@@ -1,0 +1,20 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Homey
+.homeybuild/
+.homeycompose/app.json.tmp
+env.json
+*.homeycompose.log
+
+# Secrets / credentials (never commit Violet write credentials)
+.env
+*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
