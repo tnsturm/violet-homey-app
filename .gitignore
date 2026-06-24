@@ -5,7 +5,6 @@ yarn-error.log*
 
 # Homey
 .homeybuild/
-/app.json
 .homeycompose/app.json.tmp
 env.json
 *.homeycompose.log
