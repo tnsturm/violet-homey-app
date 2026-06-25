@@ -11,8 +11,6 @@ const {
   buildCapabilityUpdates,
 } = require('../../lib/Capabilities');
 
-const STATIC_CAPS = ['measure_temperature', 'measure_ph', 'measure_orp', 'pump_running', 'measurements_fresh'];
-
 class PoolDevice extends Homey.Device {
   async onInit() {
     this._pumpOnSince = null;
@@ -42,7 +40,7 @@ class PoolDevice extends Homey.Device {
     try {
       raw = await fetchReadings(host, { timeoutMs: 10000 });
       this._failures = 0;
-      if (!this.getAvailable()) await this.setAvailable();
+      if (!this.getAvailable()) await this.setAvailable().catch(this.error);
     } catch (err) {
       this._failures += 1;
       if (this._failures >= 3) await this.setUnavailable('Violet not reachable').catch(this.error);
@@ -97,7 +95,7 @@ class PoolDevice extends Homey.Device {
         await this.setCapabilityOptions(cap, { title: { en: `Sensor ${ch.id}` } }).catch(this.error);
       }
     }
-    for (const cap of this.getCapabilities()) {
+    for (const cap of [...this.getCapabilities()]) {
       if (cap.startsWith('measure_temperature.ow') && !wanted.has(cap)) {
         await this.removeCapability(cap).catch(this.error);
       }
