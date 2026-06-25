@@ -17,6 +17,7 @@ class PoolDriver extends Homey.Driver {
       if (!cleanHost) throw new Error('Host is required');
       await fetchReadings(cleanHost, { timeoutMs: 10000 }); // throws on failure
       pairData = {
+        id: crypto.randomUUID(),
         host: cleanHost,
         writeUsername: String(username || '').trim(),
         writePassword: String(password || ''),
@@ -29,7 +30,7 @@ class PoolDriver extends Homey.Driver {
       return [
         {
           name: 'Pool',
-          data: { id: crypto.randomUUID() },
+          data: { id: pairData.id },
           settings: {
             host: pairData.host,
             writeUsername: pairData.writeUsername,
