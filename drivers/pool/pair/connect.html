@@ -1,0 +1,23 @@
+<script type="text/javascript">
+  function onConnect() {
+    const host = document.getElementById('host').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const status = document.getElementById('status');
+    status.textContent = 'Connecting…';
+    Homey.emit('connect', { host, username, password })
+      .then(function () { Homey.showView('list_devices'); })
+      .catch(function (err) { status.textContent = 'Failed: ' + (err.message || err); });
+  }
+</script>
+
+<div class="homey-form-group">
+  <label class="homey-form-label" for="host">Violet host or IP</label>
+  <input class="homey-form-input" id="host" type="text" value="violet.local" />
+  <label class="homey-form-label" for="username">Write username (optional)</label>
+  <input class="homey-form-input" id="username" type="text" />
+  <label class="homey-form-label" for="password">Write password (optional)</label>
+  <input class="homey-form-input" id="password" type="password" />
+  <p id="status"></p>
+  <button class="homey-button-primary-full" onclick="onConnect()">Connect</button>
+</div>
