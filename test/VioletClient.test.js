@@ -19,6 +19,7 @@ test('parseReadings maps the core probe fields', () => {
   assert.strictEqual(typeof p.ph, 'number');
   assert.strictEqual(typeof p.orp, 'number');
   assert.strictEqual(typeof p.pumpOn, 'boolean');
+  assert.strictEqual(p.pumpOn, true); // fixture has PUMP: 1
 });
 
 test('parseReadings lists only OK onewire channels with numeric values', () => {
