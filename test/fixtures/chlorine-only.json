@@ -1,0 +1,13 @@
+{
+  "pH_value": 7.4,
+  "orp_value": 720,
+  "pot_value": 0.8,
+  "PUMP": 1,
+  "onewire1_state": "OK",
+  "onewire1_value": 27.5,
+  "onewire2_state": "NO_SENSOR_CONFIGURED",
+  "DOS_1_CL_USE": "1",
+  "DOS_2_ELO_USE": "0",
+  "HEATER": 0,
+  "LIGHT": 0
+}
