@@ -52,9 +52,21 @@ test('buildCapabilityUpdates gates probe values on freshness', () => {
   assert.strictEqual(stale.measure_temperature, 27);
   assert.strictEqual(stale['measure_temperature.ow1'], 26);
   assert.ok(!('measure_ph' in stale));
+  assert.ok(!('measure_orp' in stale));
+  assert.ok(!('measure_chlorine' in stale));
 
   const fresh = buildCapabilityUpdates({ parsed, fresh: true, primaryChannel: 27 });
   assert.strictEqual(fresh.measure_ph, 7.3);
   assert.strictEqual(fresh.measure_orp, 750);
   assert.strictEqual(fresh.measure_chlorine, 0.8);
+});
+
+test('buildCapabilityUpdates omits chlorine when fresh but chlorine is null', () => {
+  const parsed = {
+    ph: 7.3, orp: 750, chlorine: null, pumpOn: true,
+    tempChannels: [{ id: 1, value: 26 }],
+  };
+  const updates = buildCapabilityUpdates({ parsed, fresh: true, primaryChannel: 26 });
+  assert.strictEqual(updates.measure_ph, 7.3);
+  assert.ok(!('measure_chlorine' in updates));
 });
