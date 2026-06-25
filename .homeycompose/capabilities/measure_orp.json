@@ -1,0 +1,11 @@
+{
+  "type": "number",
+  "title": { "en": "Redox (ORP)" },
+  "units": { "en": "mV" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Redox (ORP)" },
+  "decimals": 0
+}
