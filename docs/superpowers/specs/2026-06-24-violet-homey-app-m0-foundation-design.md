@@ -54,7 +54,8 @@ Write is **not implemented in M0** (deferred to M3) but credentials are captured
 | M1 | LSI flagship | PoolLab manual values + `measure_lsi` + `classifyLSI` + warning Flow cards | M0 |
 | M2 | Full read coverage + feature groups | all remaining readings, grouped & feature-detected | M0 |
 | M3 | Full control (write) | `setFunctionManually` → capabilities + Flow actions, BasicAuth, safety guards | M2 |
-| M4 | Publish-readiness | EN/DE i18n, store assets, `homey app validate`, trademark/branding review | M1–M3 |
+| M4 | Inbound alarm notifications | embedded HTTP listener + device Flow trigger for the Violet NOTIFY push (`?ERRORCODE&SUBJECT`) | M0 |
+| M5 | Publish-readiness | EN/DE i18n, store assets, `homey app validate`, trademark/branding review | M1–M4 |
 
 ---
 

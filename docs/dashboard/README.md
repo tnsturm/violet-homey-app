@@ -1,7 +1,7 @@
 # Violet Homey App — Fortschritts-Dashboard
 
 `dashboard.html` ist ein eigenständiges Artefakt: per Doppelklick im Browser öffnen, kein Server,
-kein CDN, keine Build-Schritte. Es zeigt den Stand der Meilensteine **M0–M4** und enthält pro
+kein CDN, keine Build-Schritte. Es zeigt den Stand der Meilensteine **M0–M5** und enthält pro
 nicht-abgeschlossenem Meilenstein den vollständigen Start-Prompt (zum Lesen/Kopieren).
 
 ## Einzige Quelle der Wahrheit
@@ -36,7 +36,7 @@ Wenn du (eine Claude-Code-Session) an Meilenstein `Mx` arbeitest, pflege den Ein
 
 | Feld | Bedeutung |
 |------|-----------|
-| `id` | `"M0"` … `"M4"` |
+| `id` | `"M0"` … `"M5"` |
 | `title` | Kurztitel |
 | `status` | `"done"` \| `"active"` \| `"todo"` |
 | `startedAt` / `finishedAt` | `"YYYY-MM-DD"` oder `null` |

@@ -203,12 +203,42 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
     },
     {
       id: "M4",
+      title: "Inbound-Alarme (HTTP → Flow-Trigger)",
+      status: "active",
+      startedAt: "2026-06-26",
+      finishedAt: null,
+      commit: null,
+      summary: "Eingehende Violet-Alarme (NOTIFY: HTTP GET ?ERRORCODE&SUBJECT) per eingebettetem HTTP-Listener (Default-Port 22222, konfigurierbar) als Geraete-Flow-Trigger am Pool-Device. Ersetzt den Micro-Web-Server-Umweg. Unabhaengig von M1-M3.",
+      steps: [
+        { label: "Brainstorming", done: true },
+        { label: "Spec", done: true },
+        { label: "Plan", done: false },
+        { label: "Implementierung (SDD)", done: false },
+        { label: "Validate + Push", done: false }
+      ],
+      currentActivity: "Spec freigegeben — Plan/Implementierung ausstehend (pausiert auf Nutzerwunsch)",
+      runtime: null,
+      log: [
+        { at: "2026-06-26", note: "Brainstorming + Spec abgeschlossen und freigegeben" }
+      ],
+      prompt: `Violet Homey Pro App — Milestone M4 (Inbound-HTTP-Alarme → Flow-Trigger). Brainstorming + Spec sind bereits fertig und freigegeben.
+
+Lies zuerst docs/dashboard/README.md (Dashboard-Update-Protokoll) und die Spec docs/superpowers/specs/2026-06-26-violet-http-notifications-design.md. Aktualisiere beim Start den M4-Eintrag in docs/dashboard/dashboard.html: log "Plan gestartet", currentActivity pflegen; Steps Plan -> Implementierung (SDD) -> Validate + Push abhaken; am Ende status "done" + commit.
+
+Kontext laden: Projekt-Status-Memory. M0 fertig (HEAD c174267). Dieses Feature ist unabhaengig von M1–M3 und kann jederzeit nach M0 gebaut werden.
+
+Aufgabe (aus der Spec): eingebetteter HTTP-Listener im Pool-Device (neue lib/NotifyServer.js mit reiner, testbarer parseAlarm-Funktion + Singleton-Bind, EADDRINUSE sauber abfangen), Geraete-Flow-Trigger "Alarm empfangen" via getDeviceTriggerCard (Tokens errorcode + subject, optionaler Freitext-Code-Filter per registerRunListener), neue Device-Einstellung notifyPort (Default 22222, konfigurierbar). Vor dem Coden an echter Hardware bestaetigen, dass die Violet die Tokens exakt als ERRORCODE/SUBJECT sendet und ob die Werte URL-codiert ankommen — das praegt nur parseAlarm, nicht die Architektur.
+
+Vorgehen wie M0: superpowers:writing-plans -> subagent-driven-development (frischer Implementer + Review je Task, TDD). Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika ueber die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: violet).`
+    },
+    {
+      id: "M5",
       title: "Publish-Readiness",
       status: "todo",
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Store-Assets/Bilder, App-ID de.neunbft.violet finalisieren, Credential rotieren. Ziel: validate --level=publish gruen. Haengt an M3.",
+      summary: "Store-Assets/Bilder, App-ID de.neunbft.violet finalisieren, Credential rotieren. Ziel: validate --level=publish gruen. Haengt an M4.",
       steps: [
         { label: "Brainstorming", done: false },
         { label: "Spec", done: false },
@@ -219,11 +249,11 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `Violet Homey Pro App — Milestone M4 (Publish-Readiness, Homey App Store).
+      prompt: `Violet Homey Pro App — Milestone M5 (Publish-Readiness, Homey App Store).
 
-Lies zuerst docs/dashboard/README.md. Aktualisiere beim Start den M4-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit.
+Lies zuerst docs/dashboard/README.md. Aktualisiere beim Start den M5-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit.
 
-Kontext laden: Projekt-Status-Memory + M0-Spec. M0–M3 sollten fertig sein — Reihenfolge pruefen.
+Kontext laden: Projekt-Status-Memory + M0-Spec. M0–M4 sollten fertig sein — Reihenfolge pruefen.
 
 Aufgabe: App publish-fertig machen, sodass npx homey app validate --level=publish PASST (aktuell scheitert nur --level=publish an fehlenden drivers.pool.images). To-dos: Store-Assets/Bilder ergaenzen, App-ID de.neunbft.violet final festlegen, Beschreibung/README, Kategorien, Berechtigungen.
 
