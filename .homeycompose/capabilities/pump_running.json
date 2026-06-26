@@ -1,9 +1,9 @@
 {
   "type": "boolean",
-  "title": { "en": "Pump running" },
+  "title": { "en": "Pump running", "de": "Pumpe läuft" },
   "uiComponent": "sensor",
   "getable": true,
   "setable": false,
   "insights": true,
-  "insightsTitle": { "en": "Pump running" }
+  "insightsTitle": { "en": "Pump running", "de": "Pumpe läuft" }
 }

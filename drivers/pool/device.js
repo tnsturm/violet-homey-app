@@ -92,7 +92,7 @@ class PoolDevice extends Homey.Device {
       const cap = channelSubCapId(ch.id);
       if (!this.hasCapability(cap)) {
         await this.addCapability(cap).catch(this.error);
-        await this.setCapabilityOptions(cap, { title: { en: `Sensor ${ch.id}` } }).catch(this.error);
+        await this.setCapabilityOptions(cap, { title: { en: `Sensor ${ch.id}`, de: `Sensor ${ch.id}` } }).catch(this.error);
       }
     }
     for (const cap of [...this.getCapabilities()]) {

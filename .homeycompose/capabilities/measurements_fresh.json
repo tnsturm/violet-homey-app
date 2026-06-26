@@ -1,9 +1,9 @@
 {
   "type": "boolean",
-  "title": { "en": "Measurements fresh" },
+  "title": { "en": "Measurements fresh", "de": "Messwerte aktuell" },
   "uiComponent": "sensor",
   "getable": true,
   "setable": false,
   "insights": true,
-  "insightsTitle": { "en": "Measurements fresh" }
+  "insightsTitle": { "en": "Measurements fresh", "de": "Messwerte aktuell" }
 }

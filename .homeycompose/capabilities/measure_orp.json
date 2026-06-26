@@ -1,11 +1,11 @@
 {
   "type": "number",
-  "title": { "en": "Redox (ORP)" },
-  "units": { "en": "mV" },
+  "title": { "en": "Redox (ORP)", "de": "Redox (ORP)" },
+  "units": { "en": "mV", "de": "mV" },
   "uiComponent": "sensor",
   "getable": true,
   "setable": false,
   "insights": true,
-  "insightsTitle": { "en": "Redox (ORP)" },
+  "insightsTitle": { "en": "Redox (ORP)", "de": "Redox (ORP)" },
   "decimals": 0
 }

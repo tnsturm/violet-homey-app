@@ -1,5 +1,5 @@
 {
-  "name": { "en": "Pool" },
+  "name": { "en": "Pool", "de": "Pool" },
   "class": "sensor",
   "capabilities": [
     "measure_temperature",
@@ -9,7 +9,7 @@
     "measurements_fresh"
   ],
   "capabilitiesOptions": {
-    "measure_temperature": { "title": { "en": "Water temperature" } }
+    "measure_temperature": { "title": { "en": "Water temperature", "de": "Wassertemperatur" } }
   },
   "platforms": ["local"],
   "connectivity": ["lan"],

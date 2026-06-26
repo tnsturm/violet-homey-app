@@ -2,20 +2,20 @@
   {
     "id": "host",
     "type": "text",
-    "label": { "en": "Violet host or IP" },
+    "label": { "en": "Violet host or IP", "de": "Violet-Host oder IP" },
     "value": "violet.local",
-    "hint": { "en": "Use a static IP outside the DHCP range for reliability." }
+    "hint": { "en": "Use a static IP outside the DHCP range for reliability.", "de": "Aus Zuverlässigkeitsgründen eine statische IP außerhalb des DHCP-Bereichs verwenden." }
   },
   {
     "id": "writeUsername",
     "type": "text",
-    "label": { "en": "Write username (optional)" },
+    "label": { "en": "Write username (optional)", "de": "Schreib-Benutzername (optional)" },
     "value": ""
   },
   {
     "id": "pollIntervalSeconds",
     "type": "number",
-    "label": { "en": "Poll interval (seconds)" },
+    "label": { "en": "Poll interval (seconds)", "de": "Abfrageintervall (Sekunden)" },
     "value": 60,
     "min": 60,
     "max": 900
@@ -23,7 +23,7 @@
   {
     "id": "pumpWarmupSeconds",
     "type": "number",
-    "label": { "en": "Pump warmup before trusting readings (seconds)" },
+    "label": { "en": "Pump warmup before trusting readings (seconds)", "de": "Pumpen-Vorlaufzeit, bevor Werte als gültig gelten (Sekunden)" },
     "value": 120,
     "min": 0,
     "max": 1800
@@ -31,33 +31,33 @@
   {
     "id": "waterTempChannel",
     "type": "dropdown",
-    "label": { "en": "Water temperature sensor" },
+    "label": { "en": "Water temperature sensor", "de": "Wassertemperatur-Sensor" },
     "value": "auto",
     "values": [
-      { "id": "auto", "label": { "en": "Auto" } },
-      { "id": "1", "label": { "en": "Sensor 1" } },
-      { "id": "2", "label": { "en": "Sensor 2" } },
-      { "id": "3", "label": { "en": "Sensor 3" } },
-      { "id": "4", "label": { "en": "Sensor 4" } },
-      { "id": "5", "label": { "en": "Sensor 5" } },
-      { "id": "6", "label": { "en": "Sensor 6" } },
-      { "id": "7", "label": { "en": "Sensor 7" } },
-      { "id": "8", "label": { "en": "Sensor 8" } },
-      { "id": "9", "label": { "en": "Sensor 9" } },
-      { "id": "10", "label": { "en": "Sensor 10" } },
-      { "id": "11", "label": { "en": "Sensor 11" } },
-      { "id": "12", "label": { "en": "Sensor 12" } }
+      { "id": "auto", "label": { "en": "Auto", "de": "Auto" } },
+      { "id": "1", "label": { "en": "Sensor 1", "de": "Sensor 1" } },
+      { "id": "2", "label": { "en": "Sensor 2", "de": "Sensor 2" } },
+      { "id": "3", "label": { "en": "Sensor 3", "de": "Sensor 3" } },
+      { "id": "4", "label": { "en": "Sensor 4", "de": "Sensor 4" } },
+      { "id": "5", "label": { "en": "Sensor 5", "de": "Sensor 5" } },
+      { "id": "6", "label": { "en": "Sensor 6", "de": "Sensor 6" } },
+      { "id": "7", "label": { "en": "Sensor 7", "de": "Sensor 7" } },
+      { "id": "8", "label": { "en": "Sensor 8", "de": "Sensor 8" } },
+      { "id": "9", "label": { "en": "Sensor 9", "de": "Sensor 9" } },
+      { "id": "10", "label": { "en": "Sensor 10", "de": "Sensor 10" } },
+      { "id": "11", "label": { "en": "Sensor 11", "de": "Sensor 11" } },
+      { "id": "12", "label": { "en": "Sensor 12", "de": "Sensor 12" } }
     ]
   },
   {
     "id": "group_chlorine",
     "type": "dropdown",
-    "label": { "en": "Chlorine measurement" },
+    "label": { "en": "Chlorine measurement", "de": "Chlor-Messung" },
     "value": "auto",
     "values": [
-      { "id": "auto", "label": { "en": "Auto (show if detected)" } },
-      { "id": "force", "label": { "en": "Always show" } },
-      { "id": "hide", "label": { "en": "Hide" } }
+      { "id": "auto", "label": { "en": "Auto (show if detected)", "de": "Auto (anzeigen, wenn erkannt)" } },
+      { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } },
+      { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } }
     ]
   }
 ]

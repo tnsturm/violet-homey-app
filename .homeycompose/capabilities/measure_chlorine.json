@@ -1,11 +1,11 @@
 {
   "type": "number",
-  "title": { "en": "Free chlorine" },
-  "units": { "en": "mg/L" },
+  "title": { "en": "Free chlorine", "de": "Freies Chlor" },
+  "units": { "en": "mg/L", "de": "mg/L" },
   "uiComponent": "sensor",
   "getable": true,
   "setable": false,
   "insights": true,
-  "insightsTitle": { "en": "Free chlorine" },
+  "insightsTitle": { "en": "Free chlorine", "de": "Freies Chlor" },
   "decimals": 2
 }

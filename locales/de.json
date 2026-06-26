@@ -1,0 +1,12 @@
+{
+  "pair": {
+    "connect": {
+      "host": "Violet-Host oder IP",
+      "username": "Schreib-Benutzername (optional)",
+      "password": "Schreib-Passwort (optional)",
+      "connecting": "Verbinde…",
+      "failed": "Fehlgeschlagen: ",
+      "button": "Verbinden"
+    }
+  }
+}

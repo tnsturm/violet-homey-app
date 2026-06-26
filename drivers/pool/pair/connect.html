@@ -1,23 +1,40 @@
 <script type="text/javascript">
+  function t(key, fallback) {
+    try {
+      if (typeof Homey !== 'undefined' && typeof Homey.__ === 'function') {
+        var s = Homey.__(key);
+        if (s && s !== key) return s;
+      }
+    } catch (e) {}
+    return fallback;
+  }
   function onConnect() {
     const host = document.getElementById('host').value;
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     const status = document.getElementById('status');
-    status.textContent = 'Connecting…';
+    status.textContent = t('pair.connect.connecting', 'Connecting…');
     Homey.emit('connect', { host, username, password })
       .then(function () { Homey.showView('list_devices'); })
-      .catch(function (err) { status.textContent = 'Failed: ' + (err.message || err); });
+      .catch(function (err) { status.textContent = t('pair.connect.failed', 'Failed: ') + (err.message || err); });
+  }
+  function applyI18n() {
+    document.getElementById('lbl-host').textContent = t('pair.connect.host', 'Violet host or IP');
+    document.getElementById('lbl-username').textContent = t('pair.connect.username', 'Write username (optional)');
+    document.getElementById('lbl-password').textContent = t('pair.connect.password', 'Write password (optional)');
+    document.getElementById('btn-connect').textContent = t('pair.connect.button', 'Connect');
   }
 </script>
 
 <div class="homey-form-group">
-  <label class="homey-form-label" for="host">Violet host or IP</label>
+  <label class="homey-form-label" id="lbl-host" for="host">Violet host or IP</label>
   <input class="homey-form-input" id="host" type="text" value="violet.local" />
-  <label class="homey-form-label" for="username">Write username (optional)</label>
+  <label class="homey-form-label" id="lbl-username" for="username">Write username (optional)</label>
   <input class="homey-form-input" id="username" type="text" />
-  <label class="homey-form-label" for="password">Write password (optional)</label>
+  <label class="homey-form-label" id="lbl-password" for="password">Write password (optional)</label>
   <input class="homey-form-input" id="password" type="password" />
   <p id="status"></p>
-  <button class="homey-button-primary-full" onclick="onConnect()">Connect</button>
+  <button class="homey-button-primary-full" id="btn-connect" onclick="onConnect()">Connect</button>
 </div>
+
+<script type="text/javascript">applyI18n();</script>

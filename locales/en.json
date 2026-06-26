@@ -1,1 +1,12 @@
-{}
+{
+  "pair": {
+    "connect": {
+      "host": "Violet host or IP",
+      "username": "Write username (optional)",
+      "password": "Write password (optional)",
+      "connecting": "Connecting…",
+      "failed": "Failed: ",
+      "button": "Connect"
+    }
+  }
+}
