@@ -16,7 +16,7 @@
     "id": "pollIntervalSeconds",
     "type": "number",
     "label": { "en": "Poll interval (seconds)" },
-    "value": 300,
+    "value": 60,
     "min": 60,
     "max": 900
   },

@@ -34,7 +34,7 @@ class PoolDriver extends Homey.Driver {
           settings: {
             host: pairData.host,
             writeUsername: pairData.writeUsername,
-            pollIntervalSeconds: 300,
+            pollIntervalSeconds: 60,
             pumpWarmupSeconds: 120,
             waterTempChannel: 'auto',
             group_chlorine: 'auto',

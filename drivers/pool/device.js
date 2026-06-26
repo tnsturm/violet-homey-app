@@ -21,7 +21,7 @@ class PoolDevice extends Homey.Device {
 
   _startPolling() {
     if (this._poll) this.homey.clearInterval(this._poll);
-    const seconds = this.getSetting('pollIntervalSeconds') || 300;
+    const seconds = this.getSetting('pollIntervalSeconds') || 60;
     this._poll = this.homey.setInterval(() => this._tick().catch(this.error), seconds * 1000);
     this._tick().catch(this.error);
   }
