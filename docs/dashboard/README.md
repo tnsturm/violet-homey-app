@@ -54,5 +54,13 @@ Wenn du (eine Claude-Code-Session) an Meilenstein `Mx` arbeitest, pflege den Ein
 - Die Datei ist **committet**. Änderungen mitcommitten, damit andere Sessions und frische
   git-worktrees (über die „Start Mx …"-Chips) den aktuellen Stand sehen.
 - Der Fortschrittsbalken oben rechnet automatisch aus allen `steps[].done` (kein manuelles Pflegen).
-- Ansehen: `dashboard.html` im Browser. Im Claude-Chat kann Claude das Dashboard jederzeit
-  aus diesem Daten-Block neu inline rendern.
+- Ansehen: `dashboard.html` im Browser (zeigt **immer** alle Prompts). Im Claude-Chat kann Claude
+  das Dashboard auch inline neu rendern.
+
+## Inline-Anzeige im Chat (wichtig)
+
+Inline-Widgets werden pro Session neu erzeugt — sie laden NICHT automatisch diese Datei. Wenn du das
+Dashboard im Chat renderst, baue es **1:1 aus dem Daten-Block** `DASHBOARD_STATUS` und übernimm für
+**jeden nicht-abgeschlossenen Meilenstein den vollständigen `prompt`** (eingeklappt unter „Start-Prompt
+anzeigen"). Prompts niemals kürzen oder weglassen — genau dadurch wirkten sie schon einmal „verloren".
+Die verlässliche Vollansicht bleibt die Datei `dashboard.html`.
