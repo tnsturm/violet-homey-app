@@ -41,7 +41,7 @@ test('desiredFeatureCapabilities respects detection and overrides', () => {
   );
 });
 
-test('buildCapabilityUpdates gates probe values on freshness', () => {
+test('buildCapabilityUpdates clears probe values to null when stale, sets them when fresh', () => {
   const parsed = {
     ph: 7.3, orp: 750, chlorine: 0.8, pumpOn: true,
     tempChannels: [{ id: 1, value: 26 }, { id: 3, value: 27 }],
@@ -51,9 +51,9 @@ test('buildCapabilityUpdates gates probe values on freshness', () => {
   assert.strictEqual(stale.pump_running, true);
   assert.strictEqual(stale.measure_temperature, 27);
   assert.strictEqual(stale['measure_temperature.ow1'], 26);
-  assert.ok(!('measure_ph' in stale));
-  assert.ok(!('measure_orp' in stale));
-  assert.ok(!('measure_chlorine' in stale));
+  assert.strictEqual(stale.measure_ph, null);
+  assert.strictEqual(stale.measure_orp, null);
+  assert.strictEqual(stale.measure_chlorine, null);
 
   const fresh = buildCapabilityUpdates({ parsed, fresh: true, primaryChannel: 27 });
   assert.strictEqual(fresh.measure_ph, 7.3);
