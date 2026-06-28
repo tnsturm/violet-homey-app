@@ -159,12 +159,16 @@ shows a real value as before.
 - **M1 `PUMP_LAST_ON` freshness refactor** (`notes/2026-06-26-m1-inputs.md §1`): orthogonal. That
   changes *how `fresh` is decided*; this changes *what is written given `fresh`*. The clear-on-stale
   logic sits downstream of `fresh` and does not conflict.
-- **Code-documentation convention plan** (`docs/superpowers/plans/2026-06-27-code-documentation-convention.md`,
-  untracked, not yet executed): its Task 2/Task 3 embed **verbatim** current copies of
-  `lib/Capabilities.js` and `drivers/pool/device.js`. If that plan runs *after* this fix, those
-  verbatim blocks would **revert** this change. Coordination required: whichever lands second must
-  carry the other's edits. Recommend landing this fix first, then updating the doc-convention plan's
-  code blocks to include clear-on-stale before it executes.
+- **Code-documentation convention** (spec `…/specs/2026-06-27-code-documentation-convention-design.md`;
+  plan `…/plans/2026-06-27-code-documentation-convention.md`): **already committed and executed**
+  (`9c7ef17`, `e28d378`, `9364eae`, `d951bbf`, `155554d`). `lib/Capabilities.js` and
+  `drivers/pool/device.js` therefore already carry documented headers + JSDoc. Consequence for this
+  fix: it builds *on top of* the documented files, and per the `documenting-code` skill it must also
+  **update the now-stale retrofit comments** that still describe the old behaviour — specifically the
+  `buildCapabilityUpdates` JSDoc note "(skip null/undefined when applying)" and the `device.js`
+  apply-loop comment "Skip null/undefined…" — so they match the new `undefined`=skip / `null`=clear
+  semantic. (Earlier confusion: the conversation-start worktree was mid-OneDrive-sync and showed
+  pre-retrofit copies; ground truth at `7fb8dc5` is post-retrofit.)
 - **Dashboard:** this is **not** an Mx milestone; following the doc-convention plan's precedent,
   `docs/dashboard/dashboard.html` is **not** updated.
 
