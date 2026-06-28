@@ -79,9 +79,10 @@ class PoolDevice extends Homey.Device {
 
     const primaryChannel = choosePrimaryTemperature(parsed.tempChannels, this.getSetting('waterTempChannel'));
     const updates = buildCapabilityUpdates({ parsed, fresh, primaryChannel });
-    // Skip null/undefined: "no fresh value yet" must not overwrite the last good one (spec §7).
+    // Apply rule (clear-stale §3): undefined = leave as-is; null = clear to "–"
+    // (Insights gap); else set. What is fresh-gated/cleared is decided in /lib (§7).
     for (const [cap, value] of Object.entries(updates)) {
-      if (value === null || value === undefined) continue;
+      if (value === undefined) continue;
       if (this.hasCapability(cap)) {
         await this.setCapabilityValue(cap, value).catch(this.error);
       }
