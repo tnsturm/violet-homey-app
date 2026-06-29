@@ -1,0 +1,6 @@
+{
+  "0.1.0": {
+    "en": "Initial monitoring foundation: pH, ORP, free chlorine and water temperature with pump-aware freshness (still-water probe values are not shown as live), plus pump status. All values are logged to Insights.",
+    "de": "Erste Überwachungs-Grundlage: pH, Redox (ORP), freies Chlor und Wassertemperatur mit pumpenbewusster Aktualität (Sondenwerte bei stehendem Wasser werden nicht als live angezeigt), dazu Pumpenstatus. Alle Werte werden in Insights protokolliert."
+  }
+}

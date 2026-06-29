@@ -26,11 +26,32 @@ Wenn du (eine Claude-Code-Session) an Meilenstein `Mx` arbeitest, pflege den Ein
    - `currentActivity`: ein kurzer Satz, woran gerade gearbeitet wird (oder `null`)
    - `runtime`: optionale Laufzeit-/Aufwandsnotiz (z. B. `"Tag 1"`, `"9 SDD-Tasks"`)
    - bei groben Etappen `log` ergänzen
+   - **Versionierung (gilt für JEDEN Milestone):** vor jedem Upload auf das Homey
+     (`homey app install`) oder in den Store die App-Version hochzählen und in
+     [`versions.md`](versions.md) protokollieren (Version ↔ Commit). Details siehe unten.
 3. **Am Ende**
    - `status: "done"`
    - `finishedAt: "<YYYY-MM-DD>"`, `commit: "<short-sha>"`
    - alle `steps[].done = true`, `currentActivity: null`
    - oben `updatedAt` aktualisieren
+
+## Versionierung & Upload-Protokoll (für alle Milestones)
+
+App-Version `0.X.Y`: **X = Milestone** (semver-minor), **Y = fortlaufender Build im Milestone**
+(semver-patch, beginnt pro Milestone neu bei 0). Jeder Stand, der auf das Homey installiert
+(`homey app install`) **oder** in den Store geladen wird, bekommt eine eigene Nummer und einen
+Eintrag in [`versions.md`](versions.md), der ihn auf den exakten GitHub-Commit abbildet.
+`homey app run` (flüchtiger Dev-Modus) zählt **nicht**.
+
+Pro Upload:
+1. Code-Stand committen.
+2. Bumpen: `npx homey app version patch` (neuer Build im selben Milestone) bzw.
+   `npx homey app version minor` zum **Milestone-Start** (X +1, Y → 0).
+3. `.homeychangelog.json` für die neue Version füllen (en + de, nutzerverständlich).
+4. Bump + Changelog committen (Version in `.homeycompose/app.json` und generiertem `app.json` gleich).
+5. Hochladen, dann Zeile in [`versions.md`](versions.md) ergänzen (Version, Datum, Commit, Ziel, Notiz).
+
+Vollständige Regeln und das Log: **[`versions.md`](versions.md)**.
 
 ## Felder pro Meilenstein
 
