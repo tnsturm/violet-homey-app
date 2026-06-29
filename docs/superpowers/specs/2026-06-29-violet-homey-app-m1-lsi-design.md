@@ -22,7 +22,7 @@ M1 also performs a small, high-value **freshness refactor** flagged during M0 li
 | LSI input | Source | Status |
 |---|---|---|
 | pH | `pH_value` (live) | verified live in M0 |
-| Water temperature (°C) | selected `onewireN_value` (live) | verified live in M0 (channel picker) |
+| Water temperature (°C) | selected `onewireN_value` (live), else **fixed-temperature setting** fallback | live verified in M0 (channel picker); fixed fallback new in M1 |
 | Calcium hardness | **manual device setting** (unit-selectable) | new in M1 |
 | Total alkalinity | **manual device setting** (unit-selectable) | new in M1 |
 | Cyanuric acid (CYA) | **manual device setting** (ppm) | new in M1 |
@@ -36,8 +36,10 @@ M1 also performs a small, high-value **freshness refactor** flagged during M0 li
 
 **In scope**
 - New pure module `lib/Lsi.js`: LSI computation (Carrier closed form), pH-dependent CYA correction, unit conversion to ppm CaCO₃, and classification.
-- New custom capability `measure_lsi` (number, Insights-enabled), always present on the Pool device.
-- New device settings: calcium hardness, total alkalinity (each with a unit dropdown), cyanuric acid, plus an informational LSI label (source + asymmetry + caveat).
+- New custom capability `measure_lsi` (number, Insights-enabled), present on the Pool device **when LSI is enabled**.
+- **LSI is optional**: an on/off toggle setting (`lsi_enabled`, opt-in). When disabled, `measure_lsi` is absent and no warnings fire.
+- **Fixed-temperature fallback**: a temperature setting used for the LSI when the controller has no water-temperature sensor available/selected (the user keeps it representative).
+- New device settings: calcium hardness, total alkalinity (each with a unit dropdown), cyanuric acid, the fixed-temperature fallback, plus an informational LSI label (source + asymmetry + caveat).
 - New Flow cards (the app's first): one device **trigger** "LSI warning" (edge-triggered, filterable, with tokens) and one **action** "Set water chemistry".
 - Freshness refactor to `PUMP_LAST_ON` (`lib/VioletClient.js`, `lib/Freshness.js`, `drivers/pool/device.js`, tests).
 - LSI fresh-gating: computed only while `measurements_fresh === true`; warnings suppressed while stale (M0 spec §7).
@@ -65,8 +67,8 @@ Follows the M0 principle: all non-trivial logic is pure and lives in `/lib` (uni
 /drivers/pool/
    device.js           ← MODIFY: freshness refactor, read chem settings, compute+classify LSI,
                           edge-trigger the warning, register Flow cards & action listener
-   driver.compose.json        ← MODIFY: add measure_lsi to capabilities + capabilitiesOptions
-   driver.settings.compose.json ← MODIFY: chem settings + unit dropdowns + info label
+   driver.compose.json        ← (measure_lsi added dynamically by device.js per lsi_enabled — mirrors the M0 chlorine group; NOT statically declared)
+   driver.settings.compose.json ← MODIFY: lsi_enabled toggle, chem settings + unit dropdowns, fixed-temperature fallback, info label
 /.homeycompose/
    app.json                         ← MODIFY: description mentions LSI + standard
    capabilities/measure_lsi.json    ← NEW
@@ -169,9 +171,9 @@ New custom capability, modeled on `measure_ph`:
 }
 ```
 
-- Added **statically** to `drivers/pool/driver.compose.json` `capabilities` (flagship — always visible, not feature-gated).
+- **Conditionally present**: added/removed by `device.js` `_reconcileCapabilities` according to the `lsi_enabled` setting (opt-in, default off), mirroring the M0 chlorine feature-group mechanism. When LSI is disabled the capability is absent and no warnings fire. (Disabling can break user Flows built on `measure_lsi` — accepted, since it is the user's explicit choice; the M0 `removeCapability` caveat applies.)
 - `setable: false` → only the app writes it (consistent with M0 `measure_*`).
-- Value is `null` (GUI "–", Insights gap) when stale or inputs incomplete (§9), reusing the M0 clear-on-stale apply rule.
+- Value is `null` (GUI "–", Insights gap) when enabled but stale or inputs incomplete (§9), reusing the M0 clear-on-stale apply rule.
 
 ---
 
@@ -200,12 +202,14 @@ Add a settings group **"Water chemistry (LSI)" / „Wasserchemie (LSI)"** to `dr
 
 | id | type | default | notes |
 |---|---|---|---|
+| `lsi_enabled` | checkbox (boolean) | `false` | master on/off for LSI; gates the `measure_lsi` capability + warnings (opt-in) |
 | `chem_info` | `label` | — | informational text (§8.1) |
 | `chem_calcium_hardness` | number | (empty) | required for LSI |
 | `chem_calcium_unit` | dropdown `ppm`/`dH`/`fH` | `ppm` | converts via `toPpmCaCO3` |
 | `chem_total_alkalinity` | number | (empty) | required for LSI |
 | `chem_alkalinity_unit` | dropdown `ppm`/`dH`/`fH` | `ppm` | converts via `toPpmCaCO3` |
 | `chem_cya` | number (ppm) | `0` | pH-dependent correction; 0 ⇒ no correction |
+| `chem_fixed_temperature` | number (°C) | (empty) | LSI temperature **fallback** used only when no water-temp sensor is available/selected; user keeps it representative/constant |
 
 Existing M0 settings (`host`, `pollIntervalSeconds`, `pumpWarmupSeconds`, `waterTempChannel`, `group_chlorine`, `writeUsername`) are unchanged. No TDS field (fixed 1000).
 
@@ -223,9 +227,10 @@ Existing M0 settings (`host`, `pollIntervalSeconds`, `pumpWarmupSeconds`, `water
 
 Per poll, after parse/detect/freshness:
 
-1. Read chem settings; convert calcium & alkalinity to ppm via `toPpmCaCO3`.
-2. `const lsi = fresh ? computeLSI({ pH, tempC: primaryChannel, calciumHardnessPpm, totalAlkalinityPpm, cya }) : null;`
-   (`computeLSI` returns `null` if required inputs are missing — so incomplete chemistry ⇒ `measure_lsi` null.)
+0. **LSI toggle:** `_reconcileCapabilities` adds `measure_lsi` iff `lsi_enabled` is true (removes it otherwise). If `lsi_enabled` is false, skip steps 1–4 entirely (no computation, classification or trigger). Changing `lsi_enabled` in `onSettings` re-runs the reconcile.
+1. Read chem settings; convert calcium & alkalinity to ppm via `toPpmCaCO3`. Resolve the LSI temperature: `tempC = primaryChannel != null ? primaryChannel : (chem_fixed_temperature ?? null)` — the fixed-temperature setting is the fallback when no water-temp sensor is available/selected.
+2. `const lsi = fresh ? computeLSI({ pH, tempC, calciumHardnessPpm, totalAlkalinityPpm, cya }) : null;`
+   (`computeLSI` returns `null` if a required input is missing — incomplete chemistry **or no temperature** ⇒ `measure_lsi` null.)
 3. `buildCapabilityUpdates` places `measure_lsi: lsi` (cleared to null when stale/incomplete, per the M0 apply rule: `undefined`=skip, `null`=clear, else set).
 4. Classify: `const next = classifyLSI(lsi);` Compare `next.band` to the in-memory `this._lastLsiBand`. If `next` is a non-balanced band **and** `next.band !== this._lastLsiBand`, fire the trigger with tokens. Update `this._lastLsiBand = next ? next.band : null`.
 
@@ -305,11 +310,13 @@ Fixes two M0 final-review findings (clock-skew via in-memory rising edge; warmup
 | Source visibility | **Store description + in-UI label**, incl. asymmetry + DIN stainless caveat | user requirement; honest about applicability |
 | Calcium/alkalinity units | **Per-value dropdown** (ppm/°dH/°f) | matches whatever PoolLab displays |
 | TDS | **Fixed 1000 ppm, no field** | LSI is log-insensitive to TDS; simplest |
-| `measure_lsi` | **Always present** (static capability) | flagship value; "–" when inputs incomplete |
+| LSI optional | **`lsi_enabled` toggle** (opt-in, default off); `measure_lsi` added/removed accordingly | LSI is optional per user; avoids an empty tile for users without chem data |
+| No temp sensor | **Fixed-temperature fallback setting** (`chem_fixed_temperature`) | some controllers lack a water-temp sensor; user keeps it constant/representative |
+| `measure_lsi` presence | **Dynamic** (per `lsi_enabled`), not static | follows the optional-LSI decision; mirrors the M0 chlorine group |
 | Freshness | **Derive from `PUMP_LAST_ON`**, drop in-memory `_pumpOnSince` | fixes clock-skew + restart-reset in one change |
 
 ---
 
 ## 16. Later milestones (context)
 
-- **M2** full read coverage + feature groups · **M3** full write/control · **M4** inbound alarm notifications (specced, paused) · **M5** publish-readiness · **M6** LabCOM/PoolLab cloud import (auto-pull the chemistry values M1 collects manually).
+- **M2** full read coverage + feature groups · **M3** full write/control · **M4** inbound alarm notifications (specced, paused) · **M5** publish-readiness · **M6** LabCOM/PoolLab cloud import (auto-pull the chemistry values M1 collects manually) · **M7** recommendation module (advisory): how to bring the initial tap water — starting from the published water-utility values — into a favorable LSI band; identify the real "drivers" to reach a good LSI fastest; account for CO₂ outgassing when fresh tap water is let in (raises pH, and with low alkalinity causes large pH swings).

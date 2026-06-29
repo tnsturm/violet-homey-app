@@ -306,6 +306,36 @@ Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-
 Aufgabe: Die in M1 manuell gepflegten Chem-Werte automatisch aus der PoolLab/LabCOM-Cloud beziehen (Auth, Polling/Refresh, Feld-Mapping auf die bestehenden Settings), als zusätzliche, optionale Quelle — manuelle Eingabe + Flow-Action aus M1 bleiben als Fallback. Reine, testbare Mapping-/Client-Logik nach /lib; device.js bleibt dünn.
 
 Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).`
+    },
+    {
+      id: "M7",
+      title: "Empfehlungs-Modul (Wasserbalance)",
+      status: "todo",
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Beratungsmodul: Wie bringt man das Ausgangs-Leitungswasser (aus den veröffentlichten Werten der Wasserwerke) in ein günstiges LSI-Band? Welche aktuellen Werte sind die echten Treiber für einen schnellen, günstigen LSI? Inkl. CO₂-Ausgasung bei Frischwasser (pH steigt; niedrige Alkalität → starke pH-Schwankungen). Nachgelagert zu M1/M5.",
+      steps: [
+        { label: "Brainstorming", done: false },
+        { label: "Spec", done: false },
+        { label: "Plan", done: false },
+        { label: "Implementierung (SDD)", done: false },
+        { label: "Validate + Push", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Violet Homey Pro App — Milestone M7 (Empfehlungs-/Wasserbalance-Modul).
+
+Lies zuerst docs/dashboard/README.md (Dashboard- + Versionierungs-Protokoll). Aktualisiere beim Start den M7-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen + in docs/dashboard/versions.md protokollieren.
+
+Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-06-29-violet-homey-app-m1-lsi-design.md) — dort sind LSI-Mathe (lib/Lsi.js), Klassifizierung und die Chem-Eingaben definiert, auf denen dieses Modul aufsetzt. M0–M6 sollten fertig sein.
+
+Aufgabe (beratend, kein Zwang zum Schreiben auf die Violet): Empfehlungen, mit welchen chemischen Maßnahmen man (a) das initiale Leitungswasser — ausgehend von den veröffentlichten Messwerten der Wasserwerke — in ein günstiges LSI-Band bringt und (b) aus den aktuellen Werten die wirklichen "Treiber" identifiziert, um schnell auf einen günstigen LSI zu kommen (welche Stellgröße bringt am meisten). Wichtig: Hinweis auf CO₂-Ausgasung beim Einlass von frischem Leitungswasser (erhöht den pH-Wert) und die Wechselwirkung mit niedriger Alkalität (starke pH-Schwankungen, schlechte Pufferung). Mögliche Ausgabe: berechnete Mengenempfehlungen + erklärende Hinweise (Flow-Tokens/Notification oder Settings-Hinweis); ggf. Anbindung an M3-Dosierung als Option.
+
+Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).`
     }
   ]
 };
