@@ -85,7 +85,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-06-26",
+  updatedAt: "2026-06-29",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -105,7 +105,10 @@ window.DASHBOARD_STATUS = {
       ],
       currentActivity: null,
       runtime: "9 SDD-Tasks",
-      log: [],
+      log: [
+        { at: "2026-06-29", note: "Repo aus OneDrive nach C:/Users/TorstenSturm/source/repos/VioletApp verschoben (OneDrive-.git-Sync war fehleranfaellig)." },
+        { at: "2026-06-29", note: "Patch (origin/main 4d1aaf3, live verifiziert): fresh-gated Messwerte bei stale -> null; GUI zeigt '-' + echte Insights-Luecke statt Flatline." }
+      ],
       prompt: null
     },
     {
@@ -126,7 +129,9 @@ window.DASHBOARD_STATUS = {
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `Wir starten Milestone M1 (LSI-Flaggschiff) der Violet Homey App. M0 ist gebaut, getestet und dauerhaft auf meinem Homey installiert (origin/main, HEAD c174267).
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Wir starten Milestone M1 (LSI-Flaggschiff) der Violet Homey App. M0 ist gebaut, getestet und dauerhaft auf meinem Homey installiert (origin/main, HEAD 4d1aaf3).
 
 Lies zuerst, in dieser Reihenfolge:
 1. docs/dashboard/README.md  — das Dashboard-Update-Protokoll (du musst docs/dashboard/dashboard.html waehrend des Laufs aktualisieren)
@@ -161,11 +166,13 @@ Nach dem Brainstorming: Spec schreiben, dann mit superpowers:writing-plans einen
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `Violet Homey Pro App — Milestone M2 (Volle Reads + Feature-Gruppen).
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Violet Homey Pro App — Milestone M2 (Volle Reads + Feature-Gruppen).
 
 Lies zuerst docs/dashboard/README.md (Dashboard-Update-Protokoll). Aktualisiere beim Start den M2-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Hake waehrend des Laufs die groben Steps ab; am Ende status "done" + commit.
 
-Kontext laden: Projekt-Status-Memory + M0-Spec (docs/superpowers/specs/2026-06-24-violet-homey-app-m0-foundation-design.md). M0 fertig (HEAD c174267); M1 sollte vorher abgeschlossen sein — Reihenfolge pruefen.
+Kontext laden: Projekt-Status-Memory + M0-Spec (docs/superpowers/specs/2026-06-24-violet-homey-app-m0-foundation-design.md). M0 fertig (HEAD 4d1aaf3); M1 sollte vorher abgeschlossen sein — Reihenfolge pruefen.
 
 Aufgabe: ALLE Werte aus GET http://<host>/getReadings?ALL (keine Auth) als sinnvolle Feature-Gruppen abbilden (Temperaturen, pH, Redox/ORP, Chlor/Desinfektion, Filter/Pumpe, Dosierung, Salz/Elektrolyse), per FeatureDetector an die installierte Hardware angepasst. Bestehende lib-Module + pump-aware Freshness weiterverwenden.
 
@@ -189,7 +196,9 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `Violet Homey Pro App — Milestone M3 (Voller Schreib-/Steuerzugriff).
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Violet Homey Pro App — Milestone M3 (Voller Schreib-/Steuerzugriff).
 
 Lies zuerst docs/dashboard/README.md. Aktualisiere beim Start den M3-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps waehrend des Laufs abhaken; am Ende status "done" + commit.
 
@@ -221,11 +230,13 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
       log: [
         { at: "2026-06-26", note: "Brainstorming + Spec abgeschlossen und freigegeben" }
       ],
-      prompt: `Violet Homey Pro App — Milestone M4 (Inbound-HTTP-Alarme → Flow-Trigger). Brainstorming + Spec sind bereits fertig und freigegeben.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Violet Homey Pro App — Milestone M4 (Inbound-HTTP-Alarme → Flow-Trigger). Brainstorming + Spec sind bereits fertig und freigegeben.
 
 Lies zuerst docs/dashboard/README.md (Dashboard-Update-Protokoll) und die Spec docs/superpowers/specs/2026-06-26-violet-http-notifications-design.md. Aktualisiere beim Start den M4-Eintrag in docs/dashboard/dashboard.html: log "Plan gestartet", currentActivity pflegen; Steps Plan -> Implementierung (SDD) -> Validate + Push abhaken; am Ende status "done" + commit.
 
-Kontext laden: Projekt-Status-Memory. M0 fertig (HEAD c174267). Dieses Feature ist unabhaengig von M1–M3 und kann jederzeit nach M0 gebaut werden.
+Kontext laden: Projekt-Status-Memory. M0 fertig (HEAD 4d1aaf3). Dieses Feature ist unabhaengig von M1–M3 und kann jederzeit nach M0 gebaut werden.
 
 Aufgabe (aus der Spec): eingebetteter HTTP-Listener im Pool-Device (neue lib/NotifyServer.js mit reiner, testbarer parseAlarm-Funktion + Singleton-Bind, EADDRINUSE sauber abfangen), Geraete-Flow-Trigger "Alarm empfangen" via getDeviceTriggerCard (Tokens errorcode + subject, optionaler Freitext-Code-Filter per registerRunListener), neue Device-Einstellung notifyPort (Default 22222, konfigurierbar). Vor dem Coden an echter Hardware bestaetigen, dass die Violet die Tokens exakt als ERRORCODE/SUBJECT sendet und ob die Werte URL-codiert ankommen — das praegt nur parseAlarm, nicht die Architektur.
 
@@ -249,7 +260,9 @@ Vorgehen wie M0: superpowers:writing-plans -> subagent-driven-development (frisc
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `Violet Homey Pro App — Milestone M5 (Publish-Readiness, Homey App Store).
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Violet Homey Pro App — Milestone M5 (Publish-Readiness, Homey App Store).
 
 Lies zuerst docs/dashboard/README.md. Aktualisiere beim Start den M5-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit.
 
