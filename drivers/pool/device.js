@@ -19,7 +19,6 @@ const {
 
 class PoolDevice extends Homey.Device {
   async onInit() {
-    this._pumpOnSince = null;
     this._failures = 0;
     this._startPolling();
     this.log('Pool device initialized');
@@ -60,17 +59,11 @@ class PoolDevice extends Homey.Device {
     // Prefer the controller clock for warmup math; fall back to local time if absent.
     const now = parsed.timeUnix || Math.floor(Date.now() / 1000);
 
-    // Rising-edge warmup tracking (spec §7): remember when the pump last turned on
-    // so isFresh() can require continuous circulation. In-memory by design in M0;
-    // M1 replaces this with PUMP_LAST_ON (notes/2026-06-26-m1-inputs.md §1).
-    if (parsed.pumpOn) {
-      if (this._pumpOnSince === null) this._pumpOnSince = now;
-    } else {
-      this._pumpOnSince = null;
-    }
+    // Freshness from the payload's PUMP_LAST_ON (M1 §10; notes 2026-06-26 §1):
+    // survives restarts, single coherent controller clock.
     const fresh = isFresh({
       pumpOn: parsed.pumpOn,
-      pumpOnSince: this._pumpOnSince,
+      pumpLastOn: parsed.pumpLastOn,
       now,
       warmupSeconds: this.getSetting('pumpWarmupSeconds') ?? 120,
     });
