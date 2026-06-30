@@ -16,6 +16,7 @@ const {
   desiredFeatureCapabilities,
   buildCapabilityUpdates,
 } = require('../../lib/Capabilities');
+const { computeLSI, toPpmCaCO3 } = require('../../lib/Lsi');
 
 class PoolDevice extends Homey.Device {
   async onInit() {
@@ -34,6 +35,10 @@ class PoolDevice extends Homey.Device {
 
   async onSettings({ changedKeys }) {
     if (changedKeys.includes('pollIntervalSeconds')) this._startPolling();
+    // LSI toggle / chemistry edits take effect on the next poll — re-tick promptly.
+    if (changedKeys.some((k) => k === 'lsi_enabled' || k.startsWith('chem_'))) {
+      this._tick().catch(this.error);
+    }
   }
 
   async onUninit() {
@@ -71,7 +76,22 @@ class PoolDevice extends Homey.Device {
     await this._reconcileCapabilities(parsed, features);
 
     const primaryChannel = choosePrimaryTemperature(parsed.tempChannels, this.getSetting('waterTempChannel'));
-    const updates = buildCapabilityUpdates({ parsed, fresh, primaryChannel });
+
+    // LSI (M1 §6,§9): only when enabled AND fresh; temperature falls back to the
+    // fixed setting when no water-temp sensor is available/selected.
+    let lsi = null;
+    if (this.getSetting('lsi_enabled') === true && fresh) {
+      const tempC = primaryChannel != null ? primaryChannel : (this.getSetting('chem_fixed_temperature') ?? null);
+      lsi = computeLSI({
+        pH: parsed.ph,
+        tempC,
+        calciumHardnessPpm: toPpmCaCO3(this.getSetting('chem_calcium_hardness'), this.getSetting('chem_calcium_unit') || 'ppm'),
+        totalAlkalinityPpm: toPpmCaCO3(this.getSetting('chem_total_alkalinity'), this.getSetting('chem_alkalinity_unit') || 'ppm'),
+        cya: this.getSetting('chem_cya') ?? 0,
+      });
+    }
+
+    const updates = buildCapabilityUpdates({ parsed, fresh, primaryChannel, lsi });
     // Apply rule (clear-stale §3): undefined = leave as-is; null = clear to "–"
     // (Insights gap); else set. What is fresh-gated/cleared is decided in /lib (§7).
     for (const [cap, value] of Object.entries(updates)) {
@@ -91,6 +111,12 @@ class PoolDevice extends Homey.Device {
       if (want && !this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
       if (!want && this.hasCapability(cap)) await this.removeCapability(cap).catch(this.error);
     }
+
+    // measure_lsi present iff LSI is enabled (M1 §6). Disabling removes it
+    // (can break user Flows — accepted, it is the user's explicit choice).
+    const wantLsi = this.getSetting('lsi_enabled') === true;
+    if (wantLsi && !this.hasCapability('measure_lsi')) await this.addCapability('measure_lsi').catch(this.error);
+    if (!wantLsi && this.hasCapability('measure_lsi')) await this.removeCapability('measure_lsi').catch(this.error);
 
     // 2) One read-only sub-sensor per OK temperature channel so the user can
     //    identify the water channel (spec §8); drop sub-sensors that vanished.
