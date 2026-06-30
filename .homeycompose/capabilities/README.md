@@ -9,6 +9,7 @@ lives in the M0 design spec
 | `measure_ph.json` | pH, fresh-gated | §5, §7; Insights §5.1 |
 | `measure_orp.json` | Redox / ORP (mV), fresh-gated | §5, §7; Insights §5.1 |
 | `measure_chlorine.json` | Free chlorine (ppm), feature-detected + fresh-gated | §5, §7, §9; Insights §5.1 |
+| `measure_lsi.json` | LSI (water balance), number + Insights-enabled | M1 §6 |
 | `pump_running.json` | Pump on/off, every poll | §5; Insights §5.1 |
 | `measurements_fresh.json` | Freshness indicator, derived | §5, §7; Insights §5.1 |
 

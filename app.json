@@ -271,6 +271,22 @@
       },
       "decimals": 2
     },
+    "measure_lsi": {
+      "type": "number",
+      "title": {
+        "en": "LSI",
+        "de": "LSI"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "LSI (water balance)",
+        "de": "LSI (Wasserbalance)"
+      },
+      "decimals": 2
+    },
     "measure_orp": {
       "type": "number",
       "title": {
