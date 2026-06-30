@@ -23,6 +23,103 @@
     "name": "Torsten Sturm"
   },
   "brandColor": "#6A4C93",
+  "flow": {
+    "triggers": [
+      {
+        "id": "lsi_warning",
+        "title": {
+          "en": "LSI warning",
+          "de": "LSI-Warnung"
+        },
+        "titleFormatted": {
+          "en": "LSI warning ([[filter]])",
+          "de": "LSI-Warnung ([[filter]])"
+        },
+        "hint": {
+          "en": "Fires when the water balance enters a corrosive or scale-forming band.",
+          "de": "Wird ausgelöst, wenn die Wasserbalance in ein korrosives oder kalkbildendes Band wechselt."
+        },
+        "args": [
+          {
+            "type": "dropdown",
+            "name": "filter",
+            "title": {
+              "en": "When",
+              "de": "Wann"
+            },
+            "values": [
+              {
+                "id": "all",
+                "title": {
+                  "en": "Any warning",
+                  "de": "Jede Warnung"
+                }
+              },
+              {
+                "id": "corrosive",
+                "title": {
+                  "en": "Corrosive only",
+                  "de": "Nur korrosiv"
+                }
+              },
+              {
+                "id": "scaling",
+                "title": {
+                  "en": "Scaling only",
+                  "de": "Nur kalkbildend"
+                }
+              },
+              {
+                "id": "critical",
+                "title": {
+                  "en": "Critical only",
+                  "de": "Nur kritisch"
+                }
+              }
+            ]
+          }
+        ],
+        "tokens": [
+          {
+            "name": "lsi",
+            "type": "number",
+            "title": {
+              "en": "LSI",
+              "de": "LSI"
+            },
+            "example": -0.45
+          },
+          {
+            "name": "classification",
+            "type": "string",
+            "title": {
+              "en": "Classification",
+              "de": "Einstufung"
+            },
+            "example": "corrosive"
+          },
+          {
+            "name": "direction",
+            "type": "string",
+            "title": {
+              "en": "Direction",
+              "de": "Richtung"
+            },
+            "example": "corrosive"
+          },
+          {
+            "name": "severity",
+            "type": "string",
+            "title": {
+              "en": "Severity",
+              "de": "Schweregrad"
+            },
+            "example": "warning"
+          }
+        ]
+      }
+    ]
+  },
   "drivers": [
     {
       "name": {

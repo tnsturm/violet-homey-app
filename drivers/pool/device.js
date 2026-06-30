@@ -16,11 +16,18 @@ const {
   desiredFeatureCapabilities,
   buildCapabilityUpdates,
 } = require('../../lib/Capabilities');
-const { computeLSI, toPpmCaCO3 } = require('../../lib/Lsi');
+const { computeLSI, classifyLSI, toPpmCaCO3 } = require('../../lib/Lsi');
 
 class PoolDevice extends Homey.Device {
   async onInit() {
     this._failures = 0;
+    this._lastLsiBand = null;
+    this._lsiWarning = this.homey.flow.getDeviceTriggerCard('lsi_warning');
+    this._lsiWarning.registerRunListener((args, state) => {
+      if (args.filter === 'all') return true;
+      if (args.filter === 'critical') return state.severity === 'critical';
+      return state.direction === args.filter; // 'corrosive' | 'scaling'
+    });
     this._startPolling();
     this.log('Pool device initialized');
   }
@@ -92,6 +99,19 @@ class PoolDevice extends Homey.Device {
     }
 
     const updates = buildCapabilityUpdates({ parsed, fresh, primaryChannel, lsi });
+
+    // Edge-trigger the warning only when the band CHANGES into a non-balanced
+    // state (M1 §7,§9). null (disabled/stale/incomplete) clears the tracked band
+    // and never fires; _lastLsiBand is in-memory (may re-fire once after restart).
+    const cls = classifyLSI(lsi);
+    const band = cls ? cls.band : null;
+    if (cls && cls.severity !== 'ok' && band !== this._lastLsiBand) {
+      this._lsiWarning
+        .trigger(this, { lsi, classification: cls.band, direction: cls.direction, severity: cls.severity }, { direction: cls.direction, severity: cls.severity })
+        .catch(this.error);
+    }
+    this._lastLsiBand = band;
+
     // Apply rule (clear-stale §3): undefined = leave as-is; null = clear to "–"
     // (Insights gap); else set. What is fresh-gated/cleared is decided in /lib (§7).
     for (const [cap, value] of Object.entries(updates)) {
