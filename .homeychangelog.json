@@ -2,5 +2,9 @@
   "0.1.0": {
     "en": "Initial monitoring foundation: pH, ORP, free chlorine and water temperature with pump-aware freshness (still-water probe values are not shown as live), plus pump status. All values are logged to Insights.",
     "de": "Erste Überwachungs-Grundlage: pH, Redox (ORP), freies Chlor und Wassertemperatur mit pumpenbewusster Aktualität (Sondenwerte bei stehendem Wasser werden nicht als live angezeigt), dazu Pumpenstatus. Alle Werte werden in Insights protokolliert."
+  },
+  "0.1.1": {
+    "en": "New: optional live Langelier (LSI) water-balance safety net with a configurable warning Flow card; classification per ANSI/PHTA/ICC-11. Enter calcium hardness, alkalinity and cyanuric acid in settings (or via the 'Set water chemistry' Flow action). More reliable pump-warmup detection.",
+    "de": "Neu: optionaler Live-Langelier-Index (LSI) als Wasserbalance-Sicherheitsnetz mit konfigurierbarer Warn-Flow-Karte; Einstufung nach ANSI/PHTA/ICC-11. Calciumhärte, Alkalität und Cyanursäure in den Einstellungen eingeben (oder per Flow-Aktion „Wasserchemie setzen“). Zuverlässigere Pumpen-Vorlauf-Erkennung."
   }
 }
