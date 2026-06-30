@@ -4,6 +4,15 @@ Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-s
 
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
+## 0. Always-On Skills
+
+**These two skill sets are mandatory for this project — apply them by default, not on request.**
+
+- **Superpowers workflow skills** (`superpowers:*`): use them as the standard way of working — `brainstorming` before any creative/feature work, `writing-plans` before multi-step code, `test-driven-development` for features/bugfixes, `systematic-debugging` for bugs, and the code-review/verification skills before completion. When in doubt whether one applies, invoke it (see `using-superpowers`).
+- **`/documenting-code`** (this project's own skill): apply whenever you write or modify a source file — add the spec-referenced file header, decision-point comments with §-refs, and JSDoc on pure `/lib` exports.
+
+These override the default "just write the code" behavior; user instructions still take precedence over both.
+
 ## 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
@@ -59,6 +68,20 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+## 5. Security by Design
+
+**Derive security requirements before writing the plan — not after the bug.**
+
+When a milestone adds a new attack surface — write/control paths, network listeners, credential handling, or any untrusted external input — invoke the `security-requirement-extraction` skill during **brainstorming/design** and **writing-plans** to:
+
+- Build a short STRIDE threat model for the new surface (assets, trust boundaries, threats).
+- Derive concrete, **testable** security requirements — each traced to a threat, with acceptance criteria.
+- Record both in `docs/superpowers/security/<date>-<milestone>-threat-model.md` (the M3 doc is the pattern).
+
+Then carry those requirements into the plan as explicit verification steps (§4) and TDD cases where testable, and re-run `/security-review` on the resulting diff before merge.
+
+Skip only for changes with no new attack surface (pure reads, docs, refactors, UI copy). When in doubt, do the threat model — it is cheap relative to a shipped vulnerability.
 
 ---
 
