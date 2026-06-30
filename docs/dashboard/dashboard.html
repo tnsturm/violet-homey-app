@@ -121,16 +121,17 @@ window.DASHBOARD_STATUS = {
       summary: "Langelier-Index (LSI) als Wasserchemie-Sicherheitsnetz gegen Kupferkorrosion. Inkl. Freshness-Refactor auf PUMP_LAST_ON.",
       steps: [
         { label: "Brainstorming", done: true },
-        { label: "Spec", done: false },
-        { label: "Plan", done: false },
+        { label: "Spec", done: true },
+        { label: "Plan", done: true },
         { label: "Implementierung (SDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: "Spec (LSI) wird geschrieben",
-      runtime: null,
+      currentActivity: "Plan fertig (12 Tasks) — bereit für SDD-Umsetzung",
+      runtime: "12 SDD-Tasks geplant",
       log: [
         { at: "2026-06-29", note: "Brainstorming/Design gestartet" },
-        { at: "2026-06-29", note: "Design freigegeben: LSI-Mathe (Carrier), CYA pH-abhängig, Bänder nach ANSI/PHTA/ICC-11, eine Warn-Flow-Card + Action 'Wasserchemie setzen', Freshness-Refactor auf PUMP_LAST_ON. Neuer M6 (LabCOM-Cloud) eingefügt." }
+        { at: "2026-06-29", note: "Design freigegeben: LSI-Mathe (Carrier), CYA pH-abhängig, Bänder nach ANSI/PHTA/ICC-11, eine Warn-Flow-Card + Action 'Wasserchemie setzen', Freshness-Refactor auf PUMP_LAST_ON. Neue M6 (LabCOM) + M7 (Empfehlungsmodul) eingefügt." },
+        { at: "2026-06-29", note: "Spec freigegeben (LSI optional via Toggle, fixe-Temp-Fallback); Implementierungsplan mit 12 Tasks geschrieben." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
