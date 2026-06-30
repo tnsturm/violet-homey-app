@@ -70,3 +70,20 @@ test('buildCapabilityUpdates omits chlorine when fresh but chlorine is null', ()
   assert.strictEqual(updates.measure_ph, 7.3);
   assert.ok(!('measure_chlorine' in updates));
 });
+
+test('buildCapabilityUpdates places measure_lsi (fresh-gated)', () => {
+  const parsed = { ph: 7.2, orp: 700, chlorine: 0.3, pumpOn: true, tempChannels: [] };
+  assert.strictEqual(
+    buildCapabilityUpdates({ parsed, fresh: true, primaryChannel: 28, lsi: 0.12 }).measure_lsi,
+    0.12,
+  );
+  assert.strictEqual(
+    buildCapabilityUpdates({ parsed, fresh: true, primaryChannel: 28, lsi: null }).measure_lsi,
+    null,
+  );
+  // LSI value 0 must be preserved (not coerced to null).
+  assert.strictEqual(
+    buildCapabilityUpdates({ parsed, fresh: true, primaryChannel: 28, lsi: 0 }).measure_lsi,
+    0,
+  );
+});
