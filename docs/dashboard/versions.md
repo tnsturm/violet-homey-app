@@ -41,5 +41,6 @@ nächsten `build`/`run`/`validate` mitgezogen (beide müssen vor dem Commit iden
 | Version | Datum | Commit | Ziel | Milestone | Notiz |
 |---|---|---|---|---|---|
 | `0.1.0` | 2026-06-24 … 06-29 | `4d1aaf3` | Homey-Install | M0 | Scaffold-Default (Homey `app create`), **nie hochgezählt** — alle M0-Installs (`c174267` → clear-on-stale `4d1aaf3`, aktuell live) liefen unter 0.1.0. Grandfathered; Auslöser für diese Konvention. |
+| `0.1.1` | 2026-06-30 | `0740c5f` | origin/main (Homey-Install) | M1 | LSI-Flaggschiff (optional via Toggle, Bänder nach ANSI/PHTA/ICC-11, CYA pH-abhängig) + Freshness-Refactor auf PUMP_LAST_ON. 12 SDD-Tasks, alle reviewt; Whole-Branch-Review (opus): „ready to merge". |
 
-**Nächster Upload (erster M1-Build): `0.1.1`** (`npx homey app version patch`).
+**Nächster Upload (erster M2-Build): `0.2.0`** (`npx homey app version minor`).
