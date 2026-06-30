@@ -76,7 +76,11 @@
         "id": "chem_info",
         "type": "label",
         "label": { "en": "About the LSI", "de": "Über den LSI" },
-        "value": "Balanced is -0.3 to +0.5 (0 ideal), per ANSI/PHTA/ICC-11 — deliberately asymmetric: a slightly positive value is safer because a thin scale layer protects surfaces, whereas corrosive water (copper/heater!) causes permanent damage. Note: per DIN 19643 the index is NOT a valid indicator for stainless-steel corrosion."
+        "value": "Langelier Saturation Index (LSI)",
+        "hint": {
+          "en": "The LSI (Langelier Saturation Index) rates the water's scaling/corrosion balance. Balanced is -0.3 to +0.5 (0 ideal) — deliberately asymmetric: a slightly positive value is safer because a thin scale layer protects surfaces whereas corrosive water (copper/heater!) causes permanent damage. Classification per ANSI/PHTA/ICC-11. Note: the index applies to the calcium-carbonate/CO2 equilibrium and metals such as copper/iron and cement-based materials; per DIN 19643 it is NOT a valid indicator for stainless-steel corrosion.",
+          "de": "Der LSI (Langelier-Sättigungsindex) bewertet die Kalk-/Korrosions-Balance des Wassers. Ausgeglichen ist -0,3 bis +0,5 (0 ideal) — der Bereich ist bewusst asymmetrisch: Ein leicht positiver Wert ist sicherer, weil eine dünne Kalkschicht schützt, während korrosives Wasser (Kupfer/Heizung!) bleibende Schäden verursacht. Einstufung nach ANSI/PHTA/ICC-11. Hinweis: Der Index gilt für das Kalk-Kohlensäure-Gleichgewicht und Metalle wie Kupfer/Eisen sowie zementgebundene Werkstoffe; für Edelstahl ist er laut DIN 19643 NICHT als Korrosions-Indikator geeignet."
+        }
       },
       {
         "id": "chem_calcium_hardness",
