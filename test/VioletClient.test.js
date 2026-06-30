@@ -38,3 +38,8 @@ test('parseReadings returns null chlorine when pot sensor absent', () => {
   assert.strictEqual(p.chlorine, null);
   assert.strictEqual(p.pumpOn, false);
 });
+
+test('parseReadings exposes pumpLastOn from PUMP_LAST_ON', () => {
+  assert.strictEqual(parseReadings({ PUMP_LAST_ON: '1782331200' }).pumpLastOn, 1782331200);
+  assert.strictEqual(parseReadings({}).pumpLastOn, null);
+});
