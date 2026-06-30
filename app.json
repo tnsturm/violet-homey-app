@@ -12,8 +12,8 @@
     "de": "Pool (Violet)"
   },
   "description": {
-    "en": "Monitor and control a PoolDigital Violet pool controller.",
-    "de": "Überwacht und steuert einen PoolDigital-Violet-Poolregler."
+    "en": "Monitor a PoolDigital Violet pool controller, with an optional live Langelier (LSI) water-balance safety net — classification per ANSI/PHTA/ICC-11.",
+    "de": "Überwacht einen PoolDigital-Violet-Poolregler, mit optionalem Live-Langelier-Index (LSI) als Wasserbalance-Sicherheitsnetz — Einstufung nach ANSI/PHTA/ICC-11."
   },
   "category": [
     "appliances"
