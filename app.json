@@ -246,6 +246,151 @@
               }
             }
           ]
+        },
+        {
+          "id": "group_lsi",
+          "type": "group",
+          "label": {
+            "en": "Water chemistry (LSI)",
+            "de": "Wasserchemie (LSI)"
+          },
+          "children": [
+            {
+              "id": "lsi_enabled",
+              "type": "checkbox",
+              "label": {
+                "en": "Compute LSI (Langelier index)",
+                "de": "LSI (Langelier-Index) berechnen"
+              },
+              "value": false,
+              "hint": {
+                "en": "Off by default. Enable to show the LSI and water-balance warnings (needs the values below).",
+                "de": "Standardmäßig aus. Aktivieren, um LSI und Wasserbalance-Warnungen anzuzeigen (benötigt die Werte unten)."
+              }
+            },
+            {
+              "id": "chem_info",
+              "type": "label",
+              "label": {
+                "en": "About the LSI",
+                "de": "Über den LSI"
+              },
+              "value": "Balanced is -0.3 to +0.5 (0 ideal), per ANSI/PHTA/ICC-11 — deliberately asymmetric: a slightly positive value is safer because a thin scale layer protects surfaces, whereas corrosive water (copper/heater!) causes permanent damage. Note: per DIN 19643 the index is NOT a valid indicator for stainless-steel corrosion."
+            },
+            {
+              "id": "chem_calcium_hardness",
+              "type": "number",
+              "label": {
+                "en": "Calcium hardness",
+                "de": "Calciumhärte"
+              },
+              "hint": {
+                "en": "From your PoolLab/test. Required for the LSI.",
+                "de": "Aus deinem PoolLab/Test. Für den LSI erforderlich."
+              }
+            },
+            {
+              "id": "chem_calcium_unit",
+              "type": "dropdown",
+              "label": {
+                "en": "Calcium hardness unit",
+                "de": "Einheit Calciumhärte"
+              },
+              "value": "ppm",
+              "values": [
+                {
+                  "id": "ppm",
+                  "label": {
+                    "en": "ppm (mg/L CaCO₃)",
+                    "de": "ppm (mg/L CaCO₃)"
+                  }
+                },
+                {
+                  "id": "dH",
+                  "label": {
+                    "en": "°dH",
+                    "de": "°dH"
+                  }
+                },
+                {
+                  "id": "fH",
+                  "label": {
+                    "en": "°f",
+                    "de": "°f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "chem_total_alkalinity",
+              "type": "number",
+              "label": {
+                "en": "Total alkalinity",
+                "de": "Gesamtalkalität"
+              },
+              "hint": {
+                "en": "From your PoolLab/test. Required for the LSI.",
+                "de": "Aus deinem PoolLab/Test. Für den LSI erforderlich."
+              }
+            },
+            {
+              "id": "chem_alkalinity_unit",
+              "type": "dropdown",
+              "label": {
+                "en": "Total alkalinity unit",
+                "de": "Einheit Gesamtalkalität"
+              },
+              "value": "ppm",
+              "values": [
+                {
+                  "id": "ppm",
+                  "label": {
+                    "en": "ppm (mg/L CaCO₃)",
+                    "de": "ppm (mg/L CaCO₃)"
+                  }
+                },
+                {
+                  "id": "dH",
+                  "label": {
+                    "en": "°dH",
+                    "de": "°dH"
+                  }
+                },
+                {
+                  "id": "fH",
+                  "label": {
+                    "en": "°f",
+                    "de": "°f"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "chem_cya",
+              "type": "number",
+              "label": {
+                "en": "Cyanuric acid (CYA, ppm)",
+                "de": "Cyanursäure (CYA, ppm)"
+              },
+              "value": 0,
+              "hint": {
+                "en": "0 if unstabilised. Used for the pH-dependent alkalinity correction.",
+                "de": "0 wenn unstabilisiert. Für die pH-abhängige Alkalitäts-Korrektur."
+              }
+            },
+            {
+              "id": "chem_fixed_temperature",
+              "type": "number",
+              "label": {
+                "en": "Fixed temperature for LSI (°C)",
+                "de": "Feste Temperatur für LSI (°C)"
+              },
+              "hint": {
+                "en": "Only used if no water-temperature sensor is available/selected. Keep it representative.",
+                "de": "Nur genutzt, wenn kein Wassertemperatur-Sensor verfügbar/gewählt ist. Repräsentativ halten."
+              }
+            }
+          ]
         }
       ]
     }
