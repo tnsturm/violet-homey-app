@@ -1,0 +1,12 @@
+{
+  "id": "set_water_chemistry",
+  "title": { "en": "Set water chemistry", "de": "Wasserchemie setzen" },
+  "titleFormatted": { "en": "Set calcium [[calcium]], alkalinity [[alkalinity]], CYA [[cya]]", "de": "Calcium [[calcium]], Alkalität [[alkalinity]], CYA [[cya]] setzen" },
+  "hint": { "en": "Writes the slow-changing LSI chemistry values into this device's settings (in their configured units).", "de": "Schreibt die langsam veränderlichen LSI-Chemiewerte in die Einstellungen dieses Geräts (in den konfigurierten Einheiten)." },
+  "args": [
+    { "type": "device", "name": "device", "filter": "driver_id=pool" },
+    { "type": "number", "name": "calcium", "title": { "en": "Calcium hardness", "de": "Calciumhärte" }, "min": 0 },
+    { "type": "number", "name": "alkalinity", "title": { "en": "Total alkalinity", "de": "Gesamtalkalität" }, "min": 0 },
+    { "type": "number", "name": "cya", "title": { "en": "Cyanuric acid (ppm)", "de": "Cyanursäure (ppm)" }, "min": 0 }
+  ]
+}

@@ -13,6 +13,19 @@ const { fetchReadings } = require('../../lib/VioletClient');
 class PoolDriver extends Homey.Driver {
   async onInit() {
     this.log('Pool driver initialized');
+
+    // "Set water chemistry" Flow action (M1 §7): writes the slow LSI inputs into
+    // the target device's settings; the next poll recomputes the LSI. This is the
+    // seam the M6 LabCOM bridge / automations push values through.
+    this.homey.flow.getActionCard('set_water_chemistry').registerRunListener(async (args) => {
+      await args.device.setSettings({
+        chem_calcium_hardness: args.calcium,
+        chem_total_alkalinity: args.alkalinity,
+        chem_cya: args.cya,
+      });
+      await args.device._tick().catch(args.device.error);
+      return true;
+    });
   }
 
   onPair(session) {
