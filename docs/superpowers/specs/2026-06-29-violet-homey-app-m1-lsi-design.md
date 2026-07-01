@@ -194,6 +194,15 @@ New custom capability, modeled on `measure_ph`:
 
 Flow card titles/args/tokens are bilingual (en/de) inline in the compose JSON.
 
+### 7.3 Water-balance alarm capability (added in 0.1.3)
+
+The Flow trigger (§7.1) fires for automations but is **not visible on the device tile**. To surface the warning state where the user looks, add a boolean capability `alarm_water_balance` (title "Water balance alarm" / „Wasserbalance-Alarm", `insights: true`). Homey renders `alarm_*` booleans as a red alarm indicator on the tile (like `alarm_motion`).
+
+- **True** whenever the LSI is outside the balanced band (any non-`ok` band — corrosive or scaling, warning or critical); **false** when balanced. Derived from `classifyLSI(lsi)` via `severity !== 'ok'` (Option A — chosen by the user over per-value colour coding, which Homey does not support).
+- **Absent** when `lsi_enabled` is off (added/removed in `_reconcileCapabilities` alongside `measure_lsi`); **false** when stale/inputs-incomplete (no false alarm on still water — §7).
+- Boolean → cannot encode warning-vs-critical; the `lsi_warning` trigger (§7.1) retains the severity/direction detail for automations.
+- Logs to Insights (state timeline).
+
 ---
 
 ## 8. Device settings

@@ -98,12 +98,17 @@ class PoolDevice extends Homey.Device {
       });
     }
 
-    const updates = buildCapabilityUpdates({ parsed, fresh, primaryChannel, lsi });
+    // Classify once: drives both the tile alarm capability and the edge-trigger.
+    const cls = classifyLSI(lsi);
+    // Water-balance alarm (M1 §7.3): true whenever the LSI is outside the
+    // balanced band (warning or critical); false when balanced/stale/disabled.
+    const alarm = !!cls && cls.severity !== 'ok';
+
+    const updates = buildCapabilityUpdates({ parsed, fresh, primaryChannel, lsi, alarm });
 
     // Edge-trigger the warning only when the band CHANGES into a non-balanced
     // state (M1 §7,§9). null (disabled/stale/incomplete) clears the tracked band
     // and never fires; _lastLsiBand is in-memory (may re-fire once after restart).
-    const cls = classifyLSI(lsi);
     const band = cls ? cls.band : null;
     if (cls && cls.severity !== 'ok' && band !== this._lastLsiBand) {
       this._lsiWarning
@@ -132,11 +137,13 @@ class PoolDevice extends Homey.Device {
       if (!want && this.hasCapability(cap)) await this.removeCapability(cap).catch(this.error);
     }
 
-    // measure_lsi present iff LSI is enabled (M1 §6). Disabling removes it
-    // (can break user Flows — accepted, it is the user's explicit choice).
+    // measure_lsi + alarm_water_balance present iff LSI is enabled (M1 §6,§7.3).
+    // Disabling removes them (can break user Flows — accepted, user's choice).
     const wantLsi = this.getSetting('lsi_enabled') === true;
-    if (wantLsi && !this.hasCapability('measure_lsi')) await this.addCapability('measure_lsi').catch(this.error);
-    if (!wantLsi && this.hasCapability('measure_lsi')) await this.removeCapability('measure_lsi').catch(this.error);
+    for (const cap of ['measure_lsi', 'alarm_water_balance']) {
+      if (wantLsi && !this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
+      if (!wantLsi && this.hasCapability(cap)) await this.removeCapability(cap).catch(this.error);
+    }
 
     // 2) One read-only sub-sensor per OK temperature channel so the user can
     //    identify the water channel (spec §8); drop sub-sensors that vanished.

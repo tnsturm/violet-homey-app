@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Water balance alarm", "de": "Wasserbalance-Alarm" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Water balance alarm", "de": "Wasserbalance-Alarm" }
+}

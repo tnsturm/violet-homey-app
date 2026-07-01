@@ -6,7 +6,5 @@
   "setable": false,
   "insights": true,
   "insightsTitle": { "en": "LSI (water balance)", "de": "LSI (Wasserbalance)" },
-  "decimals": 2,
-  "min": -3,
-  "max": 3
+  "decimals": 2
 }

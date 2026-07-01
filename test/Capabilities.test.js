@@ -87,3 +87,20 @@ test('buildCapabilityUpdates places measure_lsi (fresh-gated)', () => {
     0,
   );
 });
+
+test('buildCapabilityUpdates places alarm_water_balance (LSI warning state)', () => {
+  const parsed = { ph: 7.2, orp: 700, chlorine: 0.3, pumpOn: true, tempChannels: [] };
+  assert.strictEqual(
+    buildCapabilityUpdates({ parsed, fresh: true, primaryChannel: 28, lsi: -0.6, alarm: true }).alarm_water_balance,
+    true,
+  );
+  assert.strictEqual(
+    buildCapabilityUpdates({ parsed, fresh: true, primaryChannel: 28, lsi: 0.1, alarm: false }).alarm_water_balance,
+    false,
+  );
+  // alarm omitted → defaults to false (a boolean alarm is never undefined/null).
+  assert.strictEqual(
+    buildCapabilityUpdates({ parsed, fresh: true, primaryChannel: 28, lsi: 0.1 }).alarm_water_balance,
+    false,
+  );
+});

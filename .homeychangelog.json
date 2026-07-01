@@ -10,5 +10,9 @@
   "0.1.2": {
     "en": "Cosmetic polish: fixed LSI scale (-3 to +3) for cleaner Insights chart axis labels, and a settings hint explaining how dropdown selections appear in the Homey iOS app.",
     "de": "Kosmetik: feste LSI-Skala (-3 bis +3) für sauberere Achsen im Insights-Diagramm, plus ein Einstellungs-Hinweis zur Anzeige von Dropdown-Auswahlen in der Homey-iOS-App."
+  },
+  "0.1.3": {
+    "en": "New: a Water balance alarm on the device tile that turns on when the LSI leaves the balanced range (like a motion alarm) — warnings are now visible at a glance, in addition to the Flow trigger.",
+    "de": "Neu: ein Wasserbalance-Alarm auf der Gerätekachel, der angeht, sobald der LSI den ausgeglichenen Bereich verlässt (wie ein Bewegungsalarm) — Warnungen sind jetzt auf einen Blick sichtbar, zusätzlich zur Flow-Karte."
   }
 }
