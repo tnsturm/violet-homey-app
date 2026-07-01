@@ -161,21 +161,25 @@ Nach dem Brainstorming: Spec schreiben, dann mit superpowers:writing-plans einen
     {
       id: "M2",
       title: "Volle Reads + Feature-Gruppen",
-      status: "todo",
-      startedAt: null,
+      status: "active",
+      startedAt: "2026-07-01",
       finishedAt: null,
       commit: null,
       summary: "Alle Werte aus getReadings?ALL als Feature-Gruppen (Temperatur, pH, Redox, Chlor, Pumpe, Dosierung …), hardware-adaptiv. Haengt an M1.",
       steps: [
-        { label: "Brainstorming", done: false },
-        { label: "Spec", done: false },
+        { label: "Brainstorming", done: true },
+        { label: "Spec", done: true },
         { label: "Plan", done: false },
         { label: "Implementierung (SDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: null,
+      currentActivity: "Spec-Review durch Nutzer → danach Plan",
       runtime: null,
-      log: [],
+      log: [
+        { at: "2026-07-01", note: "M2 gestartet — Brainstorming/Design (volle Reads + Feature-Gruppen)." },
+        { at: "2026-07-01", note: "Scope 'curated parity' + polled Alarme + optionale Daten (Dosier-Verbrauch, Laufzeiten, Diagnose) festgelegt; 7-Agenten-Feld-Klassifikation als Spec-Grundlage (notes/2026-07-01-m2-field-classification.md)." },
+        { at: "2026-07-01", note: "Design freigegeben (Controller-Error-Alarm nach M4 verschoben); Spec geschrieben: specs/2026-07-01-violet-homey-app-m2-full-reads-design.md." }
+      ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Violet Homey Pro App — Milestone M2 (Volle Reads + Feature-Gruppen).
