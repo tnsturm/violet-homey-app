@@ -6,5 +6,9 @@
   "0.1.1": {
     "en": "New: optional live Langelier (LSI) water-balance safety net with a configurable warning Flow card; classification per ANSI/PHTA/ICC-11. Enter calcium hardness, alkalinity and cyanuric acid in settings (or via the 'Set water chemistry' Flow action). More reliable pump-warmup detection.",
     "de": "Neu: optionaler Live-Langelier-Index (LSI) als Wasserbalance-Sicherheitsnetz mit konfigurierbarer Warn-Flow-Karte; Einstufung nach ANSI/PHTA/ICC-11. Calciumhärte, Alkalität und Cyanursäure in den Einstellungen eingeben (oder per Flow-Aktion „Wasserchemie setzen“). Zuverlässigere Pumpen-Vorlauf-Erkennung."
+  },
+  "0.1.2": {
+    "en": "Cosmetic polish: fixed LSI scale (-3 to +3) for cleaner Insights chart axis labels, and a settings hint explaining how dropdown selections appear in the Homey iOS app.",
+    "de": "Kosmetik: feste LSI-Skala (-3 bis +3) für sauberere Achsen im Insights-Diagramm, plus ein Einstellungs-Hinweis zur Anzeige von Dropdown-Auswahlen in der Homey-iOS-App."
   }
 }
