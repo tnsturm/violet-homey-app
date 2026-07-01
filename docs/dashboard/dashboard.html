@@ -79,7 +79,9 @@
 /* =====================================================================
    DATEN-BLOCK — EINZIGE QUELLE DER WAHRHEIT
    Jede Milestone-Session editiert NUR dieses Objekt.
-   Protokoll & Feld-Bedeutungen: docs/dashboard/README.md
+   Protokoll & Feld-Bedeutungen: CLAUDE.md §7 (generisch, wird automatisch geladen),
+   Homey-Versionierung: HOMEY.md (per @-Import in CLAUDE.md, ebenfalls automatisch geladen).
+   Violet-spezifische Hinweise: docs/dashboard/README.md.
    Den Renderer darunter NICHT anfassen.
    ===================================================================== */
 window.DASHBOARD_STATUS = {
@@ -141,9 +143,10 @@ window.DASHBOARD_STATUS = {
 Wir starten Milestone M1 (LSI-Flaggschiff) der Violet Homey App. M0 ist gebaut, getestet und dauerhaft auf meinem Homey installiert (origin/main, HEAD 4d1aaf3).
 
 Lies zuerst, in dieser Reihenfolge:
-1. docs/dashboard/README.md  — das Dashboard-Update-Protokoll (du musst docs/dashboard/dashboard.html waehrend des Laufs aktualisieren)
-2. docs/superpowers/notes/2026-06-26-m1-inputs.md   (Erkenntnisse aus dem M0-Live-Test)
-3. docs/superpowers/specs/2026-06-24-violet-homey-app-m0-foundation-design.md  — §2 (Meilenstein-Uebersicht) und §15 (offene Punkte fuer M1)
+1. docs/superpowers/notes/2026-06-26-m1-inputs.md   (Erkenntnisse aus dem M0-Live-Test)
+2. docs/superpowers/specs/2026-06-24-violet-homey-app-m0-foundation-design.md  — §2 (Meilenstein-Uebersicht) und §15 (offene Punkte fuer M1)
+
+(Dashboard-Update-Protokoll: CLAUDE.md §7 — bereits automatisch geladen, du musst docs/dashboard/dashboard.html waehrend des Laufs aktualisieren.)
 
 Aktualisiere danach den M1-Status an ZWEI Stellen: (a) im Projektgedaechtnis (project-status.md) und (b) im Dashboard-Daten-Block in docs/dashboard/dashboard.html — markiere M1 als "active", setze startedAt auf das heutige Datum und haenge einen log-Eintrag "Brainstorming/Design gestartet" an. Hake waehrend des Laufs die groben Steps ab (Brainstorming -> Spec -> Plan -> Implementierung (SDD) -> Validate + Push) und pflege currentActivity. Am Ende: status "done", finishedAt + commit setzen.
 
@@ -177,7 +180,7 @@ Nach dem Brainstorming: Spec schreiben, dann mit superpowers:writing-plans einen
 
 Violet Homey Pro App — Milestone M2 (Volle Reads + Feature-Gruppen).
 
-Lies zuerst docs/dashboard/README.md (Dashboard-Update-Protokoll). Aktualisiere beim Start den M2-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Hake waehrend des Laufs die groben Steps ab; am Ende status "done" + commit.
+Aktualisiere beim Start den M2-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Hake waehrend des Laufs die groben Steps ab; am Ende status "done" + commit. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory + M0-Spec (docs/superpowers/specs/2026-06-24-violet-homey-app-m0-foundation-design.md). M0 fertig (HEAD 4d1aaf3); M1 sollte vorher abgeschlossen sein — Reihenfolge pruefen.
 
@@ -207,7 +210,7 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
 
 Violet Homey Pro App — Milestone M3 (Voller Schreib-/Steuerzugriff).
 
-Lies zuerst docs/dashboard/README.md. Aktualisiere beim Start den M3-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps waehrend des Laufs abhaken; am Ende status "done" + commit.
+Aktualisiere beim Start den M3-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps waehrend des Laufs abhaken; am Ende status "done" + commit. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory + M0-Spec. M0 fertig; M1+M2 sollten vorher abgeschlossen sein — Reihenfolge pruefen.
 
@@ -241,7 +244,7 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
 
 Violet Homey Pro App — Milestone M4 (Inbound-HTTP-Alarme → Flow-Trigger). Brainstorming + Spec sind bereits fertig und freigegeben.
 
-Lies zuerst docs/dashboard/README.md (Dashboard-Update-Protokoll) und die Spec docs/superpowers/specs/2026-06-26-violet-http-notifications-design.md. Aktualisiere beim Start den M4-Eintrag in docs/dashboard/dashboard.html: log "Plan gestartet", currentActivity pflegen; Steps Plan -> Implementierung (SDD) -> Validate + Push abhaken; am Ende status "done" + commit.
+Lies zuerst die Spec docs/superpowers/specs/2026-06-26-violet-http-notifications-design.md. Aktualisiere beim Start den M4-Eintrag in docs/dashboard/dashboard.html: log "Plan gestartet", currentActivity pflegen; Steps Plan -> Implementierung (SDD) -> Validate + Push abhaken; am Ende status "done" + commit. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory. M0 fertig (HEAD 4d1aaf3). Dieses Feature ist unabhaengig von M1–M3 und kann jederzeit nach M0 gebaut werden.
 
@@ -271,7 +274,7 @@ Vorgehen wie M0: superpowers:writing-plans -> subagent-driven-development (frisc
 
 Violet Homey Pro App — Milestone M5 (Publish-Readiness, Homey App Store).
 
-Lies zuerst docs/dashboard/README.md. Aktualisiere beim Start den M5-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit.
+Aktualisiere beim Start den M5-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory + M0-Spec. M0–M4 sollten fertig sein — Reihenfolge pruefen.
 
@@ -303,7 +306,7 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
 
 Violet Homey Pro App — Milestone M6 (LabCOM-Cloud-Import der Wasserchemie für den LSI).
 
-Lies zuerst docs/dashboard/README.md (Dashboard- + Versionierungs-Protokoll). Aktualisiere beim Start den M6-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen + in docs/dashboard/versions.md protokollieren.
+Aktualisiere beim Start den M6-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-06-29-violet-homey-app-m1-lsi-design.md) — dort ist definiert, wie die Chem-Werte (Calciumhärte, Gesamtalkalität, CYA, TDS/Salz) gespeichert und vom LSI gelesen werden (Device-Settings + Flow-Action „Wasserchemie setzen“). M0–M5 sollten fertig sein.
 
@@ -333,7 +336,7 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
 
 Violet Homey Pro App — Milestone M7 (Empfehlungs-/Wasserbalance-Modul).
 
-Lies zuerst docs/dashboard/README.md (Dashboard- + Versionierungs-Protokoll). Aktualisiere beim Start den M7-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen + in docs/dashboard/versions.md protokollieren.
+Aktualisiere beim Start den M7-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-06-29-violet-homey-app-m1-lsi-design.md) — dort sind LSI-Mathe (lib/Lsi.js), Klassifizierung und die Chem-Eingaben definiert, auf denen dieses Modul aufsetzt. M0–M6 sollten fertig sein.
 

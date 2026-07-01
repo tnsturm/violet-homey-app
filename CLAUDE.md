@@ -83,8 +83,63 @@ Then carry those requirements into the plan as explicit verification steps (§4)
 
 Skip only for changes with no new attack surface (pure reads, docs, refactors, UI copy). When in doubt, do the threat model — it is cheap relative to a shipped vulnerability.
 
+## 6. Platform-Specific Conventions
+
+**Check for a `<PLATFORM>.md` at the project root before assuming generic tooling.**
+
+If this repo targets a specific platform or SDK (e.g. Homey, iOS, a cloud provider's CLI), a root-level `<PLATFORM>.md` (e.g. `HOMEY.md`) holds the CLI commands, artifact-sync rules, and release mechanics specific to that platform. This file only covers conventions that hold regardless of platform — defer to the platform file wherever §7–8 say "see the platform file".
+
+## 7. Progress Dashboard Protocol
+
+**For multi-milestone projects, track progress in a self-contained dashboard artifact.**
+
+Use a single-file `dashboard.html` (or equivalent): opens directly in a browser, no server/build step. It shows every milestone's status and, for each unfinished milestone, the full prompt needed to resume it.
+
+**Single source of truth:** one data block near the top (e.g. `window.DASHBOARD_STATUS`). Edit only that block; never touch the renderer beneath it.
+
+**Protocol per milestone session** — when working on milestone `Mx`, maintain its entry in the same run:
+1. **At start:** `status: "active"`, `startedAt: "<YYYY-MM-DD>"`, append a `log` entry ("Brainstorming/Design started"), bump the top-level `updatedAt`.
+2. **During the run:** tick off `steps[].done` as completed (fixed workflow: **Brainstorming → Spec → Plan → Implementation (TDD/SDD) → Validate + Release**); keep `currentActivity` current (or `null`); append coarse-grained entries to `log`; before every deployable release, bump the version and log it (§8 — see the platform file for the exact command).
+3. **At the end:** `status: "done"`, `finishedAt`, `commit: "<short-sha>"`, all `steps[].done = true`, `currentActivity: null`, bump `updatedAt`.
+4. **Between milestones:** once a milestone is closed and before starting the next, run `/claude-automation-recommender` once to check whether the codebase now warrants new hooks/subagents/skills.
+
+**Fields per milestone:** `id`, `title`, `status` (`done`|`active`|`todo`), `startedAt`/`finishedAt`, `commit`, `summary`, `steps[]` (`{label, done}`), `currentActivity`, `runtime`, `log[]` (`{at, note}`), `prompt` (full resume prompt; `null` once done).
+
+**Rules:**
+- Keep edits surgical — only the data block, only the one milestone's object.
+- Commit the file — other sessions and fresh worktrees read it (e.g. via "Start Mx…" chips).
+- The progress bar derives automatically from `steps[].done` — don't maintain it by hand.
+- View in a browser for the reliable full view (always shows every prompt in full); it can also be re-rendered inline in chat.
+
+**Inline chat rendering:** inline widgets are recreated per session and do NOT auto-load the dashboard file. When rendering it in chat, build it 1:1 from the status data block and include, for every unfinished milestone, its **full** prompt (collapsed under a "show prompt" toggle). Never truncate or omit prompts — that's exactly how they end up feeling "lost".
+
+## 8. Versioning & Release Log
+
+**Every real release gets a version bump and a log entry mapping it to a commit.**
+
+Version scheme `0.X.Y`: **X = milestone number**, **Y = build number within that milestone** (resets to 0 at each new milestone). Major stays `0` until the first public 1.0 release.
+
+Any build that is actually deployed/installed/published — not a throwaway dev run — gets its own version number and a line in a committed version log (e.g. `versions.md`):
+
+| Version | Date | Commit | Target | Milestone | Note |
+
+Per release:
+1. Commit the code being deployed.
+2. Bump the version (see the platform file, §6, for the exact command — new build within a milestone vs. a new milestone).
+3. Write a changelog entry for the new version, in the language(s) the project's users see.
+4. Verify any generated/derived manifest is in sync with its source; commit the bump + changelog together.
+5. Deploy/publish, then append the log line (version, date, commit, target, note).
+
+An ephemeral dev-run command (one that tears itself down on stop) is not a release and needs no bump/log entry.
+
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
 
 Based on: https://github.com/multica-ai/andrej-karpathy-skills
+
+---
+
+## Project Extensions
+
+This repo targets the Homey platform — see @HOMEY.md for platform-specific conventions (versioning, CLI, release mechanics).
