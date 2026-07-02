@@ -152,6 +152,10 @@ class PoolDevice extends Homey.Device {
     };
     for (const [cap, val] of Object.entries(m2)) {
       if (typeof val !== 'boolean' || !cap.startsWith('alarm_')) continue;
+      // Skip alarms whose capability isn't present (Hidden group / undetected
+      // actuator): _reconcileCapabilities already ran this tick, so hasCapability
+      // reflects detection ∧ override for this exact instance (spec §7).
+      if (!this.hasCapability(cap)) continue;
       const dot = cap.indexOf('.');
       const base = dot > 0 ? cap.slice(0, dot) : cap;
       const ch = dot > 0 ? cap.slice(dot + 1) : null;
