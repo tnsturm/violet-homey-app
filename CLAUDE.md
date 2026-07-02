@@ -101,12 +101,13 @@ Use a single-file `dashboard.html` (or equivalent): opens directly in a browser,
 1. **At start:** `status: "active"`, `startedAt: "<YYYY-MM-DD>"`, append a `log` entry ("Brainstorming/Design started"), bump the top-level `updatedAt`.
 2. **During the run:** tick off `steps[].done` as completed (fixed workflow: **Brainstorming → Spec → Plan → Implementation (TDD/SDD) → Validate + Release**); keep `currentActivity` current (or `null`); append coarse-grained entries to `log`; before every deployable release, bump the version and log it (§8 — see the platform file for the exact command).
 3. **At the end:** `status: "done"`, `finishedAt`, `commit: "<short-sha>"`, all `steps[].done = true`, `currentActivity: null`, bump `updatedAt`.
-4. **Between milestones:** once a milestone is closed and before starting the next, run `/claude-automation-recommender` once to check whether the codebase now warrants new hooks/subagents/skills.
+4. **Between milestones:** once a milestone is closed and before starting the next, run the project's `milestone-checkpoint` skill (wraps `/fewer-permission-prompts`, `/claude-automation-recommender`, and a check of this project's third-party skill sources). Track this as its own checkpoint entry in the milestones list (same object shape as a milestone, `id: "→Mx"`), not just prose.
 
 **Fields per milestone:** `id`, `title`, `status` (`done`|`active`|`todo`), `startedAt`/`finishedAt`, `commit`, `summary`, `steps[]` (`{label, done}`), `currentActivity`, `runtime`, `log[]` (`{at, note}`), `prompt` (full resume prompt; `null` once done).
 
 **Rules:**
-- Keep edits surgical — only the data block, only the one milestone's object.
+- Every resume prompt (milestone or checkpoint) ends with `/remote-control <id> — <title>` so the spawned session is reachable from the Claude mobile app.
+- Keep edits surgical — only the data block, only the one milestone's (or checkpoint's) object.
 - Commit the file — other sessions and fresh worktrees read it (e.g. via "Start Mx…" chips).
 - The progress bar derives automatically from `steps[].done` — don't maintain it by hand.
 - View in a browser for the reliable full view (always shows every prompt in full); it can also be re-rendered inline in chat.
@@ -131,6 +132,19 @@ Per release:
 5. Deploy/publish, then append the log line (version, date, commit, target, note).
 
 An ephemeral dev-run command (one that tears itself down on stop) is not a release and needs no bump/log entry.
+
+## 9. Finishing a Branch
+
+**Before any git action on a finished branch, run `/code-review` — then ask how to proceed.**
+
+Once a branch/worktree's change is complete and a git action (commit/push/merge) is next:
+
+1. Proactively start `/code-review` on the diff against the base branch — don't wait to be asked.
+2. Based on the result, ask (don't decide silently):
+   - **Trivial change (no Critical Issues):** ask whether to push directly to `origin/main` and pull the local `main` checkout up to date — skipping a PR.
+   - **Otherwise:** ask whether to push the branch and open a Pull Request.
+
+Always wait for an explicit yes before pushing or merging — this section only saves re-explaining the two options each time, not the confirmation itself.
 
 ---
 

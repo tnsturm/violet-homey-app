@@ -87,7 +87,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-07-01",
+  updatedAt: "2026-07-02",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -159,6 +159,28 @@ Dann nutze die Skill superpowers:brainstorming, um M1 zu entwerfen. Ziel von M1:
 Nach dem Brainstorming: Spec schreiben, dann mit superpowers:writing-plans einen Task-fuer-Task-Plan erstellen und mit superpowers:subagent-driven-development umsetzen (gleicher Workflow wie M0: frischer Implementer + Review je Task, TDD, validate als Ground Truth, am Ende push nach origin/main). Wichtig: SDK-Spezifika ueber die Skill homey-app, Live-Inspektion via homey-cli (homey api …) gegen meinen Homey "Torstens Homey Pro" / die echte Violet unter Host \`violet\`.`
     },
     {
+      id: "→M2",
+      title: "Zwischen-Check",
+      status: "done",
+      startedAt: "2026-07-02",
+      finishedAt: "2026-07-02",
+      commit: "9c10b13",
+      summary: "Housekeeping zwischen M1 und M2: Permission-Allowlist verschlankt, Automation-Empfehlungen geprüft (CLAUDE.md §7 Punkt 4).",
+      steps: [
+        { label: "/fewer-permission-prompts", done: true },
+        { label: "/claude-automation-recommender", done: true },
+        { label: "Skill-Quellen geprüft", done: true }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-07-02", note: "/fewer-permission-prompts: Allowlist für read-only Commands ergänzt (commit 9c10b13)." },
+        { at: "2026-07-02", note: "/claude-automation-recommender: Subagent + Hooks + Skills + MCP-Empfehlungen geprüft und umgesetzt (release-readiness, write-path-security-reviewer, homey-release, dashboard-sync, cleanup-worktrees, context7 .mcp.json)." },
+        { at: "2026-07-02", note: "Skill-Quellen geprüft: homey-cli-skill + homey-app-skill beide aktuell (kein Update verfügbar); Superpowers 6.0.3 installiert (claude-plugins-official)." }
+      ],
+      prompt: null
+    },
+    {
       id: "M2",
       title: "Volle Reads + Feature-Gruppen",
       status: "done",
@@ -194,7 +216,35 @@ Kontext laden: Projekt-Status-Memory + M0-Spec (docs/superpowers/specs/2026-06-2
 
 Aufgabe: ALLE Werte aus GET http://<host>/getReadings?ALL (keine Auth) als sinnvolle Feature-Gruppen abbilden (Temperaturen, pH, Redox/ORP, Chlor/Desinfektion, Filter/Pumpe, Dosierung, Salz/Elektrolyse), per FeatureDetector an die installierte Hardware angepasst. Bestehende lib-Module + pump-aware Freshness weiterverwenden.
 
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN.`
+Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN.
+
+/remote-control M2 — Volle Reads + Feature-Gruppen`
+    },
+    {
+      id: "→M3",
+      title: "Zwischen-Check",
+      status: "todo",
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Housekeeping zwischen M2 und M3: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      steps: [
+        { label: "/fewer-permission-prompts", done: false },
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Zwischen-Check vor M3 (CLAUDE.md §7 Punkt 4). M2 ist abgeschlossen, M3 startet als Naechstes.
+
+Fuehre aus: /milestone-checkpoint
+
+Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+/remote-control →M3 — Zwischen-Check`
     },
     {
       id: "M3",
@@ -226,7 +276,35 @@ Aufgabe: Schreibende Steuerung ueber setFunctionManually mit BasicAuth (Pumpe, L
 
 SICHERHEIT: Write-Credentials NUR im Device-Store, niemals in Source/Settings; Violet-Write-Passwort vor Publish rotieren. Wo moeglich gegen Demo demo.myViolet.de testen.
 
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN.`
+Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN.
+
+/remote-control M3 — Voller Schreib-/Steuerzugriff`
+    },
+    {
+      id: "→M4",
+      title: "Zwischen-Check",
+      status: "todo",
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Housekeeping zwischen M3 und M4: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      steps: [
+        { label: "/fewer-permission-prompts", done: false },
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Zwischen-Check vor M4 (CLAUDE.md §7 Punkt 4). M3 ist abgeschlossen, M4 startet als Naechstes.
+
+Fuehre aus: /milestone-checkpoint
+
+Das aktualisiert automatisch den →M4-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+/remote-control →M4 — Zwischen-Check`
     },
     {
       id: "M4",
@@ -258,7 +336,35 @@ Kontext laden: Projekt-Status-Memory. M0 fertig (HEAD 4d1aaf3). Dieses Feature i
 
 Aufgabe (aus der Spec): eingebetteter HTTP-Listener im Pool-Device (neue lib/NotifyServer.js mit reiner, testbarer parseAlarm-Funktion + Singleton-Bind, EADDRINUSE sauber abfangen), Geraete-Flow-Trigger "Alarm empfangen" via getDeviceTriggerCard (Tokens errorcode + subject, optionaler Freitext-Code-Filter per registerRunListener), neue Device-Einstellung notifyPort (Default 22222, konfigurierbar). Vor dem Coden an echter Hardware bestaetigen, dass die Violet die Tokens exakt als ERRORCODE/SUBJECT sendet und ob die Werte URL-codiert ankommen — das praegt nur parseAlarm, nicht die Architektur.
 
-Vorgehen wie M0: superpowers:writing-plans -> subagent-driven-development (frischer Implementer + Review je Task, TDD). Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika ueber die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: violet).`
+Vorgehen wie M0: superpowers:writing-plans -> subagent-driven-development (frischer Implementer + Review je Task, TDD). Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika ueber die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: violet).
+
+/remote-control M4 — Inbound-Alarme (HTTP → Flow-Trigger)`
+    },
+    {
+      id: "→M5",
+      title: "Zwischen-Check",
+      status: "todo",
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Housekeeping zwischen M4 und M5: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      steps: [
+        { label: "/fewer-permission-prompts", done: false },
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Zwischen-Check vor M5 (CLAUDE.md §7 Punkt 4). M4 ist abgeschlossen, M5 startet als Naechstes.
+
+Fuehre aus: /milestone-checkpoint
+
+Das aktualisiert automatisch den →M5-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+/remote-control →M5 — Zwischen-Check`
     },
     {
       id: "M5",
@@ -290,7 +396,35 @@ Aufgabe: App publish-fertig machen, sodass npx homey app validate --level=publis
 
 SICHERHEIT (Blocker vor Publish): Violet-Write-Passwort rotieren; Credentials nur im Device-Store.
 
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Final-Gate: npx homey app validate --level=publish muss PASSEN.`
+Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Final-Gate: npx homey app validate --level=publish muss PASSEN.
+
+/remote-control M5 — Publish-Readiness`
+    },
+    {
+      id: "→M6",
+      title: "Zwischen-Check",
+      status: "todo",
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Housekeeping zwischen M5 und M6: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      steps: [
+        { label: "/fewer-permission-prompts", done: false },
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Zwischen-Check vor M6 (CLAUDE.md §7 Punkt 4). M5 ist abgeschlossen, M6 startet als Naechstes.
+
+Fuehre aus: /milestone-checkpoint
+
+Das aktualisiert automatisch den →M6-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+/remote-control →M6 — Zwischen-Check`
     },
     {
       id: "M6",
@@ -320,7 +454,35 @@ Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-
 
 Aufgabe: Die in M1 manuell gepflegten Chem-Werte automatisch aus der PoolLab/LabCOM-Cloud beziehen (Auth, Polling/Refresh, Feld-Mapping auf die bestehenden Settings), als zusätzliche, optionale Quelle — manuelle Eingabe + Flow-Action aus M1 bleiben als Fallback. Reine, testbare Mapping-/Client-Logik nach /lib; device.js bleibt dünn.
 
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).`
+Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).
+
+/remote-control M6 — LabCOM-Cloud-Import (PoolLab)`
+    },
+    {
+      id: "→M7",
+      title: "Zwischen-Check",
+      status: "todo",
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Housekeeping zwischen M6 und M7: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      steps: [
+        { label: "/fewer-permission-prompts", done: false },
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Zwischen-Check vor M7 (CLAUDE.md §7 Punkt 4). M6 ist abgeschlossen, M7 startet als Naechstes.
+
+Fuehre aus: /milestone-checkpoint
+
+Das aktualisiert automatisch den →M7-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+/remote-control →M7 — Zwischen-Check`
     },
     {
       id: "M7",
@@ -350,7 +512,9 @@ Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-
 
 Aufgabe (beratend, kein Zwang zum Schreiben auf die Violet): Empfehlungen, mit welchen chemischen Maßnahmen man (a) das initiale Leitungswasser — ausgehend von den veröffentlichten Messwerten der Wasserwerke — in ein günstiges LSI-Band bringt und (b) aus den aktuellen Werten die wirklichen "Treiber" identifiziert, um schnell auf einen günstigen LSI zu kommen (welche Stellgröße bringt am meisten). Wichtig: Hinweis auf CO₂-Ausgasung beim Einlass von frischem Leitungswasser (erhöht den pH-Wert) und die Wechselwirkung mit niedriger Alkalität (starke pH-Schwankungen, schlechte Pufferung). Mögliche Ausgabe: berechnete Mengenempfehlungen + erklärende Hinweise (Flow-Tokens/Notification oder Settings-Hinweis); ggf. Anbindung an M3-Dosierung als Option.
 
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).`
+Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).
+
+/remote-control M7 — Empfehlungs-Modul (Wasserbalance)`
     }
   ]
 };

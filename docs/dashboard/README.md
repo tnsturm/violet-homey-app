@@ -14,4 +14,6 @@ Versionierungs-/Release-Mechanik (`homey app version`, Changelog) steht in
 Diese Datei enthält nur noch violet-spezifische Hinweise:
 
 - Live-Status: `dashboard.html` in diesem Ordner (immer die vollständige Quelle der Wahrheit).
+- Zwischen-Milestone-Checkpoints (`→M2`…`→M7`, CLAUDE.md §7 Punkt 4) stehen als eigene,
+  milestone-förmige Einträge in derselben Liste, direkt vor dem Milestone, den sie gaten.
 - Versions-Log dieses Projekts (Version ↔ Commit): [`versions.md`](versions.md).
