@@ -2,6 +2,10 @@
 
 Homey-app-specific development conventions. Reusable across Homey app projects as-is — pairs with `CLAUDE.md` (general engineering guidelines; §6–8 define the platform-file mechanism and the generic dashboard/versioning protocol this file plugs into).
 
+## SDK-Doku nachschlagen
+
+Der `homey-app`-Skill deckt die Homey Apps SDK v3 Grundlagen ab (Compose, Kernklassen, CLI). Bei Details, die dort fehlen oder veraltet sein könnten (neue SDK-Version, Edge-Case-API, Compose-Merge-Verhalten), den `context7`-MCP-Server (siehe `.mcp.json`) für einen Live-Doku-Lookup nutzen statt zu raten.
+
 ## Versioning commands
 
 | Anlass | Befehl | Effekt |
