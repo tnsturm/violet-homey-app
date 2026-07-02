@@ -222,19 +222,23 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
     {
       id: "→M3",
       title: "Zwischen-Check",
-      status: "todo",
-      startedAt: null,
-      finishedAt: null,
+      status: "done",
+      startedAt: "2026-07-02",
+      finishedAt: "2026-07-02",
       commit: null,
       summary: "Housekeeping zwischen M2 und M3: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
-        { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false },
-        { label: "Skill-Quellen geprüft", done: false }
+        { label: "/fewer-permission-prompts", done: true },
+        { label: "/claude-automation-recommender", done: true },
+        { label: "Skill-Quellen geprüft", done: true }
       ],
       currentActivity: null,
       runtime: null,
-      log: [],
+      log: [
+        { at: "2026-07-02", note: "Permission-Scan (50 neueste Transcripts): alle read-only High-Freq-Patterns bereits allowlisted (git merge-base, homey api …get-*, visualize read_me/show_widget) — nichts hinzuzufuegen. Writes/npx/node/bash korrekt ausgeschlossen." },
+        { at: "2026-07-02", note: "Automation-Empfehlungen: Setup bereits reif. Top-Vorschlag fuer M3 = secrets-guard PreToolUse-Hook (Write-Credential nie in Source/Settings, aus M3-Threat-Model); optional security-reviewer-Subagent. Keine MCP-Aenderung noetig (context7 + Homey-MCP vorhanden)." },
+        { at: "2026-07-02", note: "Skill-Quellen: homey-cli-skill + homey-app-skill beide up-to-date (keine incoming commits). Superpowers 6.0.3 installiert (Aktualitaet von hier nicht feststellbar — ggf. 'claude plugin update superpowers' interaktiv)." }
+      ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Zwischen-Check vor M3 (CLAUDE.md §7 Punkt 4). M2 ist abgeschlossen, M3 startet als Naechstes.
@@ -252,8 +256,10 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Steuerung via setFunctionManually (BasicAuth): Pumpe, Licht, Dosierung/Sollwerte, settbare Capabilities + Flow-Karten. Haengt an M2.",
+      summary: "Steuerung via setFunctionManually (BasicAuth): Pumpe, Licht, Dosierung/Sollwerte, settbare Capabilities + Flow-Karten. Haengt an M2. Vorab-Setup aus Zwischen-Check: secrets-guard Hook + security-reviewer Subagent.",
       steps: [
+        { label: "Setup: secrets-guard PreToolUse-Hook", done: false },
+        { label: "Setup: security-reviewer Subagent", done: false },
         { label: "Brainstorming", done: false },
         { label: "Spec", done: false },
         { label: "Plan", done: false },
@@ -270,6 +276,10 @@ Violet Homey Pro App — Milestone M3 (Voller Schreib-/Steuerzugriff).
 Aktualisiere beim Start den M3-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps waehrend des Laufs abhaken; am Ende status "done" + commit. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory + M0-Spec. M0 fertig; M1+M2 sollten vorher abgeschlossen sein — Reihenfolge pruefen.
+
+Vorab-Setup (ZUERST, vor Brainstorming — aus dem M2->M3-Zwischen-Check, Automation-Empfehlungen):
+1. secrets-guard PreToolUse-Hook: .claude/hooks/secrets-guard.js, verdrahtet in .claude/settings.json unter hooks.PreToolUse (matcher "Edit|Write"). Blockt (exit 2) das Schreiben eines "Basic <base64>"-Auth-Headers oder des Violet-Write-Passworts in getrackte Dateien (lib/**, drivers/**, .homeycompose/**, committete *.json). Muster wie das bestehende .claude/hooks/check-version-sync.js. Setzt die M3-Threat-Model-Anforderung "Write-Credential nie in Source/Settings" als Gate durch.
+2. security-reviewer-Subagent: .claude/agents/security-reviewer.md. Reviewt gezielt den M3-Diff auf Credential-Storage (nur Device-Store), setFunctionManually-Call-Sites und Log-/Error-Pfade (kein Passwort-Leak in Homey-Logs). Ergaenzt die bestehende /security-review-Skill, parallel waehrend der Implementierung nutzbar.
 
 Aufgabe: Schreibende Steuerung ueber setFunctionManually mit BasicAuth (Pumpe, Licht, Dosierung/Sollwerte je nach Hardware), settbare Homey-Capabilities + passende Flow-Action-Karten.
 
