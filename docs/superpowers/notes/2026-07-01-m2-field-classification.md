@@ -121,3 +121,18 @@ Homey has no native enum-*sensor* tile, but supports custom `enum`/`string`/`boo
 - **SYSTEM_* vs CPU_TEMP*/SYSTEM_MEMORY/fw duplicates** — one measure + one skip; SYSTEM_* canonical, alias fallback, never a second capability.
 - **onewireN_faultcount/freezecount** — raw is cumulative (not a live tile); the derived *delta* is the alarm artifact.
 - No hard contradictions found across the 6 classifiers.
+
+---
+
+## Live-test confirmations (2026-07-01, v0.2.0 installed on "Torstens Homey Pro" 68fa0cd3, real Violet host `violet`)
+
+Device `Pool` available+ready, 34 capabilities. M2 verified end-to-end on real hardware:
+- **Hardware-adaptive detection working:** `pump_speed_stage=2`, `solar_active=true`, `cover_state="open"` (COVER_STATE `OPEN`→enum `open` confirmed), overflow group present (`overflow_refill_active`, `alarm_overflow_*`). `heater_active=false` **with** `runtime_heater=1.9h` — the history-based (monotonic) detection surfaces a heater that ran today but is currently off, exactly as designed. Undetected/absent (no history on this pool): `eco_active`, `backwash_active`, `alarm_omni_valve`, `light_on`, `measure_water_level` (no BathingAI `BATHING_AI_SYSTEM_BOOT===1`).
+- **Per-channel dosing (cl + phm detected via `_USE`):** `measure_dosing_days_left.cl=6`/`.phm=29`, `measure_dosing_daily_ml.cl=39`/`.phm=223`, `dosing_active.*=false`, `alarm_dosing_blocked.*=false`.
+- **Alarm gating + threshold proven on live data:** `alarm_dosing_low.cl=true` (6 d ≤ 7-d default) vs `.phm=false` (29 d). Overflow alarms `false`. Capability-present gating verified (only detected channels/groups produce alarm caps + Flow triggers).
+- **Diagnostics correctly hidden** by default (`show_advanced_diagnostics=false`): none of `measure_system_*`/`system_uptime`/`last_error_id`/`controller_firmware` present.
+- **M0/M1 intact:** temp sub-sensors ow1/ow2/ow7/ow8, `measure_ph=7.46`, `measure_orp=788`, `measure_chlorine=1.12`, `measure_lsi=-0.51`, `alarm_water_balance=true`, `measurements_fresh=true`, `pump_running=true`.
+
+**Open-question outcomes:** COVER_STATE `OPEN`→`open` confirmed (other enum values still unconfirmed until the cover moves). LIGHT semantics still unconfirmed (light not detected on this pool → `light_on` absent; harmless since it's just `>0`). `runtime_solar=0` while `solar_active=true` = solar currently on with no accumulated runtime today (consistent; not a bug). No defects found — code shipped defensively for the remaining hardware unknowns.
+
+**Still to verify by the user (visual, iOS only):** whether the new `radio` group-visibility settings render their selected value in the Homey iOS list row (the follow-up #1 pilot). Values are stored regardless; this is purely the iOS rendering question. Fall back to `dropdown` if `radio` also shows "-".

@@ -161,19 +161,19 @@ Nach dem Brainstorming: Spec schreiben, dann mit superpowers:writing-plans einen
     {
       id: "M2",
       title: "Volle Reads + Feature-Gruppen",
-      status: "active",
+      status: "done",
       startedAt: "2026-07-01",
-      finishedAt: null,
-      commit: null,
+      finishedAt: "2026-07-01",
+      commit: "b4c0d2a",
       summary: "Alle Werte aus getReadings?ALL als Feature-Gruppen (Temperatur, pH, Redox, Chlor, Pumpe, Dosierung …), hardware-adaptiv. Haengt an M1.",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
         { label: "Implementierung (SDD)", done: true },
-        { label: "Validate + Push", done: false }
+        { label: "Validate + Push", done: true }
       ],
-      currentActivity: "Code fertig + reviewt (46/46 Tests, validate PASS); Live-Test + Release 0.2.0 ausstehend",
+      currentActivity: null,
       runtime: "10 Code-Tasks (frischer Implementer + Review je Task) + Whole-Branch-Review (opus)",
       log: [
         { at: "2026-07-01", note: "M2 gestartet — Brainstorming/Design (volle Reads + Feature-Gruppen)." },
@@ -181,7 +181,8 @@ Nach dem Brainstorming: Spec schreiben, dann mit superpowers:writing-plans einen
         { at: "2026-07-01", note: "Design freigegeben (Controller-Error-Alarm nach M4 verschoben); Spec geschrieben: specs/2026-07-01-violet-homey-app-m2-full-reads-design.md." },
         { at: "2026-07-01", note: "12-Task-Implementierungsplan geschrieben (plans/2026-07-01-violet-homey-app-m2-full-reads.md); main (ea2e66f: release-readiness-Subagent + Version-Sync/Test-Runner-Hooks) gemergt." },
         { at: "2026-07-01", note: "Code umgesetzt: 10 SDD-Tasks (je Implementer+Review), pure lib/FeatureGroups.js (Registry+Parser) + FeatureDetector-Erweiterung, 27 neue Capabilities, 5 Alarm-Flow-Trigger, Feature-Gruppen-Settings, dünne device.js-Reconcile/Apply-Glue. 46/46 Unit-Tests, validate --level=debug PASS." },
-        { at: "2026-07-01", note: "Whole-Branch-Review (opus): 'ready to merge' — Capability-ID-Kohärenz Registry↔JSON↔app.json↔device.js lückenlos (27↔27↔27); 1 Important gefixt (Alarm-Trigger nur wenn Capability sichtbar, Spec §7). HEAD 2e696a1." }
+        { at: "2026-07-01", note: "Whole-Branch-Review (opus): 'ready to merge' — Capability-ID-Kohärenz Registry↔JSON↔app.json↔device.js lückenlos (27↔27↔27); 1 Important gefixt (Alarm-Trigger nur wenn Capability sichtbar, Spec §7). HEAD 2e696a1." },
+        { at: "2026-07-01", note: "Version 0.2.0 (commit b4c0d2a) gebaut, Changelog (en+de) + versions.md gepflegt; auf 'Torstens Homey Pro' installiert. Live verifiziert: Detektion adaptiv (Pumpenstufe 2, Solar an, Abdeckung offen, Heizung via History), Dosierung cl+phm, alarm_dosing_low.cl=true bei 6 Tagen, Diagnose ausgeblendet, M0/M1 intakt. M2 abgeschlossen." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
