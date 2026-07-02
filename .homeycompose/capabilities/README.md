@@ -11,6 +11,11 @@ lives in the M0 design spec
 | `measure_chlorine.json` | Free chlorine (ppm), feature-detected + fresh-gated | §5, §7, §9; Insights §5.1 |
 | `measure_lsi.json` | LSI (water balance), number + Insights-enabled; added/removed per `lsi_enabled` | M1 §6 |
 | `alarm_water_balance.json` | LSI warning alarm (boolean), true when LSI outside the balanced band; per `lsi_enabled` | M1 §7.3 |
+| `alarm_dosing_blocked.json` | Dosing blocked alarm (boolean), per M2 dosing monitors | M2 §9.1 |
+| `alarm_dosing_low.json` | Chemical low alarm (boolean), per M2 dosing monitors | M2 §9.1 |
+| `alarm_overflow_dryrun.json` | Overflow dry-run alarm (boolean), per M2 overflow monitors | M2 §9.2 |
+| `alarm_overflow_overfill.json` | Overflow overfill alarm (boolean), per M2 overflow monitors | M2 §9.2 |
+| `alarm_omni_valve.json` | Backwash valve fault alarm (boolean), per M2 backwash monitors | M2 §9.3 |
 | `pump_running.json` | Pump on/off, every poll | §5; Insights §5.1 |
 | `measurements_fresh.json` | Freshness indicator, derived | §5, §7; Insights §5.1 |
 | `pump_speed_stage.json` | Pump speed stage (0–100), M2 owner-facing | M2 §5 |

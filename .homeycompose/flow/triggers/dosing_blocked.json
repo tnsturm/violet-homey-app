@@ -1,0 +1,9 @@
+{
+  "id": "dosing_blocked",
+  "title": { "en": "Dosing blocked", "de": "Dosierung blockiert" },
+  "hint": { "en": "Fires when a dosing channel hits its safety cap (chemistry stops being corrected).", "de": "Wird ausgelöst, wenn ein Dosierkanal seine Sicherheitsgrenze erreicht (Chemie wird nicht mehr korrigiert)." },
+  "tokens": [
+    { "name": "channel", "type": "string", "title": { "en": "Channel", "de": "Kanal" }, "example": "pH-minus" },
+    { "name": "reason", "type": "string", "title": { "en": "Reason", "de": "Grund" }, "example": "BLOCKED_BY_MAX_AMOUNT" }
+  ]
+}

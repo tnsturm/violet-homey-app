@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Overflow dry-run", "de": "Überlauf Trockenlauf" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Overflow dry-run", "de": "Überlauf Trockenlauf" }
+}

@@ -26,6 +26,90 @@
   "flow": {
     "triggers": [
       {
+        "id": "backwash_valve_fault",
+        "title": {
+          "en": "Backwash valve fault",
+          "de": "Rückspülventil-Fehler"
+        },
+        "hint": {
+          "en": "Fires when the backwash multiport (OMNI) valve reports a non-OK state.",
+          "de": "Wird ausgelöst, wenn das Rückspül-Mehrwegeventil (OMNI) einen nicht-OK-Zustand meldet."
+        },
+        "tokens": [
+          {
+            "name": "state",
+            "type": "string",
+            "title": {
+              "en": "State",
+              "de": "Zustand"
+            },
+            "example": "ERROR"
+          }
+        ]
+      },
+      {
+        "id": "dosing_blocked",
+        "title": {
+          "en": "Dosing blocked",
+          "de": "Dosierung blockiert"
+        },
+        "hint": {
+          "en": "Fires when a dosing channel hits its safety cap (chemistry stops being corrected).",
+          "de": "Wird ausgelöst, wenn ein Dosierkanal seine Sicherheitsgrenze erreicht (Chemie wird nicht mehr korrigiert)."
+        },
+        "tokens": [
+          {
+            "name": "channel",
+            "type": "string",
+            "title": {
+              "en": "Channel",
+              "de": "Kanal"
+            },
+            "example": "pH-minus"
+          },
+          {
+            "name": "reason",
+            "type": "string",
+            "title": {
+              "en": "Reason",
+              "de": "Grund"
+            },
+            "example": "BLOCKED_BY_MAX_AMOUNT"
+          }
+        ]
+      },
+      {
+        "id": "dosing_low",
+        "title": {
+          "en": "Dosing chemical low",
+          "de": "Dosier-Chemie niedrig"
+        },
+        "hint": {
+          "en": "Fires when a dosing canister drops below the configured days-left threshold.",
+          "de": "Wird ausgelöst, wenn ein Dosierkanister unter die eingestellte Reichweite fällt."
+        },
+        "tokens": [
+          {
+            "name": "channel",
+            "type": "string",
+            "title": {
+              "en": "Channel",
+              "de": "Kanal"
+            },
+            "example": "chlorine"
+          },
+          {
+            "name": "days_left",
+            "type": "number",
+            "title": {
+              "en": "Days left",
+              "de": "Reichweite (Tage)"
+            },
+            "example": 5
+          }
+        ]
+      },
+      {
         "id": "lsi_warning",
         "title": {
           "en": "LSI warning",
@@ -117,6 +201,30 @@
             "example": "warning"
           }
         ]
+      },
+      {
+        "id": "overflow_dryrun",
+        "title": {
+          "en": "Overflow dry-run",
+          "de": "Überlauf-Trockenlauf"
+        },
+        "hint": {
+          "en": "Fires when the overflow tank reports a dry-run (equipment risk).",
+          "de": "Wird ausgelöst, wenn der Überlaufbehälter Trockenlauf meldet (Anlagenrisiko)."
+        },
+        "tokens": []
+      },
+      {
+        "id": "overflow_overfill",
+        "title": {
+          "en": "Overflow overfill",
+          "de": "Überlauf-Überfüllung"
+        },
+        "hint": {
+          "en": "Fires when the overflow tank reports overfill (flood risk).",
+          "de": "Wird ausgelöst, wenn der Überlaufbehälter Überfüllung meldet (Überflutungsrisiko)."
+        },
+        "tokens": []
       }
     ],
     "actions": [
@@ -548,6 +656,81 @@
     }
   ],
   "capabilities": {
+    "alarm_dosing_blocked": {
+      "type": "boolean",
+      "title": {
+        "en": "Dosing blocked",
+        "de": "Dosierung blockiert"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Dosing blocked",
+        "de": "Dosierung blockiert"
+      }
+    },
+    "alarm_dosing_low": {
+      "type": "boolean",
+      "title": {
+        "en": "Chemical low",
+        "de": "Chemie niedrig"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Chemical low",
+        "de": "Chemie niedrig"
+      }
+    },
+    "alarm_omni_valve": {
+      "type": "boolean",
+      "title": {
+        "en": "Backwash valve fault",
+        "de": "Rückspülventil-Fehler"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Backwash valve fault",
+        "de": "Rückspülventil-Fehler"
+      }
+    },
+    "alarm_overflow_dryrun": {
+      "type": "boolean",
+      "title": {
+        "en": "Overflow dry-run",
+        "de": "Überlauf Trockenlauf"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Overflow dry-run",
+        "de": "Überlauf Trockenlauf"
+      }
+    },
+    "alarm_overflow_overfill": {
+      "type": "boolean",
+      "title": {
+        "en": "Overflow overfill",
+        "de": "Überlauf Überfüllung"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Overflow overfill",
+        "de": "Überlauf Überfüllung"
+      }
+    },
     "alarm_water_balance": {
       "type": "boolean",
       "title": {

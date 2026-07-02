@@ -1,0 +1,9 @@
+{
+  "id": "dosing_low",
+  "title": { "en": "Dosing chemical low", "de": "Dosier-Chemie niedrig" },
+  "hint": { "en": "Fires when a dosing canister drops below the configured days-left threshold.", "de": "Wird ausgelöst, wenn ein Dosierkanister unter die eingestellte Reichweite fällt." },
+  "tokens": [
+    { "name": "channel", "type": "string", "title": { "en": "Channel", "de": "Kanal" }, "example": "chlorine" },
+    { "name": "days_left", "type": "number", "title": { "en": "Days left", "de": "Reichweite (Tage)" }, "example": 5 }
+  ]
+}

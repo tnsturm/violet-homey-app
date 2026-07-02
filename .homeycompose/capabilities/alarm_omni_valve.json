@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Backwash valve fault", "de": "Rückspülventil-Fehler" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Backwash valve fault", "de": "Rückspülventil-Fehler" }
+}

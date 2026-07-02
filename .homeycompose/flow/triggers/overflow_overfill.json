@@ -1,0 +1,6 @@
+{
+  "id": "overflow_overfill",
+  "title": { "en": "Overflow overfill", "de": "Überlauf-Überfüllung" },
+  "hint": { "en": "Fires when the overflow tank reports overfill (flood risk).", "de": "Wird ausgelöst, wenn der Überlaufbehälter Überfüllung meldet (Überflutungsrisiko)." },
+  "tokens": []
+}

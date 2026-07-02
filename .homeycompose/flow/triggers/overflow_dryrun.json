@@ -1,0 +1,6 @@
+{
+  "id": "overflow_dryrun",
+  "title": { "en": "Overflow dry-run", "de": "Überlauf-Trockenlauf" },
+  "hint": { "en": "Fires when the overflow tank reports a dry-run (equipment risk).", "de": "Wird ausgelöst, wenn der Überlaufbehälter Trockenlauf meldet (Anlagenrisiko)." },
+  "tokens": []
+}
