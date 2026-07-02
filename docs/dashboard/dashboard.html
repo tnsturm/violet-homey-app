@@ -168,13 +168,15 @@ Nach dem Brainstorming: Spec schreiben, dann mit superpowers:writing-plans einen
       summary: "Housekeeping zwischen M1 und M2: Permission-Allowlist verschlankt, Automation-Empfehlungen geprüft (CLAUDE.md §7 Punkt 4).",
       steps: [
         { label: "/fewer-permission-prompts", done: true },
-        { label: "/claude-automation-recommender", done: true }
+        { label: "/claude-automation-recommender", done: true },
+        { label: "Skill-Quellen geprüft", done: true }
       ],
       currentActivity: null,
       runtime: null,
       log: [
         { at: "2026-07-02", note: "/fewer-permission-prompts: Allowlist für read-only Commands ergänzt (commit 9c10b13)." },
-        { at: "2026-07-02", note: "/claude-automation-recommender: Subagent + Hooks + Skills + MCP-Empfehlungen geprüft und umgesetzt (release-readiness, write-path-security-reviewer, homey-release, dashboard-sync, cleanup-worktrees, context7 .mcp.json)." }
+        { at: "2026-07-02", note: "/claude-automation-recommender: Subagent + Hooks + Skills + MCP-Empfehlungen geprüft und umgesetzt (release-readiness, write-path-security-reviewer, homey-release, dashboard-sync, cleanup-worktrees, context7 .mcp.json)." },
+        { at: "2026-07-02", note: "Skill-Quellen geprüft: homey-cli-skill + homey-app-skill beide aktuell (kein Update verfügbar); Superpowers 6.0.3 installiert (claude-plugins-official)." }
       ],
       prompt: null
     },
@@ -220,7 +222,8 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
       summary: "Housekeeping zwischen M2 und M3: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
         { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false }
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false }
       ],
       currentActivity: null,
       runtime: null,
@@ -229,11 +232,9 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
 
 Zwischen-Check vor M3 (CLAUDE.md §7 Punkt 4). M2 ist abgeschlossen, M3 startet als Naechstes.
 
-Fuehre nacheinander aus:
-1. /fewer-permission-prompts
-2. /claude-automation-recommender
+Fuehre aus: /milestone-checkpoint
 
-Aktualisiere danach den →M3-Eintrag in docs/dashboard/dashboard.html: status "done", finishedAt = heute, beide Steps abhaken, je einen log-Eintrag mit kurzer Zusammenfassung. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
+Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
 
 /remote-control →M3 — Zwischen-Check`
     },
@@ -281,7 +282,8 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
       summary: "Housekeeping zwischen M3 und M4: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
         { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false }
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false }
       ],
       currentActivity: null,
       runtime: null,
@@ -290,11 +292,9 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
 
 Zwischen-Check vor M4 (CLAUDE.md §7 Punkt 4). M3 ist abgeschlossen, M4 startet als Naechstes.
 
-Fuehre nacheinander aus:
-1. /fewer-permission-prompts
-2. /claude-automation-recommender
+Fuehre aus: /milestone-checkpoint
 
-Aktualisiere danach den →M4-Eintrag in docs/dashboard/dashboard.html: status "done", finishedAt = heute, beide Steps abhaken, je einen log-Eintrag mit kurzer Zusammenfassung. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
+Das aktualisiert automatisch den →M4-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
 
 /remote-control →M4 — Zwischen-Check`
     },
@@ -342,7 +342,8 @@ Vorgehen wie M0: superpowers:writing-plans -> subagent-driven-development (frisc
       summary: "Housekeeping zwischen M4 und M5: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
         { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false }
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false }
       ],
       currentActivity: null,
       runtime: null,
@@ -351,11 +352,9 @@ Vorgehen wie M0: superpowers:writing-plans -> subagent-driven-development (frisc
 
 Zwischen-Check vor M5 (CLAUDE.md §7 Punkt 4). M4 ist abgeschlossen, M5 startet als Naechstes.
 
-Fuehre nacheinander aus:
-1. /fewer-permission-prompts
-2. /claude-automation-recommender
+Fuehre aus: /milestone-checkpoint
 
-Aktualisiere danach den →M5-Eintrag in docs/dashboard/dashboard.html: status "done", finishedAt = heute, beide Steps abhaken, je einen log-Eintrag mit kurzer Zusammenfassung. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
+Das aktualisiert automatisch den →M5-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
 
 /remote-control →M5 — Zwischen-Check`
     },
@@ -403,7 +402,8 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
       summary: "Housekeeping zwischen M5 und M6: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
         { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false }
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false }
       ],
       currentActivity: null,
       runtime: null,
@@ -412,11 +412,9 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
 
 Zwischen-Check vor M6 (CLAUDE.md §7 Punkt 4). M5 ist abgeschlossen, M6 startet als Naechstes.
 
-Fuehre nacheinander aus:
-1. /fewer-permission-prompts
-2. /claude-automation-recommender
+Fuehre aus: /milestone-checkpoint
 
-Aktualisiere danach den →M6-Eintrag in docs/dashboard/dashboard.html: status "done", finishedAt = heute, beide Steps abhaken, je einen log-Eintrag mit kurzer Zusammenfassung. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
+Das aktualisiert automatisch den →M6-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
 
 /remote-control →M6 — Zwischen-Check`
     },
@@ -462,7 +460,8 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
       summary: "Housekeeping zwischen M6 und M7: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
         { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false }
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false }
       ],
       currentActivity: null,
       runtime: null,
@@ -471,11 +470,9 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
 
 Zwischen-Check vor M7 (CLAUDE.md §7 Punkt 4). M6 ist abgeschlossen, M7 startet als Naechstes.
 
-Fuehre nacheinander aus:
-1. /fewer-permission-prompts
-2. /claude-automation-recommender
+Fuehre aus: /milestone-checkpoint
 
-Aktualisiere danach den →M7-Eintrag in docs/dashboard/dashboard.html: status "done", finishedAt = heute, beide Steps abhaken, je einen log-Eintrag mit kurzer Zusammenfassung. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
+Das aktualisiert automatisch den →M7-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
 
 /remote-control →M7 — Zwischen-Check`
     },
