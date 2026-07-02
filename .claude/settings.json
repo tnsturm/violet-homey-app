@@ -16,5 +16,18 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git merge-base *)",
+      "Bash(homey whoami)",
+      "Bash(homey api devices get-*)",
+      "Bash(homey api flow get-*)",
+      "Bash(homey api logic get-*)",
+      "Bash(homey api apps get-*)",
+      "Bash(homey api flowtoken get-*)",
+      "Bash(homey api zones get-*)",
+      "Bash(homey api notifications get-*)"
+    ]
   }
 }
