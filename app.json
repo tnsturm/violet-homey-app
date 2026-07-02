@@ -563,6 +563,121 @@
         "de": "Wasserbalance-Alarm"
       }
     },
+    "backwash_active": {
+      "type": "boolean",
+      "title": {
+        "en": "Backwash running",
+        "de": "Rückspülung läuft"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Backwash running",
+        "de": "Rückspülung läuft"
+      }
+    },
+    "cover_state": {
+      "type": "enum",
+      "title": {
+        "en": "Cover",
+        "de": "Abdeckung"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "values": [
+        {
+          "id": "open",
+          "title": {
+            "en": "Open",
+            "de": "Offen"
+          }
+        },
+        {
+          "id": "closed",
+          "title": {
+            "en": "Closed",
+            "de": "Geschlossen"
+          }
+        },
+        {
+          "id": "moving",
+          "title": {
+            "en": "Moving",
+            "de": "Fährt"
+          }
+        },
+        {
+          "id": "stopped",
+          "title": {
+            "en": "Stopped",
+            "de": "Gestoppt"
+          }
+        }
+      ]
+    },
+    "dosing_active": {
+      "type": "boolean",
+      "title": {
+        "en": "Dosing now",
+        "de": "Dosiert gerade"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Dosing now",
+        "de": "Dosiert gerade"
+      }
+    },
+    "eco_active": {
+      "type": "boolean",
+      "title": {
+        "en": "Eco mode",
+        "de": "Eco-Modus"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Eco mode",
+        "de": "Eco-Modus"
+      }
+    },
+    "heater_active": {
+      "type": "boolean",
+      "title": {
+        "en": "Heater on",
+        "de": "Heizung an"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Heater on",
+        "de": "Heizung an"
+      }
+    },
+    "light_on": {
+      "type": "boolean",
+      "title": {
+        "en": "Light on",
+        "de": "Licht an"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Light on",
+        "de": "Licht an"
+      }
+    },
     "measure_chlorine": {
       "type": "number",
       "title": {
@@ -582,6 +697,46 @@
         "de": "Freies Chlor"
       },
       "decimals": 2
+    },
+    "measure_dosing_daily_ml": {
+      "type": "number",
+      "title": {
+        "en": "Dosed today",
+        "de": "Dosiert heute"
+      },
+      "units": {
+        "en": "mL",
+        "de": "mL"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Dosed today",
+        "de": "Dosiert heute"
+      },
+      "decimals": 0
+    },
+    "measure_dosing_days_left": {
+      "type": "number",
+      "title": {
+        "en": "Chemical days left",
+        "de": "Chemie-Reichweite"
+      },
+      "units": {
+        "en": "d",
+        "de": "d"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Chemical days left",
+        "de": "Chemie-Reichweite"
+      },
+      "decimals": 0
     },
     "measure_lsi": {
       "type": "number",
@@ -635,6 +790,26 @@
       },
       "decimals": 2
     },
+    "measure_water_level": {
+      "type": "number",
+      "title": {
+        "en": "Water level",
+        "de": "Wasserstand"
+      },
+      "units": {
+        "en": "%",
+        "de": "%"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Water level",
+        "de": "Wasserstand"
+      },
+      "decimals": 0
+    },
     "measurements_fresh": {
       "type": "boolean",
       "title": {
@@ -650,6 +825,21 @@
         "de": "Messwerte aktuell"
       }
     },
+    "overflow_refill_active": {
+      "type": "boolean",
+      "title": {
+        "en": "Overflow refill",
+        "de": "Überlauf-Nachfüllung"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Overflow refill",
+        "de": "Überlauf-Nachfüllung"
+      }
+    },
     "pump_running": {
       "type": "boolean",
       "title": {
@@ -663,6 +853,127 @@
       "insightsTitle": {
         "en": "Pump running",
         "de": "Pumpe läuft"
+      }
+    },
+    "pump_speed_stage": {
+      "type": "number",
+      "title": {
+        "en": "Pump speed stage",
+        "de": "Pumpen-Stufe"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Pump speed stage",
+        "de": "Pumpen-Stufe"
+      },
+      "decimals": 0
+    },
+    "pv_surplus_active": {
+      "type": "boolean",
+      "title": {
+        "en": "PV surplus mode",
+        "de": "PV-Überschuss-Modus"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "PV surplus mode",
+        "de": "PV-Überschuss-Modus"
+      }
+    },
+    "refill_active": {
+      "type": "boolean",
+      "title": {
+        "en": "Refill running",
+        "de": "Nachfüllung läuft"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Refill running",
+        "de": "Nachfüllung läuft"
+      }
+    },
+    "runtime_heater": {
+      "type": "number",
+      "title": {
+        "en": "Heater runtime today",
+        "de": "Heizungslaufzeit heute"
+      },
+      "units": {
+        "en": "h",
+        "de": "h"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Heater runtime today",
+        "de": "Heizungslaufzeit heute"
+      },
+      "decimals": 1
+    },
+    "runtime_pump": {
+      "type": "number",
+      "title": {
+        "en": "Pump runtime today",
+        "de": "Pumpenlaufzeit heute"
+      },
+      "units": {
+        "en": "h",
+        "de": "h"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Pump runtime today",
+        "de": "Pumpenlaufzeit heute"
+      },
+      "decimals": 1
+    },
+    "runtime_solar": {
+      "type": "number",
+      "title": {
+        "en": "Solar runtime today",
+        "de": "Solarlaufzeit heute"
+      },
+      "units": {
+        "en": "h",
+        "de": "h"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Solar runtime today",
+        "de": "Solarlaufzeit heute"
+      },
+      "decimals": 1
+    },
+    "solar_active": {
+      "type": "boolean",
+      "title": {
+        "en": "Solar on",
+        "de": "Solar an"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Solar on",
+        "de": "Solar an"
       }
     }
   }

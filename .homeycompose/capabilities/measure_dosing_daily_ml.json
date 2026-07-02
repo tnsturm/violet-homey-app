@@ -1,0 +1,11 @@
+{
+  "type": "number",
+  "title": { "en": "Dosed today", "de": "Dosiert heute" },
+  "units": { "en": "mL", "de": "mL" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Dosed today", "de": "Dosiert heute" },
+  "decimals": 0
+}

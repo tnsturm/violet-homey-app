@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Heater on", "de": "Heizung an" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Heater on", "de": "Heizung an" }
+}

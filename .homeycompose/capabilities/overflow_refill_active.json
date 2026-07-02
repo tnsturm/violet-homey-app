@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Overflow refill", "de": "Überlauf-Nachfüllung" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Overflow refill", "de": "Überlauf-Nachfüllung" }
+}

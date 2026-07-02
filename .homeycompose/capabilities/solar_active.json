@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Solar on", "de": "Solar an" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Solar on", "de": "Solar an" }
+}

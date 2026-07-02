@@ -1,0 +1,11 @@
+{
+  "type": "number",
+  "title": { "en": "Water level", "de": "Wasserstand" },
+  "units": { "en": "%", "de": "%" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Water level", "de": "Wasserstand" },
+  "decimals": 0
+}

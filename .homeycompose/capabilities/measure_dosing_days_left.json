@@ -1,0 +1,11 @@
+{
+  "type": "number",
+  "title": { "en": "Chemical days left", "de": "Chemie-Reichweite" },
+  "units": { "en": "d", "de": "d" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Chemical days left", "de": "Chemie-Reichweite" },
+  "decimals": 0
+}

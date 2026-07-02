@@ -1,0 +1,11 @@
+{
+  "type": "number",
+  "title": { "en": "Heater runtime today", "de": "Heizungslaufzeit heute" },
+  "units": { "en": "h", "de": "h" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Heater runtime today", "de": "Heizungslaufzeit heute" },
+  "decimals": 1
+}

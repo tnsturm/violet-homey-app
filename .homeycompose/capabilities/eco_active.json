@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Eco mode", "de": "Eco-Modus" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Eco mode", "de": "Eco-Modus" }
+}

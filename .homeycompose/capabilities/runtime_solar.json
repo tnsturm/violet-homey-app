@@ -1,0 +1,11 @@
+{
+  "type": "number",
+  "title": { "en": "Solar runtime today", "de": "Solarlaufzeit heute" },
+  "units": { "en": "h", "de": "h" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Solar runtime today", "de": "Solarlaufzeit heute" },
+  "decimals": 1
+}

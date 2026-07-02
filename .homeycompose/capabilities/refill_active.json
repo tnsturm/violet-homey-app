@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Refill running", "de": "Nachfüllung läuft" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Refill running", "de": "Nachfüllung läuft" }
+}

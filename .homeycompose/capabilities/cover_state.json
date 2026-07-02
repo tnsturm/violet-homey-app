@@ -1,0 +1,13 @@
+{
+  "type": "enum",
+  "title": { "en": "Cover", "de": "Abdeckung" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "values": [
+    { "id": "open", "title": { "en": "Open", "de": "Offen" } },
+    { "id": "closed", "title": { "en": "Closed", "de": "Geschlossen" } },
+    { "id": "moving", "title": { "en": "Moving", "de": "Fährt" } },
+    { "id": "stopped", "title": { "en": "Stopped", "de": "Gestoppt" } }
+  ]
+}

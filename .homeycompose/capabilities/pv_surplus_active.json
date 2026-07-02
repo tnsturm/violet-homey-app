@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "PV surplus mode", "de": "PV-Überschuss-Modus" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "PV surplus mode", "de": "PV-Überschuss-Modus" }
+}

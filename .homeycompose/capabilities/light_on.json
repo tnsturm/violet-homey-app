@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Light on", "de": "Licht an" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Light on", "de": "Licht an" }
+}

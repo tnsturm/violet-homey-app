@@ -1,0 +1,11 @@
+{
+  "type": "number",
+  "title": { "en": "Pump runtime today", "de": "Pumpenlaufzeit heute" },
+  "units": { "en": "h", "de": "h" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Pump runtime today", "de": "Pumpenlaufzeit heute" },
+  "decimals": 1
+}
