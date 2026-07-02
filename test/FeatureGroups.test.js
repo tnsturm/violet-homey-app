@@ -19,6 +19,7 @@ test('parseDurationToHours parses "Hh Mm Ss" to fractional hours', () => {
 test('parseDurationToHours returns null on unparseable input', () => {
   assert.strictEqual(parseDurationToHours('NONE'), null);
   assert.strictEqual(parseDurationToHours(undefined), null);
+  assert.strictEqual(parseDurationToHours('abc 5h 5m 5s def'), null);
 });
 
 test('parseRangeToDays parses day/week/month suffixes', () => {
