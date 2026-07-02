@@ -88,3 +88,29 @@ test('buildM2Updates derives diagnostics values', () => {
   assert.strictEqual(typeof u.system_uptime, 'string');
   assert.ok(u.controller_firmware.includes('1.2.1'));
 });
+
+test('buildM2Updates omits all keys when payload is empty', () => {
+  const u = buildM2Updates({}, { dosingChannels: [], dosingLowThresholdDays: 7 });
+  assert.deepStrictEqual(u, {});
+});
+
+test('buildM2Updates omits absent-field keys on minimal fixture', () => {
+  const minimal = JSON.parse(
+    require('node:fs').readFileSync(
+      require('node:path').join(__dirname, 'fixtures', 'minimal-pool.json'),
+      'utf8'
+    )
+  );
+  const u = buildM2Updates(minimal, { dosingChannels: [], dosingLowThresholdDays: 7 });
+  // Absent fields should be omitted (only PUMP, PUMP_RPM_*, SOLAR, HEATER, LIGHT, BACKWASH, REFILL_STATE present)
+  assert.ok(!('eco_active' in u), 'eco_active should be omitted when ECO is absent');
+  assert.ok(!('cover_state' in u), 'cover_state should be omitted when COVER_STATE is absent');
+  assert.ok(!('measure_water_level' in u), 'measure_water_level should be omitted when BATHING_AI_LAST_LEVEL is absent');
+  assert.ok(!('pv_surplus_active' in u), 'pv_surplus_active should be omitted when PVSURPLUS is absent');
+  assert.ok(!('alarm_overflow_dryrun' in u), 'alarm_overflow_dryrun should be omitted when OVERFLOW_DRYRUN_STATE is absent');
+  // Present fields should still appear
+  assert.strictEqual(u.pump_speed_stage, 1, 'pump_speed_stage should be derived when PUMP_RPM_* fields are present');
+  assert.strictEqual(u.heater_active, false, 'heater_active should be false when HEATER=0 is present');
+  assert.strictEqual(u.solar_active, false, 'solar_active should be false when SOLAR=0 is present');
+  assert.strictEqual(u.light_on, false, 'light_on should be false when LIGHT=0 is present');
+});
