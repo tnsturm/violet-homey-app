@@ -108,7 +108,6 @@ window.DASHBOARD_STATUS = {
       currentActivity: null,
       runtime: "9 SDD-Tasks",
       log: [
-        { at: "2026-06-29", note: "Repo aus OneDrive nach C:/Users/TorstenSturm/source/repos/VioletApp verschoben (OneDrive-.git-Sync war fehleranfaellig)." },
         { at: "2026-06-29", note: "Patch (origin/main 4d1aaf3, live verifiziert): fresh-gated Messwerte bei stale -> null; GUI zeigt '-' + echte Insights-Luecke statt Flatline." }
       ],
       prompt: null
@@ -138,7 +137,7 @@ window.DASHBOARD_STATUS = {
         { at: "2026-07-01", note: "Kosmetik-Patch 0.1.2 (67812c6): feste LSI-Insights-Skala (−3..+3, Achsen-Experiment) + iOS-Dropdown-Hinweis; gepusht + installiert." },
         { at: "2026-07-01", note: "0.1.3 (0ac021f): Kachel-Alarm 'alarm_water_balance' bei LSI außerhalb ausgeglichen (wie Bewegungsalarm); min/max wieder entfernt (Homey nutzt es nicht für Insights). Gepusht + installiert." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Wir starten Milestone M1 (LSI-Flaggschiff) der Violet Homey App. M0 ist gebaut, getestet und dauerhaft auf meinem Homey installiert (origin/main, HEAD 4d1aaf3).
 
@@ -206,7 +205,7 @@ Nach dem Brainstorming: Spec schreiben, dann mit superpowers:writing-plans einen
         { at: "2026-07-01", note: "Whole-Branch-Review (opus): 'ready to merge' — Capability-ID-Kohärenz Registry↔JSON↔app.json↔device.js lückenlos (27↔27↔27); 1 Important gefixt (Alarm-Trigger nur wenn Capability sichtbar, Spec §7). HEAD 2e696a1." },
         { at: "2026-07-01", note: "Version 0.2.0 (commit b4c0d2a) gebaut, Changelog (en+de) + versions.md gepflegt; auf 'Torstens Homey Pro' installiert. Live verifiziert: Detektion adaptiv (Pumpenstufe 2, Solar an, Abdeckung offen, Heizung via History), Dosierung cl+phm, alarm_dosing_low.cl=true bei 6 Tagen, Diagnose ausgeblendet, M0/M1 intakt. M2 abgeschlossen." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Violet Homey Pro App — Milestone M2 (Volle Reads + Feature-Gruppen).
 
@@ -236,7 +235,7 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Zwischen-Check vor M3 (CLAUDE.md §7 Punkt 4). M2 ist abgeschlossen, M3 startet als Naechstes.
 
@@ -264,7 +263,7 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Violet Homey Pro App — Milestone M3 (Voller Schreib-/Steuerzugriff).
 
@@ -296,7 +295,7 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Zwischen-Check vor M4 (CLAUDE.md §7 Punkt 4). M3 ist abgeschlossen, M4 startet als Naechstes.
 
@@ -326,7 +325,7 @@ Das aktualisiert automatisch den →M4-Eintrag in docs/dashboard/dashboard.html 
       log: [
         { at: "2026-06-26", note: "Brainstorming + Spec abgeschlossen und freigegeben" }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Violet Homey Pro App — Milestone M4 (Inbound-HTTP-Alarme → Flow-Trigger). Brainstorming + Spec sind bereits fertig und freigegeben.
 
@@ -356,7 +355,7 @@ Vorgehen wie M0: superpowers:writing-plans -> subagent-driven-development (frisc
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Zwischen-Check vor M5 (CLAUDE.md §7 Punkt 4). M4 ist abgeschlossen, M5 startet als Naechstes.
 
@@ -384,7 +383,7 @@ Das aktualisiert automatisch den →M5-Eintrag in docs/dashboard/dashboard.html 
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Violet Homey Pro App — Milestone M5 (Publish-Readiness, Homey App Store).
 
@@ -416,7 +415,7 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Zwischen-Check vor M6 (CLAUDE.md §7 Punkt 4). M5 ist abgeschlossen, M6 startet als Naechstes.
 
@@ -444,7 +443,7 @@ Das aktualisiert automatisch den →M6-Eintrag in docs/dashboard/dashboard.html 
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Violet Homey Pro App — Milestone M6 (LabCOM-Cloud-Import der Wasserchemie für den LSI).
 
@@ -474,7 +473,7 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Zwischen-Check vor M7 (CLAUDE.md §7 Punkt 4). M6 ist abgeschlossen, M7 startet als Naechstes.
 
@@ -502,7 +501,7 @@ Das aktualisiert automatisch den →M7-Eintrag in docs/dashboard/dashboard.html 
       currentActivity: null,
       runtime: null,
       log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp (NICHT mehr in OneDrive). Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Violet Homey Pro App — Milestone M7 (Empfehlungs-/Wasserbalance-Modul).
 
