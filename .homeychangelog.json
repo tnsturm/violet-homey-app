@@ -14,5 +14,9 @@
   "0.1.3": {
     "en": "New: a Water balance alarm on the device tile that turns on when the LSI leaves the balanced range (like a motion alarm) — warnings are now visible at a glance, in addition to the Flow trigger.",
     "de": "Neu: ein Wasserbalance-Alarm auf der Gerätekachel, der angeht, sobald der LSI den ausgeglichenen Bereich verlässt (wie ein Bewegungsalarm) — Warnungen sind jetzt auf einen Blick sichtbar, zusätzlich zur Flow-Karte."
+  },
+  "0.2.0": {
+    "en": "Full read coverage: new tiles for pump speed, heater, solar, cover, light, water level and backwash — plus per-channel dosing consumption (days of chemical left, mL dosed today), with 'dosing blocked', 'chemical low', 'overflow dry-run/overfill' and 'backwash valve fault' alarms and Flow triggers. Everything auto-detects to your hardware; an optional diagnostics group (CPU, memory, uptime, firmware) can be shown in settings.",
+    "de": "Volle Lese-Abdeckung: neue Kacheln für Pumpenstufe, Heizung, Solar, Abdeckung, Licht, Wasserstand und Rückspülung — plus Dosier-Verbrauch je Kanal (Chemie-Reichweite in Tagen, ml heute dosiert), mit Alarmen und Flow-Triggern für „Dosierung blockiert", „Chemie niedrig", „Überlauf Trockenlauf/Überfüllung" und „Rückspülventil-Fehler". Alles erkennt sich automatisch passend zur Hardware; eine optionale Diagnosegruppe (CPU, Speicher, Laufzeit, Firmware) lässt sich in den Einstellungen einblenden."
   }
 }
