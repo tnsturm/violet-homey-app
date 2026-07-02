@@ -101,7 +101,7 @@ Use a single-file `dashboard.html` (or equivalent): opens directly in a browser,
 1. **At start:** `status: "active"`, `startedAt: "<YYYY-MM-DD>"`, append a `log` entry ("Brainstorming/Design started"), bump the top-level `updatedAt`.
 2. **During the run:** tick off `steps[].done` as completed (fixed workflow: **Brainstorming → Spec → Plan → Implementation (TDD/SDD) → Validate + Release**); keep `currentActivity` current (or `null`); append coarse-grained entries to `log`; before every deployable release, bump the version and log it (§8 — see the platform file for the exact command).
 3. **At the end:** `status: "done"`, `finishedAt`, `commit: "<short-sha>"`, all `steps[].done = true`, `currentActivity: null`, bump `updatedAt`.
-4. **Between milestones:** once a milestone is closed and before starting the next, run `/fewer-permission-prompts` and `/claude-automation-recommender` to keep tool permissions tight and check whether the codebase now warrants new hooks/subagents/skills. Track this as its own checkpoint entry in the milestones list (same object shape as a milestone, `id: "→Mx"`), not just prose.
+4. **Between milestones:** once a milestone is closed and before starting the next, run the project's `milestone-checkpoint` skill (wraps `/fewer-permission-prompts`, `/claude-automation-recommender`, and a check of this project's third-party skill sources). Track this as its own checkpoint entry in the milestones list (same object shape as a milestone, `id: "→Mx"`), not just prose.
 
 **Fields per milestone:** `id`, `title`, `status` (`done`|`active`|`todo`), `startedAt`/`finishedAt`, `commit`, `summary`, `steps[]` (`{label, done}`), `currentActivity`, `runtime`, `log[]` (`{at, note}`), `prompt` (full resume prompt; `null` once done).
 
