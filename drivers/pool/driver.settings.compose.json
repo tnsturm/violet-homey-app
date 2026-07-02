@@ -130,5 +130,39 @@
         "hint": { "en": "Only used if no water-temperature sensor is available/selected. Keep it representative.", "de": "Nur genutzt, wenn kein Wassertemperatur-Sensor verfügbar/gewählt ist. Repräsentativ halten." }
       }
     ]
+  },
+  {
+    "type": "group",
+    "label": { "en": "Feature groups (show/hide)", "de": "Funktionsgruppen (ein-/ausblenden)" },
+    "children": [
+      { "id": "group_eco", "type": "radio", "label": { "en": "Eco mode", "de": "Eco-Modus" }, "value": "auto",
+        "values": [
+          { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } },
+          { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } },
+          { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } }
+        ] },
+      { "id": "group_heater", "type": "radio", "label": { "en": "Heater", "de": "Heizung" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_solar", "type": "radio", "label": { "en": "Solar", "de": "Solar" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_backwash", "type": "radio", "label": { "en": "Backwash", "de": "Rückspülung" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_cover", "type": "radio", "label": { "en": "Cover", "de": "Abdeckung" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_light", "type": "radio", "label": { "en": "Light", "de": "Licht" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_refill", "type": "radio", "label": { "en": "Water refill", "de": "Nachfüllung" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_overflow", "type": "radio", "label": { "en": "Overflow tank", "de": "Überlaufbehälter" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_waterLevel", "type": "radio", "label": { "en": "Water level", "de": "Wasserstand" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_pv", "type": "radio", "label": { "en": "PV surplus", "de": "PV-Überschuss" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_dosing", "type": "radio", "label": { "en": "Dosing", "de": "Dosierung" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (per detected channel)", "de": "Auto (je erkanntem Kanal)" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "dosing_low_threshold_days", "type": "number", "label": { "en": "Chemical-low alarm threshold (days)", "de": "Alarmschwelle Chemie-Reichweite (Tage)" }, "value": 7, "min": 1, "max": 60 },
+      { "id": "show_advanced_diagnostics", "type": "checkbox", "label": { "en": "Show advanced diagnostics", "de": "Erweiterte Diagnose anzeigen" }, "value": false, "hint": { "en": "Adds CPU/memory/uptime/firmware/error tiles.", "de": "Fügt CPU-/Speicher-/Laufzeit-/Firmware-/Fehler-Kacheln hinzu." } }
+    ]
   }
 ]
