@@ -114,3 +114,29 @@ test('buildM2Updates omits absent-field keys on minimal fixture', () => {
   assert.strictEqual(u.solar_active, false, 'solar_active should be false when SOLAR=0 is present');
   assert.strictEqual(u.light_on, false, 'light_on should be false when LIGHT=0 is present');
 });
+
+const { desiredM2Capabilities } = require('../lib/FeatureGroups');
+
+test('desiredM2Capabilities: auto shows detected, hides undetected', () => {
+  const features = { pump: true, eco: false, heater: true, solar: false, backwash: false, cover: true, light: false, refill: false, overflow: false, waterLevel: true, pvSurplus: true, diagnostics: true, dosingChannels: ['cl'] };
+  const caps = desiredM2Capabilities({ features, overrides: {}, diagnosticsEnabled: false });
+  assert.ok(caps.includes('pump_speed_stage'));      // pump force default
+  assert.ok(caps.includes('heater_active'));         // detected
+  assert.ok(!caps.includes('solar_active'));         // undetected
+  assert.ok(caps.includes('cover_state'));
+  assert.ok(caps.includes('measure_water_level'));
+  assert.ok(caps.includes('measure_dosing_days_left.cl'));
+  assert.ok(caps.includes('alarm_dosing_blocked.cl'));
+  assert.ok(!caps.some((c) => c.startsWith('measure_system_')));  // diagnostics off
+});
+
+test('desiredM2Capabilities: force shows undetected, hide removes detected', () => {
+  const features = { pump: true, heater: false, solar: false, dosingChannels: [] };
+  assert.ok(desiredM2Capabilities({ features, overrides: { heater: 'force' }, diagnosticsEnabled: false }).includes('heater_active'));
+  assert.ok(!desiredM2Capabilities({ features: { ...features, heater: true }, overrides: { heater: 'hide' }, diagnosticsEnabled: false }).includes('heater_active'));
+});
+
+test('desiredM2Capabilities: diagnostics gated by diagnosticsEnabled', () => {
+  const features = { pump: true, diagnostics: true, dosingChannels: [] };
+  assert.ok(desiredM2Capabilities({ features, overrides: {}, diagnosticsEnabled: true }).includes('last_error_id'));
+});
