@@ -17,6 +17,13 @@ const {
   buildCapabilityUpdates,
 } = require('../../lib/Capabilities');
 const { computeLSI, classifyLSI, toPpmCaCO3 } = require('../../lib/Lsi');
+const {
+  desiredM2Capabilities,
+  buildM2Updates,
+  M2_GROUPS,
+  DOSING_SUBCAPS,
+  DIAGNOSTIC_CAPS,
+} = require('../../lib/FeatureGroups');
 
 class PoolDevice extends Homey.Device {
   async onInit() {
@@ -157,6 +164,58 @@ class PoolDevice extends Homey.Device {
     }
     for (const cap of [...this.getCapabilities()]) {
       if (cap.startsWith('measure_temperature.ow') && !wanted.has(cap)) {
+        await this.removeCapability(cap).catch(this.error);
+      }
+    }
+
+    // 3) M2 feature-group capabilities (spec M2 §4,§6). Overrides come from the
+    //    per-group settings (group_<id>); diagnostics gated by a toggle.
+    const m2Overrides = {};
+    for (const g of Object.keys(M2_GROUPS)) m2Overrides[g] = this.getSetting(`group_${g}`) || undefined;
+    m2Overrides.dosing = this.getSetting('group_dosing') || undefined;
+    const diagnosticsEnabled = this.getSetting('show_advanced_diagnostics') === true;
+    const desiredM2 = new Set(desiredM2Capabilities({ features, overrides: m2Overrides, diagnosticsEnabled }));
+
+    // Add desired-but-absent; give dosing sub-instances a channel title.
+    const CH_TITLE = {
+      cl: { en: 'Chlorine', de: 'Chlor' },
+      elo: { en: 'Electrolysis', de: 'Elektrolyse' },
+      elorev: { en: 'Electrolysis (rev.)', de: 'Elektrolyse (rev.)' },
+      phm: { en: 'pH-minus', de: 'pH-Minus' },
+      php: { en: 'pH-plus', de: 'pH-Plus' },
+      floc: { en: 'Flocculant', de: 'Flockung' },
+    };
+    const DOSING_NOUN = {
+      measure_dosing_days_left: { en: 'days left', de: 'Reichweite' },
+      measure_dosing_daily_ml: { en: 'dosed today', de: 'dosiert heute' },
+      dosing_active: { en: 'dosing', de: 'dosiert' },
+      alarm_dosing_blocked: { en: 'blocked', de: 'blockiert' },
+      alarm_dosing_low: { en: 'low', de: 'niedrig' },
+    };
+    for (const cap of desiredM2) {
+      if (this.hasCapability(cap)) continue;
+      await this.addCapability(cap).catch(this.error);
+      const dot = cap.indexOf('.');
+      if (dot > 0) {
+        const base = cap.slice(0, dot);
+        const ch = cap.slice(dot + 1);
+        const noun = DOSING_NOUN[base];
+        if (CH_TITLE[ch] && noun) {
+          await this.setCapabilityOptions(cap, { title: { en: `${CH_TITLE[ch].en} ${noun.en}`, de: `${CH_TITLE[ch].de} ${noun.de}` } }).catch(this.error);
+        }
+      }
+    }
+    // Remove M2 caps no longer desired (Hide override / channel gone). The managed
+    // set is derived from the registry so it can never drift or miss an alarm cap
+    // (a hand-listed prefix list omitted alarm_overflow_* in an earlier draft).
+    const M2_MANAGED_BASES = new Set([
+      ...Object.values(M2_GROUPS).flatMap((g) => g.capIds),
+      ...DOSING_SUBCAPS,
+      ...DIAGNOSTIC_CAPS,
+    ]);
+    const baseOf = (cap) => (cap.includes('.') ? cap.slice(0, cap.indexOf('.')) : cap);
+    for (const cap of [...this.getCapabilities()]) {
+      if (M2_MANAGED_BASES.has(baseOf(cap)) && !desiredM2.has(cap)) {
         await this.removeCapability(cap).catch(this.error);
       }
     }
