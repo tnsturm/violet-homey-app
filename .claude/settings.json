@@ -6,6 +6,12 @@
         "hooks": [
           { "type": "command", "command": "node .claude/hooks/check-version-sync.js" }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "node .claude/hooks/secrets-guard.js" }
+        ]
       }
     ],
     "PostToolUse": [
