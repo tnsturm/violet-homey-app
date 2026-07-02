@@ -1,0 +1,15 @@
+{
+  "PUMP": 1, "PUMP_LAST_ON": 1782331200, "PUMP_RUNTIME": "02h 00m 00s",
+  "PUMP_RPM_0": 0, "PUMP_RPM_1": 1, "PUMP_RPM_2": 0, "PUMP_RPM_3": 0,
+  "CURRENT_TIME_UNIX": 1782345366,
+  "pH_value": 7.2, "orp_value": 700,
+  "onewire1_value": 26.0, "onewire1_state": "OK",
+  "onewire2_state": "NO_SENSOR_CONFIGURED",
+  "SOLAR": 0, "SOLAR_RUNTIME": "00h 00m 00s", "SOLAR_LAST_ON": 0,
+  "HEATER": 0, "HEATER_RUNTIME": "00h 00m 00s", "HEATER_LAST_ON": 0,
+  "LIGHT": 0, "LIGHT_RUNTIME": "00h 00m 00s", "LIGHT_LAST_ON": 0,
+  "BACKWASH": 0, "BACKWASH_RUNTIME": "00h 00m 00s", "BACKWASH_LAST_ON": 0,
+  "REFILL_STATE": "OFF", "REFILL_RUNTIME": "00h 00m 00s", "REFILL_LAST_ON": 0,
+  "DOS_1_CL_USE": "0", "DOS_2_ELO_USE": "0", "DOS_4_PHM_USE": "0",
+  "DOS_5_PHP_USE": "0", "DOS_6_FLOC_USE": "0"
+}
