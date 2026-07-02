@@ -16,9 +16,17 @@ am Anfang der Datei — nie den Renderer darunter.
 - Während der Umsetzung (Steps abhaken, `currentActivity` aktualisieren)
 - Milestone-Abschluss (`status: done`)
 
+## Checkpoint-Einträge (`→Mx`)
+
+Zwischen-Milestone-Checkpoints (`id: "→Mx"`, `title: "Zwischen-Check"`) sind milestone-förmige
+Objekte in derselben `milestones[]`-Liste (CLAUDE.md §7 Punkt 4) — gleiche Felder, gleiche
+Status-Lifecycle, gleiche Edit-Regeln wie ein echter Milestone. Zwei Steps:
+`/fewer-permission-prompts`, `/claude-automation-recommender`.
+
 ## Regeln
 
-- Nur das eine betroffene Milestone-Objekt (`Mx`) anfassen, nicht andere Einträge.
+- Nur das eine betroffene Objekt (`Mx` oder `→Mx`) anfassen, nicht andere Einträge.
+- Jeder neue Resume-Prompt (Milestone oder Checkpoint) endet mit `/remote-control <id> — <title>`.
 - **Am Start**: `status: "active"`, `startedAt` setzen, einen `log[]`-Eintrag anhängen,
   Top-Level `updatedAt` bumpen.
 - **Während der Arbeit**: `steps[].done` abhaken (feste Reihenfolge: Brainstorming → Spec →
