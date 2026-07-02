@@ -155,3 +155,40 @@ belt-and-suspenders addition on top of the (already-enabled but seemingly unreli
 | `CLAUDE.md` | §7 point 4 wording + new Rules bullet |
 | `.claude/skills/dashboard-sync/SKILL.md` | Checkpoint-entry note + `/remote-control` convention |
 | `docs/dashboard/README.md` | One-line mention of the `→Mx` convention |
+| `.claude/skills/milestone-checkpoint/SKILL.md` | New skill (addendum, §7) |
+
+---
+
+## 7. Addendum: consolidate checkpoint housekeeping into one skill
+
+Added mid-implementation, before push — same branch/diff (user decision).
+
+**Trigger:** the checkpoint's two commands (`/fewer-permission-prompts`,
+`/claude-automation-recommender`) should also cover a third housekeeping task: checking whether the
+Homey-specific skills this project depends on (`homey-cli-skill`, `homey-app-skill`, both installed
+as plain file copies under `~/.claude/skills/`, sourced from real git clones under `/tmp/`) or
+Superpowers (installed via the `claude-plugins-official` marketplace, **not** a git checkout — no
+direct relationship to `github.com/obra/Superpowers`) have upstream updates.
+
+**Decision: consolidate all three into one new skill**, `milestone-checkpoint` (project-local —
+the exact skill list is Homey/VioletApp-specific). Every `→Mx` checkpoint prompt now runs this one
+skill instead of listing two separate commands.
+
+**Update behavior per source** (confirmed via live testing, not assumption):
+- `homey-cli-skill` / `homey-app-skill`: real git clones with real remotes — `git fetch` +
+  `log HEAD..origin/HEAD` detects updates; if found, `git pull` in the `/tmp` clone then copy over
+  the live `~/.claude/skills/` copy (which has no git tracking of its own). **Auto-applied**, no
+  confirmation needed (user decision).
+- Marketplace-install as an alternative was tested and rejected: `claude plugin marketplace add
+  https://github.com/timvdhoorn/homey-cli-skill` fails — the repo has no
+  `.claude-plugin/marketplace.json` manifest, so it isn't marketplace-installable as-is. Forking
+  to add one was considered and rejected (added maintenance burden for two single-file skills).
+- Superpowers: **report-only**. No git remote to check; its actual update path is
+  `claude plugin update superpowers`, which requires a restart and can't be driven from this
+  session. The skill reports the currently-installed version (`claude plugin list`) and tells the
+  user to run the update command themselves if they want to.
+
+**Retroactive `→M2` data**: both `homey-cli-skill` and `homey-app-skill` were live-checked during
+this session (2026-07-02) and found already current (no commits beyond local HEAD); Superpowers is
+at `6.0.3`. `→M2` gets a third step (`"Skill-Quellen geprüft"`, done) and a matching log entry with
+this real result, instead of a placeholder.
