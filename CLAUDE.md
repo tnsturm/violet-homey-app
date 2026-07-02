@@ -132,6 +132,19 @@ Per release:
 
 An ephemeral dev-run command (one that tears itself down on stop) is not a release and needs no bump/log entry.
 
+## 9. Finishing a Branch
+
+**Before any git action on a finished branch, run `/code-review` — then ask how to proceed.**
+
+Once a branch/worktree's change is complete and a git action (commit/push/merge) is next:
+
+1. Proactively start `/code-review` on the diff against the base branch — don't wait to be asked.
+2. Based on the result, ask (don't decide silently):
+   - **Trivial change (no Critical Issues):** ask whether to push directly to `origin/main` and pull the local `main` checkout up to date — skipping a PR.
+   - **Otherwise:** ask whether to push the branch and open a Pull Request.
+
+Always wait for an explicit yes before pushing or merging — this section only saves re-explaining the two options each time, not the confirmation itself.
+
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
