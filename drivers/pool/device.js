@@ -23,6 +23,7 @@ const {
   M2_GROUPS,
   DOSING_SUBCAPS,
   DIAGNOSTIC_CAPS,
+  dosingChannelPrefix,
 } = require('../../lib/FeatureGroups');
 
 class PoolDevice extends Homey.Device {
@@ -35,6 +36,15 @@ class PoolDevice extends Homey.Device {
       if (args.filter === 'critical') return state.severity === 'critical';
       return state.direction === args.filter; // 'corrosive' | 'scaling'
     });
+    // M2 polled-alarm device triggers (spec §7). No filter args → no run listener.
+    this._m2Triggers = {
+      dosing_blocked: this.homey.flow.getDeviceTriggerCard('dosing_blocked'),
+      dosing_low: this.homey.flow.getDeviceTriggerCard('dosing_low'),
+      overflow_dryrun: this.homey.flow.getDeviceTriggerCard('overflow_dryrun'),
+      overflow_overfill: this.homey.flow.getDeviceTriggerCard('overflow_overfill'),
+      backwash_valve_fault: this.homey.flow.getDeviceTriggerCard('backwash_valve_fault'),
+    };
+    this._m2AlarmState = {}; // capInstanceId -> last boolean (edge detection)
     this._startPolling();
     this.log('Pool device initialized');
   }
@@ -113,6 +123,14 @@ class PoolDevice extends Homey.Device {
 
     const updates = buildCapabilityUpdates({ parsed, fresh, primaryChannel, lsi, alarm });
 
+    // M2 feature-group values (spec §5,§6): status/actuator/consumable caps,
+    // updated every poll (not fresh-gated). Merged with the core updates.
+    const m2 = buildM2Updates(raw, {
+      dosingChannels: features.dosingChannels,
+      dosingLowThresholdDays: this.getSetting('dosing_low_threshold_days') ?? 7,
+    });
+    Object.assign(updates, m2);
+
     // Edge-trigger the warning only when the band CHANGES into a non-balanced
     // state (M1 §7,§9). null (disabled/stale/incomplete) clears the tracked band
     // and never fires; _lastLsiBand is in-memory (may re-fire once after restart).
@@ -123,6 +141,33 @@ class PoolDevice extends Homey.Device {
         .catch(this.error);
     }
     this._lastLsiBand = band;
+
+    // Edge-trigger M2 alarms on false→true only (spec §7). Channel-scoped alarms
+    // key their state per instance; tokens carry the channel/reason.
+    const CH_LABEL = { cl: 'Chlorine', elo: 'Electrolysis', elorev: 'Electrolysis (rev.)', phm: 'pH-minus', php: 'pH-plus', floc: 'Flocculant' };
+    const fireEdge = (capInstance, isOn, card, tokens) => {
+      const prev = this._m2AlarmState[capInstance] === true;
+      if (isOn && !prev) card.trigger(this, tokens, {}).catch(this.error);
+      this._m2AlarmState[capInstance] = isOn === true;
+    };
+    for (const [cap, val] of Object.entries(m2)) {
+      if (typeof val !== 'boolean' || !cap.startsWith('alarm_')) continue;
+      const dot = cap.indexOf('.');
+      const base = dot > 0 ? cap.slice(0, dot) : cap;
+      const ch = dot > 0 ? cap.slice(dot + 1) : null;
+      if (base === 'alarm_dosing_blocked') {
+        const reason = (raw[`${dosingChannelPrefix(ch)}_STATE`] || []).join(', ');
+        fireEdge(cap, val, this._m2Triggers.dosing_blocked, { channel: CH_LABEL[ch] || ch, reason });
+      } else if (base === 'alarm_dosing_low') {
+        fireEdge(cap, val, this._m2Triggers.dosing_low, { channel: CH_LABEL[ch] || ch, days_left: m2[`measure_dosing_days_left.${ch}`] ?? 0 });
+      } else if (base === 'alarm_overflow_dryrun') {
+        fireEdge(cap, val, this._m2Triggers.overflow_dryrun, {});
+      } else if (base === 'alarm_overflow_overfill') {
+        fireEdge(cap, val, this._m2Triggers.overflow_overfill, {});
+      } else if (base === 'alarm_omni_valve') {
+        fireEdge(cap, val, this._m2Triggers.backwash_valve_fault, { state: String(raw.BACKWASH_OMNI_STATE ?? '') });
+      }
+    }
 
     // Apply rule (clear-stale §3): undefined = leave as-is; null = clear to "–"
     // (Insights gap); else set. What is fresh-gated/cleared is decided in /lib (§7).
