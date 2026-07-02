@@ -761,6 +761,16 @@
         "de": "Rückspülung läuft"
       }
     },
+    "controller_firmware": {
+      "type": "string",
+      "title": {
+        "en": "Firmware",
+        "de": "Firmware"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false
+    },
     "cover_state": {
       "type": "enum",
       "title": {
@@ -845,6 +855,22 @@
         "en": "Heater on",
         "de": "Heizung an"
       }
+    },
+    "last_error_id": {
+      "type": "number",
+      "title": {
+        "en": "Last error code",
+        "de": "Letzter Fehlercode"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Last error code",
+        "de": "Letzter Fehlercode"
+      },
+      "decimals": 0
     },
     "light_on": {
       "type": "boolean",
@@ -972,6 +998,46 @@
         "de": "pH"
       },
       "decimals": 2
+    },
+    "measure_system_cpu_temperature": {
+      "type": "number",
+      "title": {
+        "en": "CPU temperature",
+        "de": "CPU-Temperatur"
+      },
+      "units": {
+        "en": "°C",
+        "de": "°C"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "CPU temperature",
+        "de": "CPU-Temperatur"
+      },
+      "decimals": 1
+    },
+    "measure_system_memory": {
+      "type": "number",
+      "title": {
+        "en": "Memory usage",
+        "de": "Speicherauslastung"
+      },
+      "units": {
+        "en": "%",
+        "de": "%"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Memory usage",
+        "de": "Speicherauslastung"
+      },
+      "decimals": 0
     },
     "measure_water_level": {
       "type": "number",
@@ -1158,6 +1224,16 @@
         "en": "Solar on",
         "de": "Solar an"
       }
+    },
+    "system_uptime": {
+      "type": "string",
+      "title": {
+        "en": "Controller uptime",
+        "de": "Regler-Laufzeit"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false
     }
   }
 }

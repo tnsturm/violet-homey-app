@@ -1,0 +1,11 @@
+{
+  "type": "number",
+  "title": { "en": "CPU temperature", "de": "CPU-Temperatur" },
+  "units": { "en": "°C", "de": "°C" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "CPU temperature", "de": "CPU-Temperatur" },
+  "decimals": 1
+}

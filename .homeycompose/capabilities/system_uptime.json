@@ -1,0 +1,7 @@
+{
+  "type": "string",
+  "title": { "en": "Controller uptime", "de": "Regler-Laufzeit" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false
+}

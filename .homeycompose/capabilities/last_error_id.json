@@ -1,0 +1,10 @@
+{
+  "type": "number",
+  "title": { "en": "Last error code", "de": "Letzter Fehlercode" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": { "en": "Last error code", "de": "Letzter Fehlercode" },
+  "decimals": 0
+}

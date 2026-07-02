@@ -35,8 +35,16 @@ lives in the M0 design spec
 | `pv_surplus_active.json` | PV surplus mode, M2 owner-facing | M2 §5 |
 | `dosing_active.json` | Dosing now, M2 owner-facing | M2 §5 |
 | `cover_state.json` | Cover state (enum: open/closed/moving/stopped), M2 owner-facing | M2 §5 |
+| `measure_system_cpu_temperature.json` | CPU temperature (°C), system diagnostics | M2 §5 |
+| `measure_system_memory.json` | Memory usage (%), system diagnostics | M2 §5 |
+| `last_error_id.json` | Last error code, system diagnostics | M2 §5 |
+| `system_uptime.json` | Controller uptime string, system diagnostics | M2 §5 |
+| `controller_firmware.json` | Firmware version string, system diagnostics | M2 §5 |
 
 `measure_temperature` (primary + `.owN` sub-sensors) is the **standard** Homey
 capability, not defined here; it logs to Insights by default (§5.1, §8).
 
 All custom capabilities set `"insights": true` with an `insightsTitle` (§5.1, §12).
+Note: System diagnostics capabilities (measure_system_cpu_temperature, measure_system_memory,
+last_error_id) have insights enabled; string diagnostics (system_uptime, controller_firmware)
+do not (§5.1).
