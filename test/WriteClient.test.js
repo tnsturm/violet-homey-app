@@ -67,3 +67,46 @@ test('parseWriteResponse reads OK / ERROR from line 1', () => {
 test('basicAuthHeader is a base64 Basic token of user:pass', () => {
   assert.strictEqual(basicAuthHeader('user', 'pass'), 'Basic ' + Buffer.from('user:pass').toString('base64'));
 });
+
+test('sendWrite sends the auth header + redirect:error, returns parsed OK (SR-08)', async () => {
+  const { sendWrite } = require('../lib/WriteClient');
+  const calls = [];
+  const orig = global.fetch;
+  global.fetch = async (url, opts) => { calls.push({ url, opts }); return { ok: true, status: 200, text: async () => 'OK\nPUMP\non' }; };
+  try {
+    const res = await sendWrite('violet.local', { username: 'u', password: 'sekret' },
+      { target: 'PUMP', state: 'ON', args: { duration: 60, speed: 1 } });
+    assert.strictEqual(res.ok, true);
+    assert.strictEqual(calls[0].url, 'http://violet.local/setFunctionManually?PUMP,ON,60,1');
+    assert.strictEqual(calls[0].opts.headers.Authorization, 'Basic ' + Buffer.from('u:sekret').toString('base64'));
+    assert.strictEqual(calls[0].opts.redirect, 'error');
+    assert.ok(!/sekret/.test(calls[0].url)); // SR-01: no creds in URL
+  } finally { global.fetch = orig; }
+});
+
+test('sendWrite throws a sanitized error on HTTP failure — no creds in message (SR-02/09)', async () => {
+  const { sendWrite } = require('../lib/WriteClient');
+  const orig = global.fetch;
+  global.fetch = async () => ({ ok: false, status: 401, text: async () => 'Access restricted' });
+  try {
+    await assert.rejects(
+      () => sendWrite('violet.local', { username: 'u', password: 'sekret' }, { target: 'LIGHT', state: 'ON' }),
+      (err) => {
+        assert.ok(/HTTP 401/.test(err.message));
+        assert.ok(!/sekret/.test(err.message) && !/Basic /.test(err.message));
+        return true;
+      },
+    );
+  } finally { global.fetch = orig; }
+});
+
+test('sendWrite validates before any network I/O (SR-04)', async () => {
+  const { sendWrite } = require('../lib/WriteClient');
+  const orig = global.fetch;
+  let called = false;
+  global.fetch = async () => { called = true; return { ok: true, status: 200, text: async () => 'OK' }; };
+  try {
+    await assert.rejects(() => sendWrite('violet.local', { username: 'u', password: 'p' }, { target: 'DOS_1_CL', state: 'ON' }), RangeError);
+    assert.strictEqual(called, false);
+  } finally { global.fetch = orig; }
+});
