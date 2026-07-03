@@ -8,6 +8,7 @@
 
 const Homey = require('homey');
 const { fetchReadings, parseReadings } = require('../../lib/VioletClient');
+const { sendWrite } = require('../../lib/WriteClient');
 const { detectFeatures } = require('../../lib/FeatureDetector');
 const { isFresh } = require('../../lib/Freshness');
 const {
@@ -45,8 +46,52 @@ class PoolDevice extends Homey.Device {
       backwash_valve_fault: this.homey.flow.getDeviceTriggerCard('backwash_valve_fault'),
     };
     this._m2AlarmState = {}; // capInstanceId -> last boolean (edge detection)
+
+    // M3 control tiles (spec §5/§8). Registered by id regardless of current
+    // presence; taps route here once the cap is added. Each gates on the interlock.
+    this.registerCapabilityListener('pump_control', async (value) => {
+      const durationSecs = value === 'auto' ? 0 : (this.getSetting('control_default_duration_min') ?? 60) * 60;
+      await this._control({ target: 'PUMP', state: value.toUpperCase(), args: { duration: durationSecs, speed: this._pumpSpeedArg() } }, 'pump_control');
+    });
+    this.registerCapabilityListener('light_control', async (value) => {
+      await this._control({ target: 'LIGHT', state: value.toUpperCase() }, 'light_control');
+    });
+    this.registerCapabilityListener('pvsurplus_control', async (value) => {
+      const speed = this._pumpSpeedArg();
+      await this._control(value
+        ? { target: 'PVSURPLUS', state: 'ON', args: { speed: speed === 0 ? undefined : speed } }
+        : { target: 'PVSURPLUS', state: 'OFF' }, 'pvsurplus_control');
+    });
+
     this._startPolling();
     this.log('Pool device initialized');
+  }
+
+  // Read write credentials at send time: username from settings, password from the
+  // encrypted store (SR-01/02). Throws (nothing sent) if the password is unset.
+  _writeCreds() {
+    const username = this.getSetting('writeUsername') || '';
+    const password = this.getStoreValue('writePassword') || '';
+    if (!password) throw new Error('Write credentials are not set (device settings).');
+    return { username, password };
+  }
+
+  // Gate every write on the interlock (SR-07), send, and surface OK/ERROR. Logs
+  // only target + args, never credentials (SR-10). `label` is a short op name.
+  async _control(cmd, label) {
+    if (this.getSetting('control_enabled') !== true) {
+      throw new Error('Control is disabled — enable it in the device settings.');
+    }
+    const res = await sendWrite(this.getSetting('host'), this._writeCreds(), cmd);
+    this.log('control', label, cmd.target, cmd.state, JSON.stringify(cmd.args || {}));
+    if (!res.ok) throw new Error(`Controller rejected: ${label}`);
+    return res;
+  }
+
+  // Tile pump speed from settings: 'default' ⇒ omit (keep configured), else 0-3.
+  _pumpSpeedArg() {
+    const s = this.getSetting('control_pump_speed');
+    return s === undefined || s === 'default' ? undefined : Number(s);
   }
 
   _startPolling() {

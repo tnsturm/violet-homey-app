@@ -26,6 +26,34 @@ class PoolDriver extends Homey.Driver {
       await args.device._tick().catch(args.device.error);
       return true;
     });
+
+    // M3 write-control Flow actions (spec §7). Each delegates to device._control,
+    // which enforces the interlock + registry validation + sanitized errors.
+    const speedArg = (v) => (v === undefined || v === 'default' ? undefined : Number(v));
+
+    this.homey.flow.getActionCard('pump_set_mode').registerRunListener(async (args) => {
+      await args.device._control({ target: 'PUMP', state: String(args.mode).toUpperCase(), args: { duration: Math.round((args.duration_min ?? 0) * 60), speed: speedArg(args.speed) } }, 'pump_set_mode');
+      return true;
+    });
+    this.homey.flow.getActionCard('light_set_mode').registerRunListener(async (args) => {
+      await args.device._control({ target: 'LIGHT', state: String(args.mode).toUpperCase() }, 'light_set_mode');
+      return true;
+    });
+    this.homey.flow.getActionCard('light_all_scenes').registerRunListener(async (args) => {
+      await args.device._control({ target: 'DMX_SCENE', scene: 1, state: String(args.mode).toUpperCase() }, 'light_all_scenes');
+      return true;
+    });
+    this.homey.flow.getActionCard('dmx_scene').registerRunListener(async (args) => {
+      await args.device._control({ target: 'DMX_SCENE', scene: Number(args.scene), state: String(args.mode).toUpperCase() }, 'dmx_scene');
+      return true;
+    });
+    this.homey.flow.getActionCard('pvsurplus_set').registerRunListener(async (args) => {
+      const speed = speedArg(args.speed);
+      await args.device._control(String(args.state) === 'on'
+        ? { target: 'PVSURPLUS', state: 'ON', args: { speed } }
+        : { target: 'PVSURPLUS', state: 'OFF' }, 'pvsurplus_set');
+      return true;
+    });
   }
 
   onPair(session) {
