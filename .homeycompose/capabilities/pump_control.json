@@ -1,0 +1,12 @@
+{
+  "type": "enum",
+  "title": { "en": "Pump control", "de": "Pumpensteuerung" },
+  "uiComponent": "picker",
+  "getable": true,
+  "setable": true,
+  "values": [
+    { "id": "auto", "title": { "en": "Auto", "de": "Auto" } },
+    { "id": "on", "title": { "en": "On", "de": "An" } },
+    { "id": "off", "title": { "en": "Off", "de": "Aus" } }
+  ]
+}

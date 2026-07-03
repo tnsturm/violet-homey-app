@@ -1250,6 +1250,39 @@
       },
       "decimals": 0
     },
+    "light_control": {
+      "type": "enum",
+      "title": {
+        "en": "Light control",
+        "de": "Lichtsteuerung"
+      },
+      "uiComponent": "picker",
+      "getable": true,
+      "setable": true,
+      "values": [
+        {
+          "id": "auto",
+          "title": {
+            "en": "Auto",
+            "de": "Auto"
+          }
+        },
+        {
+          "id": "on",
+          "title": {
+            "en": "On",
+            "de": "An"
+          }
+        },
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "de": "Aus"
+          }
+        }
+      ]
+    },
     "light_on": {
       "type": "boolean",
       "title": {
@@ -1467,6 +1500,39 @@
         "de": "Überlauf-Nachfüllung"
       }
     },
+    "pump_control": {
+      "type": "enum",
+      "title": {
+        "en": "Pump control",
+        "de": "Pumpensteuerung"
+      },
+      "uiComponent": "picker",
+      "getable": true,
+      "setable": true,
+      "values": [
+        {
+          "id": "auto",
+          "title": {
+            "en": "Auto",
+            "de": "Auto"
+          }
+        },
+        {
+          "id": "on",
+          "title": {
+            "en": "On",
+            "de": "An"
+          }
+        },
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "de": "Aus"
+          }
+        }
+      ]
+    },
     "pump_running": {
       "type": "boolean",
       "title": {
@@ -1512,6 +1578,16 @@
         "en": "PV surplus mode",
         "de": "PV-Überschuss-Modus"
       }
+    },
+    "pvsurplus_control": {
+      "type": "boolean",
+      "title": {
+        "en": "PV surplus control",
+        "de": "PV-Überschuss-Steuerung"
+      },
+      "uiComponent": "toggle",
+      "getable": true,
+      "setable": true
     },
     "refill_active": {
       "type": "boolean",
