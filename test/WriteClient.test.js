@@ -54,3 +54,16 @@ test('no credentials ever appear in the built URL (SR-01)', () => {
   const url = buildWriteUrl(H, { target: 'PUMP', state: 'ON', args: { duration: 60, speed: 1 } });
   assert.ok(!/Basic|:@|password|Authorization/i.test(url));
 });
+
+const { parseWriteResponse, basicAuthHeader } = require('../lib/WriteClient');
+
+test('parseWriteResponse reads OK / ERROR from line 1', () => {
+  assert.deepStrictEqual(parseWriteResponse('OK\nPUMP\nswitched on\n'), { ok: true, output: 'PUMP', info: ['switched on'] });
+  assert.strictEqual(parseWriteResponse('ERROR\nPUMP\nnot allowed').ok, false);
+  assert.strictEqual(parseWriteResponse('').ok, false);
+  assert.strictEqual(parseWriteResponse('OK\r\nLIGHT').ok, true); // CRLF tolerated
+});
+
+test('basicAuthHeader is a base64 Basic token of user:pass', () => {
+  assert.strictEqual(basicAuthHeader('user', 'pass'), 'Basic ' + Buffer.from('user:pass').toString('base64'));
+});
