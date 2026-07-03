@@ -1,0 +1,19 @@
+{
+  "id": "pvsurplus_set",
+  "title": { "en": "Set PV surplus mode", "de": "PV-Überschuss-Modus setzen" },
+  "titleFormatted": { "en": "Set PV surplus [[state]] at speed [[speed]]", "de": "PV-Überschuss [[state]] mit Drehzahl [[speed]]" },
+  "hint": { "en": "Requires control to be enabled.", "de": "Erfordert aktivierte Steuerung." },
+  "args": [
+    { "type": "device", "name": "device", "filter": "driver_id=pool" },
+    { "type": "dropdown", "name": "state", "title": { "en": "State", "de": "Zustand" }, "values": [
+      { "id": "on", "label": { "en": "On", "de": "An" } },
+      { "id": "off", "label": { "en": "Off", "de": "Aus" } }
+    ] },
+    { "type": "dropdown", "name": "speed", "title": { "en": "Speed", "de": "Drehzahl" }, "values": [
+      { "id": "default", "label": { "en": "Keep configured", "de": "Konfigurierte behalten" } },
+      { "id": "1", "label": { "en": "Stage 1", "de": "Stufe 1" } },
+      { "id": "2", "label": { "en": "Stage 2", "de": "Stufe 2" } },
+      { "id": "3", "label": { "en": "Stage 3", "de": "Stufe 3" } }
+    ] }
+  ]
+}

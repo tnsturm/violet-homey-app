@@ -1,0 +1,14 @@
+{
+  "id": "light_all_scenes",
+  "title": { "en": "Set all lights & DMX scenes", "de": "Alle Lichter & DMX-Szenen setzen" },
+  "titleFormatted": { "en": "Set all lights & scenes to [[mode]]", "de": "Alle Lichter & Szenen auf [[mode]]" },
+  "hint": { "en": "Requires control to be enabled. Applies to LIGHT and every DMX scene at once.", "de": "Erfordert aktivierte Steuerung. Gilt gleichzeitig für LIGHT und alle DMX-Szenen." },
+  "args": [
+    { "type": "device", "name": "device", "filter": "driver_id=pool" },
+    { "type": "dropdown", "name": "mode", "title": { "en": "Mode", "de": "Modus" }, "values": [
+      { "id": "allon", "label": { "en": "All on", "de": "Alle an" } },
+      { "id": "allauto", "label": { "en": "All auto", "de": "Alle auto" } },
+      { "id": "alloff", "label": { "en": "All off", "de": "Alle aus" } }
+    ] }
+  ]
+}

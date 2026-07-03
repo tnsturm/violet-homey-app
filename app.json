@@ -229,6 +229,377 @@
     ],
     "actions": [
       {
+        "id": "dmx_scene",
+        "title": {
+          "en": "Set DMX scene",
+          "de": "DMX-Szene setzen"
+        },
+        "titleFormatted": {
+          "en": "Set DMX scene [[scene]] to [[mode]]",
+          "de": "DMX-Szene [[scene]] auf [[mode]]"
+        },
+        "hint": {
+          "en": "Requires control to be enabled.",
+          "de": "Erfordert aktivierte Steuerung."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pool"
+          },
+          {
+            "type": "number",
+            "name": "scene",
+            "title": {
+              "en": "Scene (1-12)",
+              "de": "Szene (1-12)"
+            },
+            "min": 1,
+            "max": 12,
+            "step": 1,
+            "value": 1
+          },
+          {
+            "type": "dropdown",
+            "name": "mode",
+            "title": {
+              "en": "Mode",
+              "de": "Modus"
+            },
+            "values": [
+              {
+                "id": "on",
+                "label": {
+                  "en": "On",
+                  "de": "An"
+                }
+              },
+              {
+                "id": "auto",
+                "label": {
+                  "en": "Auto",
+                  "de": "Auto"
+                }
+              },
+              {
+                "id": "off",
+                "label": {
+                  "en": "Off",
+                  "de": "Aus"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "light_all_scenes",
+        "title": {
+          "en": "Set all lights & DMX scenes",
+          "de": "Alle Lichter & DMX-Szenen setzen"
+        },
+        "titleFormatted": {
+          "en": "Set all lights & scenes to [[mode]]",
+          "de": "Alle Lichter & Szenen auf [[mode]]"
+        },
+        "hint": {
+          "en": "Requires control to be enabled. Applies to LIGHT and every DMX scene at once.",
+          "de": "Erfordert aktivierte Steuerung. Gilt gleichzeitig für LIGHT und alle DMX-Szenen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pool"
+          },
+          {
+            "type": "dropdown",
+            "name": "mode",
+            "title": {
+              "en": "Mode",
+              "de": "Modus"
+            },
+            "values": [
+              {
+                "id": "allon",
+                "label": {
+                  "en": "All on",
+                  "de": "Alle an"
+                }
+              },
+              {
+                "id": "allauto",
+                "label": {
+                  "en": "All auto",
+                  "de": "Alle auto"
+                }
+              },
+              {
+                "id": "alloff",
+                "label": {
+                  "en": "All off",
+                  "de": "Alle aus"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "light_set_mode",
+        "title": {
+          "en": "Set light mode",
+          "de": "Lichtmodus setzen"
+        },
+        "titleFormatted": {
+          "en": "Set light to [[mode]]",
+          "de": "Licht auf [[mode]]"
+        },
+        "hint": {
+          "en": "Requires control to be enabled. Color briefly blinks simple LED lights.",
+          "de": "Erfordert aktivierte Steuerung. Farbe lässt einfache LED-Leuchten kurz blinken."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pool"
+          },
+          {
+            "type": "dropdown",
+            "name": "mode",
+            "title": {
+              "en": "Mode",
+              "de": "Modus"
+            },
+            "values": [
+              {
+                "id": "auto",
+                "label": {
+                  "en": "Auto",
+                  "de": "Auto"
+                }
+              },
+              {
+                "id": "on",
+                "label": {
+                  "en": "On",
+                  "de": "An"
+                }
+              },
+              {
+                "id": "off",
+                "label": {
+                  "en": "Off",
+                  "de": "Aus"
+                }
+              },
+              {
+                "id": "color",
+                "label": {
+                  "en": "Color step",
+                  "de": "Farbwechsel"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pump_set_mode",
+        "title": {
+          "en": "Set pump mode",
+          "de": "Pumpenmodus setzen"
+        },
+        "titleFormatted": {
+          "en": "Set pump to [[mode]] for [[duration_min]] min at speed [[speed]]",
+          "de": "Pumpe auf [[mode]] für [[duration_min]] Min mit Drehzahl [[speed]]"
+        },
+        "hint": {
+          "en": "Requires control to be enabled in the device settings.",
+          "de": "Erfordert aktivierte Steuerung in den Geräteeinstellungen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pool"
+          },
+          {
+            "type": "dropdown",
+            "name": "mode",
+            "title": {
+              "en": "Mode",
+              "de": "Modus"
+            },
+            "values": [
+              {
+                "id": "auto",
+                "label": {
+                  "en": "Auto",
+                  "de": "Auto"
+                }
+              },
+              {
+                "id": "on",
+                "label": {
+                  "en": "On",
+                  "de": "An"
+                }
+              },
+              {
+                "id": "off",
+                "label": {
+                  "en": "Off",
+                  "de": "Aus"
+                }
+              }
+            ]
+          },
+          {
+            "type": "number",
+            "name": "duration_min",
+            "title": {
+              "en": "Duration (min, 0 = permanent)",
+              "de": "Dauer (Min, 0 = dauerhaft)"
+            },
+            "min": 0,
+            "max": 1440,
+            "value": 60
+          },
+          {
+            "type": "dropdown",
+            "name": "speed",
+            "title": {
+              "en": "Speed",
+              "de": "Drehzahl"
+            },
+            "values": [
+              {
+                "id": "default",
+                "label": {
+                  "en": "Keep configured",
+                  "de": "Konfigurierte behalten"
+                }
+              },
+              {
+                "id": "0",
+                "label": {
+                  "en": "Stage 0",
+                  "de": "Stufe 0"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "Stage 1",
+                  "de": "Stufe 1"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Stage 2",
+                  "de": "Stufe 2"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Stage 3",
+                  "de": "Stufe 3"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pvsurplus_set",
+        "title": {
+          "en": "Set PV surplus mode",
+          "de": "PV-Überschuss-Modus setzen"
+        },
+        "titleFormatted": {
+          "en": "Set PV surplus [[state]] at speed [[speed]]",
+          "de": "PV-Überschuss [[state]] mit Drehzahl [[speed]]"
+        },
+        "hint": {
+          "en": "Requires control to be enabled.",
+          "de": "Erfordert aktivierte Steuerung."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pool"
+          },
+          {
+            "type": "dropdown",
+            "name": "state",
+            "title": {
+              "en": "State",
+              "de": "Zustand"
+            },
+            "values": [
+              {
+                "id": "on",
+                "label": {
+                  "en": "On",
+                  "de": "An"
+                }
+              },
+              {
+                "id": "off",
+                "label": {
+                  "en": "Off",
+                  "de": "Aus"
+                }
+              }
+            ]
+          },
+          {
+            "type": "dropdown",
+            "name": "speed",
+            "title": {
+              "en": "Speed",
+              "de": "Drehzahl"
+            },
+            "values": [
+              {
+                "id": "default",
+                "label": {
+                  "en": "Keep configured",
+                  "de": "Konfigurierte behalten"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "Stage 1",
+                  "de": "Stufe 1"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Stage 2",
+                  "de": "Stufe 2"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Stage 3",
+                  "de": "Stufe 3"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
         "id": "set_water_chemistry",
         "title": {
           "en": "Set water chemistry",

@@ -1,0 +1,15 @@
+{
+  "id": "light_set_mode",
+  "title": { "en": "Set light mode", "de": "Lichtmodus setzen" },
+  "titleFormatted": { "en": "Set light to [[mode]]", "de": "Licht auf [[mode]]" },
+  "hint": { "en": "Requires control to be enabled. Color briefly blinks simple LED lights.", "de": "Erfordert aktivierte Steuerung. Farbe lässt einfache LED-Leuchten kurz blinken." },
+  "args": [
+    { "type": "device", "name": "device", "filter": "driver_id=pool" },
+    { "type": "dropdown", "name": "mode", "title": { "en": "Mode", "de": "Modus" }, "values": [
+      { "id": "auto", "label": { "en": "Auto", "de": "Auto" } },
+      { "id": "on", "label": { "en": "On", "de": "An" } },
+      { "id": "off", "label": { "en": "Off", "de": "Aus" } },
+      { "id": "color", "label": { "en": "Color step", "de": "Farbwechsel" } }
+    ] }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "dmx_scene",
+  "title": { "en": "Set DMX scene", "de": "DMX-Szene setzen" },
+  "titleFormatted": { "en": "Set DMX scene [[scene]] to [[mode]]", "de": "DMX-Szene [[scene]] auf [[mode]]" },
+  "hint": { "en": "Requires control to be enabled.", "de": "Erfordert aktivierte Steuerung." },
+  "args": [
+    { "type": "device", "name": "device", "filter": "driver_id=pool" },
+    { "type": "number", "name": "scene", "title": { "en": "Scene (1-12)", "de": "Szene (1-12)" }, "min": 1, "max": 12, "step": 1, "value": 1 },
+    { "type": "dropdown", "name": "mode", "title": { "en": "Mode", "de": "Modus" }, "values": [
+      { "id": "on", "label": { "en": "On", "de": "An" } },
+      { "id": "auto", "label": { "en": "Auto", "de": "Auto" } },
+      { "id": "off", "label": { "en": "Off", "de": "Aus" } }
+    ] }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "pump_set_mode",
+  "title": { "en": "Set pump mode", "de": "Pumpenmodus setzen" },
+  "titleFormatted": { "en": "Set pump to [[mode]] for [[duration_min]] min at speed [[speed]]", "de": "Pumpe auf [[mode]] für [[duration_min]] Min mit Drehzahl [[speed]]" },
+  "hint": { "en": "Requires control to be enabled in the device settings.", "de": "Erfordert aktivierte Steuerung in den Geräteeinstellungen." },
+  "args": [
+    { "type": "device", "name": "device", "filter": "driver_id=pool" },
+    { "type": "dropdown", "name": "mode", "title": { "en": "Mode", "de": "Modus" }, "values": [
+      { "id": "auto", "label": { "en": "Auto", "de": "Auto" } },
+      { "id": "on", "label": { "en": "On", "de": "An" } },
+      { "id": "off", "label": { "en": "Off", "de": "Aus" } }
+    ] },
+    { "type": "number", "name": "duration_min", "title": { "en": "Duration (min, 0 = permanent)", "de": "Dauer (Min, 0 = dauerhaft)" }, "min": 0, "max": 1440, "value": 60 },
+    { "type": "dropdown", "name": "speed", "title": { "en": "Speed", "de": "Drehzahl" }, "values": [
+      { "id": "default", "label": { "en": "Keep configured", "de": "Konfigurierte behalten" } },
+      { "id": "0", "label": { "en": "Stage 0", "de": "Stufe 0" } },
+      { "id": "1", "label": { "en": "Stage 1", "de": "Stufe 1" } },
+      { "id": "2", "label": { "en": "Stage 2", "de": "Stufe 2" } },
+      { "id": "3", "label": { "en": "Stage 3", "de": "Stufe 3" } }
+    ] }
+  ]
+}
