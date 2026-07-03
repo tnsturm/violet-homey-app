@@ -76,14 +76,15 @@ class PoolDevice extends Homey.Device {
     return { username, password };
   }
 
-  // Gate every write on the interlock (SR-07), send, and surface OK/ERROR. Logs
-  // only target + args, never credentials (SR-10). `label` is a short op name.
+  // Gate every write on the interlock (SR-07), then log the attempt before sending
+  // so failed/blocked writes are still audited (SR-10). Logs only target + args,
+  // never credentials (SR-02). `label` is a short op name.
   async _control(cmd, label) {
     if (this.getSetting('control_enabled') !== true) {
       throw new Error('Control is disabled — enable it in the device settings.');
     }
-    const res = await sendWrite(this.getSetting('host'), this._writeCreds(), cmd);
     this.log('control', label, cmd.target, cmd.state, JSON.stringify(cmd.args || {}));
+    const res = await sendWrite(this.getSetting('host'), this._writeCreds(), cmd);
     if (!res.ok) throw new Error(`Controller rejected: ${label}`);
     return res;
   }
