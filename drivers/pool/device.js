@@ -63,6 +63,8 @@ class PoolDevice extends Homey.Device {
     if (changedKeys.some((k) => k === 'lsi_enabled' || k.startsWith('chem_'))) {
       this._tick().catch(this.error);
     }
+    // Toggling control adds/removes the control capabilities — reconcile promptly.
+    if (changedKeys.includes('control_enabled')) this._tick().catch(this.error);
   }
 
   async onUninit() {
@@ -267,6 +269,22 @@ class PoolDevice extends Homey.Device {
       if (M2_MANAGED_BASES.has(baseOf(cap)) && !desiredM2.has(cap)) {
         await this.removeCapability(cap).catch(this.error);
       }
+    }
+
+    // 4) M3 control capabilities — present only while control is enabled (SR-07)
+    //    AND the hardware is detected (mirrors which read tiles are shown). Default
+    //    off ⇒ no control tiles at all (zero accidental-tap surface).
+    const controlOn = this.getSetting('control_enabled') === true;
+    const desiredControl = new Set();
+    if (controlOn) {
+      if (features.pump) desiredControl.add('pump_control');
+      if (features.light) desiredControl.add('light_control');
+      if (features.pvSurplus) desiredControl.add('pvsurplus_control');
+    }
+    for (const cap of ['pump_control', 'light_control', 'pvsurplus_control']) {
+      const want = desiredControl.has(cap);
+      if (want && !this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
+      if (!want && this.hasCapability(cap)) await this.removeCapability(cap).catch(this.error);
     }
   }
 }
