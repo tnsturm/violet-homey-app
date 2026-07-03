@@ -164,5 +164,40 @@
       { "id": "dosing_low_threshold_days", "type": "number", "label": { "en": "Chemical-low alarm threshold (days)", "de": "Alarmschwelle Chemie-Reichweite (Tage)" }, "value": 7, "min": 1, "max": 60 },
       { "id": "show_advanced_diagnostics", "type": "checkbox", "label": { "en": "Show advanced diagnostics", "de": "Erweiterte Diagnose anzeigen" }, "value": false, "hint": { "en": "Adds CPU/memory/uptime/firmware/error tiles.", "de": "Fügt CPU-/Speicher-/Laufzeit-/Firmware-/Fehler-Kacheln hinzu." } }
     ]
+  },
+  {
+    "type": "group",
+    "label": { "en": "Control (write access)", "de": "Steuerung (Schreibzugriff)" },
+    "children": [
+      {
+        "id": "control_enabled",
+        "type": "checkbox",
+        "label": { "en": "Enable control (write)", "de": "Steuerung aktivieren (Schreibzugriff)" },
+        "value": false,
+        "hint": { "en": "Off by default. When on, control tiles appear and Flow actions can command the controller. Writes use the write username/password. Plain HTTP on the LAN transmits credentials in cleartext — use a least-privilege controller account and a trusted/segmented network, and rotate the write password before sharing.", "de": "Standardmäßig aus. Wenn an, erscheinen Steuerungs-Kacheln und Flow-Aktionen können den Regler schalten. Schreibzugriffe nutzen Schreib-Benutzer/Passwort. Klartext-HTTP im LAN überträgt Zugangsdaten unverschlüsselt — ein Konto mit minimalen Rechten und ein vertrauenswürdiges/segmentiertes Netz verwenden und das Schreib-Passwort vor Weitergabe rotieren." }
+      },
+      {
+        "id": "control_default_duration_min",
+        "type": "number",
+        "label": { "en": "Default override duration (minutes)", "de": "Standard-Übersteuerungsdauer (Minuten)" },
+        "value": 60,
+        "min": 0,
+        "max": 1440,
+        "hint": { "en": "Tile pump ON/OFF auto-reverts to Auto after this time (0 = permanent — advanced). Flow actions set their own duration.", "de": "Kachel Pumpe AN/AUS fällt nach dieser Zeit auf Auto zurück (0 = dauerhaft — für Fortgeschrittene). Flow-Aktionen setzen ihre eigene Dauer." }
+      },
+      {
+        "id": "control_pump_speed",
+        "type": "dropdown",
+        "label": { "en": "Pump speed for tile ON", "de": "Pumpendrehzahl für Kachel-AN" },
+        "value": "default",
+        "values": [
+          { "id": "default", "label": { "en": "Keep configured", "de": "Konfigurierte behalten" } },
+          { "id": "0", "label": { "en": "Stage 0", "de": "Stufe 0" } },
+          { "id": "1", "label": { "en": "Stage 1", "de": "Stufe 1" } },
+          { "id": "2", "label": { "en": "Stage 2", "de": "Stufe 2" } },
+          { "id": "3", "label": { "en": "Stage 3", "de": "Stufe 3" } }
+        ]
+      }
+    ]
   }
 ]
