@@ -18,5 +18,9 @@
   "0.2.0": {
     "en": "Full read coverage: new tiles for pump speed, heater, solar, cover, light, water level and backwash — plus per-channel dosing consumption (days of chemical left, mL dosed today), with 'dosing blocked', 'chemical low', 'overflow dry-run/overfill' and 'backwash valve fault' alarms and Flow triggers. Everything auto-detects to your hardware; an optional diagnostics group (CPU, memory, uptime, firmware) can be shown in settings.",
     "de": "Volle Lese-Abdeckung: neue Kacheln für Pumpenstufe, Heizung, Solar, Abdeckung, Licht, Wasserstand und Rückspülung — plus Dosier-Verbrauch je Kanal (Chemie-Reichweite in Tagen, ml heute dosiert), mit Alarmen und Flow-Triggern für „Dosierung blockiert", „Chemie niedrig", „Überlauf Trockenlauf/Überfüllung" und „Rückspülventil-Fehler". Alles erkennt sich automatisch passend zur Hardware; eine optionale Diagnosegruppe (CPU, Speicher, Laufzeit, Firmware) lässt sich in den Einstellungen einblenden."
+  },
+  "0.3.0": {
+    "en": "Control your pool from Homey: filter pump (mode, run-time and speed), light (including a colour step and all DMX scenes) and PV-surplus mode — as device tiles and as Flow actions. Control is OFF by default: switch on 'Enable control (write)' in the device settings and enter the write username/password first. Tile overrides automatically fall back to Auto after a configurable time.",
+    "de": "Steuere deinen Pool von Homey aus: Filterpumpe (Modus, Laufzeit und Drehzahl), Licht (inklusive Farbwechsel und aller DMX-Szenen) und PV-Überschuss-Modus — als Gerätekacheln und als Flow-Aktionen. Die Steuerung ist standardmäßig AUS: zuerst „Steuerung aktivieren (Schreibzugriff)" in den Geräteeinstellungen einschalten und Schreib-Benutzer/Passwort eingeben. Kachel-Übersteuerungen fallen nach einer einstellbaren Zeit automatisch auf Auto zurück."
   }
 }
