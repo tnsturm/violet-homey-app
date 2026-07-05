@@ -18,7 +18,8 @@
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": "node .claude/hooks/run-matching-test.js" }
+          { "type": "command", "command": "node .claude/hooks/run-matching-test.js" },
+          { "type": "command", "command": "node .claude/hooks/json-guard.js" }
         ]
       }
     ]
