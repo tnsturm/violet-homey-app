@@ -21,10 +21,10 @@
   },
   "0.3.0": {
     "en": "Control your pool from Homey: filter pump (mode, run-time and speed), light (including a colour step and all DMX scenes) and PV-surplus mode — as device tiles and as Flow actions. Control is OFF by default: switch on 'Enable control (write)' in the device settings and enter the write username/password first. Tile overrides automatically fall back to Auto after a configurable time.",
-    “de”: “Steuere deinen Pool von Homey aus: Filterpumpe (Modus, Laufzeit und Drehzahl), Licht (inklusive Farbwechsel und aller DMX-Szenen) und PV-Überschuss-Modus — als Gerätekacheln und als Flow-Aktionen. Die Steuerung ist standardmäßig AUS: zuerst „Steuerung aktivieren (Schreibzugriff)” in den Geräteeinstellungen einschalten und Schreib-Benutzer/Passwort eingeben. Kachel-Übersteuerungen fallen nach einer einstellbaren Zeit automatisch auf Auto zurück.”
+    "de": "Steuere deinen Pool von Homey aus: Filterpumpe (Modus, Laufzeit und Drehzahl), Licht (inklusive Farbwechsel und aller DMX-Szenen) und PV-Überschuss-Modus — als Gerätekacheln und als Flow-Aktionen. Die Steuerung ist standardmäßig AUS: zuerst „Steuerung aktivieren (Schreibzugriff)“ in den Geräteeinstellungen einschalten und Schreib-Benutzer/Passwort eingeben. Kachel-Übersteuerungen fallen nach einer einstellbaren Zeit automatisch auf Auto zurück."
   },
-  “0.3.1”: {
-    “en”: “Diagnostics aid: with 'Show Advanced diagnostics' enabled, state and alarm tiles and their timeline/log entries now show the exact raw controller value after a colon (e.g. Chlorine blocked: [CL_DOSING_CONTROLLER]), to make troubleshooting easier.”,
-    “de”: “Diagnose-Hilfe: Bei aktivierter Option „Show Advanced diagnostics” zeigen Status- und Alarm-Kacheln sowie deren Verlauf-/Log-Einträge jetzt hinter einem Doppelpunkt den exakten Rohwert des Reglers (z. B. Chlorine blocked: [CL_DOSING_CONTROLLER]) — für einfachere Fehlersuche.”
+  "0.3.1": {
+    "en": "Diagnostics aid: with 'Show Advanced diagnostics' enabled, state and alarm tiles and their timeline/log entries now show the exact raw controller value after a colon (e.g. Chlorine blocked: [CL_DOSING_CONTROLLER]), to make troubleshooting easier.",
+    "de": "Diagnose-Hilfe: Bei aktivierter Option „Show Advanced diagnostics“ zeigen Status- und Alarm-Kacheln sowie deren Verlauf-/Log-Einträge jetzt hinter einem Doppelpunkt den exakten Rohwert des Reglers (z. B. Chlorine blocked: [CL_DOSING_CONTROLLER]) — für einfachere Fehlersuche."
   }
 }
