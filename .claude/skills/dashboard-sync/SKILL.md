@@ -20,9 +20,9 @@ am Anfang der Datei — nie den Renderer darunter.
 
 Zwischen-Milestone-Checkpoints (`id: "→Mx"`, `title: "Zwischen-Check"`) sind milestone-förmige
 Objekte in derselben `milestones[]`-Liste (CLAUDE.md §7 Punkt 4) — gleiche Felder, gleiche
-Status-Lifecycle, gleiche Edit-Regeln wie ein echter Milestone. Drei Steps, alle über den
+Status-Lifecycle, gleiche Edit-Regeln wie ein echter Milestone. Vier Steps, alle über den
 `milestone-checkpoint`-Skill abgedeckt: `/fewer-permission-prompts`,
-`/claude-automation-recommender`, `Skill-Quellen geprüft`.
+`/claude-automation-recommender`, `Skill-Quellen geprüft`, `Workflow-Retrospektive`.
 
 ## Regeln
 

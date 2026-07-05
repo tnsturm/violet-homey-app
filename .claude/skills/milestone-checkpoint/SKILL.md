@@ -1,6 +1,6 @@
 ---
 name: milestone-checkpoint
-description: Between-milestone housekeeping for this project - tightens tool permissions, checks for new automation opportunities, and checks/updates the Homey skill sources this project depends on. Run between milestones per CLAUDE.md §7 point 4 / the dashboard's →Mx checkpoint entries.
+description: Between-milestone housekeeping for this project - tightens tool permissions, checks for new automation opportunities, checks/updates the Homey skill sources this project depends on, and runs a workflow retrospective that codifies recurring friction into hooks/docs/memory. Run between milestones per CLAUDE.md §7 point 4 / the dashboard's →Mx checkpoint entries.
 disable-model-invocation: true
 ---
 
@@ -14,9 +14,11 @@ mehrere Skills einzeln aufzurufen.
 1. `/fewer-permission-prompts` ausführen.
 2. `/claude-automation-recommender` ausführen.
 3. Skill-Quellen prüfen (siehe unten).
-4. Den aktiven `→Mx`-Checkpoint-Eintrag in `docs/dashboard/dashboard.html` aktualisieren:
-   `status: "done"`, `finishedAt` = heute, alle drei Steps abgehakt, je ein `log[]`-Eintrag mit
-   kurzer Zusammenfassung der Schritte 1–3.
+4. **Workflow-Retrospektive / Optimizer** ausführen (siehe unten) — wiederkehrende Reibung aus dem
+   abgeschlossenen Milestone in eine dauerhafte Absicherung überführen.
+5. Den aktiven `→Mx`-Checkpoint-Eintrag in `docs/dashboard/dashboard.html` aktualisieren:
+   `status: "done"`, `finishedAt` = heute, alle vier Steps abgehakt, je ein `log[]`-Eintrag mit
+   kurzer Zusammenfassung der Schritte 1–4.
 
 ## Schritt 3: Skill-Quellen prüfen
 
@@ -71,8 +73,33 @@ bei Bedarf selbst `claude plugin update superpowers` in einer interaktiven Sessi
 <repo>` scheitert an beiden, da keines ein `.claude-plugin/marketplace.json`-Manifest hat (getestet
 2026-07-02). Ein Fork nur für dieses Manifest wäre mehr Wartungsaufwand als der jetzige Ansatz.
 
+## Schritt 4: Workflow-Retrospektive (Optimizer)
+
+Wiederkehrende, gleichartige Fehler in dauerhafte Absicherung überführen, damit sie nicht erneut
+auftreten. Vollständiges Design: `docs/superpowers/specs/2026-07-05-workflow-retro-optimizer-design.md`.
+
+1. **Signal sammeln** für den abgeschlossenen Milestone: `feedback`-Memories (Memory-Ordner),
+   `FRICTION:`-Einträge in den Dashboard-`log[]`, und der Git-Verlauf (wiederholte `fix:`/`revert:`-
+   Commits, Commit der einen direkt vorigen korrigiert, ≥2 gleichartige Fix-Commits an derselben Datei).
+2. **Clustern** zu eigenständigen Problemen; Häufigkeit zählen. **In Scope nur: ≥2× gesehen ODER vom
+   Nutzer markiert** („nochmal", „zum dritten Mal"). Einzelfälle überspringen (YAGNI).
+3. **Root-Cause** je Problem (dreimal „warum": passiert · wiederholt · vor dem Commit nicht gefangen).
+4. **Codifizierungs-Ebene wählen** — verlässlichste zuerst; ein Problem darf mehrere bekommen:
+   **a. Hook** (mechanisch prüfbar → automatischer Guard; unvergesslich) ·
+   **b. HOMEY.md / CLAUDE.md** (Prozess-/Konventionsregel) ·
+   **c. `feedback`-Memory** (sitzungsübergreifende Guidance) ·
+   **d. Skill-Edit** (ein Skill-Schritt ist selbst falsch).
+   Höchste Ebene bevorzugen, die das Problem *vollständig* abdeckt. Jeder neue Hook bringt einen
+   Smoke-Test mit (wie `secrets-guard` / `json-guard`) und wird in `.claude/settings.json` verdrahtet.
+5. **Anwenden + verifizieren** (Hook-Smoke-Test grün; Regel/Memory landet). Kleine, reversible
+   Änderung, eigener Commit.
+6. **Protokollieren** im `→Mx`-`log[]`: `Problem → Root-Cause → Ebene → Änderung → verifiziert`.
+
+Ist das Signal leer (nichts wiederholte sich), ist dieser Schritt ein No-op — nur kurz vermerken.
+
 ## Bericht
 
 Am Ende kurz zusammenfassen: was wurde aktualisiert (homey-cli-skill / homey-app-skill, falls
-zutreffend), und die installierte Superpowers-Version (ohne Aussage darüber, ob sie veraltet ist —
-das lässt sich von hier aus nicht feststellen).
+zutreffend), die installierte Superpowers-Version (ohne Aussage darüber, ob sie veraltet ist —
+das lässt sich von hier aus nicht feststellen), und das Ergebnis der Workflow-Retrospektive
+(welche wiederkehrenden Probleme in welche Ebene codifiziert wurden, oder „keine neue Reibung").
