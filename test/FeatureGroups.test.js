@@ -8,7 +8,34 @@ const {
   stateIsActive,
   faultQueueActive,
   dosingChannelPrefix,
+  diagAnnotatable,
+  diagRawValue,
 } = require('../lib/FeatureGroups');
+
+test('diagAnnotatable marks state/switch/dosing caps, not measurements', () => {
+  assert.strictEqual(diagAnnotatable('cover_state'), true);
+  assert.strictEqual(diagAnnotatable('alarm_dosing_blocked.cl'), true);
+  assert.strictEqual(diagAnnotatable('measure_dosing_days_left.phm'), true);
+  assert.strictEqual(diagAnnotatable('measure_ph'), false);
+  assert.strictEqual(diagAnnotatable('measure_temperature.ow1'), false);
+});
+
+test('diagRawValue returns the exact source field value as a string', () => {
+  const raw = {
+    COVER_STATE: 'OPEN', PVSURPLUS: '2', BACKWASH_OMNI_STATE: 'OK',
+    DOS_1_CL: '1', DOS_1_CL_STATE: ['CL_DOSING_CONTROLLER'], DOS_1_CL_REMAINING_RANGE: '6d',
+    DOS_4_PHM_STATE: [],
+  };
+  assert.strictEqual(diagRawValue('cover_state', raw), 'OPEN');
+  assert.strictEqual(diagRawValue('pv_surplus_active', raw), '2');
+  assert.strictEqual(diagRawValue('dosing_active.cl', raw), '1');
+  assert.strictEqual(diagRawValue('alarm_dosing_blocked.cl', raw), '[CL_DOSING_CONTROLLER]');
+  assert.strictEqual(diagRawValue('alarm_dosing_low.cl', raw), '6d');
+  assert.strictEqual(diagRawValue('alarm_dosing_blocked.phm', raw), '[]'); // empty array → []
+  assert.strictEqual(diagRawValue('alarm_omni_valve', raw), 'OK');
+  assert.strictEqual(diagRawValue('heater_active', raw), null); // HEATER field absent
+  assert.strictEqual(diagRawValue('measure_ph', raw), null); // not mapped
+});
 
 test('parseDurationToHours parses "Hh Mm Ss" to fractional hours', () => {
   assert.strictEqual(parseDurationToHours('00h 00m 00s'), 0);

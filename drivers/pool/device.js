@@ -25,7 +25,27 @@ const {
   DOSING_SUBCAPS,
   DIAGNOSTIC_CAPS,
   dosingChannelPrefix,
+  diagAnnotatable,
+  diagRawValue,
 } = require('../../lib/FeatureGroups');
+
+// Per-channel dosing tile labels (shared by capability reconcile and the
+// diagnostics title annotation) — the base title a `<base>.<ch>` tile shows.
+const CH_TITLE = {
+  cl: { en: 'Chlorine', de: 'Chlor' },
+  elo: { en: 'Electrolysis', de: 'Elektrolyse' },
+  elorev: { en: 'Electrolysis (rev.)', de: 'Elektrolyse (rev.)' },
+  phm: { en: 'pH-minus', de: 'pH-Minus' },
+  php: { en: 'pH-plus', de: 'pH-Plus' },
+  floc: { en: 'Flocculant', de: 'Flockung' },
+};
+const DOSING_NOUN = {
+  measure_dosing_days_left: { en: 'days left', de: 'Reichweite' },
+  measure_dosing_daily_ml: { en: 'dosed today', de: 'dosiert heute' },
+  dosing_active: { en: 'dosing', de: 'dosiert' },
+  alarm_dosing_blocked: { en: 'blocked', de: 'blockiert' },
+  alarm_dosing_low: { en: 'low', de: 'niedrig' },
+};
 
 class PoolDevice extends Homey.Device {
   async onInit() {
@@ -95,6 +115,48 @@ class PoolDevice extends Homey.Device {
     return s === undefined || s === 'default' ? undefined : Number(s);
   }
 
+  // Base (un-annotated) title a tile should show, reconstructed deterministically
+  // (restart-safe — never read from a possibly-annotated live title). Dosing
+  // sub-caps use the channel label + noun; other caps use the manifest title.
+  _diagBaseTitle(capId) {
+    const dot = capId.indexOf('.');
+    if (dot > 0) {
+      const base = capId.slice(0, dot);
+      const ch = capId.slice(dot + 1);
+      const noun = DOSING_NOUN[base];
+      const cht = CH_TITLE[ch];
+      if (noun && cht) return { en: `${cht.en} ${noun.en}`, de: `${cht.de} ${noun.de}` };
+    }
+    const defs = (this.homey.manifest && this.homey.manifest.capabilities) || {};
+    const t = defs[capId] && defs[capId].title;
+    if (t) return typeof t === 'string' ? { en: t, de: t } : t;
+    return { en: capId, de: capId };
+  }
+
+  // Diagnostics (2026-07-05): when "Show Advanced diagnostics" is on, append the
+  // exact raw getReadings value to each opaque tile's title (e.g. "Chlorine
+  // blocked: [CL_DOSING_CONTROLLER]"); revert to the clean title when off. Only
+  // mapped state/switch/alarm caps are touched, and setCapabilityOptions runs only
+  // when the shown value changes (bounded churn on this heavy API). A one-time pass
+  // per app start (_diagInit) corrects any stale title left by an abnormal exit.
+  async _applyDiagTitles(raw) {
+    const on = this.getSetting('show_advanced_diagnostics') === true;
+    if (!this._diagState) this._diagState = {};
+    const first = !this._diagInit;
+    for (const cap of this.getCapabilities()) {
+      if (!diagAnnotatable(cap)) continue;
+      const suffix = on ? diagRawValue(cap, raw) : null;
+      if (!first && (this._diagState[cap] ?? null) === suffix) continue;
+      const base = this._diagBaseTitle(cap);
+      const title = suffix !== null
+        ? { en: `${base.en}: ${suffix}`, de: `${base.de}: ${suffix}` }
+        : base;
+      await this.setCapabilityOptions(cap, { title }).catch(this.error);
+      this._diagState[cap] = suffix;
+    }
+    this._diagInit = true;
+  }
+
   _startPolling() {
     if (this._poll) this.homey.clearInterval(this._poll);
     // Poll interval from settings; 60s fallback (lowered in M0 — notes/2026-06-26-m1-inputs.md §3).
@@ -110,7 +172,7 @@ class PoolDevice extends Homey.Device {
       this._tick().catch(this.error);
     }
     // Toggling control adds/removes the control capabilities — reconcile promptly.
-    if (changedKeys.includes('control_enabled')) this._tick().catch(this.error);
+    if (changedKeys.includes('control_enabled') || changedKeys.includes('show_advanced_diagnostics')) this._tick().catch(this.error);
   }
 
   async onUninit() {
@@ -229,6 +291,9 @@ class PoolDevice extends Homey.Device {
         await this.setCapabilityValue(cap, value).catch(this.error);
       }
     }
+
+    // Diagnostics tile-title annotation (gated by show_advanced_diagnostics).
+    await this._applyDiagTitles(raw).catch(this.error);
   }
 
   async _reconcileCapabilities(parsed, features) {
@@ -274,21 +339,6 @@ class PoolDevice extends Homey.Device {
     const desiredM2 = new Set(desiredM2Capabilities({ features, overrides: m2Overrides, diagnosticsEnabled }));
 
     // Add desired-but-absent; give dosing sub-instances a channel title.
-    const CH_TITLE = {
-      cl: { en: 'Chlorine', de: 'Chlor' },
-      elo: { en: 'Electrolysis', de: 'Elektrolyse' },
-      elorev: { en: 'Electrolysis (rev.)', de: 'Elektrolyse (rev.)' },
-      phm: { en: 'pH-minus', de: 'pH-Minus' },
-      php: { en: 'pH-plus', de: 'pH-Plus' },
-      floc: { en: 'Flocculant', de: 'Flockung' },
-    };
-    const DOSING_NOUN = {
-      measure_dosing_days_left: { en: 'days left', de: 'Reichweite' },
-      measure_dosing_daily_ml: { en: 'dosed today', de: 'dosiert heute' },
-      dosing_active: { en: 'dosing', de: 'dosiert' },
-      alarm_dosing_blocked: { en: 'blocked', de: 'blockiert' },
-      alarm_dosing_low: { en: 'low', de: 'niedrig' },
-    };
     for (const cap of desiredM2) {
       if (this.hasCapability(cap)) continue;
       await this.addCapability(cap).catch(this.error);
