@@ -157,3 +157,12 @@ Based on: https://github.com/multica-ai/andrej-karpathy-skills
 ## Project Extensions
 
 This repo targets the Homey platform — see @HOMEY.md for platform-specific conventions (versioning, CLI, release mechanics).
+
+## Claude-Code-Settings: Skill = Source of Truth
+
+**Globale** Claude-Code-Settings-Änderungen (die auf jedem Rechner gelten sollen — `permissions.allow`-Muster, die überall nützlich sind, globale Hooks, `model`, Notification-Flags, Plugins/Marketplaces) gehören in das private Skill-Repo `skill-ClaudeCode-general-settings` als **Quelle der Wahrheit**, nicht nur in die Live-`~/.claude/settings.json`:
+
+1. Zuerst im Skill-Repo ablegen (`settings-reference.json` bzw. das `general-settings`-Plugin), dann in die Live-`~/.claude/settings.json` **spiegeln** — nie nur die Live-Datei ändern (sonst geht die Änderung beim Rechnerwechsel verloren).
+2. **Projekt-/plattformspezifische** Settings (z. B. die Homey-Allowlist `homey api … get-*`, `homey app validate *`, oder die Homey-Hooks wie `compose-guard`/`secrets-guard`) bleiben in der **`.claude/settings.json` dieses Repos** — sie sind dort schon portabel (ein `git clone` bringt sie mit) und gehören nicht in den globalen Skill.
+
+Faustregel: „In jedem Projekt sinnvoll?" → global (Skill). „Nur hier / nur für Homey sinnvoll?" → projekt-lokal (dieses Repo).

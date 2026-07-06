@@ -10,7 +10,8 @@
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": "node .claude/hooks/secrets-guard.js" }
+          { "type": "command", "command": "node .claude/hooks/secrets-guard.js" },
+          { "type": "command", "command": "node .claude/hooks/compose-guard.js" }
         ]
       }
     ],
