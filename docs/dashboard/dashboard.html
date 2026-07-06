@@ -283,29 +283,27 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
     {
       id: "→M4",
       title: "Zwischen-Check",
-      status: "todo",
-      startedAt: null,
-      finishedAt: null,
+      status: "done",
+      startedAt: "2026-07-06",
+      finishedAt: "2026-07-06",
       commit: null,
       summary: "Housekeeping zwischen M3 und M4: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
-        { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false },
-        { label: "Skill-Quellen geprüft", done: false },
-        { label: "Workflow-Retrospektive", done: false }
+        { label: "/fewer-permission-prompts", done: true },
+        { label: "/claude-automation-recommender", done: true },
+        { label: "Skill-Quellen geprüft", done: true },
+        { label: "Workflow-Retrospektive", done: true }
       ],
       currentActivity: null,
       runtime: null,
-      log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Zwischen-Check vor M4 (CLAUDE.md §7 Punkt 4). M3 ist abgeschlossen, M4 startet als Naechstes.
-
-Fuehre aus: /milestone-checkpoint
-
-Das aktualisiert automatisch den →M4-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
-
-/remote-control →M4 — Zwischen-Check`
+      log: [
+        { at: "2026-07-06", note: "Checkpoint gestartet (/milestone-checkpoint)" },
+        { at: "2026-07-06", note: "Permission-Scan (18 juengste Transcripts): 7 neue Allowlist-Eintraege in .claude/settings.json — npx-Varianten der homey-api-Reads (devices/apps get-*), homey app validate * (+npx-Variante), git fetch *, claude plugin list. Haeufigste Reads (git status/log/diff, ls/grep/head/tail/jq) sind auto-allowed; Writes/node/npx-Wildcards korrekt ausgeschlossen." },
+        { at: "2026-07-06", note: "Automation-Empfehlungen: Setup reif (4 Hooks, 4 Projekt-Skills, 2 Agents, context7-MCP). Top-Vorschlaege fuer M4: (a) compose-guard PreToolUse-Hook — direkte Edits am generierten app.json blocken (gehoeren nach .homeycompose/), ergaenzt check-version-sync das erst beim Commit greift; (b) release-readiness-Agent um validate --level=publish + Store-Asset-Checks erweitern. Keine MCP-Aenderung noetig." },
+        { at: "2026-07-06", note: "Skill-Quellen: homey-cli-skill + homey-app-skill beide up-to-date (keine incoming commits). Superpowers 6.0.3 installiert (Aktualitaet von hier nicht feststellbar — ggf. 'claude plugin update superpowers' interaktiv)." },
+        { at: "2026-07-06", note: "Workflow-Retro: einziges wiederkehrendes Muster in M3 = 2x fix(changelog) Smart-Quotes (727dfc5, 074d486) — bereits waehrend M3 codifiziert (json-guard-Hook + Smoke-Test + HOMEY.md-Regel + Memory). Verifiziert: json-guard 5/5, secrets-guard 9/9 gruen. Keine neue uncodifizierte Reibung -> No-op." }
+      ],
+      prompt: null
     },
     {
       id: "M4",

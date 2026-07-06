@@ -34,7 +34,13 @@
       "Bash(homey api apps get-*)",
       "Bash(homey api flowtoken get-*)",
       "Bash(homey api zones get-*)",
-      "Bash(homey api notifications get-*)"
+      "Bash(homey api notifications get-*)",
+      "Bash(npx homey api devices get-*)",
+      "Bash(npx homey api apps get-*)",
+      "Bash(homey app validate *)",
+      "Bash(npx homey app validate *)",
+      "Bash(git fetch *)",
+      "Bash(claude plugin list)"
     ]
   }
 }
