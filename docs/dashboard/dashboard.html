@@ -315,16 +315,17 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       commit: null,
       summary: "Store-Assets/Bilder, App-ID de.neunbft.violet finalisieren, Credential rotieren. Ziel: validate --level=publish gruen. Vorgezogen (Tausch mit Inbound-Alarme, jetzt M5) auf Nutzerwunsch: Store-Ready als Naechstes; haengt nur an M1-M3 (fertig).",
       steps: [
-        { label: "Brainstorming", done: false },
-        { label: "Spec", done: false },
-        { label: "Plan", done: false },
+        { label: "Brainstorming", done: true },
+        { label: "Spec", done: true },
+        { label: "Plan", done: true },
         { label: "Implementierung (SDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: "Brainstorming — Store-Metadaten (Name/Logo/Text), Assets, mDNS-Discovery, Publish-Prozess",
+      currentActivity: "Plan fertig — bereit für Implementierung (subagent-driven-development)",
       runtime: null,
       log: [
-        { at: "2026-07-07", note: "M4 gestartet — Kontext geladen (Status-Memory, M0-Spec, M4-Tooling-Spec). validate --level=publish scheitert aktuell nur an drivers.pool.images. Brainstorming beginnt." }
+        { at: "2026-07-07", note: "M4 gestartet — Kontext geladen (Status-Memory, M0-Spec, M4-Tooling-Spec). validate --level=publish scheitert aktuell nur an drivers.pool.images. Brainstorming beginnt." },
+        { at: "2026-07-07", note: "Brainstorming abgeschlossen (Entscheidungen: Store-Name 'Violet and BADU Blue Pool Control' — BADU Blue = baugleich, nur Naming; mDNS-Discovery in Scope mit Manuell-Fallback; App-ID de.neunbft.violet behalten; Kategorie appliances; Bump 0.4.0). Hersteller-Assets geliefert (App-Icon-SVG + Base-/Relay-Fotos). Spec 319eaa2/a01c579, Plan committet. Bereit für SDD." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
