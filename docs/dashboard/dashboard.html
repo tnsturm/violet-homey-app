@@ -312,7 +312,7 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       status: "done",
       startedAt: "2026-07-07",
       finishedAt: "2026-07-07",
-      commit: "bb330c0",
+      commit: "4cd56da",
       summary: "Store-Ready: validate --level=publish PASS (v0.4.0), gemergt nach origin/main bb330c0. Store-Name 'Violet and BADU Blue Pool Control' (BADU Blue baugleich), Hersteller-Assets (App-Icon font-frei geflattet + zentriert, App-/Driver-Bilder), Driver-Icon (stilisiertes VIOLET-Modul, User-freigegeben), explizite images-Manifeste, App-ID de.neunbft.violet final. mDNS live gedroppt (Violet kündigt keinen SD-Dienst an) → manueller violet.local-Fallback, Athom-dokumentiert. Offen operativ: Write-Passwort rotieren + homey app publish (privater Test, interaktiv vom User).",
       steps: [
         { label: "Brainstorming", done: true },
@@ -327,7 +327,8 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
         { at: "2026-07-07", note: "M4 gestartet — Kontext geladen (Status-Memory, M0-Spec, M4-Tooling-Spec). validate --level=publish scheitert aktuell nur an drivers.pool.images. Brainstorming beginnt." },
         { at: "2026-07-07", note: "Brainstorming abgeschlossen (Entscheidungen: Store-Name 'Violet and BADU Blue Pool Control' — BADU Blue = baugleich, nur Naming; mDNS-Discovery in Scope mit Manuell-Fallback; App-ID de.neunbft.violet behalten; Kategorie appliances; Bump 0.4.0). Hersteller-Assets geliefert (App-Icon-SVG + Base-/Relay-Fotos). Spec 319eaa2/a01c579, Plan committet. Bereit für SDD." },
         { at: "2026-07-07", note: "SDD 8 Tasks umgesetzt: Store-Name/Beschreibung (en+de), README en+de, App-Icon Text→Pfade geflattet (font-frei), App-Bilder (250x175/500x350/1000x700) + Driver-Bilder (75x75/500x500/1000x1000), Driver-Icon (stilisiertes VIOLET-Modul, User-freigegeben), explizite images-Manifeste, Bump 0.4.0 + Changelog. mDNS live untersucht → Violet kündigt KEINEN mDNS-SD-Dienst an → dokumentierter Manuell-Fallback (violet.local), kein Discovery-Code. validate --level=publish PASS, node --test 91/91, release-readiness PASS. Offen: final /code-review + Merge; danach operativ: Passwort-Rotation + echter Upload (0.4.1)." },
-        { at: "2026-07-07", note: "App-Icon-Nachfix (User-Sichtprüfung): Schriftzug war durch nachgestellte Leerzeichen im text-anchor=middle nach links aus dem Rahmen geschoben — neu geflattet, U+UIOLET jetzt auf x=72 zentriert. M4 GEMERGT nach origin/main bb330c0 (FF, kein PR — trivial). Store-ready. Nächster Schritt (User, interaktiv): `homey app publish` als privater Test + Write-Passwort rotieren." }
+        { at: "2026-07-07", note: "App-Icon-Nachfix (User-Sichtprüfung): Schriftzug war durch nachgestellte Leerzeichen im text-anchor=middle nach links aus dem Rahmen geschoben — neu geflattet, U+UIOLET jetzt auf x=72 zentriert. M4 GEMERGT nach origin/main bb330c0 (FF, kein PR — trivial). Store-ready. Nächster Schritt (User, interaktiv): `homey app publish` als privater Test + Write-Passwort rotieren." },
+        { at: "2026-07-07", note: "In den Store als privater Test publiziert (User). Nachträgliche Store-Fixes: 0.4.1 (Titel &→+, README-Umbrüche) und 0.4.2 (Icon-Kernursache: Homey maskiert Icons zu einfarbiger Silhouette → beide Icons als transparente weiße Strichgrafik neu gebaut). GETESTET & bestätigt: beide Icons rendern korrekt (Store-Kreis + Device-Tile), Write-Control live via debughttp.htm (schließt M3-§12). Offen vor LIVE: homeyCommunityTopicId (Forum-Thread-ID) + Passwort-Rotation." }
       ],
       prompt: null
     },
