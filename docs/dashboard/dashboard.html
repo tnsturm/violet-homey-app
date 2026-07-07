@@ -87,7 +87,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-07-06",
+  updatedAt: "2026-07-07",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -309,8 +309,8 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
     {
       id: "M4",
       title: "Publish-Readiness",
-      status: "todo",
-      startedAt: null,
+      status: "active",
+      startedAt: "2026-07-07",
       finishedAt: null,
       commit: null,
       summary: "Store-Assets/Bilder, App-ID de.neunbft.violet finalisieren, Credential rotieren. Ziel: validate --level=publish gruen. Vorgezogen (Tausch mit Inbound-Alarme, jetzt M5) auf Nutzerwunsch: Store-Ready als Naechstes; haengt nur an M1-M3 (fertig).",
@@ -321,9 +321,11 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
         { label: "Implementierung (SDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: null,
+      currentActivity: "Brainstorming — Store-Metadaten (Name/Logo/Text), Assets, mDNS-Discovery, Publish-Prozess",
       runtime: null,
-      log: [],
+      log: [
+        { at: "2026-07-07", note: "M4 gestartet — Kontext geladen (Status-Memory, M0-Spec, M4-Tooling-Spec). validate --level=publish scheitert aktuell nur an drivers.pool.images. Brainstorming beginnt." }
+      ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Violet Homey Pro App — Milestone M4 (Publish-Readiness, Homey App Store).
