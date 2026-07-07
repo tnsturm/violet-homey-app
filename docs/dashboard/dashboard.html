@@ -318,14 +318,15 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
-        { label: "Implementierung (SDD)", done: false },
+        { label: "Implementierung (SDD)", done: true },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: "Plan fertig — bereit für Implementierung (subagent-driven-development)",
+      currentActivity: "Code-Implementierung fertig, validate --level=publish PASS (v0.4.0). Final Code-Review + Merge-Entscheidung offen.",
       runtime: null,
       log: [
         { at: "2026-07-07", note: "M4 gestartet — Kontext geladen (Status-Memory, M0-Spec, M4-Tooling-Spec). validate --level=publish scheitert aktuell nur an drivers.pool.images. Brainstorming beginnt." },
-        { at: "2026-07-07", note: "Brainstorming abgeschlossen (Entscheidungen: Store-Name 'Violet and BADU Blue Pool Control' — BADU Blue = baugleich, nur Naming; mDNS-Discovery in Scope mit Manuell-Fallback; App-ID de.neunbft.violet behalten; Kategorie appliances; Bump 0.4.0). Hersteller-Assets geliefert (App-Icon-SVG + Base-/Relay-Fotos). Spec 319eaa2/a01c579, Plan committet. Bereit für SDD." }
+        { at: "2026-07-07", note: "Brainstorming abgeschlossen (Entscheidungen: Store-Name 'Violet and BADU Blue Pool Control' — BADU Blue = baugleich, nur Naming; mDNS-Discovery in Scope mit Manuell-Fallback; App-ID de.neunbft.violet behalten; Kategorie appliances; Bump 0.4.0). Hersteller-Assets geliefert (App-Icon-SVG + Base-/Relay-Fotos). Spec 319eaa2/a01c579, Plan committet. Bereit für SDD." },
+        { at: "2026-07-07", note: "SDD 8 Tasks umgesetzt: Store-Name/Beschreibung (en+de), README en+de, App-Icon Text→Pfade geflattet (font-frei), App-Bilder (250x175/500x350/1000x700) + Driver-Bilder (75x75/500x500/1000x1000), Driver-Icon (stilisiertes VIOLET-Modul, User-freigegeben), explizite images-Manifeste, Bump 0.4.0 + Changelog. mDNS live untersucht → Violet kündigt KEINEN mDNS-SD-Dienst an → dokumentierter Manuell-Fallback (violet.local), kein Discovery-Code. validate --level=publish PASS, node --test 91/91, release-readiness PASS. Offen: final /code-review + Merge; danach operativ: Passwort-Rotation + echter Upload (0.4.1)." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
