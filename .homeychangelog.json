@@ -30,5 +30,9 @@
   "0.4.0": {
     "en": "The app now officially covers the BADU Blue controller too (identical hardware to the PoolDigital Violet). Refreshed store presentation: new app name, app icon and product images.",
     "de": "Die App deckt jetzt offiziell auch den BADU-Blue-Regler ab (baugleich mit der PoolDigital Violet). Aufgefrischter Store-Auftritt: neuer App-Name, App-Icon und Produktbilder."
+  },
+  "0.4.1": {
+    "en": "Polish: corrected the store title, tidied the description text, and rebuilt the app icon so it displays correctly.",
+    "de": "Politur: Store-Titel korrigiert, Beschreibungstext sauber formatiert und das App-Icon neu aufgebaut, damit es korrekt angezeigt wird."
   }
 }
