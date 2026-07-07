@@ -23,6 +23,11 @@
     "name": "Torsten Sturm"
   },
   "brandColor": "#6A4C93",
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
   "flow": {
     "triggers": [
       {
@@ -678,6 +683,11 @@
       "connectivity": [
         "lan"
       ],
+      "images": {
+        "small": "/drivers/pool/assets/images/small.png",
+        "large": "/drivers/pool/assets/images/large.png",
+        "xlarge": "/drivers/pool/assets/images/xlarge.png"
+      },
       "pair": [
         {
           "id": "connect"

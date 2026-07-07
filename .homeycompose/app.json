@@ -21,5 +21,10 @@
   "author": {
     "name": "Torsten Sturm"
   },
-  "brandColor": "#6A4C93"
+  "brandColor": "#6A4C93",
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  }
 }

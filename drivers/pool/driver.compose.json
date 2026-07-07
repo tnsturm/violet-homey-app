@@ -13,6 +13,11 @@
   },
   "platforms": ["local"],
   "connectivity": ["lan"],
+  "images": {
+    "small": "/drivers/pool/assets/images/small.png",
+    "large": "/drivers/pool/assets/images/large.png",
+    "xlarge": "/drivers/pool/assets/images/xlarge.png"
+  },
   "pair": [
     { "id": "connect" },
     { "id": "list_devices", "template": "list_devices", "navigation": { "next": "add_devices" } },
