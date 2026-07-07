@@ -23,14 +23,17 @@ neuer Geräte-Code** für BADU Blue.
 - **Store-Name:** en „Violet and BADU Blue Pool Control", de „Violet & BADU Blue Poolsteuerung".
   Lokaler Gerätename „Pool" bleibt unverändert.
 - **BADU Blue = dieselbe Hardware, andere Marke** → nur Naming/Store-Text.
-- **Logo/Bilder:** der **Hersteller liefert die offiziellen Assets demnächst**; bis dahin
-  **Platzhalter** in korrekten Maßen, damit validate jetzt grün wird. Realer Store-Publish
-  erst nach Tausch.
+- **Logo/Bilder:** der **Hersteller hat die offiziellen Assets geliefert** (2026-07-07,
+  `~/Downloads/`): App-Icon `touchicon_VIOLET.svg`, Produktfotos
+  `VIOLET_Base-Module_Poolsteuerung_800x800.jpg` (für App- **und** Driver-Bilder) und
+  `VIOLET_Relais-Erweiterung_800x800.jpg` (Vorlage für das neu zu gestaltende Driver-Icon-SVG).
+  Kein Platzhalter-Ansatz mehr — wir erreichen validate-grün direkt mit finalen Assets.
 - **App-ID:** `de.neunbft.violet` **behalten** (nach Publish unveränderlich; kein
   Migrationsrisiko am bereits installierten Gerät).
 - **Kategorie:** `["appliances"]` behalten.
 - **Version:** jetzt `npx homey app version minor` → **0.4.0** als M4-Marker + Changelog;
-  der echte Upload wird dann 0.4.1 (nach Hersteller-Assets + Passwort-Rotation).
+  der echte Upload wird dann 0.4.1 (nach Passwort-Rotation + mDNS-Live-Verify — die finalen
+  Assets liegen bereits vor).
 
 ## Komponenten
 
@@ -66,23 +69,44 @@ Root-`app.json` (erzwingt der `compose-guard`-Hook). Manifeste programmatisch ba
   `references/publishing.md`). Kurz + beschreibend: Violet **& BADU Blue**, Monitoring +
   Steuerung + optionaler LSI. Entwürfe werden vor dem Schreiben im Plan/PR gezeigt.
 
-### 3. Assets — Platzhalter jetzt, Hersteller-Assets später tauschen
+### 3. Assets — finale Hersteller-Assets (2026-07-07 geliefert)
 
 Benötigt (Maße aus `references/publishing.md`, harte Prüfung macht der Validator):
-- **App:** `assets/icon.svg` (neu) + `assets/images/small.png` (250×175), `large.png`
-  (500×350), `xlarge.png` (1000×700).
-- **Driver:** `drivers/pool/assets/icon.svg` (neu) + `drivers/pool/assets/images/{small,large,
+- **App:** `assets/icon.svg` + `assets/images/small.png` (250×175), `large.png` (500×350),
+  `xlarge.png` (1000×700).
+- **Driver:** `drivers/pool/assets/icon.svg` + `drivers/pool/assets/images/{small,large,
   xlarge}.png` (gleiche Maße). ← löst den aktuellen Validator-Blocker.
 
-**Platzhalter-Ansatz:**
-- `icon.svg`: schlichtes, markenneutrales Pool/Wasser-Motiv in Brand-Violett `#6A4C93`,
-  sichtbar auf dem brandColor-Hintergrund.
-- PNGs **programmatisch in exakten Maßen** erzeugen (kleines Node-Skript im Scratchpad; kein
-  neues Repo-Dependency). Motiv: Brand-Violett-Fläche + Icon/Text-Andeutung. Jede Datei ist
-  ein **gültiges PNG** in exakter Größe (was der Validator prüft).
-- Alle Platzhalter als solche kenntlich (z. B. Kommentar im SVG / Notiz im Versions-Log).
-  **Release-Schritt „Assets tauschen"** wird explizit dokumentiert; der echte Publish (0.4.1)
-  passiert erst danach.
+**Quellen & Verarbeitung:**
+
+1. **App-Icon (`assets/icon.svg`)** ← `touchicon_VIOLET.svg` (144×144 viewBox).
+   ⚠️ **Font-Risiko:** die Vorlage nutzt `<text>`/`<tspan>` mit eingebettetem `@font-face`
+   (Audiowide, base64-woff2), **null `<path>`**. Homeys Icon-Renderer (librsvg) rendert
+   eingebettete Fonts unzuverlässig → der „VIOLET"-Schriftzug käme evtl. leer/falsch.
+   **Maßnahme:** Text vor dem Einsatz zu **Vektor-Pfaden flatten** (Inkscape
+   `--export-text-to-path` o. ä.), embedded Font danach entfernen (Dateigröße 142 KB → klein).
+   Auf brandColor `#6A4C93` sichtbar prüfen.
+
+2. **App-Bilder + Driver-Bilder (PNG)** ← `VIOLET_Base-Module_Poolsteuerung_800x800.jpg`
+   (weißer Hintergrund, Modul in Landscape-Lage). **Beide** Sätze (App und Driver) aus derselben
+   Vorlage. Quadratisch 800×800 → geforderte **Landscape**-Maße (250×175, 500×350, 1000×700,
+   ≈1.43:1): mittig auf weißem Canvas passend zuschneiden/einpassen (das Modul ist bereits breit,
+   Weißraum oben/unten wegschneiden). Jede Datei ein gültiges PNG in exakter Größe.
+
+3. **Driver-Icon (`drivers/pool/assets/icon.svg`)** — **neu von mir gestaltet**, stilisiert aus
+   dem Look von `VIOLET_Relais-Erweiterung_800x800.jpg`, nach Homey-Guideline (einfach, bei
+   kleiner Größe erkennbar, sichtbar auf brandColor). Bildsprache: schwarzer Modulkörper mit
+   abgerundeten Ecken, **violette Akzentlinie**, Andeutung grüner Klemmen/LED-Reihe, und der
+   **stilisierte „VIOLET"-Schriftzug als Vektor-Pfade** (keine Fonts). Entwurf wird dem User
+   vor dem Festschreiben zur Freigabe gezeigt.
+
+**Tooling-Hinweis (in Plan zu verifizieren):** SVG-Flatten + JPG→PNG-Resize brauchen ein Tool
+(Inkscape / ImageMagick / `sharp` / `jimp`). Verfügbarkeit als erster Schritt der Asset-Task
+prüfen; kein dauerhaftes Repo-Dependency einführen (Scratchpad-Skript bevorzugt).
+
+**Kleine Inkonsistenz (bewusst, User-Wunsch):** Driver-**Bilder** zeigen das Base-Modul,
+Driver-**Icon** ist aus der Relay-Extension stilisiert — beide sind „VIOLET"-Module, das Icon
+ist ohnehin stilisiert, daher akzeptiert.
 
 ### 4. mDNS-Discovery (Code + Live-Verify)
 
@@ -139,8 +163,7 @@ ist). M4 bleibt auch dann publish-fähig (Validator verlangt Discovery nicht).
 ## Nicht im Scope (YAGNI)
 
 - Inbound-Alarme (jetzt M5).
-- Echte Hersteller-Assets (späterer 1:1-Tausch; eigener kurzer Release-Schritt → 0.4.1).
-- Der finale `homey app publish` / Store-Live-Schalten (nach Assets + Rotation + Live-Verify).
+- Der finale `homey app publish` / Store-Live-Schalten (nach Rotation + mDNS-Live-Verify).
 - Neuer Geräte-Code für BADU Blue (identische Hardware/API).
 
 ## Verifikation (Erfolgskriterien)
