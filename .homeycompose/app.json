@@ -7,12 +7,12 @@
     "local"
   ],
   "name": {
-    "en": "Pool (Violet)",
-    "de": "Pool (Violet)"
+    "en": "Violet and BADU Blue Pool Control",
+    "de": "Violet & BADU Blue Poolsteuerung"
   },
   "description": {
-    "en": "Monitor a PoolDigital Violet pool controller, with an optional live Langelier (LSI) water-balance safety net — classification per ANSI/PHTA/ICC-11.",
-    "de": "Überwacht einen PoolDigital-Violet-Poolregler, mit optionalem Live-Langelier-Index (LSI) als Wasserbalance-Sicherheitsnetz — Einstufung nach ANSI/PHTA/ICC-11."
+    "en": "Monitor and control a PoolDigital Violet or BADU Blue pool controller over your local network — pH, ORP, chlorine, temperatures, pump, dosing and more, with an optional live Langelier (LSI) water-balance safety net.",
+    "de": "Überwacht und steuert einen PoolDigital-Violet- oder BADU-Blue-Poolregler im lokalen Netz — pH, Redox, Chlor, Temperaturen, Pumpe, Dosierung u. v. m., mit optionalem Live-Langelier-Index (LSI) als Wasserbalance-Sicherheitsnetz."
   },
   "category": [
     "appliances"
