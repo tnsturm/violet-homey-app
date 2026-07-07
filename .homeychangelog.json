@@ -34,5 +34,9 @@
   "0.4.1": {
     "en": "Polish: corrected the store title, tidied the description text, and rebuilt the app icon so it displays correctly.",
     "de": "Politur: Store-Titel korrigiert, Beschreibungstext sauber formatiert und das App-Icon neu aufgebaut, damit es korrekt angezeigt wird."
+  },
+  "0.4.2": {
+    "en": "Fixed the app and device icons so they display correctly — Homey renders app icons as a single-colour symbol on the brand colour, so the icons are now transparent-background line art instead of a filled tile.",
+    "de": "App- und Geräte-Icon werden jetzt korrekt angezeigt — Homey stellt App-Icons als einfarbiges Symbol auf der Markenfarbe dar; die Icons sind daher jetzt transparente Strichgrafik statt einer gefüllten Fläche."
   }
 }
