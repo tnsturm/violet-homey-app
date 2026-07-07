@@ -116,15 +116,15 @@ turns corrosive or scaling. Readings feed Homey Insights and Flow.
 ```
 Violet & BADU Blue Poolsteuerung
 
-Bindet deinen PoolDigital-Violet- oder BADU-Blue-Poolregler ueber das lokale
+Bindet deinen PoolDigital-Violet- oder BADU-Blue-Poolregler über das lokale
 Netzwerk in Homey ein. Zeigt Wasserchemie und Temperaturen, Pumpen- und
 Anlagenstatus sowie Dosierung in Echtzeit und steuert Filterpumpe, Licht und
-PV-Ueberschuss-Modus. Ein optionales Langelier-Index-Sicherheitsnetz (LSI) warnt,
-bevor das Wasser korrosiv oder kalkabscheidend wird. Alle Werte fliessen in Homey
+PV-Überschuss-Modus. Ein optionales Langelier-Index-Sicherheitsnetz (LSI) warnt,
+bevor das Wasser korrosiv oder kalkabscheidend wird. Alle Werte fließen in Homey
 Insights und Flow.
 ```
 
-Note: README is plain text; keep it ASCII-safe (`ue`/`ae` acceptable in a .txt, or real umlauts — but no smart quotes). The store renders it verbatim.
+Note: README is plain text (UTF-8) — real umlauts (ü/ä/ö/ß) are correct and expected; the only forbidden characters are smart quotes. Write the two files with the Write tool (real umlauts), not a shell heredoc that might mangle encoding. The store renders the text verbatim.
 
 - [ ] **Step 3: Verify no URLs/markdown**
 

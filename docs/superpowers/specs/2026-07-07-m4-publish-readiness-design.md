@@ -104,9 +104,10 @@ Benötigt (Maße aus `references/publishing.md`, harte Prüfung macht der Valida
 (Inkscape / ImageMagick / `sharp` / `jimp`). Verfügbarkeit als erster Schritt der Asset-Task
 prüfen; kein dauerhaftes Repo-Dependency einführen (Scratchpad-Skript bevorzugt).
 
-**Kleine Inkonsistenz (bewusst, User-Wunsch):** Driver-**Bilder** zeigen das Base-Modul,
-Driver-**Icon** ist aus der Relay-Extension stilisiert — beide sind „VIOLET"-Module, das Icon
-ist ohnehin stilisiert, daher akzeptiert.
+**Kleine Inkonsistenz (bewusst, User-Wunsch, bestätigt 2026-07-07):** Driver-**Bilder** zeigen
+das Base-Modul, Driver-**Icon** ist aus der Relay-Extension stilisiert. Grund: die
+Relay-Extension ist **weniger breit** und passt daher formatlich besser ins quadratische
+Icon-Format; beide sind „VIOLET"-Module, das Icon ist ohnehin stilisiert.
 
 ### 4. mDNS-Discovery (Code + Live-Verify)
 
@@ -134,6 +135,34 @@ ist ohnehin stilisiert, daher akzeptiert.
 **nicht** erzwungen; stattdessen die Manuell-Eingabe beibehalten und die Begründung
 dokumentieren (Athom akzeptiert manuelle Eingabe, *wenn Discovery technisch nicht möglich*
 ist). M4 bleibt auch dann publish-fähig (Validator verlangt Discovery nicht).
+
+### 4a. Discovery-Ergebnis (Live-Befund 2026-07-07 — ENTSCHIEDEN: Manuell-Fallback)
+
+Die Live-Prüfung an der echten Violet (`violet.local` → **192.168.180.142**, MAC
+**70:B3:D5:06:30:80**) wurde vom selben LAN aus mit `multicast-dns`/`bonjour-service`
+durchgeführt (Reception verifiziert: andere Geräte — go-eCharger, zwei Android-Hosts, ein
+`_http._tcp`-Anbieter auf .50 — wurden gehört):
+
+1. **`violet.local` löst per mDNS auf** (A-Record, HTTP 200) — reine **Hostname**-Auflösung.
+2. **Die Violet annonciert KEINEN mDNS-SD-Dienst.** Über mehrere gezielte Proben (bis 12 s,
+   wiederholte `_services._dns-sd._udp`/`_http._tcp`-PTR- und `violet.local`-SRV/TXT-Queries)
+   kam von .142 **kein einziger** PTR/SRV/TXT-Record. → Homeys `mdns-sd`-Strategie kann die
+   Violet **nicht** entdecken. Deckt sich mit PoolDigitals Warnung „mDNS unzuverlässig".
+3. **MAC-Discovery verworfen:** OUI `70:B3:D5` ist ein **geteilter IEEE-MA-S-Präfix** (viele
+   Kleinhersteller teilen ihn; die eigentliche Zuteilung liegt in den Bytes 4–5). Homeys
+   `mac`-Strategie matcht auf Byte-Grenzen (OUI) → `70:B3:D5` würde fremde Geräte mit-auflisten.
+   Unsauber, kein verlässlicher Discovery-Weg.
+
+**Entscheidung (User, 2026-07-07):** **Kein Discovery-Code.** Beibehaltung der manuellen
+Host-Eingabe (`pair/connect.html`), die **`violet.local` als Host akzeptiert** (die App
+stellt `http://` voran). Das ist die einzige technisch mögliche Kopplungsmethode und für die
+Athom-Zertifizierung verteidigbar: das Gerät bietet keinen auffindbaren Dienst; ein
+`.local`-Hostname-Eingabefeld (kein roher IP-Zwang) ist bereitgestellt. Keine Änderung an
+`driver.compose.json`/`device.js`/`.homeycompose/discovery/` in M4.
+
+**Offen (spätere optionale Idee, NICHT M4):** MAC-Discovery mit längerem Präfix live an Homey
+erproben, falls Homeys `mac`-Strategie >3-Byte-Präfixe unterstützt — nur falls sich die
+manuelle Eingabe in der Praxis/Zertifizierung als unzureichend erweist.
 
 ### 5. Sicherheit
 
