@@ -167,3 +167,15 @@ test('desiredM2Capabilities: diagnostics gated by diagnosticsEnabled', () => {
   const features = { pump: true, diagnostics: true, dosingChannels: [] };
   assert.ok(desiredM2Capabilities({ features, overrides: {}, diagnosticsEnabled: true }).includes('last_error_id'));
 });
+
+// Known M2 defect, frozen as { todo: true } (M4.7 spec §6; CLAUDE.md §4 rule):
+// faultQueueActive flags ANY non-empty DOS_n_STATE, but CL_DOSING_CONTROLLER is
+// normal controller operation (live-verified, versions.md 0.3.1) — real blocks
+// are BLOCKED_BY_*/fault codes. This test encodes the CORRECT expectation and
+// shows up as `todo` on every run without failing the suite; the fixing session
+// removes the todo flag.
+test('alarm_dosing_blocked: CL_DOSING_CONTROLLER alone is normal operation, not a block', { todo: true }, () => {
+  const raw = require('./fixtures/dosing-normal-controller-state.json');
+  const u = buildM2Updates(raw, { dosingChannels: ['cl'] });
+  assert.strictEqual(u['alarm_dosing_blocked.cl'], false);
+});

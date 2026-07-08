@@ -69,6 +69,9 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
+Known defects are frozen immediately as `{ todo: true }` tests encoding the CORRECT
+expectation — every run lists them without going red; the fixing session removes the flag.
+
 ## 5. Security by Design
 
 **Derive security requirements before writing the plan — not after the bug.**
