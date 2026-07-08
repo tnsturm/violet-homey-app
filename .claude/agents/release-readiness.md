@@ -2,6 +2,8 @@
 name: release-readiness
 description: Verify a Homey app release is ready to publish — checks version sync, changelog, validate, store assets/metadata, versions.md consistency, and dashboard status. Use before any `homey app install` or Store publish.
 tools: Read, Bash, Grep
+model: sonnet
+effort: medium
 ---
 
 Du prüfst, ob ein Release-Kandidat für dieses Homey-App-Repo (Violet) bereit ist. Nimm keine

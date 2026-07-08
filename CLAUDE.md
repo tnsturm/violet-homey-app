@@ -157,6 +157,17 @@ Always wait for an explicit yes before pushing or merging — this section only 
 
 Everyday sessions run in the default mode with the allowlist; autonomous loop sessions start with `--permission-mode auto`.
 
+## 11. Subagent Model Tiering
+
+**Don't pay flagship prices for mechanical work — and never economize on the checker.**
+
+Subagents inherit the session model by default. Assign tiers explicitly via frontmatter in `.claude/agents/*.md` (`model:` + `effort:`):
+
+- **Mechanical/checklist/extraction agents** (run commands, compare outputs, grep & report — e.g. `release-readiness`): `model: haiku` or `sonnet`, `effort: low`/`medium`.
+- **Review/judge/security agents** (e.g. `security-reviewer`): `model: inherit` — feedback quality is the loop bottleneck (§4), and a weak verifier defeats the maker/checker split.
+- In multi-agent workflows, set effort per stage: low for finder/collector stages, high only for verify/judge stages.
+- Global session-wide override if ever needed: `CLAUDE_CODE_SUBAGENT_MODEL`.
+
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
