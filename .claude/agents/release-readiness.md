@@ -30,6 +30,11 @@ Du prüfst, ob ein Release-Kandidat für dieses Homey-App-Repo (Violet) bereit i
    Commit-Hash (`git log -1 --format=%h`) für diese Version?
 7. **Dashboard**: `docs/dashboard/dashboard.html` — ist das aktuell aktive Milestone im
    `DASHBOARD_STATUS`-Block auf dem neuesten Stand (Status, `updatedAt`, `log[]`)?
+8. **Live-Smoke (read-only)**: `node scripts/live-smoke.js` ausführen (braucht das echte Gerät,
+   Host `violet`, + eingeloggte Homey-CLI). PASS = alle Checks grün; Gerät nicht erreichbar =
+   FAIL (bewusst kein Soft-Skip — ein Release-Check ohne Live-Gerät ist keiner). WARN-Zeilen
+   (z. B. detektierte, aber per Override versteckte Gruppen oder stale-geleerte Messwerte)
+   im Bericht erwähnen.
 
 Melde für jeden Punkt PASS/FAIL mit kurzer Begründung und, bei FAIL, was konkret fehlt
 (z. B. "app.json=0.1.3, .homeycompose/app.json=0.1.2 — mismatch", oder "assets/images/xlarge.png
