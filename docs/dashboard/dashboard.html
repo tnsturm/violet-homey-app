@@ -87,7 +87,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-07-07",
+  updatedAt: "2026-07-08",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -333,13 +333,51 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       prompt: null
     },
     {
+      id: "M4.5",
+      title: "TypeScript-Typecheck (checkJs)",
+      status: "todo",
+      startedAt: "2026-07-08",
+      finishedAt: null,
+      commit: null,
+      summary: "Pfad A aus der TS-Evaluation (2026-07-08): tsc --noEmit (checkJs) über den bestehenden JS-Code — maschinelles Typfehler-Signal für lib/ + drivers/ + app.js ohne Build-Schritt und ohne Test-Latenz-Kosten. 16 bekannte Befunde fixen (inkl. driver.js onPair), Typecheck ins Commit-Gate + CI. Kein Release/Version-Bump (tooling-only, §8).",
+      steps: [
+        { label: "Brainstorming", done: true },
+        { label: "Spec", done: true },
+        { label: "Plan", done: false },
+        { label: "Implementierung (TDD)", done: false },
+        { label: "Validate + Push", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-07-08", note: "Evaluation abgeschlossen (Spike in isoliertem Worktree, danach entfernt): Entscheidungsdokument docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md — Empfehlung Pfad A (checkJs); auf User-Entscheid als eigener Milestone M4.5 eingeplant. Kernzahlen: checkJs lenient = 16 Befunde (davon 1 potenzieller Bug in driver.js onPair), validate mit TS exit 0, node --test bricht bei .ts-Umbenennung (extensionless require) — daher kein .ts jetzt." }
+      ],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Violet Homey Pro App — Milestone M4.5 (TypeScript-Typecheck, Pfad A: checkJs). Evaluation + Spike sind abgeschlossen; das Entscheidungsdokument ist die Spec.
+
+Lies zuerst docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md — verbindlich sind §4 (Pfad A), §5 (Empfehlung) und §6 (maschinelle Erfolgs-/Abbruchkriterien; Baseline am Umsetzungstag auf derselben Maschine neu messen). Aktualisiere beim Start den M4.5-Eintrag in docs/dashboard/dashboard.html (status "active", log, currentActivity; Dashboard-Protokoll CLAUDE.md §7).
+
+Aufgabe (aus dem Dokument, ~2-4 h):
+1. tsconfig.checkjs.json anlegen (lenient: allowJs + checkJs, strict false, noEmit, types ["node","homey"], include lib/ drivers/ app.js test/) — bewusst NICHT tsconfig.json nennen: deren Präsenz schaltet die Homey-CLI in den TS-Modus, validate bricht dann ohne build-Script (Doku §1, Spike-verifiziert).
+2. devDependencies: typescript, @types/homey (npm-Alias homey-apps-sdk-v3-types), @types/node@18 (= Homey-Runtime-Major). package-lock.json mit committen. dependencies bleibt exakt {}.
+3. npm-Script "typecheck": "tsc -p tsconfig.checkjs.json".
+4. Die 16 bekannten lenient-Fehler fixen (Verteilung in §3 des Dokuments). ZUERST den driver.js-onPair-Befund klären (TS2416; Bug vs. Typen-Strenge — falls Bug: superpowers:systematic-debugging). Runtime-Fixes reisen mit dem naechsten Release-Milestone (M6 Inbound-Alarme); dieser Milestone bumpt KEINE Version (§8: tooling-only, nichts wird deployt).
+5. tsc --noEmit als Commit-Gate: PreToolUse-Bash-Hook nach Muster .claude/hooks/check-version-sync.js (kombinierbar mit test-gate, loop-dev-roadmap Idee 2) — per TDD mit Hook-Test in test/hooks/. KEIN PostToolUse-Typecheck (gemessen 6,6 s je Edit, auch inkrementell).
+6. Alle 8 Erfolgskriterien aus §6 maschinell durchprüfen; greift ein Abbruchkriterium: stoppen und Befund im Entscheidungsdokument nachtragen.
+
+Vorgehen: superpowers:writing-plans → TDD; /code-review vor jeder Git-Aktion (CLAUDE.md §9); documenting-code-Skill für alle angefassten Quelldateien.
+
+/remote-control M4.5 — TypeScript-Typecheck (checkJs)`
+    },
+    {
       id: "→M5",
       title: "Zwischen-Check",
       status: "todo",
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Housekeeping zwischen M4 und M5: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      summary: "Housekeeping zwischen M4.5 und M5: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
         { label: "/fewer-permission-prompts", done: false },
         { label: "/claude-automation-recommender", done: false },
@@ -351,7 +389,7 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       log: [],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
-Zwischen-Check vor M5 (CLAUDE.md §7 Punkt 4). M4 ist abgeschlossen, M5 startet als Naechstes.
+Zwischen-Check vor M5 (CLAUDE.md §7 Punkt 4). M4.5 ist abgeschlossen, M5 startet als Naechstes.
 
 Fuehre aus: /milestone-checkpoint
 
@@ -361,37 +399,45 @@ Das aktualisiert automatisch den →M5-Eintrag in docs/dashboard/dashboard.html 
     },
     {
       id: "M5",
-      title: "Inbound-Alarme (HTTP → Flow-Trigger)",
+      title: "TS-Migration device.js — Re-Evaluation (Pfad B/C)",
       status: "todo",
-      startedAt: "2026-06-26",
+      startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Eingehende Violet-Alarme (NOTIFY: HTTP GET ?ERRORCODE&SUBJECT) per eingebettetem HTTP-Listener (Default-Port 22222, konfigurierbar) als Geraete-Flow-Trigger am Pool-Device. Ersetzt den Micro-Web-Server-Umweg. Unabhaengig von M1-M3.",
+      summary: "Re-Evaluation der .ts-Migration aus der TypeScript-Evaluation 2026-07-08 (§5): device.js-FIRST (nicht lib-first — lib/ ist testgedeckt, device.js nicht). HARTES GATE: nur starten, wenn (a) Mock-Harness test/mocks/homey.js existiert (loop-dev-roadmap Idee 6), (b) GitHub-Actions-CI grün läuft (Idee 3) UND (c) der checkJs-strict-Ratchet ausgereizt ist. Ziel: verifizierbare Verhaltensäquivalenz statt Blindflug im ungetesteten Glue-Code.",
       steps: [
-        { label: "Brainstorming", done: true },
-        { label: "Spec", done: true },
-        { label: "Plan", done: false },
-        { label: "Implementierung (SDD)", done: false },
-        { label: "Validate + Push", done: false }
+        { label: "Trigger-Gate (Mock-Harness, CI, strict-Ratchet)", done: false },
+        { label: "Re-Evaluation (Brainstorming + Spike)", done: false },
+        { label: "Spec + Plan", done: false },
+        { label: "Implementierung (TDD)", done: false },
+        { label: "Validate + Release", done: false }
       ],
       currentActivity: null,
       runtime: null,
       log: [
-        { at: "2026-06-26", note: "Brainstorming + Spec abgeschlossen und freigegeben" }
+        { at: "2026-07-08", note: "Milestone aus der TS-Evaluation angelegt (docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md §5, Re-Evaluations-Trigger); auf User-Entscheid als M5 einnummeriert — ehemalige M5–M9 wurden zu M6–M10." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
-Violet Homey Pro App — Milestone M5 (Inbound-HTTP-Alarme → Flow-Trigger). Brainstorming + Spec sind bereits fertig und freigegeben.
+Violet Homey Pro App — Milestone M5 (TS-Migration device.js — Re-Evaluation, Pfad B/C aus der TypeScript-Evaluation 2026-07-08).
 
-Lies zuerst die Spec docs/superpowers/specs/2026-06-26-violet-http-notifications-design.md. Aktualisiere beim Start den M5-Eintrag in docs/dashboard/dashboard.html: log "Plan gestartet", currentActivity pflegen; Steps Plan -> Implementierung (SDD) -> Validate + Push abhaken; am Ende status "done" + commit. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
+Lies zuerst docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md (§4 Pfad B/C, §5 Re-Evaluations-Trigger, §6 letzter Absatz: Zusatzkriterien fuer B/C). Aktualisiere beim Start den M5-Eintrag in docs/dashboard/dashboard.html (Dashboard-Protokoll CLAUDE.md §7).
 
-Kontext laden: Projekt-Status-Memory. M0 fertig (HEAD 4d1aaf3). Dieses Feature ist unabhaengig von M1–M3 und kann jederzeit nach M0 gebaut werden.
+HARTES GATE zuerst — alle drei Trigger muessen erfuellt sein, sonst STOPPEN (Milestone auf todo zuruecklassen, fehlende Trigger als log-Eintrag dokumentieren, NICHT migrieren):
+(a) Mock-Harness test/mocks/homey.js existiert und deckt das device.js-Basisverhalten ab (loop-dev-roadmap Idee 6);
+(b) GitHub-Actions-CI laeuft gruen (npm test + validate --level publish; Idee 3);
+(c) checkJs-strict-Ratchet ist ausgereizt: tsconfig.checkjs.json laeuft mit strict:true fehlerfrei (Folgearbeit aus M4.5).
 
-Aufgabe (aus der Spec): eingebetteter HTTP-Listener im Pool-Device (neue lib/NotifyServer.js mit reiner, testbarer parseAlarm-Funktion + Singleton-Bind, EADDRINUSE sauber abfangen), Geraete-Flow-Trigger "Alarm empfangen" via getDeviceTriggerCard (Tokens errorcode + subject, optionaler Freitext-Code-Filter per registerRunListener), neue Device-Einstellung notifyPort (Default 22222, konfigurierbar). Vor dem Coden an echter Hardware bestaetigen, dass die Violet die Tokens exakt als ERRORCODE/SUBJECT sendet und ob die Werte URL-codiert ankommen — das praegt nur parseAlarm, nicht die Architektur.
+Wenn alle Trigger erfuellt:
+1. Re-Evaluation (superpowers:brainstorming): die Pfad-B/C-Bewertung gegen die DANN aktuelle Toolchain neu messen — TypeScript-/Node-Version, tsc-Zeiten, node --test-Verhalten mit .ts (Spike in frischem git worktree wie am 2026-07-08; Worktree danach entfernen, nichts mergen). GO/NO-GO-Entscheidung mit maschinellen Kriterien nach §6 (node --test fail 0, Laufzeit maximal 2x Baseline, validate --level publish exit 0, device.js strict-clean).
+2. Bei GO: device.js-FIRST nach .ts migrieren (NICHT lib-first — lib/ ist durch die Unit-Tests abgedeckt, device.js war der Ort des einzigen Produktions-Crashs). Spike-Gotchas beachten (Doku §1): tsconfig.json + npm-Script "build": "tsc" + explizites types-Feld ["node","homey"]. Verhaltensaequivalenz VOR/NACH ueber die Mock-Harness-Tests beweisen (TDD: Tests zuerst gegen die .js-Fassung gruen, dann unveraendert gegen die .ts-Fassung).
+3. Hook-Pflicht: die Datei-Erkennung in .claude/hooks/run-matching-test.js auf .ts-Dateien erweitern — per TDD mit neuem Test in test/hooks/ (der Hook faellt bei .ts sonst STILL aus, Doku §2). engines-Feld in package.json pinnen (Node-Version mit nativem Type-Stripping; Minimum bei Umsetzung verifizieren).
+4. Release nach CLAUDE.md §8 + HOMEY.md: npx homey app version minor (naechste freie 0.X — kann von der Milestone-Nummer abweichen; der Store verlangt monoton steigende Versionen), Changelog en+de, validate --level publish, Store-Test-Publish zur Runtime-Verifikation, versions.md-Zeile.
+5. Bei NO-GO: Befund als Nachtrag ins Entscheidungsdokument, Milestone mit Ergebnis "NO-GO" als done schliessen (log-Eintrag mit Begruendung).
 
-Vorgehen wie M0: superpowers:writing-plans -> subagent-driven-development (frischer Implementer + Review je Task, TDD). Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika ueber die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: violet).
+/code-review vor jeder Git-Aktion (CLAUDE.md §9); documenting-code-Skill fuer alle angefassten Quelldateien.
 
-/remote-control M5 — Inbound-Alarme (HTTP → Flow-Trigger)`
+/remote-control M5 — TS-Migration device.js — Re-Evaluation (Pfad B/C)`
     },
     {
       id: "→M6",
@@ -422,35 +468,37 @@ Das aktualisiert automatisch den →M6-Eintrag in docs/dashboard/dashboard.html 
     },
     {
       id: "M6",
-      title: "LabCOM-Cloud-Import (PoolLab)",
+      title: "Inbound-Alarme (HTTP → Flow-Trigger)",
       status: "todo",
-      startedAt: null,
+      startedAt: "2026-06-26",
       finishedAt: null,
       commit: null,
-      summary: "Automatischer Import der langsam veränderlichen Chemie-Werte (Calciumhärte, Gesamtalkalität, CYA, TDS/Salz) aus der PoolLab/LabCOM-Cloud statt manueller Eingabe. Speist die LSI-Berechnung aus M1; manuelle Eingabe + Flow-Action bleiben Fallback. Nachgelagert zu M1/M5.",
+      summary: "Eingehende Violet-Alarme (NOTIFY: HTTP GET ?ERRORCODE&SUBJECT) per eingebettetem HTTP-Listener (Default-Port 22222, konfigurierbar) als Geraete-Flow-Trigger am Pool-Device. Ersetzt den Micro-Web-Server-Umweg. Unabhaengig von M1-M3.",
       steps: [
-        { label: "Brainstorming", done: false },
-        { label: "Spec", done: false },
+        { label: "Brainstorming", done: true },
+        { label: "Spec", done: true },
         { label: "Plan", done: false },
         { label: "Implementierung (SDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
       currentActivity: null,
       runtime: null,
-      log: [],
+      log: [
+        { at: "2026-06-26", note: "Brainstorming + Spec abgeschlossen und freigegeben" }
+      ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
-Violet Homey Pro App — Milestone M6 (LabCOM-Cloud-Import der Wasserchemie für den LSI).
+Violet Homey Pro App — Milestone M6 (Inbound-HTTP-Alarme → Flow-Trigger). Brainstorming + Spec sind bereits fertig und freigegeben.
 
-Aktualisiere beim Start den M6-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
+Lies zuerst die Spec docs/superpowers/specs/2026-06-26-violet-http-notifications-design.md. Aktualisiere beim Start den M6-Eintrag in docs/dashboard/dashboard.html: log "Plan gestartet", currentActivity pflegen; Steps Plan -> Implementierung (SDD) -> Validate + Push abhaken; am Ende status "done" + commit. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
 
-Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-06-29-violet-homey-app-m1-lsi-design.md) — dort ist definiert, wie die Chem-Werte (Calciumhärte, Gesamtalkalität, CYA, TDS/Salz) gespeichert und vom LSI gelesen werden (Device-Settings + Flow-Action „Wasserchemie setzen“). M0–M5 sollten fertig sein.
+Kontext laden: Projekt-Status-Memory. M0 fertig (HEAD 4d1aaf3). Dieses Feature ist unabhaengig von M1–M3 und kann jederzeit nach M0 gebaut werden.
 
-Aufgabe: Die in M1 manuell gepflegten Chem-Werte automatisch aus der PoolLab/LabCOM-Cloud beziehen (Auth, Polling/Refresh, Feld-Mapping auf die bestehenden Settings), als zusätzliche, optionale Quelle — manuelle Eingabe + Flow-Action aus M1 bleiben als Fallback. Reine, testbare Mapping-/Client-Logik nach /lib; device.js bleibt dünn.
+Aufgabe (aus der Spec): eingebetteter HTTP-Listener im Pool-Device (neue lib/NotifyServer.js mit reiner, testbarer parseAlarm-Funktion + Singleton-Bind, EADDRINUSE sauber abfangen), Geraete-Flow-Trigger "Alarm empfangen" via getDeviceTriggerCard (Tokens errorcode + subject, optionaler Freitext-Code-Filter per registerRunListener), neue Device-Einstellung notifyPort (Default 22222, konfigurierbar). Vor dem Coden an echter Hardware bestaetigen, dass die Violet die Tokens exakt als ERRORCODE/SUBJECT sendet und ob die Werte URL-codiert ankommen — das praegt nur parseAlarm, nicht die Architektur.
 
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).
+Vorgehen wie M0: superpowers:writing-plans -> subagent-driven-development (frischer Implementer + Review je Task, TDD). Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika ueber die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: violet).
 
-/remote-control M6 — LabCOM-Cloud-Import (PoolLab)`
+/remote-control M6 — Inbound-Alarme (HTTP → Flow-Trigger)`
     },
     {
       id: "→M7",
@@ -481,12 +529,12 @@ Das aktualisiert automatisch den →M7-Eintrag in docs/dashboard/dashboard.html 
     },
     {
       id: "M7",
-      title: "Empfehlungs-Modul (Wasserbalance)",
+      title: "LabCOM-Cloud-Import (PoolLab)",
       status: "todo",
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Beratungsmodul: Wie bringt man das Ausgangs-Leitungswasser (aus den veröffentlichten Werten der Wasserwerke) in ein günstiges LSI-Band? Welche aktuellen Werte sind die echten Treiber für einen schnellen, günstigen LSI? Inkl. CO₂-Ausgasung bei Frischwasser (pH steigt; niedrige Alkalität → starke pH-Schwankungen). Nachgelagert zu M1/M5.",
+      summary: "Automatischer Import der langsam veränderlichen Chemie-Werte (Calciumhärte, Gesamtalkalität, CYA, TDS/Salz) aus der PoolLab/LabCOM-Cloud statt manueller Eingabe. Speist die LSI-Berechnung aus M1; manuelle Eingabe + Flow-Action bleiben Fallback. Nachgelagert zu M1/M4.",
       steps: [
         { label: "Brainstorming", done: false },
         { label: "Spec", done: false },
@@ -499,20 +547,79 @@ Das aktualisiert automatisch den →M7-Eintrag in docs/dashboard/dashboard.html 
       log: [],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
-Violet Homey Pro App — Milestone M7 (Empfehlungs-/Wasserbalance-Modul).
+Violet Homey Pro App — Milestone M7 (LabCOM-Cloud-Import der Wasserchemie für den LSI).
 
 Aktualisiere beim Start den M7-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
 
-Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-06-29-violet-homey-app-m1-lsi-design.md) — dort sind LSI-Mathe (lib/Lsi.js), Klassifizierung und die Chem-Eingaben definiert, auf denen dieses Modul aufsetzt. M0–M6 sollten fertig sein.
+Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-06-29-violet-homey-app-m1-lsi-design.md) — dort ist definiert, wie die Chem-Werte (Calciumhärte, Gesamtalkalität, CYA, TDS/Salz) gespeichert und vom LSI gelesen werden (Device-Settings + Flow-Action „Wasserchemie setzen“). M0–M6 sollten fertig sein.
+
+Aufgabe: Die in M1 manuell gepflegten Chem-Werte automatisch aus der PoolLab/LabCOM-Cloud beziehen (Auth, Polling/Refresh, Feld-Mapping auf die bestehenden Settings), als zusätzliche, optionale Quelle — manuelle Eingabe + Flow-Action aus M1 bleiben als Fallback. Reine, testbare Mapping-/Client-Logik nach /lib; device.js bleibt dünn.
+
+Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).
+
+/remote-control M7 — LabCOM-Cloud-Import (PoolLab)`
+    },
+    {
+      id: "→M8",
+      title: "Zwischen-Check",
+      status: "todo",
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Housekeeping zwischen M7 und M8: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      steps: [
+        { label: "/fewer-permission-prompts", done: false },
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false },
+        { label: "Workflow-Retrospektive", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Zwischen-Check vor M8 (CLAUDE.md §7 Punkt 4). M7 ist abgeschlossen, M8 startet als Naechstes.
+
+Fuehre aus: /milestone-checkpoint
+
+Das aktualisiert automatisch den →M8-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+/remote-control →M8 — Zwischen-Check`
+    },
+    {
+      id: "M8",
+      title: "Empfehlungs-Modul (Wasserbalance)",
+      status: "todo",
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Beratungsmodul: Wie bringt man das Ausgangs-Leitungswasser (aus den veröffentlichten Werten der Wasserwerke) in ein günstiges LSI-Band? Welche aktuellen Werte sind die echten Treiber für einen schnellen, günstigen LSI? Inkl. CO₂-Ausgasung bei Frischwasser (pH steigt; niedrige Alkalität → starke pH-Schwankungen). Nachgelagert zu M1/M4.",
+      steps: [
+        { label: "Brainstorming", done: false },
+        { label: "Spec", done: false },
+        { label: "Plan", done: false },
+        { label: "Implementierung (SDD)", done: false },
+        { label: "Validate + Push", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Violet Homey Pro App — Milestone M8 (Empfehlungs-/Wasserbalance-Modul).
+
+Aktualisiere beim Start den M8-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
+
+Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-06-29-violet-homey-app-m1-lsi-design.md) — dort sind LSI-Mathe (lib/Lsi.js), Klassifizierung und die Chem-Eingaben definiert, auf denen dieses Modul aufsetzt. M0–M7 sollten fertig sein.
 
 Aufgabe (beratend, kein Zwang zum Schreiben auf die Violet): Empfehlungen, mit welchen chemischen Maßnahmen man (a) das initiale Leitungswasser — ausgehend von den veröffentlichten Messwerten der Wasserwerke — in ein günstiges LSI-Band bringt und (b) aus den aktuellen Werten die wirklichen "Treiber" identifiziert, um schnell auf einen günstigen LSI zu kommen (welche Stellgröße bringt am meisten). Wichtig: Hinweis auf CO₂-Ausgasung beim Einlass von frischem Leitungswasser (erhöht den pH-Wert) und die Wechselwirkung mit niedriger Alkalität (starke pH-Schwankungen, schlechte Pufferung). Mögliche Ausgabe: berechnete Mengenempfehlungen + erklärende Hinweise (Flow-Tokens/Notification oder Settings-Hinweis); ggf. Anbindung an M3-Dosierung als Option.
 
 Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).
 
-/remote-control M7 — Empfehlungs-Modul (Wasserbalance)`
+/remote-control M8 — Empfehlungs-Modul (Wasserbalance)`
     },
     {
-      id: "M8",
+      id: "M9",
       title: "Dosierung & Sollwerte (setConfig)",
       status: "todo",
       startedAt: null,
@@ -531,9 +638,9 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
       log: [],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
-Violet Homey Pro App — Milestone M8 (Dosierung & Sollwerte via setConfig).
+Violet Homey Pro App — Milestone M9 (Dosierung & Sollwerte via setConfig).
 
-Aktualisiere beim Start den M8-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
+Aktualisiere beim Start den M9-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory + die M3-Spec (docs/superpowers/specs/2026-07-02-violet-homey-app-m3-write-control-design.md, §2/§13) und das M3-Threat-Model (docs/superpowers/security/2026-06-30-m3-write-control-threat-model.md). M3 (setFunctionManually-Schreibpfad, lib/WriteClient.js, WRITE_TARGETS-Registry) muss fertig sein — hier wird darauf aufgebaut.
 
@@ -543,10 +650,10 @@ SICHERHEIT: neue Angriffsfläche (schreibt direkt Wasserchemie-Parameter) → ZU
 
 Vorgehen wie M0–M3: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. Vor Merge: /security-review + security-reviewer-Subagent auf den Diff.
 
-/remote-control M8 — Dosierung & Sollwerte (setConfig)`
+/remote-control M9 — Dosierung & Sollwerte (setConfig)`
     },
     {
-      id: "M9",
+      id: "M10",
       title: "Filterdruck + Anströmung/Durchfluss + Auto-Detection-Review",
       status: "todo",
       startedAt: null,
@@ -565,9 +672,9 @@ Vorgehen wie M0–M3: superpowers:brainstorming -> writing-plans -> subagent-dri
       log: [],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
-Violet Homey Pro App — Milestone M9 (Filterdruck + Anstroemung/Durchfluss + Auto-Detection-Review).
+Violet Homey Pro App — Milestone M10 (Filterdruck + Anstroemung/Durchfluss + Auto-Detection-Review).
 
-Aktualisiere beim Start den M9-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload Version bumpen (HOMEY.md) + versions.md pflegen. (Protokoll: CLAUDE.md §7-8 + HOMEY.md, automatisch geladen.)
+Aktualisiere beim Start den M10-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload Version bumpen (HOMEY.md) + versions.md pflegen. (Protokoll: CLAUDE.md §7-8 + HOMEY.md, automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory + M2-Spec (docs/superpowers/specs/2026-07-01-violet-homey-app-m2-full-reads-design.md) — Reads-Milestone im M2-Stil (lib/FeatureGroups.js Registry + FeatureDetector). M0-M3 fertig.
 
@@ -577,7 +684,7 @@ Aufgabe B (Auto-Detection-Review): kritisch pruefen, ob die history-basierte Fea
 
 Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK via homey-app-Skill, Live-Inspektion via homey-cli.
 
-/remote-control M9 — Filterdruck + Anstroemung + Auto-Detection-Review`
+/remote-control M10 — Filterdruck + Anstroemung + Auto-Detection-Review`
     }
   ]
 };
