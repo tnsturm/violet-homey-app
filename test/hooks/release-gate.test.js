@@ -70,6 +70,18 @@ test('release-gate: install with missing changelog file → BLOCK', () => {
   assert.match(err, /\.homeychangelog\.json/);
 });
 
+test('release-gate: version only mentioned in prose (planned next upload) → PASS', () => {
+  // versions.md ends with a "Naechster Upload: `X.Y.Z`" note — a planned
+  // version is not a logged release and must not block (spec §4 b: table rows only).
+  const dir = makeRepo({ changelog: FULL_CHANGELOG });
+  fs.appendFileSync(
+    path.join(dir, 'docs', 'dashboard', 'versions.md'),
+    '\n**Naechster Upload: `' + VERSION + '`** (geplant).\n'
+  );
+  const { code, err } = runHook('homey app install', dir);
+  assert.strictEqual(code, 0, err);
+});
+
 test('release-gate: install with version already in versions.md → BLOCK naming the bump', () => {
   const { code, err } = runHook('homey app install', makeRepo({ changelog: FULL_CHANGELOG, logged: true }));
   assert.strictEqual(code, 2, err);

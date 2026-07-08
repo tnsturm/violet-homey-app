@@ -1,6 +1,6 @@
 'use strict';
 
-// PreToolUse hook (matcher: Bash) — blocks `git commit` while `tsc -p
+// PreToolUse hook (matcher: Bash|PowerShell) — blocks `git commit` while `tsc -p
 // tsconfig.checkjs.json` is red, so type errors can't land in history (M4.5 —
 // eval doc §4A "Commit-Gate": ~+7 s per commit, deliberately NOT a PostToolUse
 // per-edit check, measured 6.6 s each). Pattern mirrors check-version-sync.js:

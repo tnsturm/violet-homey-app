@@ -1,6 +1,6 @@
 'use strict';
 
-// PreToolUse hook (matcher: Bash) — blocks `git commit` while the repo's own
+// PreToolUse hook (matcher: Bash|PowerShell) — blocks `git commit` while the repo's own
 // test suite is red, so failing tests can't land in history (M4.6 — spec
 // docs/superpowers/specs/2026-07-08-m4.6-loop-hardening-gates-ci.md §3).
 // Registered ALONGSIDE typecheck-gate.js, not merged into it (spec §3 D1):

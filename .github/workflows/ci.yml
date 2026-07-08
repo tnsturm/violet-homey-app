@@ -29,6 +29,10 @@ jobs:
       - run: npm test
       - run: npm run typecheck
       - name: Manifest sync (app.json == .homeycompose/app.json)
-        run: node -e "const a=require('./app.json').version, b=require('./.homeycompose/app.json').version; if (a !== b) { console.error('Version mismatch: app.json=' + a + ' vs .homeycompose/app.json=' + b); process.exit(1); } console.log('manifest versions in sync: ' + a);"
+        # Block scalar: the JS contains ": " sequences that are invalid in a YAML plain scalar.
+        run: >-
+          node -e "const a=require('./app.json').version, b=require('./.homeycompose/app.json').version;
+          if (a !== b) { console.error('Version mismatch: app.json=' + a + ' vs .homeycompose/app.json=' + b); process.exit(1); }
+          console.log('manifest versions in sync: ' + a);"
       - name: Validate (publish level)
         run: npx --yes homey app validate --level publish

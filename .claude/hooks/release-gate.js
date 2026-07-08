@@ -1,6 +1,6 @@
 'use strict';
 
-// PreToolUse hook (matcher: Bash) — blocks `homey app install|publish` when
+// PreToolUse hook (matcher: Bash|PowerShell) — blocks `homey app install|publish` when
 // the release checklist (CLAUDE.md §8 / HOMEY.md) is provably incomplete
 // (M4.6 — spec docs/superpowers/specs/2026-07-08-m4.6-loop-hardening-gates-ci.md §4):
 //   (a) .homeychangelog.json lacks a non-empty en AND de entry for the version
@@ -69,10 +69,13 @@ process.stdin.on('end', () => {
     }
   }
 
-  // (b) the version must not already be logged: forgotten bump = double release
+  // (b) the version must not already be logged: forgotten bump = double release.
+  // Only table rows count (line starts with "| `X.Y.Z`") — versions.md also
+  // mentions the PLANNED next version in prose ("Naechster Upload: `X.Y.Z`"),
+  // which must not block the very release it announces (/code-review finding).
   try {
     const log = fs.readFileSync(path.join(cwd, 'docs', 'dashboard', 'versions.md'), 'utf8');
-    if (log.includes('`' + version + '`')) {
+    if (new RegExp('^\\|\\s*`' + version.replace(/\./g, '\\.') + '`', 'm').test(log)) {
       problems.push(
         `version ${version} is already logged in docs/dashboard/versions.md — `
         + 'bump first ("npx homey app version patch|minor", HOMEY.md) so every release gets a fresh number.'

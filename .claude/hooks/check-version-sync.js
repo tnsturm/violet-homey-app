@@ -1,6 +1,6 @@
 'use strict';
 
-// PreToolUse hook (matcher: Bash) — blocks `git commit` when app.json and
+// PreToolUse hook (matcher: Bash|PowerShell) — blocks `git commit` when app.json and
 // .homeycompose/app.json disagree on version (HOMEY.md: "muessen vor dem
 // Commit identisch sein").
 
