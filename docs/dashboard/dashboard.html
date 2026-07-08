@@ -365,19 +365,19 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
     {
       id: "M4.6",
       title: "Loop-Hardening I: Gates & CI",
-      status: "active",
+      status: "done",
       startedAt: "2026-07-08",
-      finishedAt: null,
-      commit: null,
+      finishedAt: "2026-07-08",
+      commit: "c6c2378",
       summary: "Paket 1 der Loop-Engineering-Analyse (2026-07-07, Memory loop-dev-roadmap, Ideen 1–4): Commit-Test-Gate (npm test blockt git commit; kombiniert mit dem M4.5-Typecheck-Gate), Release-Gate-Hook (install/publish ohne Changelog en+de, Versions-Bump oder Credential-Rotations-Nachweis blocken — Write-Passwort-Rotation ist vor dem Live-Publish noch offen), GitHub-Actions-CI (npm test + typecheck + validate --level publish + Manifest-Sync bei Push/PR, nächtlicher Cron) als erste sessionunabhängige Verifikationsinstanz, /goal-Done-Bedingungen in alle offenen Resume-Prompts + dashboard-sync-Regel. Tooling-only, kein Version-Bump (§8, Präzedenz M4.5). Die CI erfüllt M5-Gate (b). Erster Milestone des Tooling-Blocks M4.6–M4.9 (User-Entscheid 2026-07-08): KEIN Zwischen-Checkpoint im Block — der konsolidierte milestone-checkpoint läuft einmal danach als →M5.",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
         { label: "Implementierung (TDD)", done: true },
-        { label: "Validate + Push", done: false }
+        { label: "Validate + Push", done: true }
       ],
-      currentActivity: "/code-review + §9-Entscheid (Push/PR), danach erster CI-Lauf",
+      currentActivity: null,
       runtime: null,
       log: [
         { at: "2026-07-08", note: "Milestone aus der Loop-Engineering-Analyse angelegt (Memory loop-dev-roadmap, Paket 1 = Ideen 1–4); Brainstorming durch die Analyse-Session 2026-07-07 abgedeckt. Platzierung vor M5, weil die CI dessen hartes Gate (b) erfüllt." },
@@ -387,25 +387,10 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
         { at: "2026-07-08", note: "Release-Gate per TDD (12 Smoke-Tests, cf0c63d); Direktaufruf gegen das echte Repo blockt publish korrekt mit BEIDEN realen Verstoessen (0.4.2 schon in versions.md + Rotations-Nachweis fehlt), git status passiert. FRICTION + Fix: Commit cf0c63d landete trotz rotem tsc — die Gate-Hooks matchten nur das Bash-Tool, Commits liefen in dieser Windows-Session aber ueber das PowerShell-Tool. Matcher auf \"Bash|PowerShell\" erweitert (alle 4 Bash-Gates), Typ-Fehler im Test per JSDoc gefixt; greift wie alle settings.json-Aenderungen erst ab naechster Session." },
         { at: "2026-07-08", note: "Aufgabe 4 umgesetzt: DONE-BEDINGUNGEN-Checklisten (Klartext-Fallback, da claude 2.1.110 < /goal-Mindestversion 2.1.139 — claude --help kennt kein goal) in die Resume-Prompts M5–M10 eingefuegt (M5 mit GO/NO-GO-Variante, M9 zusaetzlich security-review, M6 ohne Release-Zeile — Prompt enthaelt keinen Release-Schritt; M4.7–M4.9 behalten ihre /goal-Zeilen, Umstellung ist M4.9-Sweep). dashboard-sync-Regel ergaenzt. CI-Workflow committet (fd32bcb); lokale Runner-Simulation gruen (typecheck exit 0, Manifest-Sync in sync, validate publish exit 0). Erster echter CI-Lauf nach Push/PR (§9-Gate)." },
         { at: "2026-07-08", note: "/code-review-Runde mit 2 echten Funden, beide gefixt: (1) ci.yml war ungueltiges YAML (': ' im Plain-Scalar der Manifest-Sync-run-Zeile — erster CI-Lauf waere sofort gescheitert; js-yaml-Parse jetzt gruen, Block-Scalar); (2) release-gate (b) false-positive — versions.md nennt die GEPLANTE naechste Version in Prosa ('Naechster Upload: `0.4.3`'), Substring-Match haette genau diesen Release geblockt; Fix per TDD: nur Tabellenzeilen ('| `X.Y.Z`') zaehlen, 13. Smoke-Test. Suite 119/119. BONUS-Befund: die neuen Hooks sind SOFORT live (release-gate blockte in-Session einen PowerShell-Befehl, der 'homey app publish' nur als String enthielt) — settings.json-Hooks greifen hier entgegen der M4.5-Annahme ohne Session-Neustart; Matcher Bash|PowerShell live bestaetigt." },
-        { at: "2026-07-08", note: "FRICTION + Fix (erster CI-Lauf): npm test hing auf dem Runner (>15 min, lokal 4 s). Systematisch eingegrenzt via npx node@18 lokal: JEDE Testdatei einzeln gruen in 1-2 s, aber der parallele Gesamtlauf node --test haengt vor der ersten Datei — Node-18-Test-Runner-Problem (18 zudem EOL seit 2025). Fix: CI auf node-version 22 (LTS; lokal verifiziert: 119/119, exit 0); haengender Lauf 28970000587 gecancelt. Lehre: CI-Node-Version nicht an der Homey-Runtime ausrichten — die Suite testet lib/Tooling, nicht die App-Runtime." }
+        { at: "2026-07-08", note: "FRICTION + Fix (erster CI-Lauf): npm test hing auf dem Runner (>15 min, lokal 4 s). Systematisch eingegrenzt via npx node@18 lokal: JEDE Testdatei einzeln gruen in 1-2 s, aber der parallele Gesamtlauf node --test haengt vor der ersten Datei — Node-18-Test-Runner-Problem (18 zudem EOL seit 2025). Fix: CI auf node-version 22 (LTS; lokal verifiziert: 119/119, exit 0); haengender Lauf 28970000587 gecancelt. Lehre: CI-Node-Version nicht an der Homey-Runtime ausrichten — die Suite testet lib/Tooling, nicht die App-Runtime." },
+        { at: "2026-07-08", note: "2. Linux-Befund: vorbestehender compose-guard-Test 'root app.json via backslash path' schlug auf dem Runner fehl (Backslash ist auf POSIX Dateinamens-Zeichen, kein Separator) — Test per { skip } auf Windows beschraenkt (c6c2378). Danach ERSTER GRUENER CI-LAUF auf origin/main: Run 28971612307, alle Steps in 1m02s (test 119 Tests, typecheck, Manifest-Sync, validate publish). M4.6 DONE: alle 4 Done-Bedingungen erfuellt (Suite fail 0; beide Gates Direktaufruf rot exit 2 / gruen exit 0; CI gruen auf main; M5-M10-Prompts mit DONE-BEDINGUNGEN-Checklisten). M5-Gate (b) damit erfuellt. User-Entscheid §9: direkt auf origin/main (kein PR). Naechster Block-Milestone: M4.7." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Violet Homey Pro App — Milestone M4.6 (Loop-Hardening I: Gates & CI). Umsetzung von Paket 1 der Loop-Engineering-Analyse. Tooling-only: KEIN Version-Bump, kein Release (CLAUDE.md §8, Präzedenz M4.5).
-
-Lies zuerst das Memory loop-dev-roadmap (via MEMORY.md, Ideen 1–4) und CLAUDE.md §4/§7–§10-Kontext. M4.5 (checkJs) sollte abgeschlossen sein — dessen Typecheck-Commit-Gate wird hier erweitert. Aktualisiere beim Start den M4.6-Eintrag in docs/dashboard/dashboard.html (status "active", startedAt, log; Protokoll CLAUDE.md §7). Kurz-Spec nach docs/superpowers/specs/ (Brainstorming ist abgedeckt; nur offene Detailfragen klären), dann superpowers:writing-plans.
-
-Aufgaben (Hooks je per TDD mit Smoke-Test in test/hooks/; Hook-Lade-Realität beachten: settings.json-Hooks laden erst beim nächsten Session-Start — in-Session per Direktaufruf mit Fixture-stdin verifizieren, roter Fall exit 2 / grüner Fall exit 0):
-1. Commit-Test-Gate (Idee 2): PreToolUse-Bash-Hook nach Muster .claude/hooks/check-version-sync.js — fängt git commit ab, führt npm test aus (Baseline ~2,4 s, 91 Tests), blockt bei Rot mit exit 2 + Test-Output als Fix-Anweisung, fail-open bei eigenen Fehlern. Mit dem M4.5-Typecheck-Gate zu EINEM Gate-Hook kombinieren oder sauber daneben registrieren — Entscheidung im Log dokumentieren.
-2. Release-Gate (Idee 4): PreToolUse-Bash-Hook, der "homey app install|publish" abfängt und blockt, wenn (a) .homeychangelog.json keinen en+de-Eintrag für die Version aus .homeycompose/app.json hat, (b) diese Version bereits in docs/dashboard/versions.md steht (Bump vergessen = Doppel-Release) oder (c) bei publish kein Rotations-Nachweis existiert (docs/superpowers/security/credential-rotation.md mit Datum) — laut versions.md ist die Write-Passwort-Rotation vor dem Live-Publish noch offen.
-3. GitHub-Actions-CI (Idee 3): .github/workflows/ci.yml — bei Push/PR: npm test, npm run typecheck (aus M4.5), npx homey app validate --level publish, Manifest-Sync-Check app.json vs .homeycompose/app.json; zusätzlich schedule-Cron (nächtlich) auf main. Vorher prüfen, ob validate ohne Homey-Login auf dem Runner läuft; Befund im Log festhalten. Erster grüner Lauf auf origin/main ist Teil der Done-Bedingung.
-4. /goal-Zeilen (Idee 1): in die offenen Resume-Prompts von M5–M10 im DASHBOARD_STATUS-Block vor der /remote-control-Zeile eine transcript-verifizierbare /goal-Done-Bedingung einfügen (Muster: "npm test zeigt fail 0 UND npx homey app validate --level publish zeigt PASS — Outputs im Chat gezeigt"; bei Release-Milestones zusätzlich release-readiness PASS; M4.7–M4.9 haben ihre /goal-Zeile bereits). Im dashboard-sync-Skill die Regel ergänzen: "Jeder neue Resume-Prompt enthält eine /goal-Zeile mit transcript-verifizierbarer Done-Bedingung." Vorher claude --version gegen die /goal-Mindestversion prüfen; falls /goal nicht verfügbar: nummerierte Klartext-Checkliste als Fallback verwenden und das im Log vermerken.
-
-/goal npm test zeigt fail 0, beide neuen Hooks blocken im Direktaufruf-Test (exit 2) und passieren den Positivfall (exit 0), .github/workflows/ci.yml liegt auf origin/main mit grünem ersten Lauf, und die Resume-Prompts M5–M10 enthalten /goal-Zeilen — Outputs/Diffs im Chat gezeigt.
-
-/code-review vor jeder Git-Aktion (CLAUDE.md §9); documenting-code-Skill für alle neuen Hooks.
-
-/remote-control M4.6 — Loop-Hardening I: Gates & CI`
+      prompt: null
     },
     {
       id: "M4.7",
