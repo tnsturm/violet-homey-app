@@ -335,7 +335,7 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
     {
       id: "M4.5",
       title: "TypeScript-Typecheck (checkJs)",
-      status: "todo",
+      status: "active",
       startedAt: "2026-07-08",
       finishedAt: null,
       commit: null,
@@ -343,14 +343,16 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
-        { label: "Plan", done: false },
+        { label: "Plan", done: true },
         { label: "Implementierung (TDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: null,
+      currentActivity: "Implementierung läuft (executing-plans): Baseline → Toolchain → 16 Fixes → typecheck-gate-Hook",
       runtime: null,
       log: [
-        { at: "2026-07-08", note: "Evaluation abgeschlossen (Spike in isoliertem Worktree, danach entfernt): Entscheidungsdokument docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md — Empfehlung Pfad A (checkJs); auf User-Entscheid als eigener Milestone M4.5 eingeplant. Kernzahlen: checkJs lenient = 16 Befunde (davon 1 potenzieller Bug in driver.js onPair), validate mit TS exit 0, node --test bricht bei .ts-Umbenennung (extensionless require) — daher kein .ts jetzt." }
+        { at: "2026-07-08", note: "Evaluation abgeschlossen (Spike in isoliertem Worktree, danach entfernt): Entscheidungsdokument docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md — Empfehlung Pfad A (checkJs); auf User-Entscheid als eigener Milestone M4.5 eingeplant. Kernzahlen: checkJs lenient = 16 Befunde (davon 1 potenzieller Bug in driver.js onPair), validate mit TS exit 0, node --test bricht bei .ts-Umbenennung (extensionless require) — daher kein .ts jetzt." },
+        { at: "2026-07-08", note: "Umsetzungssession gestartet. Brainstorming/Spec durch die Evaluation abgedeckt; Plan-Phase beginnt (superpowers:writing-plans). Baseline wird gemäß §6 heute neu gemessen." },
+        { at: "2026-07-08", note: "Plan geschrieben + committet: docs/superpowers/plans/2026-07-08-m4.5-typescript-checkjs.md (8 Tasks: Baseline, Toolchain, onPair zuerst, lib-/test-Fixes, typecheck-gate-Hook per TDD, §6-Sweep). Feature-Branch m4.5-typecheck-checkjs von main." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
