@@ -72,7 +72,9 @@ test('sendWrite sends the auth header + redirect:error, returns parsed OK (SR-08
   const { sendWrite } = require('../lib/WriteClient');
   const calls = [];
   const orig = global.fetch;
-  global.fetch = async (url, opts) => { calls.push({ url, opts }); return { ok: true, status: 200, text: async () => 'OK\nPUMP\non' }; };
+  // Stubs are deliberately minimal, not full Response objects — hence the any-cast
+  // (checkJs, M4.5): the config must never be weakened instead (§6 Abbruchkriterium).
+  global.fetch = /** @type {any} */ (async (url, opts) => { calls.push({ url, opts }); return { ok: true, status: 200, text: async () => 'OK\nPUMP\non' }; });
   try {
     const res = await sendWrite('violet.local', { username: 'u', password: 'sekret' },
       { target: 'PUMP', state: 'ON', args: { duration: 60, speed: 1 } });
@@ -87,13 +89,15 @@ test('sendWrite sends the auth header + redirect:error, returns parsed OK (SR-08
 test('sendWrite throws a sanitized error on HTTP failure — no creds in message (SR-02/09)', async () => {
   const { sendWrite } = require('../lib/WriteClient');
   const orig = global.fetch;
-  global.fetch = async () => ({ ok: false, status: 401, text: async () => 'Access restricted' });
+  global.fetch = /** @type {any} */ (async () => ({ ok: false, status: 401, text: async () => 'Access restricted' }));
   try {
     await assert.rejects(
       () => sendWrite('violet.local', { username: 'u', password: 'sekret' }, { target: 'LIGHT', state: 'ON' }),
       (err) => {
-        assert.ok(/HTTP 401/.test(err.message));
-        assert.ok(!/sekret/.test(err.message) && !/Basic /.test(err.message));
+        // assert.rejects types the caught value as unknown — narrow once (checkJs, M4.5).
+        const msg = /** @type {Error} */ (err).message;
+        assert.ok(/HTTP 401/.test(msg));
+        assert.ok(!/sekret/.test(msg) && !/Basic /.test(msg));
         return true;
       },
     );
@@ -104,7 +108,7 @@ test('sendWrite validates before any network I/O (SR-04)', async () => {
   const { sendWrite } = require('../lib/WriteClient');
   const orig = global.fetch;
   let called = false;
-  global.fetch = async () => { called = true; return { ok: true, status: 200, text: async () => 'OK' }; };
+  global.fetch = /** @type {any} */ (async () => { called = true; return { ok: true, status: 200, text: async () => 'OK' }; });
   try {
     await assert.rejects(() => sendWrite('violet.local', { username: 'u', password: 'p' }, { target: 'DOS_1_CL', state: 'ON' }), RangeError);
     assert.strictEqual(called, false);

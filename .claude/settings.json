@@ -4,7 +4,8 @@
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "node .claude/hooks/check-version-sync.js" }
+          { "type": "command", "command": "node .claude/hooks/check-version-sync.js" },
+          { "type": "command", "command": "node .claude/hooks/typecheck-gate.js" }
         ]
       },
       {

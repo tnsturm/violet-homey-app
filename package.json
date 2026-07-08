@@ -3,7 +3,13 @@
   "version": "0.1.0",
   "main": "app.js",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "typecheck": "tsc -p tsconfig.checkjs.json"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
+    "@types/node": "^18.19.130",
+    "typescript-checkjs": "npm:typescript@^6.0.3"
+  }
 }
