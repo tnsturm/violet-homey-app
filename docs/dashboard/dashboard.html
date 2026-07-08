@@ -395,8 +395,8 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
     {
       id: "M4.7",
       title: "Loop-Hardening II: Verifikations-Netz",
-      status: "todo",
-      startedAt: null,
+      status: "active",
+      startedAt: "2026-07-08",
       finishedAt: null,
       commit: null,
       summary: "Paket 2 der Loop-Engineering-Analyse (Ideen 5–7 + 12): Mock-Harness test/mocks/homey.js + erste Reconcile/Apply-Tests für drivers/pool/device.js (Ort des einzigen Produktions-Crashs; erfüllt M5-Gate a) inkl. run-matching-test-Erweiterung auf drivers/; read-only Live-Smoke-Test test/live/smoke.js gegen die echte Violet als release-readiness-Punkt 8 (der M3-§12-Write-Teil ist seit 2026-07-07 via debughttp.htm erledigt — nur noch Read-Pfad); Stop-Hook stop-verify.js (Turn darf nicht mit roten Tests/validate-Fehlern enden); bekannte Defekte als { todo: true }-Tests eingefroren (alarm_dosing_blocked-False-Positive). Tooling-only, kein Version-Bump (§8). Teil des Tooling-Blocks M4.6–M4.9 (kein Zwischen-Checkpoint; konsolidiert in →M5).",
@@ -407,10 +407,11 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
         { label: "Implementierung (TDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: null,
+      currentActivity: "Spec (offene Detailfragen) + Plan",
       runtime: null,
       log: [
-        { at: "2026-07-08", note: "Milestone aus der Loop-Engineering-Analyse angelegt (Paket 2 = Ideen 5–7; Idee 12 todo-Tests thematisch hierher gezogen). Live-Smoke gegenüber der Roadmap angepasst: §12-Live-Write ist seit 2026-07-07 erledigt, nur der Read-Teil bleibt. Platzierung vor M5, weil das Mock-Harness dessen hartes Gate (a) erfüllt." }
+        { at: "2026-07-08", note: "Milestone aus der Loop-Engineering-Analyse angelegt (Paket 2 = Ideen 5–7; Idee 12 todo-Tests thematisch hierher gezogen). Live-Smoke gegenüber der Roadmap angepasst: §12-Live-Write ist seit 2026-07-07 erledigt, nur der Read-Teil bleibt. Platzierung vor M5, weil das Mock-Harness dessen hartes Gate (a) erfüllt." },
+        { at: "2026-07-08", note: "Umsetzungssession gestartet (direkt nach M4.6-Abschluss, gleiche Session). Kontext gelesen: device.js Reconcile/Apply, run-matching-test.js (bisher testlos, nur lib/-Mapping), release-readiness.md (Punkte 1-7), Fixtures (salt-electrolysis traegt echten BLOCKED_BY_MAX_AMOUNT-Block, getReadings.all den CL_DOSING_CONTROLLER-Normalzustand fuer den todo-Test). M4.6-Lesson beachten: settings.json-Hooks greifen SOFORT — Stop-Hook wird deshalb erst NACH gruenem Endstand registriert." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
