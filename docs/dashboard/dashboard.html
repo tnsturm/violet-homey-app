@@ -384,7 +384,8 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
         { at: "2026-07-08", note: "Umsetzungssession gestartet. Baseline: npm test 100/100 pass (~5 s). Befund fuer Aufgabe 4: claude --version = 2.1.110 < /goal-Mindestversion 2.1.139 (Memory loop-dev-roadmap Idee 1) — Fallback-Entscheidung folgt in der Spec." },
         { at: "2026-07-08", note: "Spec + Plan committet (e89c99e); Befund B2: homey app validate laeuft OHNE Login (CLI-4.1.1-Quelle: App.validate rein lokal via homey-lib, AthomApi nur bei run/install/publish; Athom shipped eigenes CI-Template mit athombv/github-action-homey-app-validate) — CI-validate auf dem Runner unkritisch." },
         { at: "2026-07-08", note: "ENTSCHEIDUNG Aufgabe 1 (Spec §3 D1): test-gate.js als EIGENER Hook NEBEN typecheck-gate.js registriert, nicht kombiniert — Claude Code fuehrt matchende Hooks parallel aus (Commit-Latenz = max statt Summe), Ein-Zweck-Hooks bleiben einzeln fail-open/testbar/M4.9-extrahierbar. Umgesetzt per TDD (6 Smoke-Tests, 6e84ad6); Suite 106/106 in ~3,5 s. Debugging-Fund: geerbtes NODE_TEST_CONTEXT liess die Fixture-Suite exit 0 melden — Hook strippt die node:test-Env-Marker vor dem Spawn." },
-        { at: "2026-07-08", note: "Release-Gate per TDD (12 Smoke-Tests, cf0c63d); Direktaufruf gegen das echte Repo blockt publish korrekt mit BEIDEN realen Verstoessen (0.4.2 schon in versions.md + Rotations-Nachweis fehlt), git status passiert. FRICTION + Fix: Commit cf0c63d landete trotz rotem tsc — die Gate-Hooks matchten nur das Bash-Tool, Commits liefen in dieser Windows-Session aber ueber das PowerShell-Tool. Matcher auf \"Bash|PowerShell\" erweitert (alle 4 Bash-Gates), Typ-Fehler im Test per JSDoc gefixt; greift wie alle settings.json-Aenderungen erst ab naechster Session." }
+        { at: "2026-07-08", note: "Release-Gate per TDD (12 Smoke-Tests, cf0c63d); Direktaufruf gegen das echte Repo blockt publish korrekt mit BEIDEN realen Verstoessen (0.4.2 schon in versions.md + Rotations-Nachweis fehlt), git status passiert. FRICTION + Fix: Commit cf0c63d landete trotz rotem tsc — die Gate-Hooks matchten nur das Bash-Tool, Commits liefen in dieser Windows-Session aber ueber das PowerShell-Tool. Matcher auf \"Bash|PowerShell\" erweitert (alle 4 Bash-Gates), Typ-Fehler im Test per JSDoc gefixt; greift wie alle settings.json-Aenderungen erst ab naechster Session." },
+        { at: "2026-07-08", note: "Aufgabe 4 umgesetzt: DONE-BEDINGUNGEN-Checklisten (Klartext-Fallback, da claude 2.1.110 < /goal-Mindestversion 2.1.139 — claude --help kennt kein goal) in die Resume-Prompts M5–M10 eingefuegt (M5 mit GO/NO-GO-Variante, M9 zusaetzlich security-review, M6 ohne Release-Zeile — Prompt enthaelt keinen Release-Schritt; M4.7–M4.9 behalten ihre /goal-Zeilen, Umstellung ist M4.9-Sweep). dashboard-sync-Regel ergaenzt. CI-Workflow committet (fd32bcb); lokale Runner-Simulation gruen (typecheck exit 0, Manifest-Sync in sync, validate publish exit 0). Erster echter CI-Lauf nach Push/PR (§9-Gate)." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
@@ -593,6 +594,11 @@ Wenn alle Trigger erfuellt:
 
 /code-review vor jeder Git-Aktion (CLAUDE.md §9); documenting-code-Skill fuer alle angefassten Quelldateien.
 
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. npm test zeigt fail 0 — Output im Chat gezeigt.
+2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
+3. Bei GO: Mock-Harness-Tests laufen unveraendert gegen die .ts-Fassung gruen UND release-readiness-Subagent meldet PASS vor dem Store-Test-Publish; bei NO-GO: Nachtrag im Entscheidungsdokument + log-Eintrag mit Begruendung — im Chat gezeigt.
+
 /remote-control M5 — TS-Migration device.js — Re-Evaluation (Pfad B/C)`
     },
     {
@@ -654,6 +660,10 @@ Aufgabe (aus der Spec): eingebetteter HTTP-Listener im Pool-Device (neue lib/Not
 
 Vorgehen wie M0: superpowers:writing-plans -> subagent-driven-development (frischer Implementer + Review je Task, TDD). Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika ueber die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: violet).
 
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. npm test zeigt fail 0 — Output im Chat gezeigt.
+2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
+
 /remote-control M6 — Inbound-Alarme (HTTP → Flow-Trigger)`
     },
     {
@@ -712,6 +722,11 @@ Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-
 Aufgabe: Die in M1 manuell gepflegten Chem-Werte automatisch aus der PoolLab/LabCOM-Cloud beziehen (Auth, Polling/Refresh, Feld-Mapping auf die bestehenden Settings), als zusätzliche, optionale Quelle — manuelle Eingabe + Flow-Action aus M1 bleiben als Fallback. Reine, testbare Mapping-/Client-Logik nach /lib; device.js bleibt dünn.
 
 Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. npm test zeigt fail 0 — Output im Chat gezeigt.
+2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
+3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
 
 /remote-control M7 — LabCOM-Cloud-Import (PoolLab)`
     },
@@ -772,6 +787,11 @@ Aufgabe (beratend, kein Zwang zum Schreiben auf die Violet): Empfehlungen, mit w
 
 Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).
 
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. npm test zeigt fail 0 — Output im Chat gezeigt.
+2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
+3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
+
 /remote-control M8 — Empfehlungs-Modul (Wasserbalance)`
     },
     {
@@ -806,6 +826,11 @@ SICHERHEIT: neue Angriffsfläche (schreibt direkt Wasserchemie-Parameter) → ZU
 
 Vorgehen wie M0–M3: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. Vor Merge: /security-review + security-reviewer-Subagent auf den Diff.
 
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. npm test zeigt fail 0 — Output im Chat gezeigt.
+2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
+3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload UND /security-review + security-reviewer-Subagent auf dem Diff ohne offene Findings — Ergebnisse im Chat gezeigt.
+
 /remote-control M9 — Dosierung & Sollwerte (setConfig)`
     },
     {
@@ -839,6 +864,11 @@ Aufgabe A (neue Reads): aus GET http://<host>/getReadings?ALL zwei Werte abbilde
 Aufgabe B (Auto-Detection-Review): kritisch pruefen, ob die history-basierte FeatureDetector-Autodetection (detectFeatures: aktiv-jetzt ODER je-gelaufen, monoton/churn-frei) in der Praxis zuverlaessig ist — falsch-positive/negative Gruppen? Soll die Autodetection aktiviert bleiben (aktueller Default) oder ist ein konservativerer Default / expliziter Override besser? Ergebnis als Entscheidung + ggf. Anpassung dokumentieren.
 
 Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK via homey-app-Skill, Live-Inspektion via homey-cli.
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. npm test zeigt fail 0 — Output im Chat gezeigt.
+2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
+3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
 
 /remote-control M10 — Filterdruck + Anstroemung + Auto-Detection-Review`
     }

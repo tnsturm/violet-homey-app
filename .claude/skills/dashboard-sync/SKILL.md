@@ -28,6 +28,10 @@ Status-Lifecycle, gleiche Edit-Regeln wie ein echter Milestone. Vier Steps, alle
 
 - Nur das eine betroffene Objekt (`Mx` oder `→Mx`) anfassen, nicht andere Einträge.
 - Jeder neue Resume-Prompt (Milestone oder Checkpoint) endet mit `/remote-control <id> — <title>`.
+- Jeder neue Resume-Prompt enthält eine `/goal`-Zeile mit transcript-verifizierbarer
+  Done-Bedingung (solange Claude Code < 2.1.139: stattdessen eine nummerierte
+  Klartext-Checkliste "DONE-BEDINGUNGEN (transcript-verifizierbar; ...)" unmittelbar
+  vor der `/remote-control`-Zeile — Muster in der M4.6-Spec §6).
 - **Am Start**: `status: "active"`, `startedAt` setzen, einen `log[]`-Eintrag anhängen,
   Top-Level `updatedAt` bumpen.
 - **Während der Arbeit**: `steps[].done` abhaken (feste Reihenfolge: Brainstorming → Spec →
