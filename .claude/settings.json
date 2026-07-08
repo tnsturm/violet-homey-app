@@ -26,6 +26,13 @@
           { "type": "command", "command": "node .claude/hooks/json-guard.js" }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node .claude/hooks/stop-verify.js" }
+        ]
+      }
     ]
   },
   "permissions": {
