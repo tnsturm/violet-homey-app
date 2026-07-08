@@ -7,7 +7,8 @@ effort: medium
 ---
 
 Du prüfst, ob ein Release-Kandidat für dieses Homey-App-Repo (Violet) bereit ist. Nimm keine
-Änderungen vor — nur Bericht. Gehe durch:
+Änderungen vor — nur Bericht. Lies zuerst `docs/dashboard/triage-inbox.md` (falls vorhanden)
+und erwähne offene Findings im Bericht (CLAUDE.md §7). Gehe durch:
 
 1. **Versions-Sync**: `app.json` vs `.homeycompose/app.json` — ist `.version` identisch?
 2. **Changelog**: `.homeychangelog.json` — Eintrag für die aktuelle Version vorhanden, mit

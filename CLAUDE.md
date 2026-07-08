@@ -111,6 +111,8 @@ Use a single-file `dashboard.html` (or equivalent): opens directly in a browser,
 **Rules:**
 - Every resume prompt (milestone or checkpoint) ends with `/remote-control <id> — <title>` so the spawned session is reachable from the Claude mobile app.
 - Log friction the moment it occurs: append a `log[]` entry prefixed `FRICTION:` to the active milestone (repeated errors, blocked tools, wrong assumptions, rework). The workflow retro in `milestone-checkpoint` reads these entries as its primary signal source — unlogged friction is invisible to it.
+- New milestone sessions and the release-readiness subagent read `docs/dashboard/triage-inbox.md`
+  FIRST (when present) — surface open findings before starting new work.
 - Keep edits surgical — only the data block, only the one milestone's (or checkpoint's) object.
 - Commit the file — other sessions and fresh worktrees read it (e.g. via "Start Mx…" chips).
 - The progress bar derives automatically from `steps[].done` — don't maintain it by hand.
