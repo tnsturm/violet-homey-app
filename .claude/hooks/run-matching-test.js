@@ -2,6 +2,9 @@
 
 // PostToolUse hook (matcher: Edit|Write) — after editing lib/Foo.js, runs
 // test/Foo.test.js if it exists, for immediate TDD feedback (CLAUDE.md §4).
+// M4.7 (spec docs/superpowers/specs/2026-07-08-m4.7-loop-hardening-verification-net.md §3 D5):
+// drivers/<id>/<file>.js additionally maps to test/drivers/<id>.<file>.test.js
+// (flat, dot-joined — mirrors the flat lib convention).
 
 const fs = require('fs');
 const path = require('path');
@@ -19,13 +22,23 @@ process.stdin.on('end', () => {
 
   const filePath = (input.tool_input && input.tool_input.file_path) || '';
   const normalized = filePath.replace(/\\/g, '/');
-  const match = /(?:^|\/)lib\/(\w+)\.js$/.exec(normalized);
-  if (!match) process.exit(0);
+  let testFile = null;
+  const lib = /(?:^|\/)lib\/(\w+)\.js$/.exec(normalized);
+  if (lib) testFile = path.join('test', `${lib[1]}.test.js`);
+  const drv = /(?:^|\/)drivers\/([\w-]+)\/(\w+)\.js$/.exec(normalized);
+  if (drv) testFile = path.join('test', 'drivers', `${drv[1]}.${drv[2]}.test.js`);
+  if (!testFile) process.exit(0);
 
   const cwd = input.cwd || process.cwd();
-  const testFile = path.join('test', `${match[1]}.test.js`);
   if (!fs.existsSync(path.join(cwd, testFile))) process.exit(0);
 
-  spawnSync(process.execPath, ['--test', testFile], { cwd, stdio: 'inherit' });
+  // Strip node:test child markers: inherited (e.g. when this hook itself runs
+  // under a suite, as in its own smoke tests) they flip the spawned `node --test`
+  // into the runner's child protocol — no readable TAP (test-gate lesson, M4.6).
+  const env = { ...process.env };
+  delete env.NODE_TEST_CONTEXT;
+  delete env.NODE_TEST_WORKER_ID;
+
+  spawnSync(process.execPath, ['--test', testFile], { cwd, stdio: 'inherit', env });
   process.exit(0); // PostToolUse can't block; just surface pass/fail output
 });
