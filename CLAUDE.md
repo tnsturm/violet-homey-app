@@ -107,6 +107,7 @@ Use a single-file `dashboard.html` (or equivalent): opens directly in a browser,
 
 **Rules:**
 - Every resume prompt (milestone or checkpoint) ends with `/remote-control <id> — <title>` so the spawned session is reachable from the Claude mobile app.
+- Log friction the moment it occurs: append a `log[]` entry prefixed `FRICTION:` to the active milestone (repeated errors, blocked tools, wrong assumptions, rework). The workflow retro in `milestone-checkpoint` reads these entries as its primary signal source — unlogged friction is invisible to it.
 - Keep edits surgical — only the data block, only the one milestone's (or checkpoint's) object.
 - Commit the file — other sessions and fresh worktrees read it (e.g. via "Start Mx…" chips).
 - The progress bar derives automatically from `steps[].done` — don't maintain it by hand.
@@ -145,6 +146,16 @@ Once a branch/worktree's change is complete and a git action (commit/push/merge)
    - **Otherwise:** ask whether to push the branch and open a Pull Request.
 
 Always wait for an explicit yes before pushing or merging — this section only saves re-explaining the two options each time, not the confirmation itself.
+
+## 10. Permission Strategy (3 Layers)
+
+**Hooks always win; the allowlist covers the everyday; Auto Mode is for autonomous loops.**
+
+1. **Hooks = "must NEVER happen"** — deterministic exit-2 guards (PreToolUse). They apply in every permission mode; neither Auto Mode nor `bypassPermissions` can override them.
+2. **Project allowlist (`permissions.allow` in `.claude/settings.json`) = "is ALWAYS ok"** — deterministic, documents intent, git-portable (team, worktrees, routines). Curated at every milestone checkpoint via `/fewer-permission-prompts`. Global vs. project split: see "Claude-Code-Settings: Skill = Source of Truth" below.
+3. **Auto Mode (`claude --permission-mode auto`) = situational autonomy** for long autonomous runs (`/goal` milestone sessions, nightly routines) — the classifier approves novel actions; hooks and allowlist remain in force underneath. Never use `bypassPermissions` locally.
+
+Everyday sessions run in the default mode with the allowlist; autonomous loop sessions start with `--permission-mode auto`.
 
 ---
 

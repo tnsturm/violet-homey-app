@@ -400,7 +400,7 @@ Aufgaben (Hooks je per TDD mit Smoke-Test in test/hooks/; Hook-Lade-Realität be
 1. Commit-Test-Gate (Idee 2): PreToolUse-Bash-Hook nach Muster .claude/hooks/check-version-sync.js — fängt git commit ab, führt npm test aus (Baseline ~2,4 s, 91 Tests), blockt bei Rot mit exit 2 + Test-Output als Fix-Anweisung, fail-open bei eigenen Fehlern. Mit dem M4.5-Typecheck-Gate zu EINEM Gate-Hook kombinieren oder sauber daneben registrieren — Entscheidung im Log dokumentieren.
 2. Release-Gate (Idee 4): PreToolUse-Bash-Hook, der "homey app install|publish" abfängt und blockt, wenn (a) .homeychangelog.json keinen en+de-Eintrag für die Version aus .homeycompose/app.json hat, (b) diese Version bereits in docs/dashboard/versions.md steht (Bump vergessen = Doppel-Release) oder (c) bei publish kein Rotations-Nachweis existiert (docs/superpowers/security/credential-rotation.md mit Datum) — laut versions.md ist die Write-Passwort-Rotation vor dem Live-Publish noch offen.
 3. GitHub-Actions-CI (Idee 3): .github/workflows/ci.yml — bei Push/PR: npm test, npm run typecheck (aus M4.5), npx homey app validate --level publish, Manifest-Sync-Check app.json vs .homeycompose/app.json; zusätzlich schedule-Cron (nächtlich) auf main. Vorher prüfen, ob validate ohne Homey-Login auf dem Runner läuft; Befund im Log festhalten. Erster grüner Lauf auf origin/main ist Teil der Done-Bedingung.
-4. /goal-Zeilen (Idee 1): in die offenen Resume-Prompts von M5–M10 im DASHBOARD_STATUS-Block vor der /remote-control-Zeile eine transcript-verifizierbare /goal-Done-Bedingung einfügen (Muster: "npm test zeigt fail 0 UND npx homey app validate --level publish zeigt PASS — Outputs im Chat gezeigt"; bei Release-Milestones zusätzlich release-readiness PASS; M4.7/M4.8 haben ihre /goal-Zeile bereits). Im dashboard-sync-Skill die Regel ergänzen: "Jeder neue Resume-Prompt enthält eine /goal-Zeile mit transcript-verifizierbarer Done-Bedingung." Vorher claude --version gegen die /goal-Mindestversion prüfen; falls /goal nicht verfügbar: nummerierte Klartext-Checkliste als Fallback verwenden und das im Log vermerken.
+4. /goal-Zeilen (Idee 1): in die offenen Resume-Prompts von M5–M10 im DASHBOARD_STATUS-Block vor der /remote-control-Zeile eine transcript-verifizierbare /goal-Done-Bedingung einfügen (Muster: "npm test zeigt fail 0 UND npx homey app validate --level publish zeigt PASS — Outputs im Chat gezeigt"; bei Release-Milestones zusätzlich release-readiness PASS; M4.7–M4.9 haben ihre /goal-Zeile bereits). Im dashboard-sync-Skill die Regel ergänzen: "Jeder neue Resume-Prompt enthält eine /goal-Zeile mit transcript-verifizierbarer Done-Bedingung." Vorher claude --version gegen die /goal-Mindestversion prüfen; falls /goal nicht verfügbar: nummerierte Klartext-Checkliste als Fallback verwenden und das im Log vermerken.
 
 /goal npm test zeigt fail 0, beide neuen Hooks blocken im Direktaufruf-Test (exit 2) und passieren den Positivfall (exit 0), .github/workflows/ci.yml liegt auf origin/main mit grünem ersten Lauf, und die Resume-Prompts M5–M10 enthalten /goal-Zeilen — Outputs/Diffs im Chat gezeigt.
 
@@ -453,7 +453,7 @@ Aufgaben (je per TDD):
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Paket 3 der Loop-Engineering-Analyse (Ideen 8–11): nächtliche Triage-Routine (/schedule: npm test + validate + Follow-up-Abgleich → committete Triage-Inbox docs/dashboard/triage-inbox.md — der fehlende Heartbeat); Milestone-Handover im milestone-checkpoint-Skill (Resume-Prompt des nächsten Milestones als Push aufs Handy — Ein-Klick-Trigger statt Erinnerungsleistung); Memory-Konsolidierung als Checkpoint-Schritt (Dreaming-Muster: Diff-Review, nie direkt anwenden, offene Follow-ups nie löschen); Hook-Telemetrie (.claude/hooks/lib/log.js → hook-log.jsonl, gitignored) als Datenbasis für die Workflow-Retro. Tooling-only, kein Version-Bump (§8). Der direkt folgende →M5-Checkpoint erprobt die neuen Checkpoint-Features sofort.",
+      summary: "Paket 3 der Loop-Engineering-Analyse (Ideen 8–11): nächtliche Triage-Routine (/schedule: npm test + validate + Follow-up-Abgleich → committete Triage-Inbox docs/dashboard/triage-inbox.md — der fehlende Heartbeat); Milestone-Handover im milestone-checkpoint-Skill (Resume-Prompt des nächsten Milestones als Push aufs Handy — Ein-Klick-Trigger statt Erinnerungsleistung); Memory-Konsolidierung als Checkpoint-Schritt (Dreaming-Muster: Diff-Review, nie direkt anwenden, offene Follow-ups nie löschen); Hook-Telemetrie (.claude/hooks/lib/log.js → hook-log.jsonl, gitignored) als Datenbasis für die Workflow-Retro. Tooling-only, kein Version-Bump (§8). Der folgende →M5-Checkpoint erprobt die neuen Checkpoint-Features sofort.",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: false },
@@ -485,13 +485,57 @@ Aufgaben:
 /remote-control M4.8 — Loop-Hardening III: Autonomie & Meta-Loop`
     },
     {
+      id: "M4.9",
+      title: "Framework-Extraktion (agentic-loop-framework)",
+      status: "todo",
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Extraktion des generischen Loop-Frameworks in den portablen Skill agentic-loop-framework (Phase 6 des Bootstrap-Prompts, gesichert in skill-ClaudeCode-general-settings/prompts/): SKILL.md (generalisierte Bootstrap-Anleitung) + templates/ (CLAUDE.md-Basis §0–§10, dashboard.html, versions.md, settings.json-Gerüst, Hook-Vorlagen inkl. test-gate + Smoke-Test-Muster, milestone-checkpoint-Skill) + CHANGELOG; Homey-Bausteine getrennt (homey/-Unterordner bzw. agentic-loop-homey). Dazu im VioletApp-Repo: Skill-als-Source-of-Truth-Spiegelregel auf Framework-Artefakte erweitern + Drift-Check-Schritt im milestone-checkpoint. Tooling-only, kein Version-Bump (§8). Voraussetzung: M4.6–M4.8 fertig — deren Artefakte wandern in templates/. Abschluss: Prompt-Konsistenz-Sweep über alle offenen Milestone-/Checkpoint-Prompts (/goal, §10-Startmodus, Triage-Inbox-Verweis, veraltete Referenzen).",
+      steps: [
+        { label: "Brainstorming", done: true },
+        { label: "Spec", done: false },
+        { label: "Plan", done: false },
+        { label: "Implementierung (TDD)", done: false },
+        { label: "Validate + Push", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-07-08", note: "Milestone angelegt (Phase 6 des Bootstrap-Prompts; Prompts als Keimzelle in skill-ClaudeCode-general-settings/prompts/ gesichert, Commit fcbda47). Platzierung nach M4.8, weil erst dann alle generischen Artefakte (Gate-Hooks, CI, Checkpoint-Erweiterungen) für templates/ existieren." },
+        { at: "2026-07-08", note: "FRICTION: Smart-Quote-Fehlerklasse zum 4. Mal getroffen — ein ASCII-Anfuehrungszeichen im summary-String hat den Datenblock syntaktisch gebrochen; erstmals in dashboard.html, wo json-guard NICHT greift (deckt nur Manifest-/Changelog-JSON ab). Vom node-Eval-Verify gefangen, nicht von einem Hook. Retro-Kandidat: Datenblock-Parse-Check fuer dashboard.html als Hook oder Commit-Gate (passt zu M4.6)." }
+      ],
+      prompt: `UMGEBUNG: Zwei Repos — VioletApp unter C:/Users/TorstenSturm/source/repos/VioletApp (Claude Code hier starten) und das private Skill-Repo unter C:/Users/TorstenSturm/source/repos/skill-ClaudeCode-general-settings (bzw. auf Entscheid ein neues Repo).
+
+Violet Homey Pro App — Milestone M4.9 (Framework-Extraktion: agentic-loop-framework als portabler Skill). Tooling-only: KEIN Version-Bump, kein Release (§8). M4.6–M4.8 müssen abgeschlossen sein — ihre Artefakte sind die Quelle der Templates.
+
+Lies zuerst: (1) skill-ClaudeCode-general-settings/prompts/agentic-loop-bootstrap.de.md — Phase 6 ist die Spec-Basis dieses Milestones, der Gesamtprompt der Kern der künftigen SKILL.md; (2) das Memory loop-dev-roadmap; (3) den Abschnitt "Claude-Code-Settings: Skill = Source of Truth" in CLAUDE.md (die bestehende Konvention wird hier auf Framework-Artefakte erweitert). Aktualisiere beim Start den M4.9-Eintrag in docs/dashboard/dashboard.html (Protokoll CLAUDE.md §7). Kurz-Spec nach docs/superpowers/specs/, dann superpowers:writing-plans.
+
+ENTSCHEIDUNGSPUNKT vorab: Zielort des Skills — (a) eigenes Repo skill-agentic-loop-framework (sauberste Trennung, eigener Marketplace-Eintrag) oder (b) zweites Plugin/Skill im bestehenden skill-ClaudeCode-general-settings (weniger Repo-Overhead). Empfehlung und Trade-offs kurz präsentieren, dann entscheide ich.
+
+Aufgaben:
+1. SKILL.md: die Bootstrap-Prompts (de als Quelle, en referenzieren) zu einer generalisierten Skill-Anleitung umbauen — Trigger-Beschreibung, Phasen 0–7, Dauerregeln; VioletApp-Spezifika raus, Platzhalter rein.
+2. templates/: aus den VioletApp-Artefakten generische Vorlagen ziehen — CLAUDE.md-Basis (§0–§10 inkl. Karpathy-Kern, §10 Permission-Strategie), dashboard.html (Datenblock leer + Renderer unverändert), versions.md-Tabelle, settings.json-Gerüst (leere hooks + minimale read-only-Allowlist), Hook-Vorlagen (test-gate aus M4.6 generisch: Testkommando als Variable; Smoke-Test-Muster aus test/hooks/), milestone-checkpoint-SKILL.md (inkl. der M4.8-Schritte Handover/Memory-Konsolidierung/Telemetrie-Auswertung). Jede Vorlage frei von VioletApp-/Homey-Bezügen.
+3. Homey-Bausteine getrennt ablegen (homey/-Unterordner oder eigener Skill agentic-loop-homey): HOMEY.md-Template, die 4 Homey-Hook-Vorlagen (compose-guard, json-guard, check-version-sync, secrets-guard), Homey-Allowlist-Block, release-readiness-Vorlage.
+4. CHANGELOG im Skill anlegen (erste Version).
+5. VioletApp-Repo: im CLAUDE.md-Abschnitt "Skill = Source of Truth" die Spiegelregel auf Framework-Artefakte erweitern (jede generische Änderung an Hooks/Protokollregeln/Checkpoint-Ablauf wird in derselben Session in den Skill gespiegelt); im milestone-checkpoint-Skill den Schritt "Framework-Drift prüfen: unterscheiden sich Projekt-Framework und Skill? → Skill nachziehen" ergänzen.
+6. Trockentest (Verify aus Phase 6): templates/ in ein Temp-Verzeichnis kopieren — der dashboard.html-Datenblock parst (node-Eval), settings.json parst (JSON.parse), die Hook-Smoke-Tests laufen grün.
+7. Prompt-Konsistenz-Sweep zum Abschluss: die Resume-Prompts ALLER noch offenen Milestones und Checkpoints (→M5, M5–M10) gegen den finalen Framework-Stand aus M4.5–M4.9 prüfen und nachziehen — (a) /goal-Zeile vorhanden und transcript-verifizierbar (falls M4.6 Aufgabe 4 sie noch nicht ergänzt hat), (b) Start-Modus-Hinweis nach CLAUDE.md §10 (autonome Läufe mit claude --permission-mode auto, Alltag Default + Allowlist), (c) Verweis auf die Triage-Inbox aus M4.8 wo sinnvoll (Session liest sie zuerst), (d) keine veralteten Regel-, Hook- oder Pfad-Referenzen. Jede Anpassung chirurgisch nur im jeweiligen prompt-Feld; den Datenblock danach per node-Eval verifizieren.
+
+/goal Der Trockentest zeigt: Datenblock parst, settings.json parst, Hook-Smoke-Tests grün; SKILL.md + templates/ + Homey-Modul + CHANGELOG liegen committed im Ziel-Repo; VioletApp-CLAUDE.md enthält die erweiterte Spiegelregel und milestone-checkpoint den Drift-Check-Schritt; und der Prompt-Konsistenz-Sweep über →M5 und M5–M10 ist durchgeführt (Diffs gezeigt, Datenblock-Eval grün) — Outputs im Chat gezeigt.
+
+Git-Aktionen in BEIDEN Repos nur nach /code-review + Freigabe (CLAUDE.md §9). documenting-code-Skill für neue Hook-/Skript-Vorlagen.
+
+/remote-control M4.9 — Framework-Extraktion (agentic-loop-framework)`
+    },
+    {
       id: "→M5",
       title: "Zwischen-Check",
       status: "todo",
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Housekeeping zwischen M4.8 und M5: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4). Erster Checkpoint mit den neuen M4.8-Features (Handover, Memory-Konsolidierung, Hook-Telemetrie-Auswertung).",
+      summary: "Housekeeping zwischen M4.9 und M5: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4). Erster Checkpoint mit den neuen M4.8-Features (Handover, Memory-Konsolidierung, Hook-Telemetrie-Auswertung).",
       steps: [
         { label: "/fewer-permission-prompts", done: false },
         { label: "/claude-automation-recommender", done: false },
@@ -503,7 +547,7 @@ Aufgaben:
       log: [],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
-Zwischen-Check vor M5 (CLAUDE.md §7 Punkt 4). M4.8 ist abgeschlossen, M5 startet als Naechstes. (Erster Checkpoint mit den neuen M4.8-Schritten: Handover, Memory-Konsolidierung, Hook-Telemetrie-Auswertung.)
+Zwischen-Check vor M5 (CLAUDE.md §7 Punkt 4). M4.9 ist abgeschlossen, M5 startet als Naechstes. (Erster Checkpoint mit den neuen M4.8-Schritten: Handover, Memory-Konsolidierung, Hook-Telemetrie-Auswertung.)
 
 Fuehre aus: /milestone-checkpoint
 
