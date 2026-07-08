@@ -335,19 +335,19 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
     {
       id: "M4.5",
       title: "TypeScript-Typecheck (checkJs)",
-      status: "active",
+      status: "done",
       startedAt: "2026-07-08",
-      finishedAt: null,
-      commit: null,
+      finishedAt: "2026-07-08",
+      commit: "6d660fa",
       summary: "Pfad A aus der TS-Evaluation (2026-07-08): tsc --noEmit (checkJs) über den bestehenden JS-Code — maschinelles Typfehler-Signal für lib/ + drivers/ + app.js ohne Build-Schritt und ohne Test-Latenz-Kosten. 16 bekannte Befunde fixen (inkl. driver.js onPair), Typecheck ins Commit-Gate + CI. Kein Release/Version-Bump (tooling-only, §8).",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
         { label: "Implementierung (TDD)", done: true },
-        { label: "Validate + Push", done: false }
+        { label: "Validate + Push", done: true }
       ],
-      currentActivity: "PR #3 offen (github.com/tnsturm/violet-homey-app/pull/3) — nach Merge: Dashboard auf done schließen (status, finishedAt, commit, Validate+Push-Step)",
+      currentActivity: null,
       runtime: null,
       log: [
         { at: "2026-07-08", note: "Evaluation abgeschlossen (Spike in isoliertem Worktree, danach entfernt): Entscheidungsdokument docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md — Empfehlung Pfad A (checkJs); auf User-Entscheid als eigener Milestone M4.5 eingeplant. Kernzahlen: checkJs lenient = 16 Befunde (davon 1 potenzieller Bug in driver.js onPair), validate mit TS exit 0, node --test bricht bei .ts-Umbenennung (extensionless require) — daher kein .ts jetzt." },
@@ -357,25 +357,10 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
         { at: "2026-07-08", note: "FRICTION: validate brach nach npm i -D typescript — homey-CLI 4.1.1 schaltet den TS-Modus über devDependencies.typescript (NICHT über tsconfig-Präsenz, wie Doku/Spike §1 annahmen). Root-Cause in CLI-Quelle (App.usesTypeScript) verifiziert; Fix: Alias typescript-checkjs (npm:typescript@^6) — tsc-bin bleibt, CLI bleibt im JS-Modus, validate wieder exit 0. Invariante als test/toolchain.test.js verankert; Nachtrag im Entscheidungsdokument §1. RED-Lauf bestätigt exakt die 16 Spike-Befunde (driver 1, lib 2, Capabilities.test 7, WriteClient.test 6)." },
         { at: "2026-07-08", note: "Alle 16 Befunde gefixt: onPair = Typen-Strenge, kein Bug (SDK deklariert async; Handler-Registrierung bleibt synchron) → async onPair; lib-JSDoc-Contracts angeglichen (Capabilities lsi?/alarm?, buildM2Updates opts optional, buildWriteUrl ohne vakantes ={}-Default); Test-Stubs mit präzisen @type-Casts, KEIN Config-Aufweichen. typecheck-gate-Hook per TDD (6 Tests, test/hooks/), registriert in settings.json (greift ab nächster Session); real gegen Repo verifiziert: exit 0 in 1,7 s." },
         { at: "2026-07-08", note: "§6-Sweep ALLE 8 PASS: K1 typecheck exit 0 · K2 100 Tests/0 fail (≥91) · K3 npm test 8,05-8,31 s ≤ 8,86 s (Cap 2×B_test; tsc-Läufe im Hook-Test parallelisiert, vorher 8,81 s grenzwertig) · K4 validate exit 0/4,35 s ≤ 8,50 s · K5 kein Manifest-Drift nach tsc+build · K6 kein Root-tsconfig, build ohne TS-Schritt · K7 Lsi-Edit triggert Lsi-Test (Direktaufruf-Evidenz) · K8 dependencies {}. Kein Abbruchkriterium. Letzter Code-Commit 654f2ce; /code-review + §9-Entscheid ausstehend." },
-        { at: "2026-07-08", note: "/code-review: Approve, keine Critical Issues (4 nicht-blockierende Hinweise: git-commit-Regex-Präzisierung + Gate-Kombination → M4.6, require.resolve-Ancestor-Randfall, Hook-Selbst-Typecheck → strict-Ratchet). §9-Entscheid (User): Branch pushen + PR — PR #3 geöffnet: github.com/tnsturm/violet-homey-app/pull/3. Milestone-Abschluss (status done) nach dem Merge." }
+        { at: "2026-07-08", note: "/code-review: Approve, keine Critical Issues (4 nicht-blockierende Hinweise: git-commit-Regex-Präzisierung + Gate-Kombination → M4.6, require.resolve-Ancestor-Randfall, Hook-Selbst-Typecheck → strict-Ratchet). §9-Entscheid (User): Branch pushen + PR — PR #3 geöffnet: github.com/tnsturm/violet-homey-app/pull/3. Milestone-Abschluss (status done) nach dem Merge." },
+        { at: "2026-07-08", note: "PR #3 vom User GEMERGT → origin/main 6d660fa; lokales main per FF nachgezogen; Feature-Branch gelöscht (lokal + origin auto). M4.5 DONE. Ab der nächsten Session aktiv: typecheck-gate blockt git commit bei rotem tsc (vorher npm run typecheck). Vor M4.6: milestone-checkpoint (→M4.6-Eintrag, CLAUDE.md §7 Punkt 4)." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Violet Homey Pro App — Milestone M4.5 (TypeScript-Typecheck, Pfad A: checkJs). Evaluation + Spike sind abgeschlossen; das Entscheidungsdokument ist die Spec.
-
-Lies zuerst docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md — verbindlich sind §4 (Pfad A), §5 (Empfehlung) und §6 (maschinelle Erfolgs-/Abbruchkriterien; Baseline am Umsetzungstag auf derselben Maschine neu messen). Aktualisiere beim Start den M4.5-Eintrag in docs/dashboard/dashboard.html (status "active", log, currentActivity; Dashboard-Protokoll CLAUDE.md §7).
-
-Aufgabe (aus dem Dokument, ~2-4 h):
-1. tsconfig.checkjs.json anlegen (lenient: allowJs + checkJs, strict false, noEmit, types ["node","homey"], include lib/ drivers/ app.js test/) — bewusst NICHT tsconfig.json nennen: deren Präsenz schaltet die Homey-CLI in den TS-Modus, validate bricht dann ohne build-Script (Doku §1, Spike-verifiziert).
-2. devDependencies: typescript, @types/homey (npm-Alias homey-apps-sdk-v3-types), @types/node@18 (= Homey-Runtime-Major). package-lock.json mit committen. dependencies bleibt exakt {}.
-3. npm-Script "typecheck": "tsc -p tsconfig.checkjs.json".
-4. Die 16 bekannten lenient-Fehler fixen (Verteilung in §3 des Dokuments). ZUERST den driver.js-onPair-Befund klären (TS2416; Bug vs. Typen-Strenge — falls Bug: superpowers:systematic-debugging). Runtime-Fixes reisen mit dem naechsten Release-Milestone (M6 Inbound-Alarme); dieser Milestone bumpt KEINE Version (§8: tooling-only, nichts wird deployt).
-5. tsc --noEmit als Commit-Gate: PreToolUse-Bash-Hook nach Muster .claude/hooks/check-version-sync.js (kombinierbar mit test-gate, loop-dev-roadmap Idee 2) — per TDD mit Hook-Test in test/hooks/. KEIN PostToolUse-Typecheck (gemessen 6,6 s je Edit, auch inkrementell).
-6. Alle 8 Erfolgskriterien aus §6 maschinell durchprüfen; greift ein Abbruchkriterium: stoppen und Befund im Entscheidungsdokument nachtragen.
-
-Vorgehen: superpowers:writing-plans → TDD; /code-review vor jeder Git-Aktion (CLAUDE.md §9); documenting-code-Skill für alle angefassten Quelldateien.
-
-/remote-control M4.5 — TypeScript-Typecheck (checkJs)`
+      prompt: null
     },
     {
       id: "M4.6",
