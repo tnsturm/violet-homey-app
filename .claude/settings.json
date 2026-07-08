@@ -6,7 +6,8 @@
         "hooks": [
           { "type": "command", "command": "node .claude/hooks/check-version-sync.js" },
           { "type": "command", "command": "node .claude/hooks/typecheck-gate.js" },
-          { "type": "command", "command": "node .claude/hooks/test-gate.js" }
+          { "type": "command", "command": "node .claude/hooks/test-gate.js" },
+          { "type": "command", "command": "node .claude/hooks/release-gate.js" }
         ]
       },
       {
