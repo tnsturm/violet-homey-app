@@ -43,7 +43,10 @@ test('compose-guard: write generated root app.json (absolute) → BLOCK', () => 
   assert.strictEqual(code, 2);
 });
 
-test('compose-guard: root app.json via backslash path → BLOCK', () => {
+// Windows-only: backslash is a path separator only there — on POSIX a backslash
+// is a legal filename character, so this path does NOT address the root app.json
+// and the guard must not block it (surfaced by the first Linux CI run, M4.6).
+test('compose-guard: root app.json via backslash path → BLOCK (Windows)', { skip: process.platform !== 'win32' }, () => {
   const dir = makeProject(true);
   const { code } = runHook({ file_path: dir + '\\app.json', new_string: '{}' }, dir);
   assert.strictEqual(code, 2);
