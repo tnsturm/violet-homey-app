@@ -23,7 +23,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          # 22 (LTS), nicht 18: der Node-18-Test-Runner haengt bei parallelem
+          # Gesamtlauf dieser Suite (reproduziert lokal: einzeln alle gruen,
+          # `node --test` gesamt haengt vor der ersten Datei; 18 ist zudem EOL).
+          node-version: 22
           cache: npm
       - run: npm ci
       - run: npm test
