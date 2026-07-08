@@ -422,8 +422,8 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
     {
       id: "M4.8",
       title: "Loop-Hardening III: Autonomie & Meta-Loop",
-      status: "todo",
-      startedAt: null,
+      status: "active",
+      startedAt: "2026-07-09",
       finishedAt: null,
       commit: null,
       summary: "Paket 3 der Loop-Engineering-Analyse (Ideen 8–11): nächtliche Triage-Routine (/schedule: npm test + validate + Follow-up-Abgleich → committete Triage-Inbox docs/dashboard/triage-inbox.md — der fehlende Heartbeat); Milestone-Handover im milestone-checkpoint-Skill (Resume-Prompt des nächsten Milestones als Push aufs Handy — Ein-Klick-Trigger statt Erinnerungsleistung); Memory-Konsolidierung als Checkpoint-Schritt (Dreaming-Muster: Diff-Review, nie direkt anwenden, offene Follow-ups nie löschen); Hook-Telemetrie (.claude/hooks/lib/log.js → hook-log.jsonl, gitignored) als Datenbasis für die Workflow-Retro. Tooling-only, kein Version-Bump (§8). Teil des Tooling-Blocks M4.6–M4.9 (kein Zwischen-Checkpoint); der →M5-Checkpoint nach M4.9 erprobt die neuen Checkpoint-Features (Handover, Memory-Konsolidierung, Telemetrie-Auswertung) sofort.",
@@ -434,10 +434,11 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
         { label: "Implementierung (TDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: null,
+      currentActivity: "Spec (offene Detailfragen) + Plan",
       runtime: null,
       log: [
-        { at: "2026-07-08", note: "Milestone aus der Loop-Engineering-Analyse angelegt (Paket 3 = Ideen 9–11; Idee 8 Triage-Routine thematisch hierher gezogen). Platzierung direkt vor →M5, damit der nächste Checkpoint die neuen Meta-Loop-Features (Handover, Memory-Konsolidierung, Telemetrie-Auswertung) sofort real erprobt." }
+        { at: "2026-07-08", note: "Milestone aus der Loop-Engineering-Analyse angelegt (Paket 3 = Ideen 9–11; Idee 8 Triage-Routine thematisch hierher gezogen). Platzierung direkt vor →M5, damit der nächste Checkpoint die neuen Meta-Loop-Features (Handover, Memory-Konsolidierung, Telemetrie-Auswertung) sofort real erprobt." },
+        { at: "2026-07-09", note: "Umsetzungssession gestartet (gleiche Session wie M4.6/M4.7). BEFUND Aufgabe 1: scheduled-tasks-MCP im Setup verfuegbar und legt LOKALE Tasks an (~/.claude/scheduled-tasks/, laufen solange die Desktop-App offen ist, verpasste Laeufe beim naechsten Start nachgeholt) — fuer die Triage die RICHTIGE Wahl statt Cloud-Routine: nur lokal sind MEMORY.md lesbar und das Checkout committbar. Zusaetzlich in Scope (M4.7-Review-Hinweis): NODE_TEST_CONTEXT-Env-Strip-Idiom (3x dupliziert) nach .claude/hooks/lib/ dedupen." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
