@@ -1,0 +1,23 @@
+// Checker-only config for `npm run typecheck` (M4.5, Pfad A — evaluation doc §4A/§6:
+// docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md).
+// Deliberately NOT named tsconfig.json: its presence flips the Homey CLI into TS mode
+// and `validate` then fails without a build script (doc §1, spike-verified).
+// `types` is explicit because TS 6 no longer auto-includes installed @types (doc §1 gotcha).
+// TypeScript itself is installed under the npm alias "typescript-checkjs": homey-cli 4.1.1
+// keys its TS mode on `devDependencies.typescript` (not on tsconfig presence — doc §1
+// Nachtrag 2026-07-08); the literal name would break validate/build/run/install.
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": false,
+    "module": "node18",
+    "target": "es2022",
+    "lib": ["es2022"],
+    "types": ["node", "homey"],
+    "resolveJsonModule": true,
+    "skipLibCheck": true
+  },
+  "include": ["app.js", "lib/**/*.js", "drivers/**/*.js", "test/**/*.js"]
+}
