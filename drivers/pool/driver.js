@@ -56,7 +56,10 @@ class PoolDriver extends Homey.Driver {
     });
   }
 
-  onPair(session) {
+  // async to match the SDK's declared onPair signature (checkJs TS2416, M4.5 eval doc
+  // §3) — typing strictness, not a runtime bug: handler registration stays synchronous
+  // and Homey awaits the returned promise either way.
+  async onPair(session) {
     let pairData = null;
 
     session.setHandler('connect', async ({ host, username, password }) => {
