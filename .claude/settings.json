@@ -2,7 +2,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash",
+        "matcher": "Bash|PowerShell",
         "hooks": [
           { "type": "command", "command": "node .claude/hooks/check-version-sync.js" },
           { "type": "command", "command": "node .claude/hooks/typecheck-gate.js" },

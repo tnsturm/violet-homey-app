@@ -372,16 +372,19 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       summary: "Paket 1 der Loop-Engineering-Analyse (2026-07-07, Memory loop-dev-roadmap, Ideen 1–4): Commit-Test-Gate (npm test blockt git commit; kombiniert mit dem M4.5-Typecheck-Gate), Release-Gate-Hook (install/publish ohne Changelog en+de, Versions-Bump oder Credential-Rotations-Nachweis blocken — Write-Passwort-Rotation ist vor dem Live-Publish noch offen), GitHub-Actions-CI (npm test + typecheck + validate --level publish + Manifest-Sync bei Push/PR, nächtlicher Cron) als erste sessionunabhängige Verifikationsinstanz, /goal-Done-Bedingungen in alle offenen Resume-Prompts + dashboard-sync-Regel. Tooling-only, kein Version-Bump (§8, Präzedenz M4.5). Die CI erfüllt M5-Gate (b). Erster Milestone des Tooling-Blocks M4.6–M4.9 (User-Entscheid 2026-07-08): KEIN Zwischen-Checkpoint im Block — der konsolidierte milestone-checkpoint läuft einmal danach als →M5.",
       steps: [
         { label: "Brainstorming", done: true },
-        { label: "Spec", done: false },
-        { label: "Plan", done: false },
+        { label: "Spec", done: true },
+        { label: "Plan", done: true },
         { label: "Implementierung (TDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: "Spec (offene Detailfragen) + Plan",
+      currentActivity: "Implementierung (TDD): Release-Gate + CI + Prompt-Checklisten",
       runtime: null,
       log: [
         { at: "2026-07-08", note: "Milestone aus der Loop-Engineering-Analyse angelegt (Memory loop-dev-roadmap, Paket 1 = Ideen 1–4); Brainstorming durch die Analyse-Session 2026-07-07 abgedeckt. Platzierung vor M5, weil die CI dessen hartes Gate (b) erfüllt." },
-        { at: "2026-07-08", note: "Umsetzungssession gestartet. Baseline: npm test 100/100 pass (~5 s). Befund fuer Aufgabe 4: claude --version = 2.1.110 < /goal-Mindestversion 2.1.139 (Memory loop-dev-roadmap Idee 1) — Fallback-Entscheidung folgt in der Spec." }
+        { at: "2026-07-08", note: "Umsetzungssession gestartet. Baseline: npm test 100/100 pass (~5 s). Befund fuer Aufgabe 4: claude --version = 2.1.110 < /goal-Mindestversion 2.1.139 (Memory loop-dev-roadmap Idee 1) — Fallback-Entscheidung folgt in der Spec." },
+        { at: "2026-07-08", note: "Spec + Plan committet (e89c99e); Befund B2: homey app validate laeuft OHNE Login (CLI-4.1.1-Quelle: App.validate rein lokal via homey-lib, AthomApi nur bei run/install/publish; Athom shipped eigenes CI-Template mit athombv/github-action-homey-app-validate) — CI-validate auf dem Runner unkritisch." },
+        { at: "2026-07-08", note: "ENTSCHEIDUNG Aufgabe 1 (Spec §3 D1): test-gate.js als EIGENER Hook NEBEN typecheck-gate.js registriert, nicht kombiniert — Claude Code fuehrt matchende Hooks parallel aus (Commit-Latenz = max statt Summe), Ein-Zweck-Hooks bleiben einzeln fail-open/testbar/M4.9-extrahierbar. Umgesetzt per TDD (6 Smoke-Tests, 6e84ad6); Suite 106/106 in ~3,5 s. Debugging-Fund: geerbtes NODE_TEST_CONTEXT liess die Fixture-Suite exit 0 melden — Hook strippt die node:test-Env-Marker vor dem Spawn." },
+        { at: "2026-07-08", note: "Release-Gate per TDD (12 Smoke-Tests, cf0c63d); Direktaufruf gegen das echte Repo blockt publish korrekt mit BEIDEN realen Verstoessen (0.4.2 schon in versions.md + Rotations-Nachweis fehlt), git status passiert. FRICTION + Fix: Commit cf0c63d landete trotz rotem tsc — die Gate-Hooks matchten nur das Bash-Tool, Commits liefen in dieser Windows-Session aber ueber das PowerShell-Tool. Matcher auf \"Bash|PowerShell\" erweitert (alle 4 Bash-Gates), Typ-Fehler im Test per JSDoc gefixt; greift wie alle settings.json-Aenderungen erst ab naechster Session." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 

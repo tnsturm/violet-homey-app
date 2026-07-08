@@ -1,0 +1,34 @@
+# CI fuer die Violet Homey App (M4.6 — spec
+# docs/superpowers/specs/2026-07-08-m4.6-loop-hardening-gates-ci.md §5):
+# spiegelt die lokalen Gates sessionunabhaengig — npm test (test-gate),
+# npm run typecheck (typecheck-gate), Manifest-Sync (check-version-sync)
+# und validate --level publish. validate laeuft ohne Homey-Login (CLI 4.1.1:
+# App.validate ist rein lokal via homey-lib; Login nur fuer run/install/publish).
+# Der nightly Cron ist der Heartbeat auf main (Default-Branch).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  ci:
+    name: Test + Typecheck + Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - name: Manifest sync (app.json == .homeycompose/app.json)
+        run: node -e "const a=require('./app.json').version, b=require('./.homeycompose/app.json').version; if (a !== b) { console.error('Version mismatch: app.json=' + a + ' vs .homeycompose/app.json=' + b); process.exit(1); } console.log('manifest versions in sync: ' + a);"
+      - name: Validate (publish level)
+        run: npx --yes homey app validate --level publish

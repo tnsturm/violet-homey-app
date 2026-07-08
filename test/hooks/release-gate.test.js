@@ -20,6 +20,9 @@ const HOOK = path.join(__dirname, '..', '..', '.claude', 'hooks', 'release-gate.
 const VERSION = '0.9.9';
 
 // Throwaway Homey-compose repo; opts toggle the three gate conditions.
+/**
+ * @param {{ changelog?: object, logged?: boolean, rotation?: string }} [opts]
+ */
 function makeRepo({ changelog, logged, rotation } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'release-gate-'));
   fs.mkdirSync(path.join(dir, '.homeycompose'), { recursive: true });
