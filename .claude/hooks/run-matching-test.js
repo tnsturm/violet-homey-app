@@ -9,6 +9,8 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const { logHook } = require('./lib/log');
+const { spawnEnv } = require('./lib/spawn-env');
 
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
@@ -32,13 +34,8 @@ process.stdin.on('end', () => {
   const cwd = input.cwd || process.cwd();
   if (!fs.existsSync(path.join(cwd, testFile))) process.exit(0);
 
-  // Strip node:test child markers: inherited (e.g. when this hook itself runs
-  // under a suite, as in its own smoke tests) they flip the spawned `node --test`
-  // into the runner's child protocol — no readable TAP (test-gate lesson, M4.6).
-  const env = { ...process.env };
-  delete env.NODE_TEST_CONTEXT;
-  delete env.NODE_TEST_WORKER_ID;
-
-  spawnSync(process.execPath, ['--test', testFile], { cwd, stdio: 'inherit', env });
+  // spawnEnv strips the node:test child markers (lib/spawn-env.js — M4.6/M4.7 lesson).
+  spawnSync(process.execPath, ['--test', testFile], { cwd, stdio: 'inherit', env: spawnEnv() });
+  logHook('run-matching-test', 'pass', cwd); // mapped suite was executed (result is in the output)
   process.exit(0); // PostToolUse can't block; just surface pass/fail output
 });

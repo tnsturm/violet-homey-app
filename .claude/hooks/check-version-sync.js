@@ -6,6 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { logHook } = require('./lib/log');
 
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
@@ -33,6 +34,7 @@ process.stdin.on('end', () => {
   }
 
   if (rootVersion !== composeVersion) {
+    logHook('check-version-sync', 'block', cwd);
     console.error(
       `Version mismatch: app.json=${rootVersion} vs .homeycompose/app.json=${composeVersion}. `
       + 'Run "npx homey app build" (or version bump again) so both match before committing.'
@@ -40,5 +42,6 @@ process.stdin.on('end', () => {
     process.exit(2); // block the commit
   }
 
+  logHook('check-version-sync', 'pass', cwd);
   process.exit(0);
 });

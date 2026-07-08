@@ -15,6 +15,8 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const { logHook } = require('./lib/log');
+const { spawnEnv } = require('./lib/spawn-env');
 
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
@@ -42,21 +44,18 @@ process.stdin.on('end', () => {
     process.exit(0); // no test script -> nothing to gate
   }
 
-  // node:test marks its child processes via NODE_TEST_CONTEXT/NODE_TEST_WORKER_ID.
-  // If this hook itself runs inside a suite (its own smoke tests, or a commit-gated
-  // run whose suite spawns the hook), an inherited marker would flip the child
-  // `node --test` into the runner's child protocol — exit 0 even on failures.
-  // Strip the markers so the guarded suite always reports honestly.
-  const env = { ...process.env };
-  delete env.NODE_TEST_CONTEXT;
-  delete env.NODE_TEST_WORKER_ID;
-
-  // shell:true because scripts.test is a shell command line (like npm run)
-  const r = spawnSync(testScript, { cwd, shell: true, encoding: 'utf8', env });
-  if (r.status === 0 || r.status === null) {
-    process.exit(0); // green, or the suite failed to spawn -> fail open
+  // shell:true because scripts.test is a shell command line (like npm run);
+  // spawnEnv strips the node:test child markers (lib/spawn-env.js — M4.6/M4.7 lesson).
+  const r = spawnSync(testScript, { cwd, shell: true, encoding: 'utf8', env: spawnEnv() });
+  if (r.status === 0) {
+    logHook('test-gate', 'pass', cwd);
+    process.exit(0); // green
+  }
+  if (r.status === null) {
+    process.exit(0); // the suite failed to spawn -> fail open (nothing was checked)
   }
 
+  logHook('test-gate', 'block', cwd);
   console.error(
     `test-gate: test suite ("${testScript}") failed — fix the failing tests below `
     + '(or run "npm test") before committing.\n'

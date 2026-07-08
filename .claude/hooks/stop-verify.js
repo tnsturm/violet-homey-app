@@ -15,6 +15,8 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const { logHook } = require('./lib/log');
+const { spawnEnv } = require('./lib/spawn-env');
 
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
@@ -53,10 +55,8 @@ process.stdin.on('end', () => {
     // no package.json/scripts -> skip the suite step
   }
   if (testScript) {
-    const env = { ...process.env };
-    delete env.NODE_TEST_CONTEXT;
-    delete env.NODE_TEST_WORKER_ID;
-    const r = spawnSync(testScript, { cwd, shell: true, encoding: 'utf8', env });
+    // spawnEnv strips the node:test child markers (lib/spawn-env.js — M4.6/M4.7 lesson).
+    const r = spawnSync(testScript, { cwd, shell: true, encoding: 'utf8', env: spawnEnv() });
     if (r.status !== 0 && r.status !== null) {
       problems.push(`test suite ("${testScript}") failed:\n${[r.stdout, r.stderr].filter(Boolean).join('\n').trim()}`);
     }
@@ -71,6 +71,7 @@ process.stdin.on('end', () => {
   }
 
   if (problems.length > 0) {
+    logHook('stop-verify', 'block', cwd);
     console.error(
       'stop-verify: source files are modified but verification is red — fix before ending the turn '
       + `(modified: ${guarded.join(', ')}):\n${problems.join('\n\n')}`
@@ -78,5 +79,6 @@ process.stdin.on('end', () => {
     process.exit(2); // block the stop; the model continues and fixes
   }
 
+  logHook('stop-verify', 'pass', cwd); // guarded dirs dirty, but suite/validate green
   process.exit(0);
 });

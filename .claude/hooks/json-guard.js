@@ -12,6 +12,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { logHook } = require('./lib/log');
 
 // The Homey manifest/changelog JSON set — pure JSON (no JSONC comments). Tooling
 // JSON under .claude/ (e.g. launch.json) is deliberately NOT guarded (may be JSONC).
@@ -42,8 +43,10 @@ process.stdin.on('end', () => {
 
   try {
     JSON.parse(text);
+    logHook('json-guard', 'pass', input.cwd);
     process.exit(0);
   } catch (err) {
+    logHook('json-guard', 'block', input.cwd);
     console.error(
       `json-guard: ${path.basename(abs)} is not valid JSON after this edit — ${err.message}. `
       + `Common cause in this repo: an ASCII " string delimiter came out as a curly "smart quote" `

@@ -15,6 +15,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { logHook } = require('./lib/log');
 
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
@@ -41,8 +42,12 @@ process.stdin.on('end', () => {
   // signature). Anchor this on the edited file's OWN directory, never on cwd: Claude
   // Code passes an absolute file_path while cwd is the session dir, so a cwd-anchored
   // check would miss the real root app.json from any subdir/parent session.
-  if (!fs.existsSync(path.join(path.dirname(target), '.homeycompose'))) process.exit(0);
+  if (!fs.existsSync(path.join(path.dirname(target), '.homeycompose'))) {
+    logHook('compose-guard', 'pass', input.cwd); // app.json checked: real source, not generated
+    process.exit(0);
+  }
 
+  logHook('compose-guard', 'block', input.cwd);
   console.error(
     'compose-guard: refusing to edit the generated root app.json directly. It is '
     + 'assembled from .homeycompose/** and drivers/**/driver.compose.json and will be '

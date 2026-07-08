@@ -3,6 +3,9 @@ node_modules/
 npm-debug.log*
 yarn-error.log*
 
+# Hook telemetry (local only — M4.8)
+.claude/hooks/hook-log.jsonl
+
 # Homey
 .homeybuild/
 .homeycompose/app.json.tmp

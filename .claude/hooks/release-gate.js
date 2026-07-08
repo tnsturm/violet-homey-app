@@ -17,6 +17,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { logHook } = require('./lib/log');
 
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
@@ -103,11 +104,13 @@ process.stdin.on('end', () => {
   }
 
   if (problems.length > 0) {
+    logHook('release-gate', 'block', cwd);
     console.error(
       `release-gate: blocking "homey app ${action}" for version ${version}:\n- ${problems.join('\n- ')}`
     );
     process.exit(2); // block the release
   }
 
+  logHook('release-gate', 'pass', cwd);
   process.exit(0);
 });

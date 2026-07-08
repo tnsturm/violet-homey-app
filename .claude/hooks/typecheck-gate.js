@@ -13,6 +13,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const { logHook } = require('./lib/log');
 
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
@@ -48,10 +49,15 @@ process.stdin.on('end', () => {
   }
 
   const r = spawnSync(process.execPath, [tscPath, '-p', 'tsconfig.checkjs.json'], { cwd, encoding: 'utf8' });
-  if (r.status === 0 || r.status === null) {
-    process.exit(0); // green, or tsc itself failed to spawn -> fail open
+  if (r.status === 0) {
+    logHook('typecheck-gate', 'pass', cwd);
+    process.exit(0); // green
+  }
+  if (r.status === null) {
+    process.exit(0); // tsc itself failed to spawn -> fail open (no telemetry: nothing was checked)
   }
 
+  logHook('typecheck-gate', 'block', cwd);
   console.error(
     'typecheck-gate: tsc -p tsconfig.checkjs.json failed — fix the type errors below '
     + '(or run "npm run typecheck") before committing.\n'

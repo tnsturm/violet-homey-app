@@ -16,6 +16,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { logHook } = require('./lib/log');
 
 // Files where a credential must never appear: app source + generated/committed
 // manifests. Tooling/config/docs/tests/scratchpad are out of scope.
@@ -83,6 +84,7 @@ process.stdin.on('end', () => {
 
   const rule = violation(content, knownSecret);
   if (rule) {
+    logHook('secrets-guard', 'block', input.cwd);
     const rel = String(filePath).replace(/\\/g, '/').replace(/^.*\/(lib|drivers|\.homeycompose)\//, '$1/');
     console.error(
       `secrets-guard: refusing to write what looks like a hardcoded Violet write `
@@ -94,5 +96,6 @@ process.stdin.on('end', () => {
     process.exit(2); // block the Edit/Write
   }
 
+  logHook('secrets-guard', 'pass', input.cwd);
   process.exit(0);
 });
