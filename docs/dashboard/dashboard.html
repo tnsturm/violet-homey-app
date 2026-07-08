@@ -358,7 +358,7 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
         { at: "2026-07-08", note: "Alle 16 Befunde gefixt: onPair = Typen-Strenge, kein Bug (SDK deklariert async; Handler-Registrierung bleibt synchron) → async onPair; lib-JSDoc-Contracts angeglichen (Capabilities lsi?/alarm?, buildM2Updates opts optional, buildWriteUrl ohne vakantes ={}-Default); Test-Stubs mit präzisen @type-Casts, KEIN Config-Aufweichen. typecheck-gate-Hook per TDD (6 Tests, test/hooks/), registriert in settings.json (greift ab nächster Session); real gegen Repo verifiziert: exit 0 in 1,7 s." },
         { at: "2026-07-08", note: "§6-Sweep ALLE 8 PASS: K1 typecheck exit 0 · K2 100 Tests/0 fail (≥91) · K3 npm test 8,05-8,31 s ≤ 8,86 s (Cap 2×B_test; tsc-Läufe im Hook-Test parallelisiert, vorher 8,81 s grenzwertig) · K4 validate exit 0/4,35 s ≤ 8,50 s · K5 kein Manifest-Drift nach tsc+build · K6 kein Root-tsconfig, build ohne TS-Schritt · K7 Lsi-Edit triggert Lsi-Test (Direktaufruf-Evidenz) · K8 dependencies {}. Kein Abbruchkriterium. Letzter Code-Commit 654f2ce; /code-review + §9-Entscheid ausstehend." },
         { at: "2026-07-08", note: "/code-review: Approve, keine Critical Issues (4 nicht-blockierende Hinweise: git-commit-Regex-Präzisierung + Gate-Kombination → M4.6, require.resolve-Ancestor-Randfall, Hook-Selbst-Typecheck → strict-Ratchet). §9-Entscheid (User): Branch pushen + PR — PR #3 geöffnet: github.com/tnsturm/violet-homey-app/pull/3. Milestone-Abschluss (status done) nach dem Merge." },
-        { at: "2026-07-08", note: "PR #3 vom User GEMERGT → origin/main 6d660fa; lokales main per FF nachgezogen; Feature-Branch gelöscht (lokal + origin auto). M4.5 DONE. Ab der nächsten Session aktiv: typecheck-gate blockt git commit bei rotem tsc (vorher npm run typecheck). Vor M4.6: milestone-checkpoint (→M4.6-Eintrag, CLAUDE.md §7 Punkt 4)." }
+        { at: "2026-07-08", note: "PR #3 vom User GEMERGT → origin/main 6d660fa; lokales main per FF nachgezogen; Feature-Branch gelöscht (lokal + origin auto). M4.5 DONE. Ab der nächsten Session aktiv: typecheck-gate blockt git commit bei rotem tsc (vorher npm run typecheck). ENTSCHEID (User 2026-07-08): M4.6–M4.9 laufen als EIN Tooling-Block OHNE Zwischen-Checkpoints; der milestone-checkpoint läuft einmal konsolidiert danach als →M5 (kein eigener →M4.6). Grund: die Loop-Hardening-Milestones bauen selbst die Automatisierung, die ein Checkpoint jetzt nur empfehlen würde — nach dem Block hat er echten Input." }
       ],
       prompt: null
     },
@@ -369,7 +369,7 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Paket 1 der Loop-Engineering-Analyse (2026-07-07, Memory loop-dev-roadmap, Ideen 1–4): Commit-Test-Gate (npm test blockt git commit; kombiniert mit dem M4.5-Typecheck-Gate), Release-Gate-Hook (install/publish ohne Changelog en+de, Versions-Bump oder Credential-Rotations-Nachweis blocken — Write-Passwort-Rotation ist vor dem Live-Publish noch offen), GitHub-Actions-CI (npm test + typecheck + validate --level publish + Manifest-Sync bei Push/PR, nächtlicher Cron) als erste sessionunabhängige Verifikationsinstanz, /goal-Done-Bedingungen in alle offenen Resume-Prompts + dashboard-sync-Regel. Tooling-only, kein Version-Bump (§8, Präzedenz M4.5). Die CI erfüllt M5-Gate (b).",
+      summary: "Paket 1 der Loop-Engineering-Analyse (2026-07-07, Memory loop-dev-roadmap, Ideen 1–4): Commit-Test-Gate (npm test blockt git commit; kombiniert mit dem M4.5-Typecheck-Gate), Release-Gate-Hook (install/publish ohne Changelog en+de, Versions-Bump oder Credential-Rotations-Nachweis blocken — Write-Passwort-Rotation ist vor dem Live-Publish noch offen), GitHub-Actions-CI (npm test + typecheck + validate --level publish + Manifest-Sync bei Push/PR, nächtlicher Cron) als erste sessionunabhängige Verifikationsinstanz, /goal-Done-Bedingungen in alle offenen Resume-Prompts + dashboard-sync-Regel. Tooling-only, kein Version-Bump (§8, Präzedenz M4.5). Die CI erfüllt M5-Gate (b). Erster Milestone des Tooling-Blocks M4.6–M4.9 (User-Entscheid 2026-07-08): KEIN Zwischen-Checkpoint im Block — der konsolidierte milestone-checkpoint läuft einmal danach als →M5.",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: false },
@@ -407,7 +407,7 @@ Aufgaben (Hooks je per TDD mit Smoke-Test in test/hooks/; Hook-Lade-Realität be
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Paket 2 der Loop-Engineering-Analyse (Ideen 5–7 + 12): Mock-Harness test/mocks/homey.js + erste Reconcile/Apply-Tests für drivers/pool/device.js (Ort des einzigen Produktions-Crashs; erfüllt M5-Gate a) inkl. run-matching-test-Erweiterung auf drivers/; read-only Live-Smoke-Test test/live/smoke.js gegen die echte Violet als release-readiness-Punkt 8 (der M3-§12-Write-Teil ist seit 2026-07-07 via debughttp.htm erledigt — nur noch Read-Pfad); Stop-Hook stop-verify.js (Turn darf nicht mit roten Tests/validate-Fehlern enden); bekannte Defekte als { todo: true }-Tests eingefroren (alarm_dosing_blocked-False-Positive). Tooling-only, kein Version-Bump (§8).",
+      summary: "Paket 2 der Loop-Engineering-Analyse (Ideen 5–7 + 12): Mock-Harness test/mocks/homey.js + erste Reconcile/Apply-Tests für drivers/pool/device.js (Ort des einzigen Produktions-Crashs; erfüllt M5-Gate a) inkl. run-matching-test-Erweiterung auf drivers/; read-only Live-Smoke-Test test/live/smoke.js gegen die echte Violet als release-readiness-Punkt 8 (der M3-§12-Write-Teil ist seit 2026-07-07 via debughttp.htm erledigt — nur noch Read-Pfad); Stop-Hook stop-verify.js (Turn darf nicht mit roten Tests/validate-Fehlern enden); bekannte Defekte als { todo: true }-Tests eingefroren (alarm_dosing_blocked-False-Positive). Tooling-only, kein Version-Bump (§8). Teil des Tooling-Blocks M4.6–M4.9 (kein Zwischen-Checkpoint; konsolidiert in →M5).",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: false },
@@ -445,7 +445,7 @@ Aufgaben (je per TDD):
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Paket 3 der Loop-Engineering-Analyse (Ideen 8–11): nächtliche Triage-Routine (/schedule: npm test + validate + Follow-up-Abgleich → committete Triage-Inbox docs/dashboard/triage-inbox.md — der fehlende Heartbeat); Milestone-Handover im milestone-checkpoint-Skill (Resume-Prompt des nächsten Milestones als Push aufs Handy — Ein-Klick-Trigger statt Erinnerungsleistung); Memory-Konsolidierung als Checkpoint-Schritt (Dreaming-Muster: Diff-Review, nie direkt anwenden, offene Follow-ups nie löschen); Hook-Telemetrie (.claude/hooks/lib/log.js → hook-log.jsonl, gitignored) als Datenbasis für die Workflow-Retro. Tooling-only, kein Version-Bump (§8). Der folgende →M5-Checkpoint erprobt die neuen Checkpoint-Features sofort.",
+      summary: "Paket 3 der Loop-Engineering-Analyse (Ideen 8–11): nächtliche Triage-Routine (/schedule: npm test + validate + Follow-up-Abgleich → committete Triage-Inbox docs/dashboard/triage-inbox.md — der fehlende Heartbeat); Milestone-Handover im milestone-checkpoint-Skill (Resume-Prompt des nächsten Milestones als Push aufs Handy — Ein-Klick-Trigger statt Erinnerungsleistung); Memory-Konsolidierung als Checkpoint-Schritt (Dreaming-Muster: Diff-Review, nie direkt anwenden, offene Follow-ups nie löschen); Hook-Telemetrie (.claude/hooks/lib/log.js → hook-log.jsonl, gitignored) als Datenbasis für die Workflow-Retro. Tooling-only, kein Version-Bump (§8). Teil des Tooling-Blocks M4.6–M4.9 (kein Zwischen-Checkpoint); der →M5-Checkpoint nach M4.9 erprobt die neuen Checkpoint-Features (Handover, Memory-Konsolidierung, Telemetrie-Auswertung) sofort.",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: false },
@@ -483,7 +483,7 @@ Aufgaben:
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Extraktion des generischen Loop-Frameworks in den portablen Skill agentic-loop-framework (Phase 6 des Bootstrap-Prompts, gesichert in skill-ClaudeCode-general-settings/prompts/): SKILL.md (generalisierte Bootstrap-Anleitung) + templates/ (CLAUDE.md-Basis §0–§10, dashboard.html, versions.md, settings.json-Gerüst, Hook-Vorlagen inkl. test-gate + Smoke-Test-Muster, milestone-checkpoint-Skill) + CHANGELOG; Homey-Bausteine getrennt (homey/-Unterordner bzw. agentic-loop-homey). Dazu im VioletApp-Repo: Skill-als-Source-of-Truth-Spiegelregel auf Framework-Artefakte erweitern + Drift-Check-Schritt im milestone-checkpoint. Tooling-only, kein Version-Bump (§8). Voraussetzung: M4.6–M4.8 fertig — deren Artefakte wandern in templates/. Abschluss: Prompt-Konsistenz-Sweep über alle offenen Milestone-/Checkpoint-Prompts (/goal, §10-Startmodus, Triage-Inbox-Verweis, veraltete Referenzen).",
+      summary: "Extraktion des generischen Loop-Frameworks in den portablen Skill agentic-loop-framework (Phase 6 des Bootstrap-Prompts, gesichert in skill-ClaudeCode-general-settings/prompts/): SKILL.md (generalisierte Bootstrap-Anleitung) + templates/ (CLAUDE.md-Basis §0–§10, dashboard.html, versions.md, settings.json-Gerüst, Hook-Vorlagen inkl. test-gate + Smoke-Test-Muster, milestone-checkpoint-Skill) + CHANGELOG; Homey-Bausteine getrennt (homey/-Unterordner bzw. agentic-loop-homey). Dazu im VioletApp-Repo: Skill-als-Source-of-Truth-Spiegelregel auf Framework-Artefakte erweitern + Drift-Check-Schritt im milestone-checkpoint. Tooling-only, kein Version-Bump (§8). Voraussetzung: M4.6–M4.8 fertig — deren Artefakte wandern in templates/. Abschluss: Prompt-Konsistenz-Sweep über alle offenen Milestone-/Checkpoint-Prompts (/goal, §10-Startmodus, Triage-Inbox-Verweis, veraltete Referenzen). Letzter Milestone des Tooling-Blocks M4.6–M4.9; danach läuft der konsolidierte →M5-Checkpoint.",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: false },
@@ -527,7 +527,7 @@ Git-Aktionen in BEIDEN Repos nur nach /code-review + Freigabe (CLAUDE.md §9). d
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Housekeeping zwischen M4.9 und M5: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4). Erster Checkpoint mit den neuen M4.8-Features (Handover, Memory-Konsolidierung, Hook-Telemetrie-Auswertung).",
+      summary: "EINZIGER, konsolidierter Checkpoint für den gesamten Tooling-Block M4.6–M4.9 (User-Entscheid 2026-07-08: keine Zwischen-Checkpoints im Block; deckt auch den ausgelassenen M4.5→M4.6-Check ab). Permission-Allowlist + Automation-Empfehlungen prüfen (CLAUDE.md §7 Punkt 4) — jetzt mit echtem Input aus den frisch gebauten Gates/CI/Hooks statt gegen Platzhalter. Erster Checkpoint mit den neuen M4.8-Features (Handover, Memory-Konsolidierung, Hook-Telemetrie-Auswertung).",
       steps: [
         { label: "/fewer-permission-prompts", done: false },
         { label: "/claude-automation-recommender", done: false },
@@ -536,10 +536,12 @@ Git-Aktionen in BEIDEN Repos nur nach /code-review + Freigabe (CLAUDE.md §9). d
       ],
       currentActivity: null,
       runtime: null,
-      log: [],
+      log: [
+        { at: "2026-07-08", note: "Als konsolidierter Post-Block-Checkpoint umgewidmet (User-Entscheid): M4.6–M4.9 laufen als ein Tooling-Block ohne Zwischen-Checkpoints; dieser Eintrag deckt den ganzen Block inkl. des ausgelassenen M4.5→M4.6-Checks ab." }
+      ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
-Zwischen-Check vor M5 (CLAUDE.md §7 Punkt 4). M4.9 ist abgeschlossen, M5 startet als Naechstes. (Erster Checkpoint mit den neuen M4.8-Schritten: Handover, Memory-Konsolidierung, Hook-Telemetrie-Auswertung.)
+Konsolidierter Checkpoint nach dem Tooling-Block M4.6–M4.9 (CLAUDE.md §7 Punkt 4) — der EINZIGE Checkpoint für den ganzen Block; innerhalb M4.6–M4.9 lief bewusst keiner (User-Entscheid 2026-07-08), der ausgelassene M4.5→M4.6-Check ist hier mit abgedeckt. M4.9 ist abgeschlossen, M5 startet als Naechstes. (Erster Checkpoint mit den neuen M4.8-Schritten: Handover, Memory-Konsolidierung, Hook-Telemetrie-Auswertung.)
 
 Fuehre aus: /milestone-checkpoint
 
