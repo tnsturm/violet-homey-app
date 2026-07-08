@@ -365,8 +365,8 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
     {
       id: "M4.6",
       title: "Loop-Hardening I: Gates & CI",
-      status: "todo",
-      startedAt: null,
+      status: "active",
+      startedAt: "2026-07-08",
       finishedAt: null,
       commit: null,
       summary: "Paket 1 der Loop-Engineering-Analyse (2026-07-07, Memory loop-dev-roadmap, Ideen 1–4): Commit-Test-Gate (npm test blockt git commit; kombiniert mit dem M4.5-Typecheck-Gate), Release-Gate-Hook (install/publish ohne Changelog en+de, Versions-Bump oder Credential-Rotations-Nachweis blocken — Write-Passwort-Rotation ist vor dem Live-Publish noch offen), GitHub-Actions-CI (npm test + typecheck + validate --level publish + Manifest-Sync bei Push/PR, nächtlicher Cron) als erste sessionunabhängige Verifikationsinstanz, /goal-Done-Bedingungen in alle offenen Resume-Prompts + dashboard-sync-Regel. Tooling-only, kein Version-Bump (§8, Präzedenz M4.5). Die CI erfüllt M5-Gate (b). Erster Milestone des Tooling-Blocks M4.6–M4.9 (User-Entscheid 2026-07-08): KEIN Zwischen-Checkpoint im Block — der konsolidierte milestone-checkpoint läuft einmal danach als →M5.",
@@ -377,10 +377,11 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
         { label: "Implementierung (TDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: null,
+      currentActivity: "Spec (offene Detailfragen) + Plan",
       runtime: null,
       log: [
-        { at: "2026-07-08", note: "Milestone aus der Loop-Engineering-Analyse angelegt (Memory loop-dev-roadmap, Paket 1 = Ideen 1–4); Brainstorming durch die Analyse-Session 2026-07-07 abgedeckt. Platzierung vor M5, weil die CI dessen hartes Gate (b) erfüllt." }
+        { at: "2026-07-08", note: "Milestone aus der Loop-Engineering-Analyse angelegt (Memory loop-dev-roadmap, Paket 1 = Ideen 1–4); Brainstorming durch die Analyse-Session 2026-07-07 abgedeckt. Platzierung vor M5, weil die CI dessen hartes Gate (b) erfüllt." },
+        { at: "2026-07-08", note: "Umsetzungssession gestartet. Baseline: npm test 100/100 pass (~5 s). Befund fuer Aufgabe 4: claude --version = 2.1.110 < /goal-Mindestversion 2.1.139 (Memory loop-dev-roadmap Idee 1) — Fallback-Entscheidung folgt in der Spec." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
