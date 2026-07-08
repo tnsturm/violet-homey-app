@@ -10,7 +10,7 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert');
-const { spawnSync } = require('node:child_process');
+const { spawn, spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -40,19 +40,33 @@ function runHook(command, cwd, raw) {
   return { code: r.status, err: (r.stderr || '').trim() };
 }
 
+// Async variant for the two tsc-running cases: both are kicked off at module load
+// so their ~1,7 s tsc runs overlap instead of serializing — keeps the whole suite
+// inside the §6 wall-time cap (2 × B_test); measured 8,81 s vs cap 8,86 s serial.
+function runHookAsync(command, cwd) {
+  return new Promise((resolve) => {
+    const child = spawn(process.execPath, [HOOK], { stdio: ['pipe', 'ignore', 'pipe'] });
+    let err = '';
+    child.stderr.on('data', (d) => { err += d; });
+    child.on('close', (code) => resolve({ code, err: err.trim() }));
+    child.stdin.end(JSON.stringify({ tool_name: 'Bash', cwd, tool_input: { command } }));
+  });
+}
+
 const RED_SRC = "'use strict';\n/** @type {number} */\nconst n = 'not a number';\nmodule.exports = n;\n";
 const GREEN_SRC = "'use strict';\n/** @type {number} */\nconst n = 1;\nmodule.exports = n;\n";
 
-test('typecheck-gate: git commit with red typecheck → BLOCK with tsc output', () => {
-  const dir = makeProject(RED_SRC);
-  const { code, err } = runHook('git commit -m "x"', dir);
+const redRun = runHookAsync('git commit -m "x"', makeProject(RED_SRC));
+const greenRun = runHookAsync('git commit -m "x"', makeProject(GREEN_SRC));
+
+test('typecheck-gate: git commit with red typecheck → BLOCK with tsc output', async () => {
+  const { code, err } = await redRun;
   assert.strictEqual(code, 2, err);
   assert.match(err, /src\.js/); // the tsc finding must reach the model as fix guidance
 });
 
-test('typecheck-gate: git commit with green typecheck → PASS', () => {
-  const dir = makeProject(GREEN_SRC);
-  const { code, err } = runHook('git commit -m "x"', dir);
+test('typecheck-gate: git commit with green typecheck → PASS', async () => {
+  const { code, err } = await greenRun;
   assert.strictEqual(code, 0, err);
 });
 
