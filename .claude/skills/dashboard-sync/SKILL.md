@@ -48,4 +48,6 @@ Status-Lifecycle, gleiche Edit-Regeln wie ein echter Milestone. Sieben Steps, al
 
 `id`, `title`, `status` (`done`|`active`|`todo`), `startedAt`/`finishedAt`, `commit`,
 `summary`, `steps[]` (`{label, done}`), `currentActivity`, `runtime`, `log[]`
-(`{at, note}`), `prompt` (vollständiger Resume-Prompt; `null` sobald `done`).
+(`{at, note}`), `prompt` (vollständiger Resume-Prompt; `null` sobald `done`),
+`recommendedModel` (`{model, effort, why}` — CLAUDE.md §11; für jeden offenen Milestone
+gesetzt, entfällt sobald `status: done`).

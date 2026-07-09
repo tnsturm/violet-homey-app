@@ -14,6 +14,7 @@ const { installHomeyMock } = require('../mocks/homey');
 installHomeyMock();
 
 const VioletClient = require('../../lib/VioletClient');
+/** @type {*} */
 let currentFixture = null;
 let failFetch = false;
 VioletClient.fetchReadings = async () => {
@@ -54,6 +55,7 @@ const DEFAULT_SETTINGS = {
  */
 
 // Fresh device wired to a fixture; onInit kicks one async _tick — settle it.
+/** @param {*} fixture @param {Object<string, *>} [settings] */
 async function makeDevice(fixture, settings = {}) {
   currentFixture = fixture;
   failFetch = false;

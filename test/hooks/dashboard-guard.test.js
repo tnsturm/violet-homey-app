@@ -20,6 +20,7 @@ const HOOK = path.join(__dirname, '..', '..', '.claude', 'hooks', 'dashboard-gua
 const LQ = String.fromCharCode(0x201C); // “
 const RQ = String.fromCharCode(0x201D); // ”
 
+/** @param {string} filePath */
 function runHook(filePath) {
   const r = spawnSync(process.execPath, [HOOK], {
     input: JSON.stringify({ tool_name: 'Write', tool_input: { file_path: filePath } }),
@@ -28,6 +29,7 @@ function runHook(filePath) {
   return { code: r.status, err: (r.stderr || '').trim() };
 }
 
+/** @param {string} name @param {string} content */
 function tmpFile(name, content) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashguard-'));
   const p = path.join(dir, 'docs', 'dashboard');
@@ -37,6 +39,7 @@ function tmpFile(name, content) {
   return full;
 }
 
+/** @param {string} dataBlockBody */
 function htmlWith(dataBlockBody) {
   return `<html><body>\n<script id="status-data">\n${dataBlockBody}\n</script>\n</body></html>`;
 }

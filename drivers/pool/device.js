@@ -31,6 +31,7 @@ const {
 
 // Per-channel dosing tile labels (shared by capability reconcile and the
 // diagnostics title annotation) — the base title a `<base>.<ch>` tile shows.
+/** @type {Object<string, {en: string, de: string}>} */
 const CH_TITLE = {
   cl: { en: 'Chlorine', de: 'Chlor' },
   elo: { en: 'Electrolysis', de: 'Elektrolyse' },
@@ -39,6 +40,7 @@ const CH_TITLE = {
   php: { en: 'pH-plus', de: 'pH-Plus' },
   floc: { en: 'Flocculant', de: 'Flockung' },
 };
+/** @type {Object<string, {en: string, de: string}>} */
 const DOSING_NOUN = {
   measure_dosing_days_left: { en: 'days left', de: 'Reichweite' },
   measure_dosing_daily_ml: { en: 'dosed today', de: 'dosiert heute' },
@@ -48,11 +50,23 @@ const DOSING_NOUN = {
 };
 
 class PoolDevice extends Homey.Device {
+  // Instance-state field declarations (checkJs strict, M5 gate c): typed here so
+  // reads in _tick/_reconcile aren't seen as possibly-undefined. onInit assigns
+  // the real values; these defaults exist only to pin the types.
+  /** @type {number} */
+  _failures = 0;
+  /** @type {Object<string, boolean>} capInstanceId → last boolean (edge detection) */
+  _m2AlarmState = {};
+  /** @type {Object<string, *>} capId → FlowCardTriggerDevice */
+  _m2Triggers = {};
+
   async onInit() {
     this._failures = 0;
+    /** @type {?string} */
     this._lastLsiBand = null;
+    /** @type {*} Homey FlowCardTriggerDevice (SDK type is loose here). */
     this._lsiWarning = this.homey.flow.getDeviceTriggerCard('lsi_warning');
-    this._lsiWarning.registerRunListener((args, state) => {
+    this._lsiWarning.registerRunListener((/** @type {*} */ args, /** @type {*} */ state) => {
       if (args.filter === 'all') return true;
       if (args.filter === 'critical') return state.severity === 'critical';
       return state.direction === args.filter; // 'corrosive' | 'scaling'
@@ -65,18 +79,18 @@ class PoolDevice extends Homey.Device {
       overflow_overfill: this.homey.flow.getDeviceTriggerCard('overflow_overfill'),
       backwash_valve_fault: this.homey.flow.getDeviceTriggerCard('backwash_valve_fault'),
     };
-    this._m2AlarmState = {}; // capInstanceId -> last boolean (edge detection)
+    this._m2AlarmState = {};
 
     // M3 control tiles (spec §5/§8). Registered by id regardless of current
     // presence; taps route here once the cap is added. Each gates on the interlock.
-    this.registerCapabilityListener('pump_control', async (value) => {
+    this.registerCapabilityListener('pump_control', async (/** @type {string} */ value) => {
       const durationSecs = value === 'auto' ? 0 : (this.getSetting('control_default_duration_min') ?? 60) * 60;
       await this._control({ target: 'PUMP', state: value.toUpperCase(), args: { duration: durationSecs, speed: this._pumpSpeedArg() } }, 'pump_control');
     });
-    this.registerCapabilityListener('light_control', async (value) => {
+    this.registerCapabilityListener('light_control', async (/** @type {string} */ value) => {
       await this._control({ target: 'LIGHT', state: value.toUpperCase() }, 'light_control');
     });
-    this.registerCapabilityListener('pvsurplus_control', async (value) => {
+    this.registerCapabilityListener('pvsurplus_control', async (/** @type {*} */ value) => {
       const speed = this._pumpSpeedArg();
       await this._control(value
         ? { target: 'PVSURPLUS', state: 'ON', args: { speed: speed === 0 ? undefined : speed } }
@@ -99,6 +113,10 @@ class PoolDevice extends Homey.Device {
   // Gate every write on the interlock (SR-07), then log the attempt before sending
   // so failed/blocked writes are still audited (SR-10). Logs only target + args,
   // never credentials (SR-02). `label` is a short op name.
+  /**
+   * @param {{target:string, scene?:number, state:string, args?:Object<string, *>}} cmd
+   * @param {string} label Short op name for the audit log.
+   */
   async _control(cmd, label) {
     if (this.getSetting('control_enabled') !== true) {
       throw new Error('Control is disabled — enable it in the device settings.');
@@ -118,6 +136,7 @@ class PoolDevice extends Homey.Device {
   // Base (un-annotated) title a tile should show, reconstructed deterministically
   // (restart-safe — never read from a possibly-annotated live title). Dosing
   // sub-caps use the channel label + noun; other caps use the manifest title.
+  /** @param {string} capId @returns {{en: string, de: string}} */
   _diagBaseTitle(capId) {
     const dot = capId.indexOf('.');
     if (dot > 0) {
@@ -127,7 +146,7 @@ class PoolDevice extends Homey.Device {
       const cht = CH_TITLE[ch];
       if (noun && cht) return { en: `${cht.en} ${noun.en}`, de: `${cht.de} ${noun.de}` };
     }
-    const defs = (this.homey.manifest && this.homey.manifest.capabilities) || {};
+    const defs = /** @type {Object<string, *>} */ ((this.homey.manifest && this.homey.manifest.capabilities) || {});
     const t = defs[capId] && defs[capId].title;
     if (t) return typeof t === 'string' ? { en: t, de: t } : t;
     return { en: capId, de: capId };
@@ -139,9 +158,10 @@ class PoolDevice extends Homey.Device {
   // mapped state/switch/alarm caps are touched, and setCapabilityOptions runs only
   // when the shown value changes (bounded churn on this heavy API). A one-time pass
   // per app start (_diagInit) corrects any stale title left by an abnormal exit.
+  /** @param {import('../../lib/VioletClient').RawReadings} raw */
   async _applyDiagTitles(raw) {
     const on = this.getSetting('show_advanced_diagnostics') === true;
-    if (!this._diagState) this._diagState = {};
+    if (!this._diagState) this._diagState = /** @type {Object<string, ?string>} */ ({});
     const first = !this._diagInit;
     for (const cap of this.getCapabilities()) {
       if (!diagAnnotatable(cap)) continue;
@@ -165,6 +185,7 @@ class PoolDevice extends Homey.Device {
     this._tick().catch(this.error);
   }
 
+  /** @param {{changedKeys: string[]}} event */
   async onSettings({ changedKeys }) {
     if (changedKeys.includes('pollIntervalSeconds')) this._startPolling();
     // LSI toggle / chemistry edits take effect on the next poll — re-tick promptly.
@@ -216,11 +237,14 @@ class PoolDevice extends Homey.Device {
     let lsi = null;
     if (this.getSetting('lsi_enabled') === true && fresh) {
       const tempC = primaryChannel != null ? primaryChannel : (this.getSetting('chem_fixed_temperature') ?? null);
+      // computeLSI returns null for any non-finite input; `?? NaN` maps a null
+      // reading/conversion to a non-finite number so its own gate handles it
+      // (checkJs strict, M5 gate c — behaviour-identical to passing null).
       lsi = computeLSI({
-        pH: parsed.ph,
+        pH: parsed.ph ?? NaN,
         tempC,
-        calciumHardnessPpm: toPpmCaCO3(this.getSetting('chem_calcium_hardness'), this.getSetting('chem_calcium_unit') || 'ppm'),
-        totalAlkalinityPpm: toPpmCaCO3(this.getSetting('chem_total_alkalinity'), this.getSetting('chem_alkalinity_unit') || 'ppm'),
+        calciumHardnessPpm: toPpmCaCO3(this.getSetting('chem_calcium_hardness'), this.getSetting('chem_calcium_unit') || 'ppm') ?? NaN,
+        totalAlkalinityPpm: toPpmCaCO3(this.getSetting('chem_total_alkalinity'), this.getSetting('chem_alkalinity_unit') || 'ppm') ?? NaN,
         cya: this.getSetting('chem_cya') ?? 0,
       });
     }
@@ -254,8 +278,9 @@ class PoolDevice extends Homey.Device {
 
     // Edge-trigger M2 alarms on false→true only (spec §7). Channel-scoped alarms
     // key their state per instance; tokens carry the channel/reason.
+    /** @type {Object<string, string>} */
     const CH_LABEL = { cl: 'Chlorine', elo: 'Electrolysis', elorev: 'Electrolysis (rev.)', phm: 'pH-minus', php: 'pH-plus', floc: 'Flocculant' };
-    const fireEdge = (capInstance, isOn, card, tokens) => {
+    const fireEdge = (/** @type {string} */ capInstance, /** @type {*} */ isOn, /** @type {*} */ card, /** @type {Object<string, *>} */ tokens) => {
       const prev = this._m2AlarmState[capInstance] === true;
       if (isOn && !prev) card.trigger(this, tokens, {}).catch(this.error);
       this._m2AlarmState[capInstance] = isOn === true;
@@ -268,9 +293,10 @@ class PoolDevice extends Homey.Device {
       if (!this.hasCapability(cap)) continue;
       const dot = cap.indexOf('.');
       const base = dot > 0 ? cap.slice(0, dot) : cap;
-      const ch = dot > 0 ? cap.slice(dot + 1) : null;
+      const ch = dot > 0 ? cap.slice(dot + 1) : ''; // dosing alarms are always dotted
       if (base === 'alarm_dosing_blocked') {
-        const reason = (raw[`${dosingChannelPrefix(ch)}_STATE`] || []).join(', ');
+        const stateVal = raw[`${dosingChannelPrefix(ch)}_STATE`];
+        const reason = Array.isArray(stateVal) ? stateVal.join(', ') : '';
         fireEdge(cap, val, this._m2Triggers.dosing_blocked, { channel: CH_LABEL[ch] || ch, reason });
       } else if (base === 'alarm_dosing_low') {
         fireEdge(cap, val, this._m2Triggers.dosing_low, { channel: CH_LABEL[ch] || ch, days_left: m2[`measure_dosing_days_left.${ch}`] ?? 0 });
@@ -296,6 +322,10 @@ class PoolDevice extends Homey.Device {
     await this._applyDiagTitles(raw).catch(this.error);
   }
 
+  /**
+   * @param {import('../../lib/VioletClient').ParsedReadings} parsed
+   * @param {import('../../lib/FeatureDetector').Features} features
+   */
   async _reconcileCapabilities(parsed, features) {
     // 1) Feature-group capabilities via auto-detect + override (spec §9; M0: chlorine only).
     const overrides = { chlorine: this.getSetting('group_chlorine') || 'auto' };
@@ -332,7 +362,7 @@ class PoolDevice extends Homey.Device {
 
     // 3) M2 feature-group capabilities (spec M2 §4,§6). Overrides come from the
     //    per-group settings (group_<id>); diagnostics gated by a toggle.
-    const m2Overrides = {};
+    const m2Overrides = /** @type {Object<string, *>} */ ({});
     for (const g of Object.keys(M2_GROUPS)) m2Overrides[g] = this.getSetting(`group_${g}`) || undefined;
     m2Overrides.dosing = this.getSetting('group_dosing') || undefined;
     const diagnosticsEnabled = this.getSetting('show_advanced_diagnostics') === true;
@@ -360,7 +390,7 @@ class PoolDevice extends Homey.Device {
       ...DOSING_SUBCAPS,
       ...DIAGNOSTIC_CAPS,
     ]);
-    const baseOf = (cap) => (cap.includes('.') ? cap.slice(0, cap.indexOf('.')) : cap);
+    const baseOf = (/** @type {string} */ cap) => (cap.includes('.') ? cap.slice(0, cap.indexOf('.')) : cap);
     for (const cap of [...this.getCapabilities()]) {
       if (M2_MANAGED_BASES.has(baseOf(cap)) && !desiredM2.has(cap)) {
         await this.removeCapability(cap).catch(this.error);

@@ -23,6 +23,7 @@ const GREEN = "'use strict';\nconst { test } = require('node:test');\ntest('g', 
 const RED = "'use strict';\nconst { test } = require('node:test');\nconst assert = require('node:assert');\ntest('r', () => { assert.strictEqual(1, 2); });\n";
 
 // Committed baseline repo: package.json + suite + lib/a.js, clean tree.
+/** @param {{suite: string}} opts */
 function makeRepo({ suite }) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'stop-verify-'));
   fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({
@@ -31,19 +32,21 @@ function makeRepo({ suite }) {
   fs.writeFileSync(path.join(dir, 'src.test.js'), suite);
   fs.mkdirSync(path.join(dir, 'lib'));
   fs.writeFileSync(path.join(dir, 'lib', 'a.js'), 'module.exports = 1;\n');
-  const git = (args) => spawnSync('git', args, { cwd: dir, encoding: 'utf8' });
+  const git = (/** @type {string[]} */ args) => spawnSync('git', args, { cwd: dir, encoding: 'utf8' });
   git(['init', '-q']);
   git(['-c', 'user.email=t@t', '-c', 'user.name=t', 'add', '-A']);
   git(['-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-q', '-m', 'init']);
   return dir;
 }
 
+/** @param {string} [cwd] @param {Object<string, *>} [extra] @param {string} [raw] */
 function runHook(cwd, extra, raw) {
   const payload = raw !== undefined ? raw : JSON.stringify({ cwd, stop_hook_active: false, ...extra });
   const r = spawnSync(process.execPath, [HOOK], { input: payload, encoding: 'utf8' });
   return { code: r.status, err: (r.stderr || '').trim() };
 }
 
+/** @param {string} cwd */
 function runHookAsync(cwd) {
   return new Promise((resolve) => {
     const child = spawn(process.execPath, [HOOK], { stdio: ['pipe', 'ignore', 'pipe'] });

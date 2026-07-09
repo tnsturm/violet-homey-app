@@ -29,7 +29,7 @@ class PoolDriver extends Homey.Driver {
 
     // M3 write-control Flow actions (spec §7). Each delegates to device._control,
     // which enforces the interlock + registry validation + sanitized errors.
-    const speedArg = (v) => (v === undefined || v === 'default' ? undefined : Number(v));
+    const speedArg = (/** @type {*} */ v) => (v === undefined || v === 'default' ? undefined : Number(v));
 
     this.homey.flow.getActionCard('pump_set_mode').registerRunListener(async (args) => {
       await args.device._control({ target: 'PUMP', state: String(args.mode).toUpperCase(), args: { duration: Math.round((args.duration_min ?? 0) * 60), speed: speedArg(args.speed) } }, 'pump_set_mode');
@@ -59,10 +59,12 @@ class PoolDriver extends Homey.Driver {
   // async to match the SDK's declared onPair signature (checkJs TS2416, M4.5 eval doc
   // §3) — typing strictness, not a runtime bug: handler registration stays synchronous
   // and Homey awaits the returned promise either way.
+  /** @param {*} session Homey pairing session. */
   async onPair(session) {
+    /** @type {?{id: string, host: string, writeUsername: string, writePassword: string}} */
     let pairData = null;
 
-    session.setHandler('connect', async ({ host, username, password }) => {
+    session.setHandler('connect', async (/** @type {{host?: string, username?: string, password?: string}} */ { host, username, password }) => {
       const cleanHost = String(host || '').trim();
       if (!cleanHost) throw new Error('Host is required');
       // Pairing completes only on a valid live response: this throws on any

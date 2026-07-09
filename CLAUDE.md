@@ -106,9 +106,10 @@ Use a single-file `dashboard.html` (or equivalent): opens directly in a browser,
 3. **At the end:** `status: "done"`, `finishedAt`, `commit: "<short-sha>"`, all `steps[].done = true`, `currentActivity: null`, bump `updatedAt`.
 4. **Between milestones:** once a milestone is closed and before starting the next, run the project's `milestone-checkpoint` skill (wraps `/fewer-permission-prompts`, `/claude-automation-recommender`, and a check of this project's third-party skill sources). Track this as its own checkpoint entry in the milestones list (same object shape as a milestone, `id: "→Mx"`), not just prose.
 
-**Fields per milestone:** `id`, `title`, `status` (`done`|`active`|`todo`), `startedAt`/`finishedAt`, `commit`, `summary`, `steps[]` (`{label, done}`), `currentActivity`, `runtime`, `log[]` (`{at, note}`), `prompt` (full resume prompt; `null` once done).
+**Fields per milestone:** `id`, `title`, `status` (`done`|`active`|`todo`), `startedAt`/`finishedAt`, `commit`, `summary`, `steps[]` (`{label, done}`), `currentActivity`, `runtime`, `log[]` (`{at, note}`), `prompt` (full resume prompt; `null` once done), `recommendedModel` (`{model, effort, why}` — see §11; set for every open milestone, drop once `status` is `done`).
 
 **Rules:**
+- Every new milestone (or checkpoint) entered into the dashboard gets a `recommendedModel` at creation time, not as an afterthought — assign it per §11 before the entry is committed.
 - Every resume prompt (milestone or checkpoint) ends with `/remote-control <id> — <title>` so the spawned session is reachable from the Claude mobile app.
 - Log friction the moment it occurs: append a `log[]` entry prefixed `FRICTION:` to the active milestone (repeated errors, blocked tools, wrong assumptions, rework). The workflow retro in `milestone-checkpoint` reads these entries as its primary signal source — unlogged friction is invisible to it.
 - New milestone sessions and the release-readiness subagent read `docs/dashboard/triage-inbox.md`
@@ -162,9 +163,11 @@ Always wait for an explicit yes before pushing or merging — this section only 
 
 Everyday sessions run in the default mode with the allowlist; autonomous loop sessions start with `--permission-mode auto`.
 
-## 11. Subagent Model Tiering
+## 11. Model Tiering (Subagents & Milestones)
 
-**Don't pay flagship prices for mechanical work — and never economize on the checker.**
+**Don't pay flagship prices for mechanical work — and never economize on the checker or on high-risk judgment calls.**
+
+### Subagents
 
 Subagents inherit the session model by default. Assign tiers explicitly via frontmatter in `.claude/agents/*.md` (`model:` + `effort:`):
 
@@ -172,6 +175,18 @@ Subagents inherit the session model by default. Assign tiers explicitly via fron
 - **Review/judge/security agents** (e.g. `security-reviewer`): `model: inherit` — feedback quality is the loop bottleneck (§4), and a weak verifier defeats the maker/checker split.
 - In multi-agent workflows, set effort per stage: low for finder/collector stages, high only for verify/judge stages.
 - Global session-wide override if ever needed: `CLAUDE_CODE_SUBAGENT_MODEL`.
+
+### Milestones (main-loop sessions)
+
+Every open milestone in the dashboard (§7) carries a `recommendedModel: { model, effort, why }` — a suggestion for which Claude model/tier and reasoning effort best fits *that milestone's own* main-loop session (distinct from the subagents it spawns internally). Set it when the milestone entry is created (checkpoint or milestone-planning session), and re-derive it if the milestone's scope changes materially.
+
+Judge by the nature of the remaining work, not by project phase or milestone number:
+- **Mechanical/checklist work** (checkpoints, scoped reads-milestones with brainstorming/spec already done): a mid-tier model (e.g. Sonnet), `effort: low`/`medium`.
+- **Open design/brainstorming, external-integration research, or moderate ambiguity**: mid-tier model, `effort: medium`.
+- **High-stakes judgment calls** (GO/NO-GO decisions against measurable criteria, touching the one untested/production-crash-prone code path, correctness-critical domain logic feeding user-facing decisions, or any milestone with its own threat-model/security-review): the flagship model (e.g. Opus), `effort: high`/`xhigh` — judgment quality outweighs speed or cost here.
+- One-line `why` always states *what about this milestone's remaining work* drives the tier — not a generic restating of the milestone title.
+
+This is a recommendation surfaced to whoever starts that milestone session (human or automation deciding which model to launch it with) — not an enforced gate.
 
 ---
 

@@ -21,6 +21,7 @@ const REPO_NODE_MODULES = path.join(__dirname, '..', '..', 'node_modules');
 // Throwaway project with a one-file checker config. `srcText` decides red vs green.
 // node_modules is junction-linked to this repo's so the checker resolves without a
 // per-test npm install (junction: works without admin rights on Windows).
+/** @param {string} srcText */
 function makeProject(srcText) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'typecheck-gate-'));
   fs.writeFileSync(path.join(dir, 'tsconfig.checkjs.json'), JSON.stringify({
@@ -32,6 +33,7 @@ function makeProject(srcText) {
   return dir;
 }
 
+/** @param {*} command @param {string} [cwd] @param {string} [raw] */
 function runHook(command, cwd, raw) {
   const payload = raw !== undefined
     ? raw
@@ -43,6 +45,7 @@ function runHook(command, cwd, raw) {
 // Async variant for the two tsc-running cases: both are kicked off at module load
 // so their ~1,7 s tsc runs overlap instead of serializing — keeps the whole suite
 // inside the §6 wall-time cap (2 × B_test); measured 8,81 s vs cap 8,86 s serial.
+/** @param {string} command @param {string} cwd */
 function runHookAsync(command, cwd) {
   return new Promise((resolve) => {
     const child = spawn(process.execPath, [HOOK], { stdio: ['pipe', 'ignore', 'pipe'] });

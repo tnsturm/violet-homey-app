@@ -56,6 +56,9 @@
   .metaline b{font-weight:500;color:var(--muted)}
   .cur{font-size:12.5px;color:var(--activeText);background:var(--activeBg);border-radius:8px;
        padding:7px 10px;margin-top:11px}
+  .modelrec{font-size:12.5px;color:var(--muted);background:var(--todoBg);border-radius:8px;
+       padding:7px 10px;margin-top:11px}
+  .modelrec b{color:var(--text)}
   .log{margin-top:10px;font-size:12px;color:var(--faint)}
   .log div{padding:1px 0}
   details{margin-top:12px}
@@ -504,12 +507,13 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       id: "M5",
       title: "TS-Migration device.js — Re-Evaluation (Pfad B/C)",
       status: "todo",
+      recommendedModel: { model: "Claude Opus 4.8", effort: "high", why: "Hartes GO/NO-GO-Urteil unter maschinellen Kriterien + Migration des einzigen ungetesteten Produktions-Crash-Bereichs (device.js) — Urteilsqualität schlägt Tempo." },
       startedAt: null,
       finishedAt: null,
       commit: null,
       summary: "Re-Evaluation der .ts-Migration aus der TypeScript-Evaluation 2026-07-08 (§5): device.js-FIRST (nicht lib-first — lib/ ist testgedeckt, device.js nicht). HARTES GATE: nur starten, wenn (a) Mock-Harness test/mocks/homey.js existiert (loop-dev-roadmap Idee 6 → M4.7), (b) GitHub-Actions-CI grün läuft (Idee 3 → M4.6) UND (c) der checkJs-strict-Ratchet ausgereizt ist. Ziel: verifizierbare Verhaltensäquivalenz statt Blindflug im ungetesteten Glue-Code.",
       steps: [
-        { label: "Trigger-Gate (Mock-Harness, CI, strict-Ratchet)", done: false },
+        { label: "Trigger-Gate (Mock-Harness, CI, strict-Ratchet)", done: true },
         { label: "Re-Evaluation (Brainstorming + Spike)", done: false },
         { label: "Spec + Plan", done: false },
         { label: "Implementierung (TDD)", done: false },
@@ -518,7 +522,9 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       currentActivity: null,
       runtime: null,
       log: [
-        { at: "2026-07-08", note: "Milestone aus der TS-Evaluation angelegt (docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md §5, Re-Evaluations-Trigger); auf User-Entscheid als M5 einnummeriert — ehemalige M5–M9 wurden zu M6–M10." }
+        { at: "2026-07-08", note: "Milestone aus der TS-Evaluation angelegt (docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md §5, Re-Evaluations-Trigger); auf User-Entscheid als M5 einnummeriert — ehemalige M5–M9 wurden zu M6–M10." },
+        { at: "2026-07-09", note: "Gate-Check: (a) Mock-Harness test/mocks/homey.js MET (device.js unter Test); (b) CI gruen MET (Run 29051624272 auf main); (c) checkJs-strict-Ratchet beim Erst-Check NICHT MET — npx tsc -p tsconfig.checkjs.json --strict lieferte 288 Fehler (Root-Cause: untypisierter raw-Payload = TS2339/TS7053, wie die 121 lib-Fehler aus Evaluationsdoku §3; dazu Test-Callback-any + null-Sicherheit + never[]-Mock-Store)." },
+        { at: "2026-07-10", note: "strict-Ratchet auf User-Entscheid DIREKT in dieser Session geschlossen (typing-only, npm test durchweg fail 0): Root-Cause-Typedefs RawReadings/ParsedReadings/Features (lib/, via JSDoc-import in FeatureGroups/Capabilities/device.js), Index-Signatur-Casts fuer dynamisch indizierte Literale, Null-Sicherheit in Lsi.js (computeLSI-Aufrufer via ?? NaN verhaltensgleich) + Tests (?.-Chaining), Instanz-Feld-Deklarationen in device.js + Mock, @param-Annotationen in Hook-Tests. tsconfig.checkjs.json auf strict:true (Invariante im Header). ERGEBNIS: npx tsc (strict) exit 0 · npm test 155 pass/0 fail/1 todo · validate --level publish PASS · typecheck-gate 6/6. ALLE DREI M5-TRIGGER (a+b+c) ERFUELLT. Naechster Schritt: eigentliche Pfad-B/C-Re-Evaluation (Spike + GO/NO-GO nach §6) in fokussierter M5-Session (Modell-Empfehlung Opus/high). Milestone bleibt 'todo' (Re-Evaluation noch offen); Trigger-Gate-Step abgehakt. Nachtrag im Entscheidungsdokument §5." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
@@ -553,6 +559,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       id: "→M6",
       title: "Zwischen-Check",
       status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
       startedAt: null,
       finishedAt: null,
       commit: null,
@@ -589,6 +596,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       id: "M6",
       title: "Inbound-Alarme (HTTP → Flow-Trigger)",
       status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Brainstorming/Spec bereits fertig; verbleibend ist Plan+SDD für ein klar umrissenes Feature (HTTP-Listener + Flow-Trigger)." },
       startedAt: "2026-06-26",
       finishedAt: null,
       commit: null,
@@ -629,6 +637,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       id: "→M7",
       title: "Zwischen-Check",
       status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
       startedAt: null,
       finishedAt: null,
       commit: null,
@@ -665,6 +674,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       id: "M7",
       title: "LabCOM-Cloud-Import (PoolLab)",
       status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Neue externe Cloud-API (PoolLab/LabCOM) mit unbekannter Auth/Feld-Struktur — Recherche nötig, aber additiver Read-Pfad ohne Sicherheitsrisiko." },
       startedAt: null,
       finishedAt: null,
       commit: null,
@@ -704,6 +714,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       id: "→M8",
       title: "Zwischen-Check",
       status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
       startedAt: null,
       finishedAt: null,
       commit: null,
@@ -740,6 +751,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       id: "M8",
       title: "Empfehlungs-Modul (Wasserbalance)",
       status: "todo",
+      recommendedModel: { model: "Claude Opus 4.8", effort: "high", why: "Korrektheitskritische Wasserchemie-Domänen-Logik (LSI-Treiber, CO₂-Ausgasung/Alkalitäts-Wechselwirkung) speist Nutzer-Empfehlungen — Denkqualität vor Tempo." },
       startedAt: null,
       finishedAt: null,
       commit: null,
@@ -779,6 +791,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       id: "M9",
       title: "Dosierung & Sollwerte (setConfig)",
       status: "todo",
+      recommendedModel: { model: "Claude Opus 4.8", effort: "xhigh", why: "Höchstes Risiko im Projekt: reverse-engineerter undokumentierter Schreib-Endpoint direkt in die Wasserchemie-Dosierung + eigenes Threat-Model/Security-Review — stärkste verfügbare Urteilsfähigkeit für Clamping/Sicherheit." },
       startedAt: null,
       finishedAt: null,
       commit: null,
@@ -820,6 +833,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       id: "M10",
       title: "Filterdruck + Anströmung/Durchfluss + Auto-Detection-Review",
       status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Überwiegend Reads-Milestone im M2-Stil plus eine Zuverlässigkeits-Review der bestehenden Autodetection — moderates Urteil, kein Sicherheitsrisiko." },
       startedAt: null,
       finishedAt: null,
       commit: null,
@@ -922,6 +936,11 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
     html += '<div class="metaline">' + meta.join("") + '</div>';
 
     if (m.currentActivity) html += '<div class="cur">Aktuell: ' + esc(m.currentActivity) + '</div>';
+
+    if (m.recommendedModel) {
+      html += '<div class="modelrec"><b>Modell-Empfehlung:</b> ' + esc(m.recommendedModel.model)
+            + ' · Aufwand ' + esc(m.recommendedModel.effort) + ' — ' + esc(m.recommendedModel.why) + '</div>';
+    }
 
     if (m.log && m.log.length) {
       html += '<div class="log">';

@@ -19,6 +19,7 @@ const HOOK = path.join(__dirname, '..', '..', '.claude', 'hooks', 'test-gate.js'
 
 // Throwaway project whose scripts.test runs node:test on one tiny file.
 // `srcText` decides red vs green. No node_modules needed (node:test is builtin).
+/** @param {string} srcText */
 function makeProject(srcText) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-gate-'));
   fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({
@@ -28,6 +29,7 @@ function makeProject(srcText) {
   return dir;
 }
 
+/** @param {*} command @param {string} [cwd] @param {string} [raw] */
 function runHook(command, cwd, raw) {
   const payload = raw !== undefined
     ? raw
@@ -38,6 +40,7 @@ function runHook(command, cwd, raw) {
 
 // Async variant for the two suite-running cases: both are kicked off at module
 // load so their child `node --test` runs overlap instead of serializing (§6 cap).
+/** @param {string} command @param {string} cwd */
 function runHookAsync(command, cwd) {
   return new Promise((resolve) => {
     const child = spawn(process.execPath, [HOOK], { stdio: ['pipe', 'ignore', 'pipe'] });
