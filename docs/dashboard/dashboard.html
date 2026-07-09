@@ -448,49 +448,29 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
     {
       id: "M4.9",
       title: "Framework-Extraktion (agentic-loop-framework)",
-      status: "active",
+      status: "done",
       startedAt: "2026-07-09",
-      finishedAt: null,
-      commit: null,
+      finishedAt: "2026-07-09",
+      commit: "cd46019",
       summary: "Extraktion des generischen Loop-Frameworks in den portablen Skill agentic-loop-framework (Phase 6 des Bootstrap-Prompts, gesichert in skill-ClaudeCode-general-settings/prompts/): SKILL.md (generalisierte Bootstrap-Anleitung) + templates/ (CLAUDE.md-Basis §0–§10, dashboard.html, versions.md, settings.json-Gerüst, Hook-Vorlagen inkl. test-gate + Smoke-Test-Muster, milestone-checkpoint-Skill) + CHANGELOG; Homey-Bausteine getrennt (homey/-Unterordner bzw. agentic-loop-homey). Dazu im VioletApp-Repo: Skill-als-Source-of-Truth-Spiegelregel auf Framework-Artefakte erweitern + Drift-Check-Schritt im milestone-checkpoint. Tooling-only, kein Version-Bump (§8). Voraussetzung: M4.6–M4.8 fertig — deren Artefakte wandern in templates/. Abschluss: Prompt-Konsistenz-Sweep über alle offenen Milestone-/Checkpoint-Prompts (/goal, §10-Startmodus, Triage-Inbox-Verweis, veraltete Referenzen). Letzter Milestone des Tooling-Blocks M4.6–M4.9; danach läuft der konsolidierte →M5-Checkpoint.",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
         { label: "Implementierung (TDD)", done: true },
-        { label: "Validate + Push", done: false }
+        { label: "Validate + Push", done: true }
       ],
-      currentActivity: "/code-review (3 Repos) + §9-Entscheid",
+      currentActivity: null,
       runtime: null,
       log: [
         { at: "2026-07-08", note: "Milestone angelegt (Phase 6 des Bootstrap-Prompts; Prompts als Keimzelle in skill-ClaudeCode-general-settings/prompts/ gesichert, Commit fcbda47). Platzierung nach M4.8, weil erst dann alle generischen Artefakte (Gate-Hooks, CI, Checkpoint-Erweiterungen) für templates/ existieren." },
         { at: "2026-07-08", note: "FRICTION: Smart-Quote-Fehlerklasse zum 4. Mal getroffen — ein ASCII-Anfuehrungszeichen im summary-String hat den Datenblock syntaktisch gebrochen; erstmals in dashboard.html, wo json-guard NICHT greift (deckt nur Manifest-/Changelog-JSON ab). Vom node-Eval-Verify gefangen, nicht von einem Hook. Retro-Kandidat: Datenblock-Parse-Check fuer dashboard.html als Hook oder Commit-Gate (passt zu M4.6)." },
         { at: "2026-07-09", note: "Umsetzungssession gestartet (gleiche Session wie M4.6-M4.8, letzter Block-Milestone). Bootstrap-Prompts gelesen (A generisch + B Homey, prompts/agentic-loop-bootstrap.de.md im Settings-Skill-Repo); Skill-Repo-Struktur gesichtet (marketplace.json + plugin/ vorhanden). ENTSCHEIDUNGSPUNKT Zielort dem User vorgelegt: (a) eigenes Repo vs (b) zweites Plugin im Settings-Repo." },
         { at: "2026-07-09", note: "User-Entscheid: (a) eigenes Repo. Umgesetzt: privates Repo tnsturm/skill-agentic-loop-framework (gh repo create; Branch main, Identitaet torsten.sturm@gmail.com) mit Plugin-Struktur nach Settings-Repo-Muster; SKILL.md (Prompt A generalisiert: Phasen verweisen auf templates/-Baum statt Neuerzeugung, Homey via homey/README) + CHANGELOG 0.1.0 mit Quellen (0dcf648); templates/ = kopierfaehiger Projektbaum: CLAUDE.md-Basis, Dashboard mit leerem Datenblock (Renderer 1:1), versions/triage-Skelette, settings-Geruest, test-gate+lib/log+lib/spawn-env+Smoke-Test, checkpoint-Vorlage mit Quellen-Platzhalter (ed86790); homey/ = README (Prompt-B-Einbau), HOMEY.md, 4 Guard-Hooks generisch (secrets-guard: DEVICE_WRITE_PASSWORD), Allowlist, release-readiness app-neutral (d6a6084). Grep-Checks: templates/ frei von Violet/Homey (nur gewollte Quellen-Header), homey/ frei von Violet." },
-        { at: "2026-07-09", note: "VioletApp: Spiegelregel auf Framework-Artefakte erweitert (CLAUDE.md Source-of-Truth-Abschnitt) + milestone-checkpoint Schritt 6 Framework-Drift (Dashboard-Update 7, Handover 8) + dashboard-sync auf 7 Checkpoint-Steps (8172de6). Settings-Repo: Superseded-Notizen in beiden Bootstrap-Prompts + README-Verweis (0a39e35, lokal). TROCKENTEST (Phase-6-Verify) GRUEN: templates/ nach Temp kopiert — Datenblock parst (milestones=0), settings.json parst, Hook-Smoke 6/6 im ausgelieferten Layout. SWEEP (Aufgabe 7) ueber →M5-→M8 + M5-M10: Startmodus-Zeile (§10) + Triage-Inbox-Zeile (§7) in allen 10 Prompts, DONE-BEDINGUNGEN-Checklisten in den 4 Checkpoint-Prompts, Checkpoint-steps auf 7 Labels, M5-Gate-Referenzen aktualisiert (a+b VORHANDEN, nur c offen), M6 mit Gates-aktiv-Hinweis; Datenblock-Eval gruen (d9a1dc7)." }
+        { at: "2026-07-09", note: "VioletApp: Spiegelregel auf Framework-Artefakte erweitert (CLAUDE.md Source-of-Truth-Abschnitt) + milestone-checkpoint Schritt 6 Framework-Drift (Dashboard-Update 7, Handover 8) + dashboard-sync auf 7 Checkpoint-Steps (8172de6). Settings-Repo: Superseded-Notizen in beiden Bootstrap-Prompts + README-Verweis (0a39e35, lokal). TROCKENTEST (Phase-6-Verify) GRUEN: templates/ nach Temp kopiert — Datenblock parst (milestones=0), settings.json parst, Hook-Smoke 6/6 im ausgelieferten Layout. SWEEP (Aufgabe 7) ueber →M5-→M8 + M5-M10: Startmodus-Zeile (§10) + Triage-Inbox-Zeile (§7) in allen 10 Prompts, DONE-BEDINGUNGEN-Checklisten in den 4 Checkpoint-Prompts, Checkpoint-steps auf 7 Labels, M5-Gate-Referenzen aktualisiert (a+b VORHANDEN, nur c offen), M6 mit Gates-aktiv-Hinweis; Datenblock-Eval gruen (d9a1dc7)." },
+        { at: "2026-07-09", note: "/code-review ueber alle DREI Repos: Approve; 1 echter Fund gefixt (templates/CLAUDE.md referenzierte /documenting-code als existierenden Projekt-Skill — jetzt optionales Muster, 1597c60). §9-Entscheid (User): alle drei pushen — VioletApp FF-Merge cd46019 auf origin/main (CI-Lauf 29004171067 GRUEN), skill-agentic-loop-framework erster Push auf main (4 Commits, HEAD 1597c60), Settings-Repo 0a39e35. M4.9 DONE — TOOLING-BLOCK M4.6-M4.9 KOMPLETT. Nachgelagerte Praezisierung (User-Frage): Seed-Prompts im Settings-Repo bewusst eingefroren; bekannte Seed-Drifts dokumentiert (Hook-Lade-Realitaet, progress.md, en-Dateinamensverweis) — lebende Quelle ist der Skill. Naechster Schritt: konsolidierter →M5-Checkpoint (erster Lauf mit Memory-Konsolidierung, Framework-Drift-Check, Handover, Telemetrie-Auswertung)." }
       ],
-      prompt: `UMGEBUNG: Zwei Repos — VioletApp unter C:/Users/TorstenSturm/source/repos/VioletApp (Claude Code hier starten) und das private Skill-Repo unter C:/Users/TorstenSturm/source/repos/skill-ClaudeCode-general-settings (bzw. auf Entscheid ein neues Repo).
-
-Violet Homey Pro App — Milestone M4.9 (Framework-Extraktion: agentic-loop-framework als portabler Skill). Tooling-only: KEIN Version-Bump, kein Release (§8). M4.6–M4.8 müssen abgeschlossen sein — ihre Artefakte sind die Quelle der Templates.
-
-Lies zuerst: (1) skill-ClaudeCode-general-settings/prompts/agentic-loop-bootstrap.de.md — Phase 6 ist die Spec-Basis dieses Milestones, der Gesamtprompt der Kern der künftigen SKILL.md; (2) das Memory loop-dev-roadmap; (3) den Abschnitt "Claude-Code-Settings: Skill = Source of Truth" in CLAUDE.md (die bestehende Konvention wird hier auf Framework-Artefakte erweitert). Aktualisiere beim Start den M4.9-Eintrag in docs/dashboard/dashboard.html (Protokoll CLAUDE.md §7). Kurz-Spec nach docs/superpowers/specs/, dann superpowers:writing-plans.
-
-ENTSCHEIDUNGSPUNKT vorab: Zielort des Skills — (a) eigenes Repo skill-agentic-loop-framework (sauberste Trennung, eigener Marketplace-Eintrag) oder (b) zweites Plugin/Skill im bestehenden skill-ClaudeCode-general-settings (weniger Repo-Overhead). Empfehlung und Trade-offs kurz präsentieren, dann entscheide ich.
-
-Aufgaben:
-1. SKILL.md: die Bootstrap-Prompts (de als Quelle, en referenzieren) zu einer generalisierten Skill-Anleitung umbauen — Trigger-Beschreibung, Phasen 0–7, Dauerregeln; VioletApp-Spezifika raus, Platzhalter rein.
-2. templates/: aus den VioletApp-Artefakten generische Vorlagen ziehen — CLAUDE.md-Basis (§0–§10 inkl. Karpathy-Kern, §10 Permission-Strategie), dashboard.html (Datenblock leer + Renderer unverändert), versions.md-Tabelle, settings.json-Gerüst (leere hooks + minimale read-only-Allowlist), Hook-Vorlagen (test-gate aus M4.6 generisch: Testkommando als Variable; Smoke-Test-Muster aus test/hooks/), milestone-checkpoint-SKILL.md (inkl. der M4.8-Schritte Handover/Memory-Konsolidierung/Telemetrie-Auswertung). Jede Vorlage frei von VioletApp-/Homey-Bezügen.
-3. Homey-Bausteine getrennt ablegen (homey/-Unterordner oder eigener Skill agentic-loop-homey): HOMEY.md-Template, die 4 Homey-Hook-Vorlagen (compose-guard, json-guard, check-version-sync, secrets-guard), Homey-Allowlist-Block, release-readiness-Vorlage.
-4. CHANGELOG im Skill anlegen (erste Version).
-5. VioletApp-Repo: im CLAUDE.md-Abschnitt "Skill = Source of Truth" die Spiegelregel auf Framework-Artefakte erweitern (jede generische Änderung an Hooks/Protokollregeln/Checkpoint-Ablauf wird in derselben Session in den Skill gespiegelt); im milestone-checkpoint-Skill den Schritt "Framework-Drift prüfen: unterscheiden sich Projekt-Framework und Skill? → Skill nachziehen" ergänzen.
-6. Trockentest (Verify aus Phase 6): templates/ in ein Temp-Verzeichnis kopieren — der dashboard.html-Datenblock parst (node-Eval), settings.json parst (JSON.parse), die Hook-Smoke-Tests laufen grün.
-7. Prompt-Konsistenz-Sweep zum Abschluss: die Resume-Prompts ALLER noch offenen Milestones und Checkpoints (→M5, M5–M10) gegen den finalen Framework-Stand aus M4.5–M4.9 prüfen und nachziehen — (a) /goal-Zeile vorhanden und transcript-verifizierbar (falls M4.6 Aufgabe 4 sie noch nicht ergänzt hat), (b) Start-Modus-Hinweis nach CLAUDE.md §10 (autonome Läufe mit claude --permission-mode auto, Alltag Default + Allowlist), (c) Verweis auf die Triage-Inbox aus M4.8 wo sinnvoll (Session liest sie zuerst), (d) keine veralteten Regel-, Hook- oder Pfad-Referenzen. Jede Anpassung chirurgisch nur im jeweiligen prompt-Feld; den Datenblock danach per node-Eval verifizieren.
-
-/goal Der Trockentest zeigt: Datenblock parst, settings.json parst, Hook-Smoke-Tests grün; SKILL.md + templates/ + Homey-Modul + CHANGELOG liegen committed im Ziel-Repo; VioletApp-CLAUDE.md enthält die erweiterte Spiegelregel und milestone-checkpoint den Drift-Check-Schritt; und der Prompt-Konsistenz-Sweep über →M5 und M5–M10 ist durchgeführt (Diffs gezeigt, Datenblock-Eval grün) — Outputs im Chat gezeigt.
-
-Git-Aktionen in BEIDEN Repos nur nach /code-review + Freigabe (CLAUDE.md §9). documenting-code-Skill für neue Hook-/Skript-Vorlagen.
-
-/remote-control M4.9 — Framework-Extraktion (agentic-loop-framework)`
+      prompt: null
     },
     {
       id: "→M5",
