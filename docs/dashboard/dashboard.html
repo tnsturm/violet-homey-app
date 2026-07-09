@@ -429,16 +429,18 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       summary: "Paket 3 der Loop-Engineering-Analyse (Ideen 8–11): nächtliche Triage-Routine (/schedule: npm test + validate + Follow-up-Abgleich → committete Triage-Inbox docs/dashboard/triage-inbox.md — der fehlende Heartbeat); Milestone-Handover im milestone-checkpoint-Skill (Resume-Prompt des nächsten Milestones als Push aufs Handy — Ein-Klick-Trigger statt Erinnerungsleistung); Memory-Konsolidierung als Checkpoint-Schritt (Dreaming-Muster: Diff-Review, nie direkt anwenden, offene Follow-ups nie löschen); Hook-Telemetrie (.claude/hooks/lib/log.js → hook-log.jsonl, gitignored) als Datenbasis für die Workflow-Retro. Tooling-only, kein Version-Bump (§8). Teil des Tooling-Blocks M4.6–M4.9 (kein Zwischen-Checkpoint); der →M5-Checkpoint nach M4.9 erprobt die neuen Checkpoint-Features (Handover, Memory-Konsolidierung, Telemetrie-Auswertung) sofort.",
       steps: [
         { label: "Brainstorming", done: true },
-        { label: "Spec", done: false },
-        { label: "Plan", done: false },
-        { label: "Implementierung (TDD)", done: false },
+        { label: "Spec", done: true },
+        { label: "Plan", done: true },
+        { label: "Implementierung (TDD)", done: true },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: "Spec (offene Detailfragen) + Plan",
+      currentActivity: "/code-review + §9-Entscheid (Push/PR)",
       runtime: null,
       log: [
         { at: "2026-07-08", note: "Milestone aus der Loop-Engineering-Analyse angelegt (Paket 3 = Ideen 9–11; Idee 8 Triage-Routine thematisch hierher gezogen). Platzierung direkt vor →M5, damit der nächste Checkpoint die neuen Meta-Loop-Features (Handover, Memory-Konsolidierung, Telemetrie-Auswertung) sofort real erprobt." },
-        { at: "2026-07-09", note: "Umsetzungssession gestartet (gleiche Session wie M4.6/M4.7). BEFUND Aufgabe 1: scheduled-tasks-MCP im Setup verfuegbar und legt LOKALE Tasks an (~/.claude/scheduled-tasks/, laufen solange die Desktop-App offen ist, verpasste Laeufe beim naechsten Start nachgeholt) — fuer die Triage die RICHTIGE Wahl statt Cloud-Routine: nur lokal sind MEMORY.md lesbar und das Checkout committbar. Zusaetzlich in Scope (M4.7-Review-Hinweis): NODE_TEST_CONTEXT-Env-Strip-Idiom (3x dupliziert) nach .claude/hooks/lib/ dedupen." }
+        { at: "2026-07-09", note: "Umsetzungssession gestartet (gleiche Session wie M4.6/M4.7). BEFUND Aufgabe 1: scheduled-tasks-MCP im Setup verfuegbar und legt LOKALE Tasks an (~/.claude/scheduled-tasks/, laufen solange die Desktop-App offen ist, verpasste Laeufe beim naechsten Start nachgeholt) — fuer die Triage die RICHTIGE Wahl statt Cloud-Routine: nur lokal sind MEMORY.md lesbar und das Checkout committbar. Zusaetzlich in Scope (M4.7-Review-Hinweis): NODE_TEST_CONTEXT-Env-Strip-Idiom (3x dupliziert) nach .claude/hooks/lib/ dedupen." },
+        { at: "2026-07-09", note: "Aufgabe 4 done (a674fc7): lib/log.js (fail-silent JSONL-Telemetrie) + lib/spawn-env.js (Dedupe) + Einzeiler in allen 9 Hooks nach D3-Regel (block vor jedem exit 2, pass nur auf dem geprueft-gut-Pfad) + .gitignore. E2E-Verify: provozierter Smart-Quote-Edit an .homeychangelog.json → live json-guard block + block-Zeile im Log, Edit revertiert. DEBUGGING-FUND dabei: process.cwd()-Fallback in logHook liess Guard-Tests OHNE payload-cwd (Suite laeuft im echten Repo) Fixture-Entscheidungen ins ECHTE Log schreiben — Fallback entfernt (explizites cwd Pflicht, 4. Helper-Test), Beweis: Suite-Lauf Delta=0 Log-Zeilen. Gate-Commits liefern jetzt echte pass-Telemetrie." },
+        { at: "2026-07-09", note: "Aufgaben 1-3 done: Triage-Erstlauf manuell (alles gruen: 145 Tests/fail 0/todo 1, validate exit 0, Sync 0.4.2, CI 28983092430 success) → triage-inbox.md committet (c06e4ad) mit 6 offenen Follow-ups; CLAUDE.md-§7-Regel (Inbox zuerst) + release-readiness-Hinweis; Scheduled Task violet-nightly-triage angelegt (LOKAL via scheduled-tasks-MCP — Cloud-Routine kann weder lokales MEMORY.md lesen noch lokal committen; Cron 30 3 * * *, effektiv ~03:34 mit Jitter, Nachhol-Semantik beim App-Start = erwuenschter Heartbeat). milestone-checkpoint-Skill: neue Schritte 5 Memory-Konsolidierung (Dreaming: nur Diff, Follow-ups/Security nie loeschen) + 7 Handover (Push mit /remote-control-Hinweis, dann Startfrage); Retro-Signal liest hook-log.jsonl; dashboard-sync-Muster + →M5 auf 6 Steps (a5a1eac; →M6-→M8 = M4.9-Sweep)." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
