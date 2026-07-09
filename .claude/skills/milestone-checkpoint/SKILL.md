@@ -12,7 +12,7 @@ mehrere Skills einzeln aufzurufen.
 ## Schritte
 
 1. `/fewer-permission-prompts` ausführen.
-2. `/claude-automation-recommender` ausführen.
+2. `/claude-automation-recommender` ausführen, Ergebnisse zur Direktumsetzung anbieten (siehe unten).
 3. Skill-Quellen prüfen (siehe unten).
 4. **Workflow-Retrospektive / Optimizer** ausführen (siehe unten) — wiederkehrende Reibung aus dem
    abgeschlossenen Milestone in eine dauerhafte Absicherung überführen.
@@ -22,6 +22,31 @@ mehrere Skills einzeln aufzurufen.
    `status: "done"`, `finishedAt` = heute, alle Steps abgehakt, je ein `log[]`-Eintrag mit
    kurzer Zusammenfassung der Schritte 1–6.
 8. **Handover** (siehe unten) — den nächsten Milestone als Push aufs Handy übergeben.
+
+## Schritt 2: /claude-automation-recommender-Ergebnisse anbieten
+
+Der Recommender ist read-only (er schlägt nur vor). Damit die Vorschläge nicht folgenlos im
+Chat verpuffen, direkt danach:
+
+1. Die 1–2 Empfehlungen je Kategorie (MCP-Server, Skill, Hook, Subagent, Plugin) aus dem
+   Recommender-Bericht als kurze nummerierte Liste zusammenfassen (Kategorie + Name +
+   Ein-Satz-Begründung — kein erneuter Fließtext).
+2. Per `AskUserQuestion` (multiSelect) genau diese Liste als Optionen anbieten: „Welche
+   Empfehlungen jetzt direkt umsetzen?" — plus die implizite Möglichkeit, keine auszuwählen.
+3. Für jede ausgewählte Empfehlung **in derselben Session direkt umsetzen**, passend zum Typ:
+   - **Hook**: gleiches Muster wie Schritt 4 (Hook-Datei + Smoke-Test, in `.claude/settings.json`
+     verdrahten, Suite grün verifizieren, eigener Commit); ist die Änderung generisch, greift
+     Schritt 6 (Framework-Drift) dafür mit.
+   - **MCP-Server**: falls lokal ohne Interaktion hinzufügbar (`claude mcp add ...`), direkt
+     ausführen; braucht der Server OAuth/Login, NICHT versuchen — stattdessen die
+     Registrierung anlegen/dokumentieren und den Nutzer auf den nötigen Auth-Schritt hinweisen
+     (`claude mcp` bzw. `/mcp` in einer interaktiven Session).
+   - **Skill/Subagent**: Datei unter `.claude/skills/<name>/SKILL.md` bzw.
+     `.claude/agents/<name>.md` anlegen, kurz smoke-testen (z. B. Dry-Run-Aufruf).
+   - **Plugin**: `claude plugin marketplace add`/`claude plugin install` nur nach ausdrücklicher
+     Zustimmung (Marketplace-Änderungen sind kein reiner Lese-Vorgang).
+4. Nicht ausgewählte Empfehlungen NICHT stillschweigend fallen lassen — im `→Mx`-`log[]`
+   kurz vermerken, was umgesetzt und was bewusst zurückgestellt wurde.
 
 ## Schritt 3: Skill-Quellen prüfen
 
@@ -137,5 +162,6 @@ Kein Drift → kurz vermerken.
 
 Am Ende kurz zusammenfassen: was wurde aktualisiert (homey-cli-skill / homey-app-skill, falls
 zutreffend), die installierte Superpowers-Version (ohne Aussage darüber, ob sie veraltet ist —
-das lässt sich von hier aus nicht feststellen), und das Ergebnis der Workflow-Retrospektive
-(welche wiederkehrenden Probleme in welche Ebene codifiziert wurden, oder „keine neue Reibung").
+das lässt sich von hier aus nicht feststellen), welche Recommender-Empfehlungen umgesetzt bzw.
+zurückgestellt wurden, und das Ergebnis der Workflow-Retrospektive (welche wiederkehrenden
+Probleme in welche Ebene codifiziert wurden, oder „keine neue Reibung").
