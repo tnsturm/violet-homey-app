@@ -23,7 +23,8 @@
         "matcher": "Edit|Write",
         "hooks": [
           { "type": "command", "command": "node .claude/hooks/run-matching-test.js" },
-          { "type": "command", "command": "node .claude/hooks/json-guard.js" }
+          { "type": "command", "command": "node .claude/hooks/json-guard.js" },
+          { "type": "command", "command": "node .claude/hooks/dashboard-guard.js" }
         ]
       }
     ],
@@ -51,7 +52,11 @@
       "Bash(homey app validate *)",
       "Bash(npx homey app validate *)",
       "Bash(git fetch *)",
-      "Bash(claude plugin list)"
+      "Bash(claude plugin list)",
+      "Bash(npm test)",
+      "Bash(npm run typecheck)",
+      "Bash(npx tsc -p tsconfig.checkjs.json)",
+      "Bash(homey select current)"
     ]
   }
 }
