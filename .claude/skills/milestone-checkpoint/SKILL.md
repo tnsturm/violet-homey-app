@@ -16,9 +16,11 @@ mehrere Skills einzeln aufzurufen.
 3. Skill-Quellen prüfen (siehe unten).
 4. **Workflow-Retrospektive / Optimizer** ausführen (siehe unten) — wiederkehrende Reibung aus dem
    abgeschlossenen Milestone in eine dauerhafte Absicherung überführen.
-5. Den aktiven `→Mx`-Checkpoint-Eintrag in `docs/dashboard/dashboard.html` aktualisieren:
-   `status: "done"`, `finishedAt` = heute, alle vier Steps abgehakt, je ein `log[]`-Eintrag mit
-   kurzer Zusammenfassung der Schritte 1–4.
+5. **Memory-Konsolidierung** (siehe unten) — Memory-Dateien eindampfen, Ergebnis nur als Diff.
+6. Den aktiven `→Mx`-Checkpoint-Eintrag in `docs/dashboard/dashboard.html` aktualisieren:
+   `status: "done"`, `finishedAt` = heute, alle Steps abgehakt, je ein `log[]`-Eintrag mit
+   kurzer Zusammenfassung der Schritte 1–5.
+7. **Handover** (siehe unten) — den nächsten Milestone als Push aufs Handy übergeben.
 
 ## Schritt 3: Skill-Quellen prüfen
 
@@ -81,6 +83,8 @@ auftreten. Vollständiges Design: `docs/superpowers/specs/2026-07-05-workflow-re
 1. **Signal sammeln** für den abgeschlossenen Milestone: `feedback`-Memories (Memory-Ordner),
    `FRICTION:`-Einträge in den Dashboard-`log[]`, und der Git-Verlauf (wiederholte `fix:`/`revert:`-
    Commits, Commit der einen direkt vorigen korrigiert, ≥2 gleichartige Fix-Commits an derselben Datei).
+   Zusätzlich `.claude/hooks/hook-log.jsonl` auslesen (Block-Zählungen je Hook seit dem letzten
+   Checkpoint statt Erinnerung — M4.8; viele Blocks desselben Hooks = wiederkehrende Reibungsklasse).
 2. **Clustern** zu eigenständigen Problemen; Häufigkeit zählen. **In Scope nur: ≥2× gesehen ODER vom
    Nutzer markiert** („nochmal", „zum dritten Mal"). Einzelfälle überspringen (YAGNI).
 3. **Root-Cause** je Problem (dreimal „warum": passiert · wiederholt · vor dem Commit nicht gefangen).
@@ -96,6 +100,29 @@ auftreten. Vollständiges Design: `docs/superpowers/specs/2026-07-05-workflow-re
 6. **Protokollieren** im `→Mx`-`log[]`: `Problem → Root-Cause → Ebene → Änderung → verifiziert`.
 
 Ist das Signal leer (nichts wiederholte sich), ist dieser Schritt ein No-op — nur kurz vermerken.
+
+## Schritt 5: Memory-Konsolidierung (Dreaming-Muster, M4.8)
+
+Sessions seit dem letzten Checkpoint sichten (`search_session_transcripts`, falls verfügbar —
+sonst Dashboard-`log[]` und `git log` als Quellen), dann die Dateien im Memory-Ordner
+(`MEMORY.md` + Einzeldateien) konsolidieren:
+
+- **Deduplizieren/kürzen**: Erledigtes eindampfen (z. B. trägt `project-status` volle
+  Detailhistorien abgeschlossener Milestones, die eine Zeile + Verweis sein können).
+- **Widersprüche auflösen**: veraltete Aussagen korrigieren (z. B. "ab nächster Session aktiv",
+  wenn es längst live ist).
+- **HARTE REGELN**: das Ergebnis IMMER als Diff zum Review präsentieren, NIE direkt anwenden;
+  offene Follow-ups und Security-Notizen NIE löschen; im Zweifel behalten.
+
+## Schritt 7: Handover (M4.8)
+
+1. Aus dem `DASHBOARD_STATUS`-Block den NÄCHSTEN Milestone mit `status: "todo"` (erster in
+   Listenreihenfolge) lesen.
+2. Push-Benachrichtigung aufs Handy senden (PushNotification): Titel `Nächster Milestone: <id>
+   — <title>`, Text = Kurzfassung (erste Prompt-Zeilen) + Hinweis `Start per /remote-control
+   <id>` (der volle Prompt steht im Dashboard; Push hat Längenlimits). Kein Push-Kanal
+   verfügbar → Prompt-Kopf im Chat zeigen und das im Log vermerken.
+3. Fragen, ob der Milestone direkt in dieser Session gestartet werden soll.
 
 ## Bericht
 
