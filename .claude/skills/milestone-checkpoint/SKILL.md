@@ -9,6 +9,12 @@ disable-model-invocation: true
 Führt die Zwischen-Milestone-Housekeeping aus CLAUDE.md §7 Punkt 4 in einem Rutsch aus, statt
 mehrere Skills einzeln aufzurufen.
 
+## Schritt 0: GitHub-MCP-Verbindung prüfen
+
+`claude mcp get github` → „Connected"? Zusätzlich ein echter Lese-Call (z. B. `list_branches`
+gegen ein Repo) — Status allein reicht nicht (Stolperfallen: Schritt 2). Kein Server oder
+Fehler → Einrichtung läuft über den agentic-loop-framework-Bootstrap (Phase 0), nicht hier.
+
 ## Schritte
 
 1. `/fewer-permission-prompts` ausführen.
