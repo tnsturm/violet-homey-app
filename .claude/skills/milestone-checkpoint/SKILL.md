@@ -49,6 +49,24 @@ Chat verpuffen, direkt danach:
      selbst; der MCP-Server dahinter kann trotzdem einen separaten Auth-Schritt brauchen —
      `claude mcp list` danach prüfen, Status "Failed to connect"/"Needs authentication"
      dem Nutzer melden statt stillschweigend als erledigt zu verbuchen).
+     Zusätzliche Stolperfallen bei einem neu per `claude mcp add` registrierten
+     eigenständigen MCP-Server (nicht Cowork-Bundle), Erkenntnisse vom 2026-07-09
+     (GitHub-MCP-Server): **(1) Scope-Default**: `claude mcp add` registriert ohne
+     `--scope`-Flag standardmäßig `--scope local` (nur im damaligen Projektverzeichnis
+     nutzbar) — für projektübergreifende Nutzung `--scope user` angeben. **(2)
+     Session-Neustart nötig**: eine bereits laufende Session lädt die Tools eines
+     gerade neu verbundenen Servers NICHT nach, selbst wenn `claude mcp get <name>`
+     sofort „Connected" zeigt — erst eine neue Session sieht sie über `ToolSearch`.
+     **(3) „Connected" ≠ nutzbar**: der Verbindungsstatus prüft nur den Handshake,
+     nicht die Token-Rechte. Ein fine-grained PAT ohne Repo-Freigabe liefert 404 auf
+     jeden Repo-Call; mit Lesezugriff aber ohne Schreibrechten liefert er 403 bei
+     Schreibaktionen (`create_branch`, `push_files`, …) — `get_me` läuft in beiden
+     kaputten Zuständen anstandslos durch und ist daher **kein** verlässlicher
+     Health-Check. Vor dem Vertrauen auf einen neuen MCP-Server mindestens einen
+     echten Schreib-Call smoke-testen (Branch anlegen + Datei pushen + wieder
+     löschen), nicht nur Status/`get_me` prüfen. Für den GitHub-MCP-Server konkret:
+     Repo-Permissions **Contents (R/W), Pull requests (R/W), Issues (R/W)** setzen
+     (Metadata R ist Pflicht-Default).
    - **Skill/Subagent**: Datei unter `.claude/skills/<name>/SKILL.md` bzw.
      `.claude/agents/<name>.md` anlegen, kurz smoke-testen (z. B. Dry-Run-Aufruf).
    - **Plugin**: `claude plugin marketplace add`/`claude plugin install` nur nach ausdrücklicher
