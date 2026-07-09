@@ -26,7 +26,10 @@ Fehler → Einrichtung läuft über den agentic-loop-framework-Bootstrap (Phase 
 6. **Framework-Drift prüfen** (siehe unten) — Projekt-Framework vs. skill-agentic-loop-framework abgleichen.
 7. Den aktiven `→Mx`-Checkpoint-Eintrag in `docs/dashboard/dashboard.html` aktualisieren:
    `status: "done"`, `finishedAt` = heute, alle Steps abgehakt, je ein `log[]`-Eintrag mit
-   kurzer Zusammenfassung der Schritte 1–6.
+   kurzer Zusammenfassung der Schritte 1–6. Dabei für JEDEN noch offenen Milestone im
+   Datenblock `recommendedModel` prüfen/setzen (CLAUDE.md §11) — fehlt es (neuer Eintrag)
+   oder ist der verbleibende Scope seit der letzten Bewertung spürbar anders geworden,
+   jetzt neu ableiten; sonst unverändert lassen.
 8. **Handover** (siehe unten) — den nächsten Milestone als Push aufs Handy übergeben.
 
 ## Schritt 2: /claude-automation-recommender-Ergebnisse anbieten
@@ -183,7 +186,9 @@ Kein Drift → kurz vermerken.
 ## Schritt 8: Handover (M4.8)
 
 1. Aus dem `DASHBOARD_STATUS`-Block den NÄCHSTEN Milestone mit `status: "todo"` (erster in
-   Listenreihenfolge) lesen.
+   Listenreihenfolge) lesen. Hat er kein `recommendedModel` (siehe Schritt 7), jetzt
+   nachtragen, bevor die Push-Benachrichtigung rausgeht — der Handover ist der Moment, in
+   dem jemand entscheidet, mit welchem Modell die nächste Session startet.
 2. Push-Benachrichtigung aufs Handy senden (PushNotification): Titel `Nächster Milestone: <id>
    — <title>`, Text = Kurzfassung (erste Prompt-Zeilen) + Hinweis `Start per /remote-control
    <id>` (der volle Prompt steht im Dashboard; Push hat Längenlimits). Kein Push-Kanal

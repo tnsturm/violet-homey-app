@@ -6,12 +6,15 @@
 // TypeScript itself is installed under the npm alias "typescript-checkjs": homey-cli 4.1.1
 // keys its TS mode on `devDependencies.typescript` (not on tsconfig presence — doc §1
 // Nachtrag 2026-07-08); the literal name would break validate/build/run/install.
+// strict:true since M5 (2026-07-10, gate c): the checkJs-strict ratchet was exhausted —
+// lib/ + drivers/ + test/ are strict-clean (RawReadings/Features/ParsedReadings typedefs,
+// see evaluation doc §5 Nachtrag). Do NOT weaken back to false (M5 gate c invariant).
 {
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,
     "noEmit": true,
-    "strict": false,
+    "strict": true,
     "module": "node18",
     "target": "es2022",
     "lib": ["es2022"],

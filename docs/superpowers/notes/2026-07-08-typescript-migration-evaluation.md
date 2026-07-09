@@ -125,6 +125,49 @@ Baseline am Umsetzungstag auf derselben Maschine neu messen (3 Läufe, Median): 
 
 **Für eine spätere B/C-Session zusätzlich:** `run-matching-test`-Regex `.ts`-fähig **mit** neuem Test in `test/hooks/`; `engines`-Feld gepinnt; `device.js` strict-clean; Store-Test-Publish verifiziert Runtime-Äquivalenz.
 
+## Nachtrag (2026-07-09/10, M5-Gate-Check + strict-Ratchet in derselben Session geschlossen)
+
+M5-Session gestartet, um die Pfad-B/C-Re-Evaluation aus §5 durchzuführen. Vor jeder
+Re-Evaluation verlangt das harte Gate (Dashboard-Prompt) alle drei Trigger. Erst-Ergebnis:
+
+- **(a) Mock-Harness** `test/mocks/homey.js` — **MET.** Seit M4.7 vorhanden, 8
+  Reconcile/Apply-Tests gegen `device.js`. `npm test`: 155 pass / 0 fail / 1 todo.
+- **(b) CI grün** — **MET.** github.com/tnsturm/violet-homey-app, Run `29051624272` auf
+  `main`, success.
+- **(c) checkJs-strict-Ratchet** — beim Erst-Check **NICHT MET:** `npx tsc -p
+  tsconfig.checkjs.json --strict --noEmit` lieferte **288 Fehler** über alle 6 `lib/`-Module,
+  beide `drivers/pool/`-Dateien und `test/**` (v. a. `TS2339`/`TS7053` gegen den untypisierten
+  `raw`-Payload = derselbe Root-Cause wie die 121 lib-only-Fehler aus §3; dazu `TS7006`
+  implizites `any` in Test-Callbacks, `TS2531`/`TS18047` `possibly null` in `Lsi.test.js`,
+  `TS2345` gegen den `never[]`-Capability-Store in `test/mocks/homey.js`).
+
+**Entscheidung (User): den Ratchet direkt in dieser Session abschließen** (die in §1/M4.5 als
+„optional, nicht Teil der Checkpoint-Task" zurückgestellte Folgearbeit), da er das einzige noch
+offene M5-Gate war. Umsetzung (typing-only, keine Verhaltensänderung; `npm test` blieb durchweg
+`fail 0`):
+
+- **Ein Root-Cause-Typedef `RawReadings`** (Index-Signatur `Object<string, string|number|
+  Array<string>|undefined>`, in `lib/VioletClient.js`) + `ParsedReadings` + `Features`
+  (`lib/FeatureDetector.js`), via JSDoc-`import()` in FeatureGroups/Capabilities/device.js
+  referenziert → eliminierte den Großteil der `TS2339`/`TS7053`-Cluster an der Quelle.
+- **Index-Signatur-Casts** für dynamisch indizierte Literale (`DOSING_PREFIX`, `DIAG_*`,
+  `CH_TITLE`/`DOSING_NOUN`/`CH_LABEL`, `WRITE_TARGETS`, `UNIT_TO_PPM`).
+- **Null-Sicherheit** in `Lsi.js` (`classifyLSI`-Guard; `computeLSI`-Aufrufer koppeln
+  Nullwerte via `?? NaN` = verhaltensgleich zum bisherigen Nicht-Finit-Pfad) und in den Tests
+  (`?.`-Chaining, `assert.ok(x !== null)`-Narrowing).
+- **Instanz-Feld-Deklarationen** in `device.js` (`_failures`/`_m2AlarmState`/`_m2Triggers`) und
+  im Mock (`__cards`/`__listeners`/`__test`/`_log`), damit method-assigned Properties nicht als
+  „possibly undefined" gelten; mechanische `@param`-Annotationen in den Hook-Tests.
+- **`tsconfig.checkjs.json` auf `strict: true` umgestellt** (Invariante im Datei-Header
+  dokumentiert; Rückweichen verboten).
+
+**Ergebnis:** `npx tsc -p tsconfig.checkjs.json` (jetzt strict) **exit 0** · `npm test` 155
+pass / 0 fail / 1 todo (unverändert) · `npx homey app validate --level publish` **PASS** ·
+`typecheck-gate`-Hook-Tests 6/6. **Alle drei M5-Trigger sind damit erfüllt** — die eigentliche
+Pfad-B/C-Re-Evaluation (§5 Punkt 1: Spike in frischem Worktree, GO/NO-GO nach §6, ggf.
+`device.js`→`.ts`-Migration + Release) kann als nächster Schritt in einer fokussierten
+M5-Session starten (Dashboard-Modell-Empfehlung: Opus, high).
+
 ## 7. Spike-Protokoll (Leitplanken eingehalten)
 
 - Worktree `spike/ts-eval` im Session-Scratchpad; **kein** `homey app run/install/publish`, nur `build` + `validate` (lokal); nichts committet/gemergt; Worktree per `git worktree remove --force` entfernt, Branch gelöscht (verifiziert: `git worktree list` = nur Haupt-Repo, `git status` unverändert).

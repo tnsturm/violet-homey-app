@@ -5,7 +5,7 @@ const assert = require('node:assert');
 const { WRITE_TARGETS, buildWriteUrl } = require('../lib/WriteClient');
 
 const H = 'violet.local';
-const U = (s) => `http://violet.local/setFunctionManually?${s}`;
+const U = (/** @type {string} */ s) => `http://violet.local/setFunctionManually?${s}`;
 
 test('registry exposes exactly the M3 core targets', () => {
   assert.deepStrictEqual(Object.keys(WRITE_TARGETS).sort(), ['DMX_SCENE', 'LIGHT', 'PUMP', 'PVSURPLUS']);
@@ -70,11 +70,11 @@ test('basicAuthHeader is a base64 Basic token of user:pass', () => {
 
 test('sendWrite sends the auth header + redirect:error, returns parsed OK (SR-08)', async () => {
   const { sendWrite } = require('../lib/WriteClient');
-  const calls = [];
+  const calls = /** @type {Array<*>} */ ([]);
   const orig = global.fetch;
   // Stubs are deliberately minimal, not full Response objects — hence the any-cast
   // (checkJs, M4.5): the config must never be weakened instead (§6 Abbruchkriterium).
-  global.fetch = /** @type {any} */ (async (url, opts) => { calls.push({ url, opts }); return { ok: true, status: 200, text: async () => 'OK\nPUMP\non' }; });
+  global.fetch = /** @type {any} */ (async (/** @type {*} */ url, /** @type {*} */ opts) => { calls.push({ url, opts }); return { ok: true, status: 200, text: async () => 'OK\nPUMP\non' }; });
   try {
     const res = await sendWrite('violet.local', { username: 'u', password: 'sekret' },
       { target: 'PUMP', state: 'ON', args: { duration: 60, speed: 1 } });

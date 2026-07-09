@@ -17,12 +17,14 @@ const HOOK = path.join(__dirname, '..', '..', '.claude', 'hooks', 'compose-guard
 
 // Build a throwaway project dir. `compose: true` adds a .homeycompose/ marker so the
 // hook recognises app.json as generated; `compose: false` leaves it a plain app.
+/** @param {boolean} compose */
 function makeProject(compose) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'compose-guard-'));
   if (compose) fs.mkdirSync(path.join(dir, '.homeycompose'));
   return dir;
 }
 
+/** @param {*} toolInput @param {string} [cwd] @param {string} [raw] */
 function runHook(toolInput, cwd, raw) {
   const payload = raw !== undefined
     ? raw

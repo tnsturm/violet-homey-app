@@ -44,6 +44,7 @@ function makeRepo({ changelog, logged, rotation } = {}) {
 
 const FULL_CHANGELOG = { [VERSION]: { en: 'New stuff.', de: 'Neues.' } };
 
+/** @param {*} command @param {string} [cwd] @param {string} [raw] */
 function runHook(command, cwd, raw) {
   const payload = raw !== undefined
     ? raw

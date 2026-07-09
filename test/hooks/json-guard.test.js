@@ -20,6 +20,7 @@ const LQ = String.fromCharCode(0x201C); // “
 const RQ = String.fromCharCode(0x201D); // ”
 const CURLY_DELIM_JSON = `{ ${LQ}version${RQ}: ${LQ}1.0.0${RQ} }`;
 
+/** @param {string} filePath */
 function runHook(filePath) {
   const r = spawnSync(process.execPath, [HOOK], {
     input: JSON.stringify({ tool_name: 'Write', tool_input: { file_path: filePath } }),
@@ -28,6 +29,7 @@ function runHook(filePath) {
   return { code: r.status, err: (r.stderr || '').trim() };
 }
 
+/** @param {string} name @param {string} content */
 function tmpFile(name, content) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'jsonguard-'));
   const p = path.join(dir, name);

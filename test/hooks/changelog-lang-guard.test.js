@@ -16,6 +16,7 @@ const path = require('node:path');
 const HOOK = path.join(__dirname, '..', '..', '.claude', 'hooks', 'changelog-lang-guard.js');
 const VERSION = '0.9.9';
 
+/** @param {*} changelog */
 function makeRepo(changelog) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'changelog-lang-guard-'));
   fs.mkdirSync(path.join(dir, '.homeycompose'), { recursive: true });
@@ -25,6 +26,7 @@ function makeRepo(changelog) {
   return { dir, changelogPath };
 }
 
+/** @param {string} filePath @param {string} cwd */
 function runHook(filePath, cwd) {
   const r = spawnSync(process.execPath, [HOOK], {
     input: JSON.stringify({ tool_name: 'Write', cwd, tool_input: { file_path: filePath } }),

@@ -14,6 +14,7 @@ const path = require('node:path');
 const HOOK = path.join(__dirname, '..', '..', '.claude', 'hooks', 'secrets-guard.js');
 const SECRET_B64 = 'Basic YWRtaW46c3VwZXJzZWNyZXQxMjM0'; // base64 of a fake user:pass
 
+/** @param {*} toolInput @param {Object<string, string>} [env] */
 function runHook(toolInput, env) {
   const r = spawnSync(process.execPath, [HOOK], {
     input: JSON.stringify({ tool_name: 'Write', tool_input: toolInput }),

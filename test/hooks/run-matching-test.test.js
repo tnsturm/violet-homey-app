@@ -32,6 +32,7 @@ function makeProject() {
   return dir;
 }
 
+/** @param {string} filePath @param {string} cwd */
 function runHook(filePath, cwd) {
   const payload = JSON.stringify({ tool_name: 'Edit', cwd, tool_input: { file_path: filePath } });
   const r = spawnSync(process.execPath, [HOOK], { input: payload, encoding: 'utf8' });
@@ -40,6 +41,7 @@ function runHook(filePath, cwd) {
 
 // Async variant for the two grandchild-spawning cases: kicked off at module load
 // so their `node --test` runs overlap instead of serializing (suite wall-time cap).
+/** @param {string} filePath @param {string} cwd */
 function runHookAsync(filePath, cwd) {
   return new Promise((resolve) => {
     const { spawn } = require('node:child_process');
