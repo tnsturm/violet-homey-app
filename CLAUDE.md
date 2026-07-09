@@ -193,3 +193,10 @@ This repo targets the Homey platform — see @HOMEY.md for platform-specific con
 2. **Projekt-/plattformspezifische** Settings (z. B. die Homey-Allowlist `homey api … get-*`, `homey app validate *`, oder die Homey-Hooks wie `compose-guard`/`secrets-guard`) bleiben in der **`.claude/settings.json` dieses Repos** — sie sind dort schon portabel (ein `git clone` bringt sie mit) und gehören nicht in den globalen Skill.
 
 Faustregel: „In jedem Projekt sinnvoll?" → global (Skill). „Nur hier / nur für Homey sinnvoll?" → projekt-lokal (dieses Repo).
+
+**Framework-Artefakte** (seit M4.9): Jede GENERISCHE Änderung an Gate-/Guard-Hooks,
+CLAUDE.md-Protokollregeln, dem Checkpoint-Ablauf oder den Dashboard-/Template-Formaten wird
+**in derselben Session** in das Framework-Repo `skill-agentic-loop-framework`
+(`plugin/skills/agentic-loop-framework/templates/` bzw. `homey/`) gespiegelt + dessen
+CHANGELOG ergänzt. Projekt-spezifisches (z. B. Violet-Live-Smoke, konkrete Allowlist-Einträge)
+bleibt hier. Der milestone-checkpoint prüft Drift (Schritt 6).

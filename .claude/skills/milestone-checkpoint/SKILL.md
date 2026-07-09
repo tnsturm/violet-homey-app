@@ -17,10 +17,11 @@ mehrere Skills einzeln aufzurufen.
 4. **Workflow-Retrospektive / Optimizer** ausführen (siehe unten) — wiederkehrende Reibung aus dem
    abgeschlossenen Milestone in eine dauerhafte Absicherung überführen.
 5. **Memory-Konsolidierung** (siehe unten) — Memory-Dateien eindampfen, Ergebnis nur als Diff.
-6. Den aktiven `→Mx`-Checkpoint-Eintrag in `docs/dashboard/dashboard.html` aktualisieren:
+6. **Framework-Drift prüfen** (siehe unten) — Projekt-Framework vs. skill-agentic-loop-framework abgleichen.
+7. Den aktiven `→Mx`-Checkpoint-Eintrag in `docs/dashboard/dashboard.html` aktualisieren:
    `status: "done"`, `finishedAt` = heute, alle Steps abgehakt, je ein `log[]`-Eintrag mit
-   kurzer Zusammenfassung der Schritte 1–5.
-7. **Handover** (siehe unten) — den nächsten Milestone als Push aufs Handy übergeben.
+   kurzer Zusammenfassung der Schritte 1–6.
+8. **Handover** (siehe unten) — den nächsten Milestone als Push aufs Handy übergeben.
 
 ## Schritt 3: Skill-Quellen prüfen
 
@@ -114,7 +115,15 @@ sonst Dashboard-`log[]` und `git log` als Quellen), dann die Dateien im Memory-O
 - **HARTE REGELN**: das Ergebnis IMMER als Diff zum Review präsentieren, NIE direkt anwenden;
   offene Follow-ups und Security-Notizen NIE löschen; im Zweifel behalten.
 
-## Schritt 7: Handover (M4.8)
+## Schritt 6: Framework-Drift prüfen (M4.9)
+
+`git log --since=<letzter Checkpoint> --oneline -- .claude/hooks .claude/skills CLAUDE.md`
+im Projekt sichten: Ist eine der Änderungen GENERISCH (in jedem Projekt sinnvoll)? Dann in
+`C:/Users/TorstenSturm/source/repos/skill-agentic-loop-framework` die entsprechende Vorlage
+(`templates/` bzw. `homey/`) nachziehen + CHANGELOG-Eintrag; Commit dort nach §9-Freigabe.
+Kein Drift → kurz vermerken.
+
+## Schritt 8: Handover (M4.8)
 
 1. Aus dem `DASHBOARD_STATUS`-Block den NÄCHSTEN Milestone mit `status: "todo"` (erster in
    Listenreihenfolge) lesen.
