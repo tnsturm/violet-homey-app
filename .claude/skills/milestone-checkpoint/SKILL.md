@@ -37,10 +37,18 @@ Chat verpuffen, direkt danach:
    - **Hook**: gleiches Muster wie Schritt 4 (Hook-Datei + Smoke-Test, in `.claude/settings.json`
      verdrahten, Suite grün verifizieren, eigener Commit); ist die Änderung generisch, greift
      Schritt 6 (Framework-Drift) dafür mit.
-   - **MCP-Server**: falls lokal ohne Interaktion hinzufügbar (`claude mcp add ...`), direkt
-     ausführen; braucht der Server OAuth/Login, NICHT versuchen — stattdessen die
-     Registrierung anlegen/dokumentieren und den Nutzer auf den nötigen Auth-Schritt hinweisen
-     (`claude mcp` bzw. `/mcp` in einer interaktiven Session).
+   - **MCP-Server**: zuerst unterscheiden, WELCHE Registrierung gemeint ist — ein
+     `plugin:<kategorie>:<name>`-Eintrag (z. B. `plugin:engineering:github`) ist ein
+     rollenbasiertes **Cowork-Plugin-Bundle**, dessen Auth/Aktivierung NUR über die
+     Cowork-eigenen Einstellungen läuft (`setup-cowork`/`cowork-plugin-management`-Skills),
+     NICHT über `claude plugin`/`claude mcp` aus der Session heraus — das nur dokumentieren
+     + den Nutzer dorthin verweisen. Existiert daneben ein **eigenständiges** Plugin mit
+     einfachem Namen im `claude-plugins-official`-Marktplatz (z. B. `github`, prüfbar via
+     dem lokalen `marketplace.json`-Manifest), das ist unabhängig vom Bundle und direkt
+     installierbar: `claude plugin install <name>` (kein OAuth nötig für den Install-Schritt
+     selbst; der MCP-Server dahinter kann trotzdem einen separaten Auth-Schritt brauchen —
+     `claude mcp list` danach prüfen, Status "Failed to connect"/"Needs authentication"
+     dem Nutzer melden statt stillschweigend als erledigt zu verbuchen).
    - **Skill/Subagent**: Datei unter `.claude/skills/<name>/SKILL.md` bzw.
      `.claude/agents/<name>.md` anlegen, kurz smoke-testen (z. B. Dry-Run-Aufruf).
    - **Plugin**: `claude plugin marketplace add`/`claude plugin install` nur nach ausdrücklicher
