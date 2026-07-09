@@ -514,11 +514,17 @@ Git-Aktionen in BEIDEN Repos nur nach /code-review + Freigabe (CLAUDE.md §9). d
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
-Konsolidierter Checkpoint nach dem Tooling-Block M4.6–M4.9 (CLAUDE.md §7 Punkt 4) — der EINZIGE Checkpoint für den ganzen Block; innerhalb M4.6–M4.9 lief bewusst keiner (User-Entscheid 2026-07-08), der ausgelassene M4.5→M4.6-Check ist hier mit abgedeckt. M4.9 ist abgeschlossen, M5 startet als Naechstes. (Erster Checkpoint mit den neuen M4.8-Schritten: Handover, Memory-Konsolidierung, Hook-Telemetrie-Auswertung.)
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
+Konsolidierter Checkpoint nach dem Tooling-Block M4.6–M4.9 (CLAUDE.md §7 Punkt 4) — der EINZIGE Checkpoint für den ganzen Block; innerhalb M4.6–M4.9 lief bewusst keiner (User-Entscheid 2026-07-08), der ausgelassene M4.5→M4.6-Check ist hier mit abgedeckt. M4.9 ist abgeschlossen, M5 startet als Naechstes. (Erster Checkpoint mit den neuen Schritten aus M4.8/M4.9: Memory-Konsolidierung, Framework-Drift-Check, Handover, Hook-Telemetrie-Auswertung.)
 
 Fuehre aus: /milestone-checkpoint
 
 Das aktualisiert automatisch den →M5-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
+2. Der →M5-Eintrag im Dashboard steht auf done (alle 7 Steps abgehakt) — Diff gezeigt.
 
 /remote-control →M5 — Zwischen-Check`
     },
@@ -544,14 +550,16 @@ Das aktualisiert automatisch den →M5-Eintrag in docs/dashboard/dashboard.html 
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
 Violet Homey Pro App — Milestone M5 (TS-Migration device.js — Re-Evaluation, Pfad B/C aus der TypeScript-Evaluation 2026-07-08).
 
 Lies zuerst docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md (§4 Pfad B/C, §5 Re-Evaluations-Trigger, §6 letzter Absatz: Zusatzkriterien fuer B/C). Aktualisiere beim Start den M5-Eintrag in docs/dashboard/dashboard.html (Dashboard-Protokoll CLAUDE.md §7).
 
 HARTES GATE zuerst — alle drei Trigger muessen erfuellt sein, sonst STOPPEN (Milestone auf todo zuruecklassen, fehlende Trigger als log-Eintrag dokumentieren, NICHT migrieren):
-(a) Mock-Harness test/mocks/homey.js existiert und deckt das device.js-Basisverhalten ab (loop-dev-roadmap Idee 6 — wird in M4.7 gebaut);
-(b) GitHub-Actions-CI laeuft gruen (npm test + validate --level publish; Idee 3 — wird in M4.6 gebaut);
-(c) checkJs-strict-Ratchet ist ausgereizt: tsconfig.checkjs.json laeuft mit strict:true fehlerfrei (Folgearbeit aus M4.5).
+(a) Mock-Harness test/mocks/homey.js existiert und deckt das device.js-Basisverhalten ab (SEIT M4.7 VORHANDEN — 8 Reconcile/Apply-Tests gegen die 4 Fixtures);
+(b) GitHub-Actions-CI laeuft gruen (npm test + typecheck + validate --level publish; SEIT M4.6 VORHANDEN — aktuellen gruenen Lauf auf main zeigen);
+(c) checkJs-strict-Ratchet ist ausgereizt: tsconfig.checkjs.json laeuft mit strict:true fehlerfrei (Folgearbeit aus M4.5 — als EINZIGES Gate noch offen).
 
 Wenn alle Trigger erfuellt:
 1. Re-Evaluation (superpowers:brainstorming): die Pfad-B/C-Bewertung gegen die DANN aktuelle Toolchain neu messen — TypeScript-/Node-Version, tsc-Zeiten, node --test-Verhalten mit .ts (Spike in frischem git worktree wie am 2026-07-08; Worktree danach entfernen, nichts mergen). GO/NO-GO-Entscheidung mit maschinellen Kriterien nach §6 (node --test fail 0, Laufzeit maximal 2x Baseline, validate --level publish exit 0, device.js strict-clean).
@@ -581,18 +589,27 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
         { label: "/fewer-permission-prompts", done: false },
         { label: "/claude-automation-recommender", done: false },
         { label: "Skill-Quellen geprüft", done: false },
-        { label: "Workflow-Retrospektive", done: false }
+        { label: "Workflow-Retrospektive", done: false },
+        { label: "Memory-Konsolidierung", done: false },
+        { label: "Framework-Drift geprüft", done: false },
+        { label: "Handover", done: false }
       ],
       currentActivity: null,
       runtime: null,
       log: [],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
 Zwischen-Check vor M6 (CLAUDE.md §7 Punkt 4). M5 ist abgeschlossen, M6 startet als Naechstes.
 
 Fuehre aus: /milestone-checkpoint
 
 Das aktualisiert automatisch den →M6-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
+2. Der →M6-Eintrag im Dashboard steht auf done (alle 7 Steps abgehakt) — Diff gezeigt.
 
 /remote-control →M6 — Zwischen-Check`
     },
@@ -618,7 +635,9 @@ Das aktualisiert automatisch den →M6-Eintrag in docs/dashboard/dashboard.html 
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
-Violet Homey Pro App — Milestone M6 (Inbound-HTTP-Alarme → Flow-Trigger). Brainstorming + Spec sind bereits fertig und freigegeben.
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
+Violet Homey Pro App — Milestone M6 (Inbound-HTTP-Alarme → Flow-Trigger). Brainstorming + Spec sind bereits fertig und freigegeben. Die Gates aus M4.6-M4.8 sind aktiv (test-gate/typecheck-gate blocken rote Commits, stop-verify rote Turn-Enden, release-gate ungebumpte Installs; CI laeuft auf main).
 
 Lies zuerst die Spec docs/superpowers/specs/2026-06-26-violet-http-notifications-design.md. Aktualisiere beim Start den M6-Eintrag in docs/dashboard/dashboard.html: log "Plan gestartet", currentActivity pflegen; Steps Plan -> Implementierung (SDD) -> Validate + Push abhaken; am Ende status "done" + commit. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
 
@@ -646,18 +665,27 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
         { label: "/fewer-permission-prompts", done: false },
         { label: "/claude-automation-recommender", done: false },
         { label: "Skill-Quellen geprüft", done: false },
-        { label: "Workflow-Retrospektive", done: false }
+        { label: "Workflow-Retrospektive", done: false },
+        { label: "Memory-Konsolidierung", done: false },
+        { label: "Framework-Drift geprüft", done: false },
+        { label: "Handover", done: false }
       ],
       currentActivity: null,
       runtime: null,
       log: [],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
 Zwischen-Check vor M7 (CLAUDE.md §7 Punkt 4). M6 ist abgeschlossen, M7 startet als Naechstes.
 
 Fuehre aus: /milestone-checkpoint
 
 Das aktualisiert automatisch den →M7-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
+2. Der →M7-Eintrag im Dashboard steht auf done (alle 7 Steps abgehakt) — Diff gezeigt.
 
 /remote-control →M7 — Zwischen-Check`
     },
@@ -680,6 +708,8 @@ Das aktualisiert automatisch den →M7-Eintrag in docs/dashboard/dashboard.html 
       runtime: null,
       log: [],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
 Violet Homey Pro App — Milestone M7 (LabCOM-Cloud-Import der Wasserchemie für den LSI).
 
@@ -710,18 +740,27 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
         { label: "/fewer-permission-prompts", done: false },
         { label: "/claude-automation-recommender", done: false },
         { label: "Skill-Quellen geprüft", done: false },
-        { label: "Workflow-Retrospektive", done: false }
+        { label: "Workflow-Retrospektive", done: false },
+        { label: "Memory-Konsolidierung", done: false },
+        { label: "Framework-Drift geprüft", done: false },
+        { label: "Handover", done: false }
       ],
       currentActivity: null,
       runtime: null,
       log: [],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
 Zwischen-Check vor M8 (CLAUDE.md §7 Punkt 4). M7 ist abgeschlossen, M8 startet als Naechstes.
 
 Fuehre aus: /milestone-checkpoint
 
 Das aktualisiert automatisch den →M8-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
+2. Der →M8-Eintrag im Dashboard steht auf done (alle 7 Steps abgehakt) — Diff gezeigt.
 
 /remote-control →M8 — Zwischen-Check`
     },
@@ -744,6 +783,8 @@ Das aktualisiert automatisch den →M8-Eintrag in docs/dashboard/dashboard.html 
       runtime: null,
       log: [],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
 Violet Homey Pro App — Milestone M8 (Empfehlungs-/Wasserbalance-Modul).
 
@@ -781,6 +822,8 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       runtime: null,
       log: [],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
 Violet Homey Pro App — Milestone M9 (Dosierung & Sollwerte via setConfig).
 
@@ -820,6 +863,8 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       runtime: null,
       log: [],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
 Violet Homey Pro App — Milestone M10 (Filterdruck + Anstroemung/Durchfluss + Auto-Detection-Review).
 
