@@ -475,40 +475,30 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
     {
       id: "→M5",
       title: "Zwischen-Check",
-      status: "todo",
-      startedAt: null,
-      finishedAt: null,
-      commit: null,
-      summary: "EINZIGER, konsolidierter Checkpoint für den gesamten Tooling-Block M4.6–M4.9 (User-Entscheid 2026-07-08: keine Zwischen-Checkpoints im Block; deckt auch den ausgelassenen M4.5→M4.6-Check ab). Permission-Allowlist + Automation-Empfehlungen prüfen (CLAUDE.md §7 Punkt 4) — jetzt mit echtem Input aus den frisch gebauten Gates/CI/Hooks statt gegen Platzhalter. Erster Checkpoint mit den neuen M4.8-Features (Handover, Memory-Konsolidierung, Hook-Telemetrie-Auswertung).",
+      status: "done",
+      startedAt: "2026-07-09",
+      finishedAt: "2026-07-09",
+      commit: "46ae796",
+      summary: "EINZIGER, konsolidierter Checkpoint für den gesamten Tooling-Block M4.6–M4.9 (User-Entscheid 2026-07-08: keine Zwischen-Checkpoints im Block; deckt auch den ausgelassenen M4.5→M4.6-Check ab). Permission-Allowlist (4 neue Bash-Patterns) + Automation-Empfehlungen (GitHub-MCP, Changelog-Bilingual-Hook) geprüft; Workflow-Retro fand + fixte einen echten offenen Punkt (dashboard.html-Smart-Quote-Bug, 4. Auftreten, war nur als Retro-Kandidat geloggt, nie codiert) als neuen dashboard-guard-Hook; Memory konsolidiert (project-status.md 71→34 Zeilen, MEMORY.md-Index entschärft) nach User-Freigabe des Diffs; Framework-Drift gefunden + gespiegelt (dashboard-guard + homey-select-current-Allowlist ins skill-agentic-loop-framework-Repo, dort v0.1.3, 2 lokale Commits, noch nicht gepusht).",
       steps: [
-        { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false },
-        { label: "Skill-Quellen geprüft", done: false },
-        { label: "Workflow-Retrospektive", done: false },
-        { label: "Memory-Konsolidierung", done: false },
-        { label: "Framework-Drift geprüft", done: false },
-        { label: "Handover", done: false }
+        { label: "/fewer-permission-prompts", done: true },
+        { label: "/claude-automation-recommender", done: true },
+        { label: "Skill-Quellen geprüft", done: true },
+        { label: "Workflow-Retrospektive", done: true },
+        { label: "Memory-Konsolidierung", done: true },
+        { label: "Framework-Drift geprüft", done: true },
+        { label: "Handover", done: true }
       ],
       currentActivity: null,
       runtime: null,
       log: [
-        { at: "2026-07-08", note: "Als konsolidierter Post-Block-Checkpoint umgewidmet (User-Entscheid): M4.6–M4.9 laufen als ein Tooling-Block ohne Zwischen-Checkpoints; dieser Eintrag deckt den ganzen Block inkl. des ausgelassenen M4.5→M4.6-Checks ab." }
+        { at: "2026-07-08", note: "Als konsolidierter Post-Block-Checkpoint umgewidmet (User-Entscheid): M4.6–M4.9 laufen als ein Tooling-Block ohne Zwischen-Checkpoints; dieser Eintrag deckt den ganzen Block inkl. des ausgelassenen M4.5→M4.6-Checks ab." },
+        { at: "2026-07-09", note: "1) fewer-permission-prompts: 4 neue Bash-Patterns (npm test, npm run typecheck, npx tsc -p tsconfig.checkjs.json, homey select current), 40/18/9/12 Vorkommen in 28 Transkripten, alle read-only. 2) automation-recommender: GitHub-MCP (gh-CLI-Ersatz, Auth offen) + Changelog-Bilingual-Guard als neue Ideen; Rest bereits abgedeckt durch bestehendes Tooling. 3) Skill-Quellen: homey-cli-skill/homey-app-skill-Clones in /tmp waren durch Auto-Mode-Classifier BLOCKIERT (Repo-URLs nicht im Transcript etabliert, obwohl im eigenen SKILL.md dokumentiert) — dem User gemeldet, nicht umgangen; Superpowers-Version 6.0.3 bestätigt." },
+        { at: "2026-07-09", note: "4) Workflow-Retro: hook-log.jsonl (72 Einträge) zeigte nur den M4.8-Telemetrie-Selbsttest als Block-Cluster, keine neue Reibung; FRICTION-Log fand aber einen ECHTEN offenen Punkt — die dashboard.html-Smart-Quote-Klasse traf 2026-07-08 zum 4. Mal und war explizit als 'Retro-Kandidat' geloggt, nie zu einem Hook gemacht. Neu gebaut: .claude/hooks/dashboard-guard.js (PostToolUse Edit|Write, vm-Eval des script#status-data-Blocks) + 5 Tests (test/hooks/dashboard-guard.test.js), verdrahtet in settings.json; volle Suite danach 150 Tests/0 fail/1 todo, typecheck clean; Commit 46ae796." },
+        { at: "2026-07-09", note: "5) Memory-Konsolidierung: project-status.md (71→34 Zeilen, 41KB→7.4KB) + MEMORY.md-Index (der project-status-Eintrag war eine ~4000-Zeichen-Zeile) als Diff vorgelegt — User hat 'Apply as shown' gewählt, angewendet. Alle offenen Follow-ups (M2 a/b, M3 Crash+dosing-todo-test, M4 Community-Topic-ID+Passwort-Rotation) sowie Security-Hinweise unangetastet übernommen." },
+        { at: "2026-07-09", note: "6) Framework-Drift: seit e1ca899 nur der eigene dashboard-guard-Commit generisch relevant (nutzt nur das generische CLAUDE.md-§7-Dashboard-Protokoll) → nach skill-agentic-loop-framework/templates gespiegelt (Hook+Test+settings.json-Wiring, CHANGELOG 0.1.3, plugin.json-Bump), Trockentest 5/5 grün im Framework-Repo selbst; zusätzlich 'homey select current' ins homey/allowlist.json gespiegelt. 2 lokale Commits (44f6649, c47ea15), Push steht noch aus (§9)." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Konsolidierter Checkpoint nach dem Tooling-Block M4.6–M4.9 (CLAUDE.md §7 Punkt 4) — der EINZIGE Checkpoint für den ganzen Block; innerhalb M4.6–M4.9 lief bewusst keiner (User-Entscheid 2026-07-08), der ausgelassene M4.5→M4.6-Check ist hier mit abgedeckt. M4.9 ist abgeschlossen, M5 startet als Naechstes. (Erster Checkpoint mit den neuen Schritten aus M4.8/M4.9: Memory-Konsolidierung, Framework-Drift-Check, Handover, Hook-Telemetrie-Auswertung.)
-
-Fuehre aus: /milestone-checkpoint
-
-Das aktualisiert automatisch den →M5-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
-2. Der →M5-Eintrag im Dashboard steht auf done (alle 7 Steps abgehakt) — Diff gezeigt.
-
-/remote-control →M5 — Zwischen-Check`
+      prompt: null,
     },
     {
       id: "M5",
