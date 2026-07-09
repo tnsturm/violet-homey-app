@@ -448,8 +448,8 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
     {
       id: "M4.9",
       title: "Framework-Extraktion (agentic-loop-framework)",
-      status: "todo",
-      startedAt: null,
+      status: "active",
+      startedAt: "2026-07-09",
       finishedAt: null,
       commit: null,
       summary: "Extraktion des generischen Loop-Frameworks in den portablen Skill agentic-loop-framework (Phase 6 des Bootstrap-Prompts, gesichert in skill-ClaudeCode-general-settings/prompts/): SKILL.md (generalisierte Bootstrap-Anleitung) + templates/ (CLAUDE.md-Basis §0–§10, dashboard.html, versions.md, settings.json-Gerüst, Hook-Vorlagen inkl. test-gate + Smoke-Test-Muster, milestone-checkpoint-Skill) + CHANGELOG; Homey-Bausteine getrennt (homey/-Unterordner bzw. agentic-loop-homey). Dazu im VioletApp-Repo: Skill-als-Source-of-Truth-Spiegelregel auf Framework-Artefakte erweitern + Drift-Check-Schritt im milestone-checkpoint. Tooling-only, kein Version-Bump (§8). Voraussetzung: M4.6–M4.8 fertig — deren Artefakte wandern in templates/. Abschluss: Prompt-Konsistenz-Sweep über alle offenen Milestone-/Checkpoint-Prompts (/goal, §10-Startmodus, Triage-Inbox-Verweis, veraltete Referenzen). Letzter Milestone des Tooling-Blocks M4.6–M4.9; danach läuft der konsolidierte →M5-Checkpoint.",
@@ -464,7 +464,8 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       runtime: null,
       log: [
         { at: "2026-07-08", note: "Milestone angelegt (Phase 6 des Bootstrap-Prompts; Prompts als Keimzelle in skill-ClaudeCode-general-settings/prompts/ gesichert, Commit fcbda47). Platzierung nach M4.8, weil erst dann alle generischen Artefakte (Gate-Hooks, CI, Checkpoint-Erweiterungen) für templates/ existieren." },
-        { at: "2026-07-08", note: "FRICTION: Smart-Quote-Fehlerklasse zum 4. Mal getroffen — ein ASCII-Anfuehrungszeichen im summary-String hat den Datenblock syntaktisch gebrochen; erstmals in dashboard.html, wo json-guard NICHT greift (deckt nur Manifest-/Changelog-JSON ab). Vom node-Eval-Verify gefangen, nicht von einem Hook. Retro-Kandidat: Datenblock-Parse-Check fuer dashboard.html als Hook oder Commit-Gate (passt zu M4.6)." }
+        { at: "2026-07-08", note: "FRICTION: Smart-Quote-Fehlerklasse zum 4. Mal getroffen — ein ASCII-Anfuehrungszeichen im summary-String hat den Datenblock syntaktisch gebrochen; erstmals in dashboard.html, wo json-guard NICHT greift (deckt nur Manifest-/Changelog-JSON ab). Vom node-Eval-Verify gefangen, nicht von einem Hook. Retro-Kandidat: Datenblock-Parse-Check fuer dashboard.html als Hook oder Commit-Gate (passt zu M4.6)." },
+        { at: "2026-07-09", note: "Umsetzungssession gestartet (gleiche Session wie M4.6-M4.8, letzter Block-Milestone). Bootstrap-Prompts gelesen (A generisch + B Homey, prompts/agentic-loop-bootstrap.de.md im Settings-Skill-Repo); Skill-Repo-Struktur gesichtet (marketplace.json + plugin/ vorhanden). ENTSCHEIDUNGSPUNKT Zielort dem User vorgelegt: (a) eigenes Repo vs (b) zweites Plugin im Settings-Repo." }
       ],
       prompt: `UMGEBUNG: Zwei Repos — VioletApp unter C:/Users/TorstenSturm/source/repos/VioletApp (Claude Code hier starten) und das private Skill-Repo unter C:/Users/TorstenSturm/source/repos/skill-ClaudeCode-general-settings (bzw. auf Entscheid ein neues Repo).
 
