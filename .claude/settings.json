@@ -24,7 +24,8 @@
         "hooks": [
           { "type": "command", "command": "node .claude/hooks/run-matching-test.js" },
           { "type": "command", "command": "node .claude/hooks/json-guard.js" },
-          { "type": "command", "command": "node .claude/hooks/dashboard-guard.js" }
+          { "type": "command", "command": "node .claude/hooks/dashboard-guard.js" },
+          { "type": "command", "command": "node .claude/hooks/changelog-lang-guard.js" }
         ]
       }
     ],

@@ -18,6 +18,7 @@
 const fs = require('fs');
 const path = require('path');
 const { logHook } = require('./lib/log');
+const { isChangelogEntryComplete } = require('./lib/changelog');
 
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
@@ -61,8 +62,7 @@ process.stdin.on('end', () => {
   }
   if (changelog) {
     const entry = changelog[version];
-    const has = (lang) => Boolean(entry && typeof entry[lang] === 'string' && entry[lang].trim());
-    if (!has('en') || !has('de')) {
+    if (!isChangelogEntryComplete(entry)) {
       problems.push(
         `.homeychangelog.json has no complete en+de entry for ${version} — `
         + 'write both languages before releasing (HOMEY.md release checklist step 3).'
