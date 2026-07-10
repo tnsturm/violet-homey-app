@@ -21,3 +21,6 @@ env.json
 Thumbs.db
 .vscode/
 .idea/
+
+# Marketing/launch drafts — scratch, not versioned (deleted after posting)
+docs/marketing/
