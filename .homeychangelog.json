@@ -46,5 +46,9 @@
   "0.4.4": {
     "en": "Maintenance release: internal type-safety hardening (strict static type-checking across the whole codebase). No functional changes — behaviour is identical to the previous version.",
     "de": "Wartungs-Release: interne Typsicherheits-Härtung (strikte statische Typprüfung im gesamten Code). Keine Funktionsänderung — das Verhalten ist identisch zur Vorversion."
+  },
+  "0.4.5": {
+    "en": "No functional changes. Manifest update ahead of public Homey App Store certification — adds a link to the app's Community support topic.",
+    "de": "Keine Funktionsänderung. Manifest-Update vor der öffentlichen Zertifizierung im Homey App Store — ergänzt einen Verweis auf das Community-Support-Thema der App."
   }
 }
