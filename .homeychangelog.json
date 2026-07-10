@@ -42,5 +42,9 @@
   "0.4.3": {
     "en": "Maintenance release: internal type-safety hardening (strict static type-checking across the whole codebase). No functional changes — behaviour is identical to the previous version.",
     "de": "Wartungs-Release: interne Typsicherheits-Härtung (strikte statische Typprüfung im gesamten Code). Keine Funktionsänderung — das Verhalten ist identisch zur Vorversion."
+  },
+  "0.4.4": {
+    "en": "Maintenance release: internal type-safety hardening (strict static type-checking across the whole codebase). No functional changes — behaviour is identical to the previous version.",
+    "de": "Wartungs-Release: interne Typsicherheits-Härtung (strikte statische Typprüfung im gesamten Code). Keine Funktionsänderung — das Verhalten ist identisch zur Vorversion."
   }
 }
