@@ -38,5 +38,9 @@
   "0.4.2": {
     "en": "Fixed the app and device icons so they display correctly — Homey renders app icons as a single-colour symbol on the brand colour, so the icons are now transparent-background line art instead of a filled tile.",
     "de": "App- und Geräte-Icon werden jetzt korrekt angezeigt — Homey stellt App-Icons als einfarbiges Symbol auf der Markenfarbe dar; die Icons sind daher jetzt transparente Strichgrafik statt einer gefüllten Fläche."
+  },
+  "0.4.3": {
+    "en": "Maintenance release: internal type-safety hardening (strict static type-checking across the whole codebase). No functional changes — behaviour is identical to the previous version.",
+    "de": "Wartungs-Release: interne Typsicherheits-Härtung (strikte statische Typprüfung im gesamten Code). Keine Funktionsänderung — das Verhalten ist identisch zur Vorversion."
   }
 }
