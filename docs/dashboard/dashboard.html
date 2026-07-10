@@ -509,7 +509,7 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       status: "done",
       startedAt: "2026-07-10",
       finishedAt: "2026-07-10",
-      commit: null,
+      commit: "db8c55e",
       summary: "ERGEBNIS: NO-GO. Re-Evaluation der .ts-Migration (device.js-first) aus der TS-Evaluation 2026-07-08 §5. Hartes Gate (a+b+c) mechanisch verifiziert, dann Wegwerf-Spike in frischem Worktree gegen die aktuelle Toolchain (Node 25.9, TS 6.0.3). Befund: (1) Gate (c) hat den Typsicherheits-Nutzen bereits geerntet — device.js ist unter checkJs-strict (identischer tsc) fehlerfrei, .ts fügt null Typprüfung hinzu und zerbricht die Strict-Sauberkeit (40 Fehler beim reinen Rename); (2) Zwei-Artefakte-Divergenz (getestete type-gestrippte Quelle ≠ ausgeliefertes es2019-Kompilat) macht den geforderten Mock-Harness-Äquivalenzbeweis untauglich. 3 von 4 §6-GO-Kriterien out-of-the-box verfehlt (node --test fail 1, validate exit 1, nicht strict-clean). device.js bleibt strict-geprüftes .js. Pfad B/C endgültig abgeschlossen (nicht vertagt). Nachtrag im Entscheidungsdokument §Nachtrag-2026-07-10.",
       steps: [
         { label: "Trigger-Gate (Mock-Harness, CI, strict-Ratchet)", done: true },
