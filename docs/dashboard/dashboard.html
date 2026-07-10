@@ -530,6 +530,56 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       prompt: null
     },
     {
+      id: "M5.5",
+      title: "Go-Live: öffentliche Store-Publikation + Community-Launch",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Koordination externer, nach-außen-wirkender Schritte (Athom-Zertifizierung, Community-Forum-Thread, Veröffentlichung der bereits fertig entworfenen Launch-Posts, Repo öffentlich) — kein korrektheitskritischer Code, aber Sorgfalt bei schwer umkehrbaren Publikations-Schritten." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Die App von privatem Store-Test (v0.4.4, seit 2026-07-10 publiziert + auf Torstens Homey installiert) auf ÖFFENTLICH Live bringen. Umfasst: Homey-Community-Support-Thread anlegen → homeyCommunityTopicId ins Manifest; die fertigen Communication-/Launch-Posts aus der Vorsession veröffentlichen (docs/marketing/ + Design docs/superpowers/specs/2026-07-07-community-launch-posts-design.md); README.md finalisieren + Repo-Sichtbarkeit öffentlich; Athom-Zertifizierung einreichen; Version-Bump + Changelog + versions.md für den Live-Release. Credential-Rotation ist bereits erledigt (2026-07-10, release-gate (c) erfüllt).",
+      steps: [
+        { label: "Community-Support-Thread + homeyCommunityTopicId ins Manifest", done: false },
+        { label: "README finalisieren + Repo öffentlich", done: false },
+        { label: "Launch-Posts veröffentlichen (Homey-Forum EN + poolsteuerung.de DE) + Cross-Links/URLs füllen", done: false },
+        { label: "Version-Bump + Changelog + validate --level publish", done: false },
+        { label: "Athom-Zertifizierung einreichen (öffentlich) + Feedback abarbeiten", done: false },
+        { label: "versions.md-Zeile (Live) + Dashboard-Close", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-07-10", note: "Milestone angelegt (User-Entscheid) als eigener Go-Live-Schritt zwischen M5 und dem →M6-Checkpoint. Erkenntnisse aus der Publish-Session 2026-07-10: (1) v0.4.4 ist als PRIVATER Store-Test publiziert + Homey-installiert (versions.md; code-gleich zu 0.4.3, Typsicherheits-Wartung, Live-Smoke grün). (2) Write-Passwort ROTIERT + dokumentiert (docs/superpowers/security/credential-rotation.md) → release-gate (c) erfüllt, kein Publish-Blocker mehr. (3) homeyCommunityTopicId = numerische ID eines SELBST angelegten Homey-Community-Threads (KEIN app-live nötig — kein Henne-Ei; optionaler Store-Link, kein harter Blocker; Doku apps.developer.homey.app/the-basics/app/manifest). (4) Zertifizierung nur für ÖFFENTLICH/Live nötig, Test nicht; bei Cert-Einreichung 'publish directly after approval' bewusst setzen. (5) homey app publish ist INTERAKTIV (keine --yes-Flags in CLI 4.1.1) → der Entwickler führt den Befehl selbst aus (Version-Update? N, Changelog hinterlegt, bestätigen Y, dann in den Developer Tools Test/Live setzen). (6) Store verlangt monoton steigende Versionen; jedes Release-Event bekommt eine eigene Nummer (0.4.4 = aktueller Store-Test). (7) Launch-Posts + README liegen fertig, aber UNTRACKED in docs/marketing/ + README.md + Design-Spec — als Teil dieses Milestones committen und nach der Live-Freigabe veröffentlichen." }
+      ],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): Alltags-Session im Default-Modus (Allowlist greift); für lange autonome Läufe claude --permission-mode auto. Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
+Violet Homey Pro App — Milestone M5.5 (Go-Live: öffentliche Store-Publikation + Community-Launch).
+
+AUSGANGSLAGE (Stand 2026-07-10): v0.4.4 ist als PRIVATER Store-Test publiziert + auf "Torstens Homey Pro" installiert (docs/dashboard/versions.md); code-gleich zu 0.4.3 (Typsicherheits-Wartung, keine Funktionsänderung, Live-Smoke grün). Write-Passwort ROTIERT + dokumentiert (docs/superpowers/security/credential-rotation.md) → release-gate (c) erfüllt. Ziel dieses Milestones: von Test auf ÖFFENTLICH Live.
+
+Lies zuerst: docs/superpowers/specs/2026-07-07-community-launch-posts-design.md (Design der Launch-Posts) und die fertigen Entwürfe in docs/marketing/ (homey-forum-post.en.md, poolsteuerung-forum-post.de.md + .bbcode.txt, dev-story-homey-forum.en.md) + README.md (Repo-Root). Diese sind derzeit untracked — als Teil dieses Milestones committen.
+
+Schritte:
+1. Go-Live-Design (superpowers:brainstorming + writing-plans): Reihenfolge Store-Live vs. Foren-Posts vs. Repo-öffentlich festlegen — die Posts verlinken sich gegenseitig + aufs Repo (Platzhalter erst nach Veröffentlichung auflösbar).
+2. Homey-Community-Support-Thread anlegen (geht ohne app-live) → numerische ID aus der Thread-URL → homeyCommunityTopicId in .homeycompose/app.json eintragen; Manifest-Sync prüfen (app.json == compose).
+3. README.md finalisieren (Vorbild andiwirz/com.luxtronik.heatpump) + Repo-Sichtbarkeit auf öffentlich (gh repo edit --visibility public — mit User bestätigen, nach-außen-wirkend).
+4. Version-Bump (npx homey app version patch bzw. minor — nächste freie Nummer; Store verlangt monoton steigend), Changelog en+de für den Live-Release, npx homey app validate --level publish PASS.
+5. Zertifizierung bei Athom einreichen (öffentlich/Live). homey app publish ist INTERAKTIV — der Entwickler führt ihn aus (Version-Update? N, Changelog hinterlegt, bestätigen Y; dann in den Developer Tools zur Zertifizierung einreichen, 'publish directly after approval' bewusst setzen). Cert-Feedback abarbeiten.
+6. NACH der Freigabe: Foren-Posts veröffentlichen (Homey Community EN + poolsteuerung.de Unterforum f=98 DE), Cross-Links + Store-/Repo-URLs in den Platzhaltern füllen, committen.
+7. Release-Log: versions.md-Zeile (Live), Dashboard M5.5 auf done (Dashboard-Protokoll CLAUDE.md §7).
+
+/code-review vor jeder Git-Aktion (CLAUDE.md §9); documenting-code-Skill für alle angefassten Quelldateien; §5 Security nur falls neue Angriffsfläche (hier i.d.R. nein — Prosa/Publikation).
+
+DONE-BEDINGUNGEN:
+1. App ist öffentlich im Homey App Store gelistet bzw. zur Zertifizierung eingereicht + bestätigt — Beleg im Chat.
+2. homeyCommunityTopicId im Manifest gesetzt; npx homey app validate --level publish PASS — Output im Chat.
+3. Beide Foren-Posts veröffentlicht + gegenseitig/aufs Repo verlinkt (URLs), versions.md-Live-Zeile ergänzt — im Chat gezeigt.
+
+/remote-control M5.5 — Go-Live: öffentliche Store-Publikation + Community-Launch`
+    },
+    {
       id: "→M6",
       title: "Zwischen-Check",
       status: "todo",
