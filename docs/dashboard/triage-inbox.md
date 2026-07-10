@@ -13,6 +13,7 @@ Nächtliche Befund-Sammlung der `violet-nightly-triage`-Routine (M4.8, Spec §4)
 - 2026-07-09 · Follow-up · App-Crash-Trace (M3) nicht reproduzierbar — braucht User-Trace oder Store-Test-Crash-Reports; beobachten.
 - 2026-07-09 · Test/todo · alarm_dosing_blocked-False-Positive (M2-Logik) — als todo-Test eingefroren (test/FeatureGroups.test.js), Fix ausstehend.
 - ~~2026-07-09 · Follow-up · M5-Gate (c): checkJs-strict-Ratchet ausreizen~~ → **ERLEDIGT 2026-07-10**: tsconfig.checkjs.json läuft mit strict:true fehlerfrei (RawReadings/ParsedReadings/Features-Typedefs + Index-Signatur-Casts + Null-Sicherheit, typing-only). Alle drei M5-Trigger (a+b+c) jetzt erfüllt — M5-Re-Evaluation kann starten.
+- ~~2026-07-10 · M5 · Pfad-B/C-Re-Evaluation (device.js→.ts)~~ → **ABGESCHLOSSEN 2026-07-10, Ergebnis NO-GO**: Spike gegen aktuelle Toolchain (Node 25.9/TS 6.0.3) — Gate (c) hat den Typsicherheits-Nutzen bereits geerntet (checkJs = identischer strict-tsc, device.js fehlerfrei); .ts addiert null Typprüfung + Zwei-Artefakte-Divergenz. 3/4 §6-GO-Kriterien verfehlt. **Pfad B/C endgültig abgeschlossen, nicht vertagt.** device.js bleibt strict-.js. Nachtrag im Entscheidungsdokument (2026-07-08-…-evaluation.md §Nachtrag-2026-07-10). Nächster Milestone: M6.
 - 2026-07-09 · Follow-up · Branch claude/write-path-security-reviewer: merge-vs-drop bei M6 entscheiden.
 
 ## Neu (2026-07-09)

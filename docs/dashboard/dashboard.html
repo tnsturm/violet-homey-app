@@ -90,7 +90,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-07-09",
+  updatedAt: "2026-07-10",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -505,55 +505,29 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
     },
     {
       id: "M5",
-      title: "TS-Migration device.js — Re-Evaluation (Pfad B/C)",
-      status: "todo",
-      recommendedModel: { model: "Claude Opus 4.8", effort: "high", why: "Hartes GO/NO-GO-Urteil unter maschinellen Kriterien + Migration des einzigen ungetesteten Produktions-Crash-Bereichs (device.js) — Urteilsqualität schlägt Tempo." },
-      startedAt: null,
-      finishedAt: null,
+      title: "TS-Migration device.js — Re-Evaluation (Pfad B/C) → NO-GO",
+      status: "done",
+      startedAt: "2026-07-10",
+      finishedAt: "2026-07-10",
       commit: null,
-      summary: "Re-Evaluation der .ts-Migration aus der TypeScript-Evaluation 2026-07-08 (§5): device.js-FIRST (nicht lib-first — lib/ ist testgedeckt, device.js nicht). HARTES GATE: nur starten, wenn (a) Mock-Harness test/mocks/homey.js existiert (loop-dev-roadmap Idee 6 → M4.7), (b) GitHub-Actions-CI grün läuft (Idee 3 → M4.6) UND (c) der checkJs-strict-Ratchet ausgereizt ist. Ziel: verifizierbare Verhaltensäquivalenz statt Blindflug im ungetesteten Glue-Code.",
+      summary: "ERGEBNIS: NO-GO. Re-Evaluation der .ts-Migration (device.js-first) aus der TS-Evaluation 2026-07-08 §5. Hartes Gate (a+b+c) mechanisch verifiziert, dann Wegwerf-Spike in frischem Worktree gegen die aktuelle Toolchain (Node 25.9, TS 6.0.3). Befund: (1) Gate (c) hat den Typsicherheits-Nutzen bereits geerntet — device.js ist unter checkJs-strict (identischer tsc) fehlerfrei, .ts fügt null Typprüfung hinzu und zerbricht die Strict-Sauberkeit (40 Fehler beim reinen Rename); (2) Zwei-Artefakte-Divergenz (getestete type-gestrippte Quelle ≠ ausgeliefertes es2019-Kompilat) macht den geforderten Mock-Harness-Äquivalenzbeweis untauglich. 3 von 4 §6-GO-Kriterien out-of-the-box verfehlt (node --test fail 1, validate exit 1, nicht strict-clean). device.js bleibt strict-geprüftes .js. Pfad B/C endgültig abgeschlossen (nicht vertagt). Nachtrag im Entscheidungsdokument §Nachtrag-2026-07-10.",
       steps: [
         { label: "Trigger-Gate (Mock-Harness, CI, strict-Ratchet)", done: true },
-        { label: "Re-Evaluation (Brainstorming + Spike)", done: false },
-        { label: "Spec + Plan", done: false },
-        { label: "Implementierung (TDD)", done: false },
-        { label: "Validate + Release", done: false }
+        { label: "Re-Evaluation (Brainstorming + Spike)", done: true },
+        { label: "GO/NO-GO nach §6 (Ergebnis: NO-GO)", done: true },
+        { label: "Implementierung (entfällt — NO-GO)", done: true },
+        { label: "Nachtrag ins Entscheidungsdokument + Milestone-Close", done: true }
       ],
       currentActivity: null,
       runtime: null,
       log: [
         { at: "2026-07-08", note: "Milestone aus der TS-Evaluation angelegt (docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md §5, Re-Evaluations-Trigger); auf User-Entscheid als M5 einnummeriert — ehemalige M5–M9 wurden zu M6–M10." },
         { at: "2026-07-09", note: "Gate-Check: (a) Mock-Harness test/mocks/homey.js MET (device.js unter Test); (b) CI gruen MET (Run 29051624272 auf main); (c) checkJs-strict-Ratchet beim Erst-Check NICHT MET — npx tsc -p tsconfig.checkjs.json --strict lieferte 288 Fehler (Root-Cause: untypisierter raw-Payload = TS2339/TS7053, wie die 121 lib-Fehler aus Evaluationsdoku §3; dazu Test-Callback-any + null-Sicherheit + never[]-Mock-Store)." },
-        { at: "2026-07-10", note: "strict-Ratchet auf User-Entscheid DIREKT in dieser Session geschlossen (typing-only, npm test durchweg fail 0): Root-Cause-Typedefs RawReadings/ParsedReadings/Features (lib/, via JSDoc-import in FeatureGroups/Capabilities/device.js), Index-Signatur-Casts fuer dynamisch indizierte Literale, Null-Sicherheit in Lsi.js (computeLSI-Aufrufer via ?? NaN verhaltensgleich) + Tests (?.-Chaining), Instanz-Feld-Deklarationen in device.js + Mock, @param-Annotationen in Hook-Tests. tsconfig.checkjs.json auf strict:true (Invariante im Header). ERGEBNIS: npx tsc (strict) exit 0 · npm test 155 pass/0 fail/1 todo · validate --level publish PASS · typecheck-gate 6/6. ALLE DREI M5-TRIGGER (a+b+c) ERFUELLT. Naechster Schritt: eigentliche Pfad-B/C-Re-Evaluation (Spike + GO/NO-GO nach §6) in fokussierter M5-Session (Modell-Empfehlung Opus/high). Milestone bleibt 'todo' (Re-Evaluation noch offen); Trigger-Gate-Step abgehakt. Nachtrag im Entscheidungsdokument §5." }
+        { at: "2026-07-10", note: "strict-Ratchet auf User-Entscheid DIREKT in dieser Session geschlossen (typing-only, npm test durchweg fail 0): Root-Cause-Typedefs RawReadings/ParsedReadings/Features (lib/, via JSDoc-import in FeatureGroups/Capabilities/device.js), Index-Signatur-Casts fuer dynamisch indizierte Literale, Null-Sicherheit in Lsi.js (computeLSI-Aufrufer via ?? NaN verhaltensgleich) + Tests (?.-Chaining), Instanz-Feld-Deklarationen in device.js + Mock, @param-Annotationen in Hook-Tests. tsconfig.checkjs.json auf strict:true (Invariante im Header). ERGEBNIS: npx tsc (strict) exit 0 · npm test 155 pass/0 fail/1 todo · validate --level publish PASS · typecheck-gate 6/6. ALLE DREI M5-TRIGGER (a+b+c) ERFUELLT. Naechster Schritt: eigentliche Pfad-B/C-Re-Evaluation (Spike + GO/NO-GO nach §6) in fokussierter M5-Session (Modell-Empfehlung Opus/high). Milestone bleibt 'todo' (Re-Evaluation noch offen); Trigger-Gate-Step abgehakt. Nachtrag im Entscheidungsdokument §5." },
+        { at: "2026-07-10", note: "M5-Session (active) gestartet. Gate erneut mechanisch verifiziert: (a) npm test 155 pass/0 fail/1 todo; (b) CI Run 29055490423 headSha 80b425d (=HEAD) success; (c) npx tsc -p tsconfig.checkjs.json exit 0. Toolchain: Node v25.9.0, TS 6.0.3. Re-Evaluation (Brainstorming + Spike in frischem Worktree) beginnt." },
+        { at: "2026-07-10", note: "NO-GO (User-Entscheid). Wegwerf-Spike (Worktree detached @80b425d, danach entfernt, nichts gemergt): git mv device.js→device.ts + real typescript/@tsconfig/node12 + Root-tsconfig + build. Messung vs §6-GO-Kriterien: node --test fail 1 (MODULE_NOT_FOUND — Test-Require .js bricht bei .ts), device.ts NICHT strict-clean (40 Fehler: JSDoc-Casts, die checkJs ehrt, ignoriert .ts — TS7006x18/TS7053x11/TS2339x6/TS18046x4/TS7031x1), validate --level publish exit 1 (npm run build=tsc rot). Baseline B_test~10.7s / B_val~6.3s. ZWEI prinzipielle, durch die Gates NICHT aufgelöste Befunde: (1) Gate (c) hat den Nutzen bereits geerntet — checkJs = identischer tsc/strict, device.js fehlerfrei; .ts addiert null Typprüfung, zerbricht nur die Strict-Sauberkeit; (2) Zwei-Artefakte-Divergenz gemessen (Quelle '?? 60' vs Kompilat 'var _a; ... !== void 0 ? _a : 60') macht Mock-Harness-Äquivalenzbeweis untauglich. Fazit: reine Kosten, null Zusatznutzen → NO-GO, Pfad B/C endgültig abgeschlossen. device.js bleibt strict-.js. Nachtrag im Entscheidungsdokument. Kein Code, kein Release, kein Version-Bump." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Violet Homey Pro App — Milestone M5 (TS-Migration device.js — Re-Evaluation, Pfad B/C aus der TypeScript-Evaluation 2026-07-08).
-
-Lies zuerst docs/superpowers/notes/2026-07-08-typescript-migration-evaluation.md (§4 Pfad B/C, §5 Re-Evaluations-Trigger, §6 letzter Absatz: Zusatzkriterien fuer B/C). Aktualisiere beim Start den M5-Eintrag in docs/dashboard/dashboard.html (Dashboard-Protokoll CLAUDE.md §7).
-
-HARTES GATE zuerst — alle drei Trigger muessen erfuellt sein, sonst STOPPEN (Milestone auf todo zuruecklassen, fehlende Trigger als log-Eintrag dokumentieren, NICHT migrieren):
-(a) Mock-Harness test/mocks/homey.js existiert und deckt das device.js-Basisverhalten ab (SEIT M4.7 VORHANDEN — 8 Reconcile/Apply-Tests gegen die 4 Fixtures);
-(b) GitHub-Actions-CI laeuft gruen (npm test + typecheck + validate --level publish; SEIT M4.6 VORHANDEN — aktuellen gruenen Lauf auf main zeigen);
-(c) checkJs-strict-Ratchet ist ausgereizt: tsconfig.checkjs.json laeuft mit strict:true fehlerfrei (Folgearbeit aus M4.5 — als EINZIGES Gate noch offen).
-
-Wenn alle Trigger erfuellt:
-1. Re-Evaluation (superpowers:brainstorming): die Pfad-B/C-Bewertung gegen die DANN aktuelle Toolchain neu messen — TypeScript-/Node-Version, tsc-Zeiten, node --test-Verhalten mit .ts (Spike in frischem git worktree wie am 2026-07-08; Worktree danach entfernen, nichts mergen). GO/NO-GO-Entscheidung mit maschinellen Kriterien nach §6 (node --test fail 0, Laufzeit maximal 2x Baseline, validate --level publish exit 0, device.js strict-clean).
-2. Bei GO: device.js-FIRST nach .ts migrieren (NICHT lib-first — lib/ ist durch die Unit-Tests abgedeckt, device.js war der Ort des einzigen Produktions-Crashs). Spike-Gotchas beachten (Doku §1): tsconfig.json + npm-Script "build": "tsc" + explizites types-Feld ["node","homey"]. Verhaltensaequivalenz VOR/NACH ueber die Mock-Harness-Tests beweisen (TDD: Tests zuerst gegen die .js-Fassung gruen, dann unveraendert gegen die .ts-Fassung).
-3. Hook-Pflicht: die Datei-Erkennung in .claude/hooks/run-matching-test.js auf .ts-Dateien erweitern — per TDD mit neuem Test in test/hooks/ (der Hook faellt bei .ts sonst STILL aus, Doku §2). engines-Feld in package.json pinnen (Node-Version mit nativem Type-Stripping; Minimum bei Umsetzung verifizieren).
-4. Release nach CLAUDE.md §8 + HOMEY.md: npx homey app version minor (naechste freie 0.X — kann von der Milestone-Nummer abweichen; der Store verlangt monoton steigende Versionen), Changelog en+de, validate --level publish, Store-Test-Publish zur Runtime-Verifikation, versions.md-Zeile.
-5. Bei NO-GO: Befund als Nachtrag ins Entscheidungsdokument, Milestone mit Ergebnis "NO-GO" als done schliessen (log-Eintrag mit Begruendung).
-
-/code-review vor jeder Git-Aktion (CLAUDE.md §9); documenting-code-Skill fuer alle angefassten Quelldateien.
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. npm test zeigt fail 0 — Output im Chat gezeigt.
-2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
-3. Bei GO: Mock-Harness-Tests laufen unveraendert gegen die .ts-Fassung gruen UND release-readiness-Subagent meldet PASS vor dem Store-Test-Publish; bei NO-GO: Nachtrag im Entscheidungsdokument + log-Eintrag mit Begruendung — im Chat gezeigt.
-
-/remote-control M5 — TS-Migration device.js — Re-Evaluation (Pfad B/C)`
+      prompt: null
     },
     {
       id: "→M6",
