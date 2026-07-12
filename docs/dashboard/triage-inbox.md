@@ -14,7 +14,7 @@ Nächtliche Befund-Sammlung der `violet-nightly-triage`-Routine (M4.8, Spec §4)
 
 ## Neu (2026-07-12)
 
-- 2026-07-12 · Lauf · Alles grün: npm test 156 Tests / pass 155 / fail 0 / todo 1 · validate --level publish exit 0 · Versions-Sync app.json == .homeycompose/app.json (0.4.5) · letzter CI-Lauf 29141112899 auf main success (23 s, schedule).
+- 2026-07-12 · Lauf · Alles grün: npm test 156 Tests / pass 155 / fail 0 / todo 1 · validate --level publish exit 0 · Versions-Sync app.json == .homeycompose/app.json (0.4.5) · letzter CI-Lauf 29181467074 auf main success (28 s, schedule).
 
 ## Erledigt (2026-07-12)
 
