@@ -110,7 +110,7 @@ New settings group **"Steuerung (Schreibzugriff)" / "Control (write access)"** i
 | `control_default_duration_min` | number | `60` | 0–1440 | auto-revert duration for **tile** commands (0 = permanent) |
 | `control_pump_speed` | dropdown | `default` | `default`/`0`/`1`/`2`/`3` | speed for tile pump `ON` (`default` ⇒ omit VAL2) |
 
-Credentials unchanged and already captured at pairing: `writeUsername` in settings, `writePassword` in device **store** (encrypted). A settings `label` states the SR-03 accepted risk (plain-HTTP LAN; use a least-privilege controller account; rotate the write password before publishing) and reminds that control is off by default.
+Credentials unchanged and already captured at pairing: `writeUsername` in settings, `writePassword` in device **store** (hidden from the settings UI; *correction 2026-07-13:* not encrypted at rest — Homey documents no such guarantee). A settings `label` states the SR-03 accepted risk (plain-HTTP LAN; use a least-privilege controller account; rotate the write password before publishing) and reminds that control is off by default.
 
 ## 7. Flow action cards (`.homeycompose/flow/actions/`)
 

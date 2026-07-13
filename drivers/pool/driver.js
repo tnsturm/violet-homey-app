@@ -97,7 +97,9 @@ class PoolDriver extends Homey.Driver {
             waterTempChannel: 'auto',
             group_chlorine: 'auto',
           },
-          // Write password → encrypted store, never plain settings (spec §6, §13).
+          // Write password → device store: hidden from the settings UI, but NOT
+          // encrypted at rest — Homey documents no such guarantee (spec §6, §13,
+          // corrected 2026-07-13). Never plain settings.
           store: { writePassword: pairData.writePassword },
         },
       ];

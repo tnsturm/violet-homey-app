@@ -102,7 +102,8 @@ class PoolDevice extends Homey.Device {
   }
 
   // Read write credentials at send time: username from settings, password from the
-  // encrypted store (SR-01/02). Throws (nothing sent) if the password is unset.
+  // device store — hidden from the settings UI, not encrypted at rest (threat model,
+  // corrected 2026-07-13) (SR-01/02). Throws (nothing sent) if the password is unset.
   _writeCreds() {
     const username = this.getSetting('writeUsername') || '';
     const password = this.getStoreValue('writePassword') || '';

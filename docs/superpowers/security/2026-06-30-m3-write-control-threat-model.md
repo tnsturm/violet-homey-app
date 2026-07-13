@@ -14,7 +14,7 @@
 
 | Asset | Why it matters |
 |---|---|
-| **Write credentials** (controller user/password) | Grant full control of the pool controller. Stored encrypted in the device store; **transmitted in cleartext** on every write (see channel). |
+| **Write credentials** (controller user/password) | Grant full control of the pool controller. Stored in the device store — hidden from the settings UI, but **not encrypted at rest** (Homey documents no such guarantee; corrected 2026-07-13, was wrongly listed as "encrypted"); **transmitted in cleartext** on every write (see channel). |
 | **Physical pool equipment** (pump, chlorine/pH-minus acid dosing, setpoints, heater) | A wrong/over-range write is a **real-world safety hazard** — over-dosing acid or chlorine, or stopping circulation. This app's whole purpose is a chemistry *safety net*; the write path must not become the hazard. |
 | **Homey ↔ Violet LAN channel** | Plain HTTP, no TLS (controller limitation — confirmed, not a choice). |
 

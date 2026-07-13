@@ -218,13 +218,13 @@ There is no labeled water-temp field, so the user identifies the pool channel:
 - `waterTempChannel` (dropdown, OK channels + "auto")
 - feature-group override(s) — at least `group_chlorine` (Auto/Force/Hide) as the M0 example; full set in M2
 
-**Device store:** `writePassword` (encrypted, hidden).
+**Device store:** `writePassword` (hidden from the settings UI; *correction 2026-07-13:* originally noted as "encrypted" — Homey documents no encryption at rest for the device store).
 
 ---
 
 ## 13. Security notes
 
-- The write BasicAuth credential is the controller's user/password; it lives only in the encrypted device store, never in source or plain settings.
+- The write BasicAuth credential is the controller's user/password; it lives only in the device store (hidden from the settings UI — but *not* encrypted at rest; Homey documents no such guarantee, correction 2026-07-13), never in source or plain settings.
 - The credential shared during brainstorming was transmitted in cleartext; the user should rotate the Violet write-password before publication.
 - Read path needs no credentials — keep it credential-free.
 
@@ -241,7 +241,7 @@ There is no labeled water-temp field, so the user identifies the pool channel:
 | Water-temp UX | **Visible sub-sensors + picker** | user can identify the right channel from live values |
 | Freshness | **Pump-on + warmup gate** | pump runs only hours/day; still-water probe values must not be trusted |
 | Write in M0 | **Deferred to M3** | safety + faster path to monitoring value |
-| Credentials | device **store**, encrypted | secrets must not be in plain settings/source |
+| Credentials | device **store** (hidden, not encrypted at rest — corrected 2026-07-13) | secrets must not be in user-visible settings/source |
 | Insights | **all** capabilities logged (`insights: true` on customs) | user requirement: every value visible in Homey statistics |
 
 ---
