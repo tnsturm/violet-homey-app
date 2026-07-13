@@ -50,5 +50,9 @@
   "0.4.5": {
     "en": "No functional changes. Manifest update ahead of public Homey App Store certification — adds a link to the app's Community support topic.",
     "de": "Keine Funktionsänderung. Manifest-Update vor der öffentlichen Zertifizierung im Homey App Store — ergänzt einen Verweis auf das Community-Support-Thema der App."
+  },
+  "0.4.6": {
+    "en": "Reliability: the app now identifies your controller by its serial number, so the same controller can no longer be added twice by accident. All error messages (pairing and runtime) are now shown in your Homey language (English/German).",
+    "de": "Zuverlässigkeit: Die App identifiziert den Regler jetzt über seine Seriennummer — derselbe Regler kann nicht mehr versehentlich doppelt hinzugefügt werden. Alle Fehlermeldungen (Kopplung und Betrieb) erscheinen jetzt in der Homey-Sprache (Deutsch/Englisch)."
   }
 }
