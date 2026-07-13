@@ -131,3 +131,24 @@ M5.7-Brainstorming zu klären.
   Voraussetzung `control_enabled` + Write-Credentials.
 - Basic-Auth-Passwort des Read-Users wurde während der Analyse im Klartext übertragen/geloggt
   → Rotation bei Gelegenheit empfohlen (analog credential-rotation.md vom 2026-07-10).
+
+## 6. Nachtrag 2026-07-13: API-Fakten aus dem violet-hass-Review
+
+Aus dem Review der Home-Assistant-Schwester-Integration
+([2026-07-13-violet-hass-review.md](2026-07-13-violet-hass-review.md) — dort auch die
+Gut-Muster fürs Brainstorming und die Nicht-übernehmen-Liste):
+
+1. **`getOutputRuntimes`** — weiterer, uns bisher unbekannter Endpoint: Laufzeiten der
+   Ausgänge separat abfragbar (dort optional zusätzlich zu getReadings gemerged).
+2. **`SYSTEM_ext1module_alive_count` / `SYSTEM_ext2module_alive_count`** — Alive-Heartbeats
+   existieren auch je Relais-Erweiterung (wir kannten nur carrier + dosagemodule).
+   Deklaratives Präsenz-Signal für die M5.7-Signalmatrix, komplementär zu `EXTENSION_n_use`.
+3. **`ADC3_value` als Flow-Fallback** — violet-hass nutzt ADC3 als alternative
+   Durchfluss-Quelle, wenn `IMP2_value` fehlt (M5.8: bei der Wert-Auswahl berücksichtigen).
+4. **„Dosing-Standalone"-Produktvariante** — Violet ohne Basismodul existiert
+   (`dosing_standalone`); M5.7-Detection sollte die Variante zumindest kennen.
+
+**Zu verifizieren (M5.7):** ob `getConfig` Mehrfach-Keys/Präfix-Queries unterstützt
+(violet-hass übergibt Listen wie `["NAMES_", "DOSAGE_", …]`). Falls ja: gezielt nur die
+benötigten Gruppen anfragen und die Secrets-Gruppen (`NET_`, `NOTIFY_`, `USER_`) gar nicht
+erst empfangen — besser als `?ALL` + Filtern.
