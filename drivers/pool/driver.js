@@ -5,9 +5,10 @@
 // Owns the custom pairing flow: validates the host against a live getReadings
 // call, then hands a single "Pool" device to Homey. All readings/polling live
 // in device.js; this file only runs at pair time.
+// Device identity + pairing-error i18n: spec 2026-07-13-device-identity-design.md.
 
 const Homey = require('homey');
-const crypto = require('node:crypto');
+const { deriveDeviceId } = require('../../lib/deviceIdentity');
 const { fetchReadings } = require('../../lib/VioletClient');
 
 class PoolDriver extends Homey.Driver {
@@ -66,14 +67,18 @@ class PoolDriver extends Homey.Driver {
 
     session.setHandler('connect', async (/** @type {{host?: string, username?: string, password?: string}} */ { host, username, password }) => {
       const cleanHost = String(host || '').trim();
-      if (!cleanHost) throw new Error('Host is required');
+      if (!cleanHost) throw new Error(this.homey.__('pair.error.host_required'));
       // Pairing completes only on a valid live response: this throws on any
       // fetch/parse failure, surfacing a clear error to the pairing view (spec §6).
-      await fetchReadings(cleanHost, { timeoutMs: 10000 });
+      const raw = await fetchReadings(cleanHost, { timeoutMs: 10000 });
+      // data.id = controller serial (HW_SERIAL_CARRIER): stable per unit, so Homey
+      // itself blocks adding the same controller twice. Fail-closed when missing —
+      // never fall back to a random/weak id (device-identity spec §Decision,
+      // §Missing/invalid serial). Existing devices keep their frozen UUIDs.
+      const id = deriveDeviceId(raw);
+      if (!id) throw new Error(this.homey.__('pair.error.no_serial'));
       pairData = {
-        // Generate the device id once, here; it must stay immutable — Homey keys
-        // Flows/Insights off data.id (spec §6).
-        id: crypto.randomUUID(),
+        id,
         host: cleanHost,
         writeUsername: String(username || '').trim(),
         writePassword: String(password || ''),
