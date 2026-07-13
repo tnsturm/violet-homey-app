@@ -29,6 +29,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Audit (bekannte Schwachstellen — blockt vor Publish)
+        # Enforced die Sicherheitshaelfte von Option 1: bricht ab bei high/critical
+        # Advisories in den (dev-)Dependencies, bevor ein Release rausgeht.
+        run: npm audit --audit-level=high
       - run: npm test
       - run: npm run typecheck
       - name: Manifest sync (app.json == .homeycompose/app.json)

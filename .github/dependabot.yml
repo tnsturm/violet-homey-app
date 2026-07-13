@@ -1,0 +1,25 @@
+# Dependabot fuer die Violet Homey App (Option 1 aus der Paket-Freshness-Diskussion):
+# oeffnet automatisch Update-PRs; die bestehenden CI-Gates (npm test, typecheck,
+# Manifest-Sync, validate --level publish, npm audit) validieren jeden Update-PR,
+# bevor er gemergt wird — "latest, aber gated" statt blindem Auto-Update
+# (haelt CLAUDE.md §2/§3: Mensch bleibt im Loop, kein spekulatives Bumpen).
+version: 2
+updates:
+  # JavaScript-Pakete (devDependencies: @types/homey, @types/node, typescript).
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # Ein PR pro Update, damit jede Aenderung einzeln durch die Gates laeuft.
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
+  # GitHub-Actions in .github/workflows/ci.yml (checkout, setup-node) mitpflegen.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(ci)"
