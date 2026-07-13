@@ -5,6 +5,7 @@
 // Thin runtime layer: each poll fetches readings, runs the pure lib modules
 // (parse / detect / freshness / capability planning) and applies the result to
 // Homey. All non-trivial logic lives in /lib; this file just wires it.
+// Runtime-error i18n (boundary wrapping): spec 2026-07-13-device-identity-design.md.
 
 const Homey = require('homey');
 const { fetchReadings, parseReadings } = require('../../lib/VioletClient');
@@ -107,7 +108,7 @@ class PoolDevice extends Homey.Device {
   _writeCreds() {
     const username = this.getSetting('writeUsername') || '';
     const password = this.getStoreValue('writePassword') || '';
-    if (!password) throw new Error('Write credentials are not set (device settings).');
+    if (!password) throw new Error(this.homey.__('error.write_creds_missing'));
     return { username, password };
   }
 
@@ -120,11 +121,28 @@ class PoolDevice extends Homey.Device {
    */
   async _control(cmd, label) {
     if (this.getSetting('control_enabled') !== true) {
-      throw new Error('Control is disabled — enable it in the device settings.');
+      throw new Error(this.homey.__('error.control_disabled'));
     }
     this.log('control', label, cmd.target, cmd.state, JSON.stringify(cmd.args || {}));
-    const res = await sendWrite(this.getSetting('host'), this._writeCreds(), cmd);
-    if (!res.ok) throw new Error(`Controller rejected: ${label}`);
+    // Creds resolve BEFORE the try: their localized error must not be re-wrapped
+    // as write_failed below (device-identity spec §User-visible localization).
+    const creds = this._writeCreds();
+    let res;
+    try {
+      res = await sendWrite(this.getSetting('host'), creds, cmd);
+    } catch (err) {
+      // Localize at the Homey boundary; /lib throws stay pure English and are
+      // logged as diagnostic detail (credential-free by SR-09). 401/403 = the
+      // likely user error (wrong write password) → dedicated actionable message;
+      // RangeError = registry validation (reachable via bad Flow args, e.g.
+      // negative duration) → invalid_value.
+      const msg = err instanceof Error ? err.message : String(err);
+      this.error('control', label, 'failed:', msg);
+      if (err instanceof RangeError) throw new Error(this.homey.__('error.invalid_value', { detail: msg }));
+      if (/HTTP (401|403)\b/.test(msg)) throw new Error(this.homey.__('error.write_auth'));
+      throw new Error(this.homey.__('error.write_failed', { detail: msg }));
+    }
+    if (!res.ok) throw new Error(this.homey.__('error.controller_rejected', { label }));
     return res;
   }
 
@@ -211,7 +229,7 @@ class PoolDevice extends Homey.Device {
     } catch (err) {
       // 3 consecutive failures → unavailable; transient errors keep last values (spec §10).
       this._failures += 1;
-      if (this._failures >= 3) await this.setUnavailable('Violet not reachable').catch(this.error);
+      if (this._failures >= 3) await this.setUnavailable(this.homey.__('error.unreachable')).catch(this.error);
       return;
     }
 

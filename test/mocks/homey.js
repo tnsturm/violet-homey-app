@@ -47,6 +47,11 @@ class Device {
       manifest: { capabilities: {} },
       setInterval: () => ({ __fakeInterval: true }), // no real scheduling (spec D3)
       clearInterval: () => {},
+      // Minimal i18n stub (device-identity spec, Task 4): tests assert on
+      // recorded calls/state, never on exact message text, so returning the
+      // key (with tokens appended when present) is enough to keep _control/
+      // _tick's `this.homey.__(...)` calls callable under the mock.
+      __: (/** @type {string} */ key, /** @type {Object<string, *>} */ tokens) => (tokens ? `${key} ${JSON.stringify(tokens)}` : key),
       flow: {
         getDeviceTriggerCard: (/** @type {string} */ name) => {
           this.__cards[name] = this.__cards[name] || new FakeTriggerCard(name, triggers);
