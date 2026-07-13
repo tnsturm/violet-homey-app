@@ -54,5 +54,9 @@
   "0.4.6": {
     "en": "Reliability: the app now identifies your controller by its serial number, so the same controller can no longer be added twice by accident. All error messages (pairing and runtime) are now shown in your Homey language (English/German).",
     "de": "Zuverlässigkeit: Die App identifiziert den Regler jetzt über seine Seriennummer — derselbe Regler kann nicht mehr versehentlich doppelt hinzugefügt werden. Alle Fehlermeldungen (Kopplung und Betrieb) erscheinen jetzt in der Homey-Sprache (Deutsch/Englisch)."
+  },
+  "0.4.7": {
+    "en": "Store presentation refresh (Athom certification feedback): shorter app name and tagline, a new app-store image, and simplified line-art icons. No functional changes.",
+    "de": "Überarbeiteter Store-Auftritt (Feedback aus der Athom-Zertifizierung): kürzerer App-Name und Tagline, ein neues App-Store-Bild sowie vereinfachte Strichgrafik-Icons. Keine Funktionsänderung."
   }
 }

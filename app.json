@@ -1,19 +1,19 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "de.neunbft.violet",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "compatibility": ">=12.2.0",
   "sdk": 3,
   "platforms": [
     "local"
   ],
   "name": {
-    "en": "Violet + BADU Blue Pool Control",
-    "de": "Violet + BADU Blue Poolsteuerung"
+    "en": "Violet Pool Control",
+    "de": "Violet Poolsteuerung"
   },
   "description": {
-    "en": "Monitor and control a PoolDigital Violet or BADU Blue pool controller over your local network — pH, ORP, chlorine, temperatures, pump, dosing and more, with an optional live Langelier (LSI) water-balance safety net.",
-    "de": "Überwacht und steuert einen PoolDigital-Violet- oder BADU-Blue-Poolregler im lokalen Netz — pH, Redox, Chlor, Temperaturen, Pumpe, Dosierung u. v. m., mit optionalem Live-Langelier-Index (LSI) als Wasserbalance-Sicherheitsnetz."
+    "en": "Protects your pool's water balance — before problems start.",
+    "de": "Schützt die Wasserbalance deines Pools – bevor Probleme entstehen."
   },
   "category": [
     "appliances"

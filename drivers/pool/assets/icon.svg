@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
-  <g fill="#ffffff" stroke="#ffffff" stroke-linecap="round">
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
     <!-- top terminal pins -->
     <g stroke-width="7">
       <line x1="72" y1="62" x2="72" y2="86"/>
@@ -17,12 +17,14 @@
       <line x1="168" y1="154" x2="168" y2="178"/>
     </g>
     <!-- module body outline -->
-    <rect x="46" y="84" width="148" height="72" rx="14" fill="none" stroke-width="8"/>
-    <!-- status LED row -->
-    <circle cx="72" cy="104" r="4" stroke="none"/>
-    <circle cx="88" cy="104" r="4" stroke="none"/>
-    <circle cx="104" cy="104" r="4" stroke="none"/>
-    <!-- VIOLET accent line -->
-    <rect x="60" y="130" width="120" height="8" rx="4" stroke="none"/>
+    <rect x="46" y="84" width="148" height="72" rx="14" stroke-width="8"/>
+    <!-- status LED row (open rings, not filled dots) -->
+    <g stroke-width="4">
+      <circle cx="72" cy="104" r="5"/>
+      <circle cx="88" cy="104" r="5"/>
+      <circle cx="104" cy="104" r="5"/>
+    </g>
+    <!-- accent line -->
+    <line x1="64" y1="134" x2="176" y2="134" stroke-width="6"/>
   </g>
 </svg>
