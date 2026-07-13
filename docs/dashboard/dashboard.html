@@ -90,7 +90,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-07-11",
+  updatedAt: "2026-07-13",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -580,6 +580,92 @@ DONE-BEDINGUNGEN:
 /remote-control M5.5 — Go-Live: öffentliche Store-Publikation + Community-Launch`
     },
     {
+      id: "M5.7",
+      title: "Config-basierte Autoconfig (getConfig + CONFIGCHANGEMARKER)",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Brainstorming über die per-Feature-Signalmatrix + klar umrissener Read-Pfad; die eine heikle Entscheidung (Monotonie-Bruch bei Config-Autorität) ist designseitig, kein Chemie-/Schreibrisiko." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Autoconfig-Umbau: Feature-Erkennung zusätzlich aus getConfig?ALL (Basic Auth, Credentials wie M3) speisen — per-Feature-Signalmatrix statt reiner History-Heuristik. Behebt realen Cover-False-Positive (COVER_STATE-Defaultwerte trotz deaktivierter Steuerung); Namen/Einheiten aus NAMES_*/ANALOG_*. Zusätzlich: CONFIGCHANGEMARKER bei jedem getReadings-Poll mit letztem Wert vergleichen; die Aktion auf eine erkannte Änderung ist im Brainstorming zu klären. Analyse-Basis: docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md.",
+      steps: [
+        { label: "Brainstorming", done: false },
+        { label: "Spec", done: false },
+        { label: "Plan", done: false },
+        { label: "Implementierung (SDD)", done: false },
+        { label: "Validate + Push", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-07-13", note: "Milestone angelegt (API-Analyse-Session; übernimmt den Auto-Detection-Review aus dem aufgelösten M10)" }
+      ],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
+Violet Homey Pro App — Milestone M5.7 (Config-basierte Autoconfig via getConfig + CONFIGCHANGEMARKER).
+
+Aktualisiere beim Start den M5.7-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload Version bumpen (HOMEY.md) + versions.md pflegen. (Protokoll: CLAUDE.md §7-8 + HOMEY.md, automatisch geladen.)
+
+Kontext laden: ZUERST die Analyse-Notiz docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md (§3 getConfig-Struktur, §4 Signalmatrix + Cover-False-Positive + CONFIGCHANGEMARKER) — sie ist die fachliche Basis dieses Milestones. Dazu M2-Spec (docs/superpowers/specs/2026-07-01-violet-homey-app-m2-full-reads-design.md, Detection/Monotonie) und lib/FeatureDetector.js + lib/FeatureGroups.js. Credentials-Handling wie M3 (Device-Store, secrets-guard aktiv).
+
+Aufgabe: (a) getConfig?ALL beim Pairing und on-demand lesen (Basic Auth; Fallback ohne Credentials = heutige History-Heuristik) und die Feature-Erkennung auf eine per-Feature-Signalmatrix umbauen — Cover: COVER_control_use + EXTENSION_*_use als NEGATIV autoritatives Signal (behebt den realen False Positive: COVER_STATE="OPEN" als Defaultwert trotz "Nicht verwenden"); Solar/Heizung/Pumpe: *_control_use ODER *_pvsurplus_use ODER Historie ("Regelung aus" != "ungenutzt", siehe Solar-Fall in der Notiz); ADC/Impuls: ANALOG_adcN_use/IMPULS_inputN_use inkl. _units; Klartextnamen aus NAMES_* fuer Sub-Sensoren/Labels evaluieren. Der Monotonie-Bruch (Config darf Capabilities entfernen) ist eine explizite Design-Entscheidung im Brainstorming, inkl. Migration fuer Bestandsgeraete. (b) CONFIGCHANGEMARKER (undokumentiert, in getReadings enthalten, wird ohnehin gepollt) bei jedem Poll mit dem letzten Wert vergleichen; WELCHE Aktion auf eine erkannte Aenderung folgt (nur getConfig-Re-Read? Re-Reconcile? Nutzer-Benachrichtigung?) ist ausdruecklich noch offen und im Brainstorming zu klaeren.
+
+SICHERHEIT: getConfig?ALL enthaelt Klartext-Secrets (WLAN/SMTP/Push/PIN) und PII — nur die benoetigten Keys verarbeiten, Antwort nie roh loggen/persistieren. Read-only-Pfad mit vorhandenen Credentials; kurz gegen CLAUDE.md §5 pruefen, ob das bestehende M3-Threat-Model den neuen Nutzungspfad abdeckt oder ein Delta noetig ist.
+
+Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK via homey-app-Skill, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: violet).
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. npm test zeigt fail 0 — Output im Chat gezeigt.
+2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
+3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
+
+/remote-control M5.7 — Config-basierte Autoconfig (getConfig)`
+    },
+    {
+      id: "M5.8",
+      title: "getReadings-Vervollständigung (Filterdruck, Durchfluss, restliche Werte)",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Reads-Milestone im M2-Stil mit Brainstorming-Anteil (Wert-Auswahl aus der Analyse-Notiz) — moderates Urteil, kein Sicherheitsrisiko." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Brainstormen, welche restlichen getReadings-Werte ausgelesen werden sollen, und umsetzen (ehem. M10-Reads): Filterdruck (ADC1_value) + Anströmung/Durchfluss (IMP1/IMP2) plus Kandidaten aus den neu dokumentierten Feldern (REMAINING_RANGE inkl. h-Suffix, onewireN_freeze-/faultcount, *STATE als Pipe-String, OMNI_DC*, last_error_id …). Analyse-Basis: docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md §1. Direkt nach M5.7 (nutzt dessen Einheiten/Namen aus getConfig).",
+      steps: [
+        { label: "Brainstorming", done: false },
+        { label: "Spec", done: false },
+        { label: "Plan", done: false },
+        { label: "Implementierung (SDD)", done: false },
+        { label: "Validate + Push", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-07-13", note: "Milestone angelegt (API-Analyse-Session; übernimmt die Reads aus dem aufgelösten M10)" }
+      ],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
+Violet Homey Pro App — Milestone M5.8 (getReadings-Vervollstaendigung: Filterdruck, Durchfluss, restliche Werte).
+
+Aktualisiere beim Start den M5.8-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload Version bumpen (HOMEY.md) + versions.md pflegen. (Protokoll: CLAUDE.md §7-8 + HOMEY.md, automatisch geladen.)
+
+Kontext laden: ZUERST die Analyse-Notiz docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md (§1 undokumentierte Felder inkl. Live-Werten) + M2-Spec und Field-Classification (docs/superpowers/specs/2026-07-01-violet-homey-app-m2-full-reads-design.md, docs/superpowers/notes/2026-07-01-m2-field-classification.md). M5.7 sollte fertig sein — dessen getConfig-Anbindung liefert Einheiten (ANALOG_adcN_units) und Klartextnamen (NAMES_*).
+
+Aufgabe: BRAINSTORMEN, welche restlichen getReadings-Werte als Capabilities/Diagnostik ausgelesen werden sollen, dann umsetzen. Gesetzte Kandidaten (ehem. M10-Aufgabe A): Filterdruck = ADC1_value (bei Referenz-Hardware aktiv, Einheit Bar aus getConfig) und Anstroemung/Durchfluss = IMP1_value/IMP2_value — ROHE Werte, ZUERST live an der echten Violet verifizieren (Pumpe an vs. aus), bevor Einheiten/Schwellen festgelegt werden; optional Alarm "Rueckspuelen noetig" (steigender Druck) bzw. "kein Durchfluss trotz Pumpe an". Weitere Kandidaten aus der Notiz §1 bewerten: DOS_n_REMAINING_RANGE mit h-Suffix (parseRangeToDays in lib/FeatureGroups.js erweitern!), onewireN_freezecount/faultcount (Delta-basierte Alarme, M2-Deferral), PUMPSTATE/SOLARSTATE/HEATERSTATE als Pipe-String "wert|GRUND" (Array-Annahme korrigieren), OMNI_DC0..5, last_error_id, SYSTEM_*_alive_faultcount. Skip-Liste der M2-Klassifikation respektieren — kein Tile-Zoo.
+
+Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK via homey-app-Skill, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: violet).
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. npm test zeigt fail 0 — Output im Chat gezeigt.
+2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
+3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
+
+/remote-control M5.8 — getReadings-Vervollstaendigung`
+    },
+    {
       id: "→M6",
       title: "Zwischen-Check",
       status: "todo",
@@ -587,7 +673,7 @@ DONE-BEDINGUNGEN:
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Housekeeping zwischen M5 und M6: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      summary: "Housekeeping zwischen M5.8 und M6: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
         { label: "/fewer-permission-prompts", done: false },
         { label: "/claude-automation-recommender", done: false },
@@ -604,7 +690,7 @@ DONE-BEDINGUNGEN:
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
-Zwischen-Check vor M6 (CLAUDE.md §7 Punkt 4). M5 ist abgeschlossen, M6 startet als Naechstes.
+Zwischen-Check vor M6 (CLAUDE.md §7 Punkt 4). M5.8 ist abgeschlossen, M6 startet als Naechstes.
 
 Fuehre aus: /milestone-checkpoint
 
@@ -819,7 +905,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Abschluss-Milestone (2026-07-02 bei M3-Brainstorming eingefügt): manuelle Dosierung + Sollwerte (Ziel-pH/Redox/Chlor) evaluieren und ggf. umsetzen. NICHT über das dokumentierte setFunctionManually API abbildbar — nur über den UNDOKUMENTIERTEN /setConfig-Endpoint, per debughttp.htm (Manual §26.4) an echter Hardware reverse-engineered. Höheres Risiko (greift direkt in die Wasserchemie ein, kann bei Firmware-Änderungen brechen) → bewusst zuletzt, eigenes Threat-Model + Spec.",
+      summary: "Abschluss-Milestone (2026-07-02 bei M3-Brainstorming eingefügt): manuelle Dosierung + Sollwerte (Ziel-pH/Redox/Chlor) evaluieren und ggf. umsetzen. Brainstorming ZUSAMMEN mit den getOverallDosing-Erkenntnissen (docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md §2: kompletter undokumentierter Dosier-Ist-Zustand je Kanal inkl. CAN_LOW/EMPTY_WARNING, NEXT_DOSING_CYCLE, STATE-Blockiergründe) — Read-Seite darauf aufbauen. Schreiben NICHT über das dokumentierte setFunctionManually API abbildbar — nur über den UNDOKUMENTIERTEN /setConfig-Endpoint, per debughttp.htm (Manual §26.4) an echter Hardware reverse-engineered. Höheres Risiko (greift direkt in die Wasserchemie ein, kann bei Firmware-Änderungen brechen) → bewusst zuletzt, eigenes Threat-Model + Spec.",
       steps: [
         { label: "Brainstorming", done: false },
         { label: "Spec", done: false },
@@ -838,9 +924,9 @@ Violet Homey Pro App — Milestone M9 (Dosierung & Sollwerte via setConfig).
 
 Aktualisiere beim Start den M9-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
 
-Kontext laden: Projekt-Status-Memory + die M3-Spec (docs/superpowers/specs/2026-07-02-violet-homey-app-m3-write-control-design.md, §2/§13) und das M3-Threat-Model (docs/superpowers/security/2026-06-30-m3-write-control-threat-model.md). M3 (setFunctionManually-Schreibpfad, lib/WriteClient.js, WRITE_TARGETS-Registry) muss fertig sein — hier wird darauf aufgebaut.
+Kontext laden: Projekt-Status-Memory + die M3-Spec (docs/superpowers/specs/2026-07-02-violet-homey-app-m3-write-control-design.md, §2/§13) und das M3-Threat-Model (docs/superpowers/security/2026-06-30-m3-write-control-threat-model.md). ZUSAETZLICH PFLICHT: die Analyse-Notiz docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md — §2 dokumentiert den kompletten getOverallDosing-Endpoint (je Kanal: aktueller Zyklus, Kanisterstand inkl. fertiger CAN_LOW/EMPTY_WARNING-Bits, NEXT_DOSING_CYCLE, STATE-Blockiervokabular, Lebensdauer-Zaehler) und §3 die DOSAGE_*-Sollwert-Keys in getConfig (inkl. gezieltem Read getConfig?DOSAGE_phminus_setpoint). Das Brainstorming MUSS beide Quellen einbeziehen: Read-/Feedback-Seite der manuellen Dosierung ueber getOverallDosing statt eigener Ableitungen aus getReadings; Sollwert-Reads ueber getConfig. M3 (setFunctionManually-Schreibpfad, lib/WriteClient.js, WRITE_TARGETS-Registry) muss fertig sein — hier wird darauf aufgebaut.
 
-WICHTIG (aus M3-Erkenntnis): Dosierung (DOS_*) und Sollwerte sind NICHT im dokumentierten setFunctionManually-API. Sie sind Dashboard-/Konfig-Operationen (intern ein /setConfig-POST). Erster Schritt ist reverse-engineering an echter Hardware: http://<host>/debughttp.htm zeigt eingehende /setConfig-Requests inkl. Payload (Manual §26.4) — damit das exakte Feld/Payload-Format der "[MANUELL DOSIEREN]"-Aktion und der Sollwert-Änderungen ermitteln.
+WICHTIG (aus M3-Erkenntnis): SCHREIBEN von Dosierung (DOS_*) und Sollwerten ist NICHT im dokumentierten setFunctionManually-API. Sie sind Dashboard-/Konfig-Operationen (intern ein /setConfig-POST). Erster Schritt ist reverse-engineering an echter Hardware: http://<host>/debughttp.htm zeigt eingehende /setConfig-Requests inkl. Payload (Manual §26.4) — damit das exakte Feld/Payload-Format der "[MANUELL DOSIEREN]"-Aktion und der Sollwert-Änderungen ermitteln.
 
 SICHERHEIT: neue Angriffsfläche (schreibt direkt Wasserchemie-Parameter) → ZUERST security-requirement-extraction (eigenes Threat-Model in docs/superpowers/security/), dann Spec/Plan. Clamping auf sichere chemische Bereiche ist hier KRITISCH (Über-/Unterdosierung = reale Gefahr). Write-Credentials weiterhin nur im Device-Store. Wo möglich gegen Demo demo.myViolet.de bzw. echte Violet (Host \`violet\`) testen; /setConfig ist undokumentiert und kann sich mit Firmware ändern — defensive Fehlerbehandlung + klare "experimentell"-Kennzeichnung.
 
@@ -852,48 +938,6 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload UND /security-review + security-reviewer-Subagent auf dem Diff ohne offene Findings — Ergebnisse im Chat gezeigt.
 
 /remote-control M9 — Dosierung & Sollwerte (setConfig)`
-    },
-    {
-      id: "M10",
-      title: "Filterdruck + Anströmung/Durchfluss + Auto-Detection-Review",
-      status: "todo",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Überwiegend Reads-Milestone im M2-Stil plus eine Zuverlässigkeits-Review der bestehenden Autodetection — moderates Urteil, kein Sicherheitsrisiko." },
-      startedAt: null,
-      finishedAt: null,
-      commit: null,
-      summary: "Zwei neue getReadings-Reads: Filterdruck (ADC1_value = AnalogSensor_1 preassure/pressure) und Anströmung/Durchfluss (IMP1_value = Flow switch, IMP2_value = Flow Pump) — rohe Analog-/Impulswerte, Einheit/Skalierung sensorabhängig, zuerst live verifizieren. Plus kritischer Review der Feature-Autodetection (history-based FeatureDetector): zuverlässig genug? aktiviert lassen oder konservativerer Default/Override? Reads-Milestone im M2-Stil.",
-      steps: [
-        { label: "Brainstorming", done: false },
-        { label: "Spec", done: false },
-        { label: "Plan", done: false },
-        { label: "Implementierung (SDD)", done: false },
-        { label: "Validate + Push", done: false }
-      ],
-      currentActivity: null,
-      runtime: null,
-      log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Violet Homey Pro App — Milestone M10 (Filterdruck + Anstroemung/Durchfluss + Auto-Detection-Review).
-
-Aktualisiere beim Start den M10-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload Version bumpen (HOMEY.md) + versions.md pflegen. (Protokoll: CLAUDE.md §7-8 + HOMEY.md, automatisch geladen.)
-
-Kontext laden: Projekt-Status-Memory + M2-Spec (docs/superpowers/specs/2026-07-01-violet-homey-app-m2-full-reads-design.md) — Reads-Milestone im M2-Stil (lib/FeatureGroups.js Registry + FeatureDetector). M0-M3 fertig.
-
-Aufgabe A (neue Reads): aus GET http://<host>/getReadings?ALL zwei Werte abbilden — Filterdruck = ADC1_value (offizielle getReadings.xlsx: AnalogSensor_1 preassure/pressure) und Anstroemung/Durchfluss = IMP1_value (Impuls_Input 1, Flow switch) + IMP2_value (Impuls_Input 2, Flow Pump). WICHTIG: das sind ROHE Analog-/Impulswerte — Einheit/Skalierung haengt vom angeschlossenen Sensor ab. ZUERST live an der echten Violet (Host: violet, via homey-cli / debughttp.htm) pruefen, ob echte Sensoren dranhaengen und wie sich die Werte verhalten (Pumpe an vs. aus), bevor Einheiten/Schwellen festgelegt werden. Als eigene Capabilities (Naming/Einheit im Brainstorming klaeren), hardware-adaptiv nur wenn plausibel belegt (sonst hinter Setting/Force). Optional: Alarm Rueckspuelen-noetig bei steigendem Druck bzw. kein-Durchfluss-trotz-Pumpe-an.
-
-Aufgabe B (Auto-Detection-Review): kritisch pruefen, ob die history-basierte FeatureDetector-Autodetection (detectFeatures: aktiv-jetzt ODER je-gelaufen, monoton/churn-frei) in der Praxis zuverlaessig ist — falsch-positive/negative Gruppen? Soll die Autodetection aktiviert bleiben (aktueller Default) oder ist ein konservativerer Default / expliziter Override besser? Ergebnis als Entscheidung + ggf. Anpassung dokumentieren.
-
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK via homey-app-Skill, Live-Inspektion via homey-cli.
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. npm test zeigt fail 0 — Output im Chat gezeigt.
-2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
-3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
-
-/remote-control M10 — Filterdruck + Anstroemung + Auto-Detection-Review`
     }
   ]
 };
