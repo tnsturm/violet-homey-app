@@ -7,6 +7,19 @@
       "connecting": "Verbinde…",
       "failed": "Fehlgeschlagen: ",
       "button": "Verbinden"
+    },
+    "error": {
+      "host_required": "Host ist erforderlich",
+      "no_serial": "Der Regler hat keine Seriennummer gemeldet (HW_SERIAL_CARRIER). Bitte die Regler-Firmware aktualisieren und erneut versuchen."
     }
+  },
+  "error": {
+    "write_creds_missing": "Schreib-Zugangsdaten sind nicht gesetzt (Geräteeinstellungen).",
+    "control_disabled": "Steuerung ist deaktiviert — in den Geräteeinstellungen aktivieren.",
+    "controller_rejected": "Regler hat abgelehnt: __label__",
+    "write_auth": "Schreibzugriff verweigert — Schreib-Benutzer/Passwort in den Geräteeinstellungen prüfen.",
+    "write_failed": "Schreiben zum Regler fehlgeschlagen (__detail__).",
+    "invalid_value": "Ungültiger Wert: __detail__",
+    "unreachable": "Violet nicht erreichbar"
   }
 }

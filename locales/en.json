@@ -7,6 +7,19 @@
       "connecting": "Connecting…",
       "failed": "Failed: ",
       "button": "Connect"
+    },
+    "error": {
+      "host_required": "Host is required",
+      "no_serial": "This controller did not report a serial number (HW_SERIAL_CARRIER). Please update the controller firmware and try again."
     }
+  },
+  "error": {
+    "write_creds_missing": "Write credentials are not set (device settings).",
+    "control_disabled": "Control is disabled — enable it in the device settings.",
+    "controller_rejected": "Controller rejected: __label__",
+    "write_auth": "Write access denied — check the write username/password in the device settings.",
+    "write_failed": "Write to the controller failed (__detail__).",
+    "invalid_value": "Invalid value: __detail__",
+    "unreachable": "Violet not reachable"
   }
 }
