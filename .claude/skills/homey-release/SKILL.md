@@ -21,7 +21,9 @@ beim Nutzer nachfragen — das ist ein sichtbarer, kaum reversibler Schritt.
    Aktualisiert `.homeycompose/app.json`; das generierte Root-`app.json` zieht beim
    nächsten `build`/`run`/`validate` nach.
 3. **Changelog**: `.homeychangelog.json` für die neue Version füllen — klar,
-   nutzerverständlich, **en + de**.
+   nutzerverständlich, **en + de**. Die entworfenen Store-Versionshinweise (en + de)
+   **erst dem Nutzer zur Freigabe vorlegen** — er gibt frei oder schreibt um; erst
+   danach in die Datei schreiben und committen.
 4. **Sync prüfen**: Version im generierten `app.json` == `.homeycompose/app.json`?
    Bump + Changelog zusammen committen.
 5. **Ausliefern**: `npx homey app install` (Testinstallation) oder Store-Publish.
