@@ -11,6 +11,7 @@ Nächtliche Befund-Sammlung der `violet-nightly-triage`-Routine (M4.8, Spec §4)
 - 2026-07-09 · Follow-up · App-Crash-Trace (M3) nicht reproduzierbar — braucht User-Trace oder Store-Test-Crash-Reports; beobachten.
 - 2026-07-09 · Test/todo · alarm_dosing_blocked-False-Positive (M2-Logik) — als todo-Test eingefroren (test/FeatureGroups.test.js), Fix ausstehend. Stand 2026-07-13: npm test zeigt weiterhin todo 1.
 - 2026-07-09 · Follow-up · Branch claude/write-path-security-reviewer: merge-vs-drop bei M6 entscheiden. Stand 2026-07-13: lokal + origin weiterhin vorhanden.
+- 2026-07-14 · M5.9-Koordination · SR-07 (CI-Audit-Teil) ist bereits umgesetzt in PR #5 (chore(ci): Dependabot + npm audit): CI führt jetzt `npm audit --audit-level=high` nach `npm ci`. M5.9-Session: den SR-07-CI-Audit-Unterpunkt als erledigt markieren, NICHT erneut hinzufügen — offen bleibt nur `--ignore-scripts` für Agent-Installs. `.github/dependabot.yml` (Freshness-Update-PRs) ist komplementär, kein Overlap mit dem geplanten Package-Guard-Hook.
 
 ## Neu (2026-07-13)
 
