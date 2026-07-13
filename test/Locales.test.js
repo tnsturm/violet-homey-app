@@ -3,8 +3,8 @@
 // Locale-consistency guard — device-identity spec §Testing, §User-visible
 // error localization (docs/superpowers/specs/2026-07-13-device-identity-design.md).
 // Every user-visible error key must exist in BOTH languages, non-empty, with
-// identical __token__ placeholder sets. fs+JSON.parse (not require) so the
-// checkJs typecheck needs no resolveJsonModule.
+// identical __token__ placeholder sets. fs+JSON.parse (not require) to avoid
+// require-cache/type-inference coupling.
 
 const { test } = require('node:test');
 const assert = require('node:assert');
