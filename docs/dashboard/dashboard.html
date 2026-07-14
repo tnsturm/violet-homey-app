@@ -572,9 +572,9 @@ DONE-BEDINGUNGEN:
     {
       id: "M5.8",
       title: "getReadings-Vervollständigung (Filterdruck, Durchfluss, restliche Werte)",
-      status: "todo",
+      status: "active",
       recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Reads-Milestone im M2-Stil mit Brainstorming-Anteil (Wert-Auswahl aus der Analyse-Notiz) — moderates Urteil, kein Sicherheitsrisiko." },
-      startedAt: null,
+      startedAt: "2026-07-14",
       finishedAt: null,
       commit: null,
       summary: "Brainstormen, welche restlichen getReadings-Werte ausgelesen werden sollen, und umsetzen (ehem. M10-Reads): Filterdruck (ADC1_value) + Anströmung/Durchfluss (IMP1/IMP2) plus Kandidaten aus den neu dokumentierten Feldern (REMAINING_RANGE inkl. h-Suffix, onewireN_freeze-/faultcount, *STATE als Pipe-String, OMNI_DC*, last_error_id …). Analyse-Basis: docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md §1. Direkt nach M5.7 (nutzt dessen Einheiten/Namen aus getConfig).",
@@ -585,10 +585,13 @@ DONE-BEDINGUNGEN:
         { label: "Implementierung (SDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: null,
+      currentActivity: "Brainstorming: Kandidaten-Bewertung + Live-Verifikation (ADC1/IMP1/IMP2)",
       runtime: null,
       log: [
-        { at: "2026-07-13", note: "Milestone angelegt (API-Analyse-Session; übernimmt die Reads aus dem aufgelösten M10)" }
+        { at: "2026-07-13", note: "Milestone angelegt (API-Analyse-Session; übernimmt die Reads aus dem aufgelösten M10)" },
+        { at: "2026-07-14", note: "Session gestartet — Brainstorming/Design started" },
+        { at: "2026-07-14", note: "FRICTION: zugewiesener Session-Worktree (agentic-loop-framework-i18n-f6c53b) war leer/nicht registriert → Arbeit im Haupt-Checkout; Homey-Cloud-MCP meldete homey_offline → Fallback homey-cli." },
+        { at: "2026-07-14", note: "Live-Verifikation (Pumpe AUS, 23:30): ADC1=-0.11/IMP1=0/IMP2=0; Fixture (Pumpe AN, RPM1): ADC1=0.48 Bar, IMP1=10.2, IMP2=8.87. getConfig: ADC1=Filterdruck/Bar/use=1, IMP1=Anströmung/cm|s/use=1, IMP2=Förderleistung/m³|h/use=0 (liefert trotzdem Werte!), NAMES-Key der Impulseingänge = NAMES_impulscountN. DOS-Range 33h (h-Suffix) + >99d live; SOLARSTATE Pipe-String + PUMPSTATE=[] gleichzeitig belegt; getOutputRuntimes = getReadings-Runtimes ohne Mehrwert; ow-freezecount inkrementiert im Juli (3→6) → Delta-Alarm wäre False-Positive-Falle. Pumpe-Schalttest übersprungen: control_enabled=false (User-Interlock respektiert), Fixture deckt Pumpe-AN ab." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
