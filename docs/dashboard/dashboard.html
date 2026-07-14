@@ -140,25 +140,7 @@ window.DASHBOARD_STATUS = {
         { at: "2026-07-01", note: "Kosmetik-Patch 0.1.2 (67812c6): feste LSI-Insights-Skala (−3..+3, Achsen-Experiment) + iOS-Dropdown-Hinweis; gepusht + installiert." },
         { at: "2026-07-01", note: "0.1.3 (0ac021f): Kachel-Alarm 'alarm_water_balance' bei LSI außerhalb ausgeglichen (wie Bewegungsalarm); min/max wieder entfernt (Homey nutzt es nicht für Insights). Gepusht + installiert." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Wir starten Milestone M1 (LSI-Flaggschiff) der Violet Homey App. M0 ist gebaut, getestet und dauerhaft auf meinem Homey installiert (origin/main, HEAD 4d1aaf3).
-
-Lies zuerst, in dieser Reihenfolge:
-1. docs/superpowers/notes/2026-06-26-m1-inputs.md   (Erkenntnisse aus dem M0-Live-Test)
-2. docs/superpowers/specs/2026-06-24-violet-homey-app-m0-foundation-design.md  — §2 (Meilenstein-Uebersicht) und §15 (offene Punkte fuer M1)
-
-(Dashboard-Update-Protokoll: CLAUDE.md §7 — bereits automatisch geladen, du musst docs/dashboard/dashboard.html waehrend des Laufs aktualisieren.)
-
-Aktualisiere danach den M1-Status an ZWEI Stellen: (a) im Projektgedaechtnis (project-status.md) und (b) im Dashboard-Daten-Block in docs/dashboard/dashboard.html — markiere M1 als "active", setze startedAt auf das heutige Datum und haenge einen log-Eintrag "Brainstorming/Design gestartet" an. Hake waehrend des Laufs die groben Steps ab (Brainstorming -> Spec -> Plan -> Implementierung (SDD) -> Validate + Push) und pflege currentActivity. Am Ende: status "done", finishedAt + commit setzen.
-
-Dann nutze die Skill superpowers:brainstorming, um M1 zu entwerfen. Ziel von M1: der LSI (Langelier Saturation Index) als Wasserchemie-Sicherheitsnetz gegen Kupferkorrosion. Klaere im Brainstorming mindestens:
-- LSI-Eingaben: pH und Wassertemperatur kommen live aus getReadings (in M0 verifiziert); Calciumhaerte, Gesamtalkalitaet, Cyanursaeure (CYA) und TDS/Salzgehalt stehen NICHT in getReadings -> wie erfassen (manuelle Device-Settings vs. PoolLab/LabCOM-Cloud)?
-- stabilisierte vs. unstabilisierte Chlorung: CYA-Korrektur anwenden ja/nein?
-- neue Capability measure_lsi + Funktion classifyLSI (Einstufung) + Warn-Flow-Cards (Trigger bei kritischem LSI), inkl. insights:true; LSI NUR bei measurements_fresh=true berechnen, Warnungen bei stale unterdruecken/aufschieben (Spec §7).
-- Freshness-Refactor (siehe m1-inputs.md): pumpOnSince aus dem Feld PUMP_LAST_ON ableiten (now = CURRENT_TIME_UNIX), die In-Memory-Verfolgung _pumpOnSince in device.js entfernen, Delta auf >=0 clampen, Freshness-Unit-Tests anpassen. Das behebt Clock-Skew UND Neustart-Reset in einem Schritt.
-
-Nach dem Brainstorming: Spec schreiben, dann mit superpowers:writing-plans einen Task-fuer-Task-Plan erstellen und mit superpowers:subagent-driven-development umsetzen (gleicher Workflow wie M0: frischer Implementer + Review je Task, TDD, validate als Ground Truth, am Ende push nach origin/main). Wichtig: SDK-Spezifika ueber die Skill homey-app, Live-Inspektion via homey-cli (homey api …) gegen meinen Homey "Torstens Homey Pro" / die echte Violet unter Host \`violet\`.`
+      prompt: null
     },
     {
       id: "M2.0",
@@ -208,19 +190,7 @@ Nach dem Brainstorming: Spec schreiben, dann mit superpowers:writing-plans einen
         { at: "2026-07-01", note: "Whole-Branch-Review (opus): 'ready to merge' — Capability-ID-Kohärenz Registry↔JSON↔app.json↔device.js lückenlos (27↔27↔27); 1 Important gefixt (Alarm-Trigger nur wenn Capability sichtbar, Spec §7). HEAD 2e696a1." },
         { at: "2026-07-01", note: "Version 0.2.0 (commit b4c0d2a) gebaut, Changelog (en+de) + versions.md gepflegt; auf 'Torstens Homey Pro' installiert. Live verifiziert: Detektion adaptiv (Pumpenstufe 2, Solar an, Abdeckung offen, Heizung via History), Dosierung cl+phm, alarm_dosing_low.cl=true bei 6 Tagen, Diagnose ausgeblendet, M0/M1 intakt. M2 abgeschlossen." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Violet Homey Pro App — Milestone M2 (Volle Reads + Feature-Gruppen).
-
-Aktualisiere beim Start den M2-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Hake waehrend des Laufs die groben Steps ab; am Ende status "done" + commit. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
-
-Kontext laden: Projekt-Status-Memory + M0-Spec (docs/superpowers/specs/2026-06-24-violet-homey-app-m0-foundation-design.md). M0 fertig (HEAD 4d1aaf3); M1 sollte vorher abgeschlossen sein — Reihenfolge pruefen.
-
-Aufgabe: ALLE Werte aus GET http://<host>/getReadings?ALL (keine Auth) als sinnvolle Feature-Gruppen abbilden (Temperaturen, pH, Redox/ORP, Chlor/Desinfektion, Filter/Pumpe, Dosierung, Salz/Elektrolyse), per FeatureDetector an die installierte Hardware angepasst. Bestehende lib-Module + pump-aware Freshness weiterverwenden.
-
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN.
-
-/remote-control M2 — Volle Reads + Feature-Gruppen`
+      prompt: null
     },
     {
       id: "M3.0",
@@ -242,15 +212,7 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
         { at: "2026-07-02", note: "Automation-Empfehlungen: Setup bereits reif. Top-Vorschlag fuer M3 = secrets-guard PreToolUse-Hook (Write-Credential nie in Source/Settings, aus M3-Threat-Model); optional security-reviewer-Subagent. Keine MCP-Aenderung noetig (context7 + Homey-MCP vorhanden)." },
         { at: "2026-07-02", note: "Skill-Quellen: homey-cli-skill + homey-app-skill beide up-to-date (keine incoming commits). Superpowers 6.0.3 installiert (Aktualitaet von hier nicht feststellbar — ggf. 'claude plugin update superpowers' interaktiv)." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Zwischen-Check vor M3 (CLAUDE.md §7 Punkt 4). M2 ist abgeschlossen, M3 startet als Naechstes.
-
-Fuehre aus: /milestone-checkpoint
-
-Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
-
-/remote-control →M3 — Zwischen-Check`
+      prompt: null
     },
     {
       id: "M3.1",
@@ -943,7 +905,48 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 /remote-control M8.1 — Empfehlungs-Modul (Wasserbalance)`
     },
     {
-      id: "M9",
+      id: "M9.0",
+      title: "Housekeeping Agentic Loop",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Branch-/Worktree-Cleanup, Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Housekeeping zwischen M8.1 und M9.1: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      steps: [
+        { label: "Branch-/Worktree-Cleanup", done: false },
+        { label: "/fewer-permission-prompts", done: false },
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false },
+        { label: "Workflow-Retrospektive", done: false },
+        { label: "Memory-Konsolidierung", done: false },
+        { label: "Framework-Drift geprüft", done: false },
+        { label: "Handover", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
+Housekeeping Agentic Loop vor M9.1 (CLAUDE.md §7 Punkt 4). M8.1 ist abgeschlossen, M9.1 startet als Naechstes.
+
+AKTION 1 — Branch-/Worktree-Cleanup: Pruefe lokal und auf origin, ob es nicht mehr benoetigte Branches und Worktrees gibt (git branch -vv, git branch -r, git worktree list). Zeige hinter jedem gefundenen Branch/Worktree eine kurze Erklaerung (wozu er gehoerte; gemergt, verwaist oder noch aktiv?) und biete per AskUserQuestion (multiSelect) an, welche geloescht werden sollen. Loesche danach die angewaehlten Branches (lokal + origin) und Worktrees (git worktree remove inkl. Verzeichnis auf der Festplatte).
+
+Danach fuehre aus: /milestone-checkpoint
+
+Das aktualisiert automatisch den M9.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
+2. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
+3. Der M9.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
+
+/remote-control M9.0 — Housekeeping Agentic Loop`
+    },
+    {
+      id: "M9.1",
       title: "Dosierung & Sollwerte (setConfig)",
       status: "todo",
       recommendedModel: { model: "Claude Opus 4.8", effort: "xhigh", why: "Höchstes Risiko im Projekt: reverse-engineerter undokumentierter Schreib-Endpoint direkt in die Wasserchemie-Dosierung + eigenes Threat-Model/Security-Review — stärkste verfügbare Urteilsfähigkeit für Clamping/Sicherheit." },
@@ -965,9 +968,9 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
-Violet Homey Pro App — Milestone M9 (Dosierung & Sollwerte via setConfig).
+Violet Homey Pro App — Milestone M9.1 (Dosierung & Sollwerte via setConfig).
 
-Aktualisiere beim Start den M9-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
+Aktualisiere beim Start den M9.1-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory + die M3-Spec (docs/superpowers/specs/2026-07-02-violet-homey-app-m3-write-control-design.md, §2/§13) und das M3-Threat-Model (docs/superpowers/security/2026-06-30-m3-write-control-threat-model.md). ZUSAETZLICH PFLICHT: die Analyse-Notiz docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md — §2 dokumentiert den kompletten getOverallDosing-Endpoint (je Kanal: aktueller Zyklus, Kanisterstand inkl. fertiger CAN_LOW/EMPTY_WARNING-Bits, NEXT_DOSING_CYCLE, STATE-Blockiervokabular, Lebensdauer-Zaehler) und §3 die DOSAGE_*-Sollwert-Keys in getConfig (inkl. gezieltem Read getConfig?DOSAGE_phminus_setpoint). Das Brainstorming MUSS beide Quellen einbeziehen: Read-/Feedback-Seite der manuellen Dosierung ueber getOverallDosing statt eigener Ableitungen aus getReadings; Sollwert-Reads ueber getConfig. M3 (setFunctionManually-Schreibpfad, lib/WriteClient.js, WRITE_TARGETS-Registry) muss fertig sein — hier wird darauf aufgebaut.
 
@@ -982,7 +985,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
 3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload UND /security-review + security-reviewer-Subagent auf dem Diff ohne offene Findings — Ergebnisse im Chat gezeigt.
 
-/remote-control M9 — Dosierung & Sollwerte (setConfig)`
+/remote-control M9.1 — Dosierung & Sollwerte (setConfig)`
     }
   ]
 };
