@@ -672,7 +672,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
     {
       id: "M5.9",
       title: "package-guard (Slopsquatting-Abwehr im Dev-Loop)",
-      status: "todo",
+      status: "active",
       recommendedModel: { model: "Claude Fable 5", effort: "high", why: "Security-Gate mit eigenem Threat-Model (SR-01..SR-10) und Fail-closed-Semantik — die Verdict-/Parser-Korrektheit entscheidet, ob das Gate haelt; Urteilsqualitaet vor Geschwindigkeit (CLAUDE.md §11)." },
       startedAt: "2026-07-14",
       finishedAt: null,
@@ -681,22 +681,22 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
-        { label: "Plan", done: false },
+        { label: "Plan", done: true },
         { label: "Implementierung (TDD)", done: false },
         { label: "Validate + Merge", done: false }
       ],
-      currentActivity: null,
+      currentActivity: "Plan committet; als Naechstes: Implementierung (TDD, Task 1)",
       runtime: null,
       log: [
         { at: "2026-07-14", note: "Milestone gestartet (Branch m5.9-package-guard-slopsquatting); STRIDE-Threat-Model SR-01..SR-10 committet (9c4c092)" },
         { at: "2026-07-14", note: "Brainstorming abgeschlossen (User-Entscheidungen: alle 3 Layer, Existenz+Heuristik, fail closed, M5.9); Design-Spec committet (44631ef)" },
-        { at: "2026-07-14", note: "PAUSIERT auf User-Entscheidung — Fortsetzung nach M5.8-Abschluss; naechster Schritt: writing-plans (Spec ist approved bis auf finales User-Review)" }
+        { at: "2026-07-14", note: "Kurz pausiert (erst-nach-M5.8-Entscheidung), noch am selben Tag revidiert: Fortsetzung sofort wegen ungeschuetztem Interim (User). Implementation-Plan geschrieben (docs/superpowers/plans/2026-07-14-m5.9-package-guard.md)" }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp, Branch m5.9-package-guard-slopsquatting. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ. Zweitrepo (Spiegel): C:/Users/TorstenSturm/source/repos/skill-agentic-loop-framework.
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
-Violet Homey Pro App — Milestone M5.9 (package-guard: Slopsquatting-Abwehr im Dev-Loop). Tooling-only, KEIN Version-Bump/Changelog (M4.5-Praezedenz). REIHENFOLGE: erst nach M5.8-Abschluss starten (User-Entscheidung 2026-07-14). Brainstorming + Spec sind FERTIG (Commits 9c4c092, 44631ef auf Branch m5.9-package-guard-slopsquatting) — beim Wiedereinstieg: Spec dem User zum finalen Review vorlegen, dann direkt superpowers:writing-plans.
+Violet Homey Pro App — Milestone M5.9 (package-guard: Slopsquatting-Abwehr im Dev-Loop). Tooling-only, KEIN Version-Bump/Changelog (M4.5-Praezedenz). Brainstorming + Spec + Plan sind FERTIG (Branch m5.9-package-guard-slopsquatting) — beim Wiedereinstieg: Plan docs/superpowers/plans/2026-07-14-m5.9-package-guard.md mit superpowers:executing-plans ab der ersten offenen Task fortsetzen.
 
 Aktualisiere beim Start den M5.9-Eintrag in docs/dashboard/dashboard.html: Steps abhaken, currentActivity/log pflegen; am Ende status "done" + commit. (Protokoll: CLAUDE.md §7-8, automatisch geladen.)
 
