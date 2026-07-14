@@ -181,6 +181,28 @@ async function main(input) {
   process.exit(0);
 }
 
+/**
+ * Was this tool call guard-relevant (install command or package.json edit)?
+ * Decides the failure direction of the outer catch: a guard bug during a
+ * relevant action fails CLOSED (a crash-bypass would defeat the gate —
+ * code-review finding 1); anything else fails open.
+ * @param {any} input
+ * @returns {boolean}
+ */
+function isGuardRelevant(input) {
+  try {
+    const tool = input.tool_name || '';
+    const ti = input.tool_input || {};
+    if (tool === 'Bash' || tool === 'PowerShell') {
+      return /\b(npm|npx|yarn|pnpm)\b/.test(String(ti.command || ''));
+    }
+    if (tool === 'Edit' || tool === 'Write') {
+      return /(^|[\\/])package\.json$/.test(String(ti.file_path || ''));
+    }
+    return false;
+  } catch { return false; }
+}
+
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
 process.stdin.on('end', () => {
@@ -190,5 +212,11 @@ process.stdin.on('end', () => {
   } catch {
     process.exit(0); // trusted-harness input unparseable → fail open (house convention)
   }
-  main(input).catch(() => process.exit(0)); // own bugs never block the loop
+  main(input).catch(() => {
+    if (isGuardRelevant(input)) {
+      console.error('package-guard: internal error while analyzing a guard-relevant action (rule: guard-error) — failing closed. If intentional, install manually in your own terminal.');
+      process.exit(2);
+    }
+    process.exit(0);
+  });
 });

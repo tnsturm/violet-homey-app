@@ -62,6 +62,9 @@ test('parse: savesToRuntimeDeps semantics', () => {
   assert.strictEqual(parseInstallCommand('npm install --no-save foo')[0].savesToRuntimeDeps, false);
   assert.strictEqual(parseInstallCommand('npx foo')[0].savesToRuntimeDeps, false);
   assert.strictEqual(parseInstallCommand('yarn add foo')[0].savesToRuntimeDeps, true);
+  // Global installs never land in the project manifest (code-review finding 2).
+  assert.strictEqual(parseInstallCommand('npm i -g some-cli')[0].savesToRuntimeDeps, false);
+  assert.strictEqual(parseInstallCommand('npm install --global some-cli')[0].savesToRuntimeDeps, false);
 });
 
 test('resolve: plain, versioned, scoped', () => {
@@ -275,4 +278,48 @@ test('hook: non-install / non-manifest / existing dep → exit 0, ZERO registry 
 test('hook: unparseable stdin → exit 0 (fail open, trusted harness)', () => {
   const r = spawnSync(process.execPath, [HOOK], { input: 'not json', encoding: 'utf8' });
   assert.strictEqual(r.status, 0);
+});
+
+test('hook: Edit on package.json reconstructs post-state and blocks new fake dep (SR-03)', async () => {
+  await withStub({}, async (base) => {
+    const env = { PACKAGE_GUARD_REGISTRY_BASE: base, PACKAGE_GUARD_DOWNLOADS_BASE: base };
+    const { code, err } = await runHookAsync({
+      tool_name: 'Edit',
+      tool_input: {
+        file_path: 'package.json',
+        old_string: '"devDependencies": {',
+        new_string: '"devDependencies": {\n    "ghost-edit-dep": "^1.0.0",',
+      },
+    }, env);
+    assert.strictEqual(code, 2, err);
+    assert.match(err, /ghost-edit-dep/); assert.match(err, /not-found/);
+    // Edit whose old_string does not match → the Edit fails on its own → pass.
+    const miss = await runHookAsync({
+      tool_name: 'Edit',
+      tool_input: { file_path: 'package.json', old_string: 'NO-SUCH-ANCHOR', new_string: 'x' },
+    }, env);
+    assert.strictEqual(miss.code, 0, miss.err);
+  });
+});
+
+test('hook: deep overrides nesting cannot crash-bypass the analysis (code-review finding 1)', () => {
+  // A recursive flatten would RangeError on hostile-deep (but npm-valid) nesting
+  // and — with a fail-open catch — silently bypass the gate. The flatten must be
+  // iterative: analysis completes, finds the buried name, and (registry
+  // unreachable here) fails CLOSED.
+  let deep = '"buried-pkg": "1.0.0"';
+  for (let i = 0; i < 5000; i++) deep = `"o": {${deep}}`;
+  const post = `{"name":"t","overrides":{${deep}}}`;
+  const r = spawnSync(process.execPath, [HOOK], {
+    input: JSON.stringify({ tool_name: 'Write', tool_input: { file_path: 'package.json', content: post } }),
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PACKAGE_GUARD_REGISTRY_BASE: 'http://127.0.0.1:9', PACKAGE_GUARD_DOWNLOADS_BASE: 'http://127.0.0.1:9',
+      PACKAGE_GUARD_TIMEOUT_MS: '500',
+    },
+  });
+  assert.strictEqual(r.status, 2, r.stderr);
+  assert.match(r.stderr, /buried-pkg/);
+  assert.match(r.stderr, /verify-unavailable/);
 });

@@ -9,7 +9,8 @@
 // Spec §3.1: install invocations the guard intercepts. `npm install` without a
 // save-modifier lands in `dependencies` (npm default) → relevant for SR-06.
 const NPM_INSTALL_SUBCOMMANDS = new Set(['install', 'i', 'add']);
-const NO_RUNTIME_SAVE_FLAGS = new Set(['-D', '--save-dev', '-O', '--save-optional', '--no-save']);
+// -g/--global installs never land in the project manifest (still verified).
+const NO_RUNTIME_SAVE_FLAGS = new Set(['-D', '--save-dev', '-O', '--save-optional', '--no-save', '-g', '--global']);
 // Flags whose VALUE is a separate token (would otherwise be misread as a spec).
 const VALUE_FLAGS = new Set([
   '--registry', '--prefix', '--loglevel', '--cache', '--userconfig',
@@ -81,15 +82,22 @@ function resolveSpecName(spec) {
 const DEP_BLOCKS = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies'];
 
 /**
- * Flatten an overrides tree to [key, spec] string pairs (spec §3.1: recursive).
+ * Flatten an overrides tree to [key, spec] string pairs (spec §3.1: covers
+ * nested overrides). ITERATIVE on purpose: a recursive walk would RangeError
+ * on hostile-deep but npm-valid nesting and let a fail-open catch bypass the
+ * gate (code-review finding 1, 2026-07-14).
  * @param {object|undefined} node
  * @param {[string, string][]} acc
  * @returns {[string, string][]}
  */
 function flattenOverrides(node, acc) {
-  for (const [k, v] of Object.entries(node || {})) {
-    if (typeof v === 'string') acc.push([k, v]);
-    else if (v && typeof v === 'object') flattenOverrides(v, acc);
+  const stack = node ? [node] : [];
+  while (stack.length > 0) {
+    const cur = stack.pop();
+    for (const [k, v] of Object.entries(cur || {})) {
+      if (typeof v === 'string') acc.push([k, v]);
+      else if (v && typeof v === 'object') stack.push(v);
+    }
   }
   return acc;
 }
