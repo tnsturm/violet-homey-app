@@ -4,7 +4,7 @@ const { test } = require('node:test');
 const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
-const { CONFIG_QUERY, buildConfigUrl, parseConfigFacts, fetchConfigFacts } = require('../lib/ConfigSource');
+const { CONFIG_QUERY, buildConfigUrl, parseConfigFacts, fetchConfigFacts, createConfigLogThrottle } = require('../lib/ConfigSource');
 
 const reference = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'fixtures/getconfig-reference.json'), 'utf8'),
@@ -131,4 +131,16 @@ test('fetchConfigFacts: restricted trotz Credentials → Error (kein zweiter Ret
 test('SR-11 grep: source of ConfigSource never contains getConfig?ALL', () => {
   const src = fs.readFileSync(path.join(__dirname, '../lib/ConfigSource.js'), 'utf8');
   assert.ok(!src.includes('getConfig?' + 'ALL'));
+});
+
+test('createConfigLogThrottle: first/repeat/recovered-Sequenz (SR-16)', () => {
+  const t = createConfigLogThrottle(300000);
+  assert.strictEqual(t.success(0), null);            // Erfolg ohne vorherigen Fehler: still
+  assert.strictEqual(t.failure(1000), 'first');      // 1. Fehler: Warnung
+  assert.strictEqual(t.failure(2000), null);         // direkt danach: gedrosselt
+  assert.strictEqual(t.failure(302000), 'repeat');   // > 5 min später: einmal loggen
+  assert.strictEqual(t.failure(303000), null);       // wieder gedrosselt
+  assert.strictEqual(t.success(304000), 'recovered');// Recovery: Info
+  assert.strictEqual(t.success(305000), null);       // erneuter Erfolg: still
+  assert.strictEqual(t.failure(306000), 'first');    // neuer Fehlerzyklus beginnt vorn
 });
