@@ -545,23 +545,25 @@ DONE-BEDINGUNGEN:
     {
       id: "M5.7",
       title: "Config-basierte Autoconfig (getConfig + CONFIGCHANGEMARKER)",
-      status: "todo",
+      status: "active",
       recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Brainstorming über die per-Feature-Signalmatrix + klar umrissener Read-Pfad; die eine heikle Entscheidung (Monotonie-Bruch bei Config-Autorität) ist designseitig, kein Chemie-/Schreibrisiko." },
-      startedAt: null,
+      startedAt: "2026-07-14",
       finishedAt: null,
       commit: null,
       summary: "Autoconfig-Umbau: Feature-Erkennung zusätzlich aus getConfig?ALL (Basic Auth, Credentials wie M3) speisen — per-Feature-Signalmatrix statt reiner History-Heuristik. Behebt realen Cover-False-Positive (COVER_STATE-Defaultwerte trotz deaktivierter Steuerung); Namen/Einheiten aus NAMES_*/ANALOG_*. Zusätzlich: CONFIGCHANGEMARKER bei jedem getReadings-Poll mit letztem Wert vergleichen; die Aktion auf eine erkannte Änderung ist im Brainstorming zu klären. Analyse-Basis: docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md.",
       steps: [
-        { label: "Brainstorming", done: false },
-        { label: "Spec", done: false },
+        { label: "Brainstorming", done: true },
+        { label: "Spec", done: true },
         { label: "Plan", done: false },
         { label: "Implementierung (SDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: null,
+      currentActivity: "Implementierungsplan (writing-plans)",
       runtime: null,
       log: [
-        { at: "2026-07-13", note: "Milestone angelegt (API-Analyse-Session; übernimmt den Auto-Detection-Review aus dem aufgelösten M10)" }
+        { at: "2026-07-13", note: "Milestone angelegt (API-Analyse-Session; übernimmt den Auto-Detection-Review aus dem aufgelösten M10)" },
+        { at: "2026-07-14", note: "Session gestartet — Brainstorming/Design started" },
+        { at: "2026-07-14", note: "Live-Verifikation: getConfig kann Multi-Key/Präfix OHNE Auth (nur ?ALL/Secrets gesperrt) — Design auf credential-freie Whitelist-Queries umgestellt; Spec + Threat-Model-Delta (SR-11…16) committet" }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
