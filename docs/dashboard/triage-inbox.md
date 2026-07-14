@@ -16,7 +16,7 @@ Nächtliche Befund-Sammlung der `violet-nightly-triage`-Routine (M4.8, Spec §4)
 
 ## Neu (2026-07-14)
 
-- 2026-07-14 · Lauf · Grün (auf Branch m5.9-package-guard-slopsquatting, s. Anomalie unter Offen): npm test 171 Tests / pass 170 / fail 0 / todo 1 · validate --level publish exit 0 · Versions-Sync app.json == .homeycompose/app.json (0.4.7) · letzter CI-Lauf 29307799952 auf main success (27 s, schedule).
+- 2026-07-14 · Lauf · Grün (auf Branch m5.9-package-guard-slopsquatting, s. Anomalie unter Offen): npm test 171 Tests / pass 170 / fail 0 / todo 1 · validate --level publish exit 0 · Versions-Sync app.json == .homeycompose/app.json (0.4.7) · letzter CI-Lauf 29314945397 (PR dependabot setup-node 4→7) success (22 s).
 
 ## Erledigt (2026-07-12)
 
