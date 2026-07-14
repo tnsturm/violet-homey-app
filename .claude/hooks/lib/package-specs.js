@@ -12,10 +12,19 @@ const NPM_INSTALL_SUBCOMMANDS = new Set(['install', 'i', 'add']);
 // -g/--global installs never land in the project manifest (still verified).
 const NO_RUNTIME_SAVE_FLAGS = new Set(['-D', '--save-dev', '-O', '--save-optional', '--no-save', '-g', '--global']);
 // Flags whose VALUE is a separate token (would otherwise be misread as a spec).
+// NB: -p/--package are deliberately NOT here — for npx/npm exec their value IS
+// the fetched-and-run package and must be verified (security-review Vuln 2).
 const VALUE_FLAGS = new Set([
   '--registry', '--prefix', '--loglevel', '--cache', '--userconfig',
-  '--omit', '--include', '-w', '--workspace', '-p', '--package',
+  '--omit', '--include', '-w', '--workspace',
 ]);
+// The package a flag explicitly names (npx -p X / --package X / --package=X) —
+// for ephemeral runs this is the executed package, so it is always a spec.
+const PACKAGE_FLAGS = new Set(['-p', '--package']);
+// Leading `VAR=val` env-assignment prefix on a command (ordinary shell idiom).
+// Must be stripped before reading the binary, else it hides the install
+// (security-review Vuln 1).
+const ENV_ASSIGN = /^\w+=/;
 
 /**
  * Extract package-spec tokens from every install invocation in a shell command.
@@ -24,30 +33,51 @@ const VALUE_FLAGS = new Set([
  * @returns {{spec: string, savesToRuntimeDeps: boolean}[]}
  */
 function parseInstallCommand(command) {
+  /** @type {{spec: string, savesToRuntimeDeps: boolean}[]} */
   const out = [];
   for (const segment of String(command || '').split(/&&|\|\||;|\||\r?\n/)) {
     const tokens = segment.trim().split(/\s+/).filter(Boolean);
-    if (tokens.length === 0) continue;
-    const bin = tokens[0].replace(/^.*[\\/]/, ''); // tolerate full paths to the binary
+    // Drop any leading env-assignment prefix so `bin` is the real binary.
+    let head = 0;
+    while (head < tokens.length && ENV_ASSIGN.test(tokens[head])) head++;
+    if (head >= tokens.length) continue;
+    const bin = tokens[head].replace(/^.*[\\/]/, ''); // tolerate full paths to the binary
+    const sub = tokens[head + 1];
     let specStart = -1;
     let ephemeral = false; // npx/npm exec: fetched+run, but never persisted to a manifest
-    if (bin === 'npm' && NPM_INSTALL_SUBCOMMANDS.has(tokens[1])) specStart = 2;
-    else if (bin === 'npm' && tokens[1] === 'exec') { specStart = 2; ephemeral = true; }
-    else if (bin === 'npx') { specStart = 1; ephemeral = true; }
-    else if ((bin === 'yarn' || bin === 'pnpm') && tokens[1] === 'add') specStart = 2;
+    if (bin === 'npm' && NPM_INSTALL_SUBCOMMANDS.has(sub)) specStart = head + 2;
+    else if (bin === 'npm' && sub === 'exec') { specStart = head + 2; ephemeral = true; }
+    else if (bin === 'npx') { specStart = head + 1; ephemeral = true; }
+    else if ((bin === 'yarn' || bin === 'pnpm') && sub === 'add') specStart = head + 2;
     if (specStart < 0) continue;
 
     const rest = tokens.slice(specStart);
     const savesToRuntimeDeps = !ephemeral && !rest.some((t) => NO_RUNTIME_SAVE_FLAGS.has(t));
+    let segSpecs = 0; // specs pushed for THIS segment (per-segment, not global)
+    /** @param {string} spec */
+    const push = (spec) => { out.push({ spec, savesToRuntimeDeps }); segSpecs++; };
     for (let k = 0; k < rest.length; k++) {
       const t = rest[k];
       if (t === '--') break; // everything after -- is args to the invoked tool, not specs
+      if (PACKAGE_FLAGS.has(t)) { // -p X / --package X → X is a package to verify
+        if (k + 1 < rest.length) push(rest[++k]);
+        continue;
+      }
+      const inlinePkg = /^--package=(.+)$/.exec(t) || /^-p=(.+)$/.exec(t);
+      if (inlinePkg) { push(inlinePkg[1]); continue; }
       if (t.startsWith('-')) {
         if (VALUE_FLAGS.has(t)) k++; // skip the flag's value token too
         continue;
       }
-      out.push({ spec: t, savesToRuntimeDeps });
-      if (ephemeral) break; // npx/npm exec: only the first non-flag token is the package
+      // For ephemeral runs WITHOUT an explicit --package, the first bare
+      // positional is the executed package; with --package present it's the
+      // command name → skip. Non-ephemeral: every positional is a package.
+      if (ephemeral) {
+        if (segSpecs === 0) push(t);
+        else break; // remaining positionals are args to the run package
+        continue;
+      }
+      push(t);
     }
   }
   return out;

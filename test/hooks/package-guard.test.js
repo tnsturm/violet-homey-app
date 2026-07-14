@@ -49,6 +49,29 @@ test('parse: yarn add / pnpm add', () => {
   assert.deepStrictEqual(specsOf('yarn add foo && pnpm add bar'), ['foo', 'bar']);
 });
 
+test('parse: leading env-var assignment prefix does not hide the install (security-review Vuln 1)', () => {
+  assert.deepStrictEqual(specsOf('CI=true npm install evil-pkg'), ['evil-pkg']);
+  assert.deepStrictEqual(specsOf('HUSKY=0 npm_config_registry=https://x npm i -D fake'), ['fake']);
+  // The env prefix does not turn a non-install into one.
+  assert.deepStrictEqual(specsOf('FOO=bar node script.js'), []);
+});
+
+test('parse: npx/npm exec --package value IS the verified spec (security-review Vuln 2)', () => {
+  assert.deepStrictEqual(specsOf('npx --package evil-tool run-it'), ['evil-tool']);
+  assert.deepStrictEqual(specsOf('npx -p evil-tool cmd'), ['evil-tool']);
+  assert.deepStrictEqual(specsOf('npm exec --package evil-tool -- cmd'), ['evil-tool']);
+  assert.deepStrictEqual(specsOf('npx --package=evil-inline run'), ['evil-inline']);
+  // Multiple --package: verify all of them.
+  assert.deepStrictEqual(specsOf('npx -p a -p b cmd').sort(), ['a', 'b']);
+  // Plain `npx <pkg>` still works (no --package).
+  assert.deepStrictEqual(specsOf('npx cowsay hi'), ['cowsay']);
+  // Ephemeral positional is per-segment: a later npx segment is not swallowed
+  // by an earlier install's specs.
+  assert.deepStrictEqual(specsOf('npm i lodash && npx foo'), ['lodash', 'foo']);
+  // Non-ephemeral -w/--workspace value stays a skipped flag value (not a spec).
+  assert.deepStrictEqual(specsOf('npm i -w pkgs/foo lodash'), ['lodash']);
+});
+
 test('parse: non-install commands → empty', () => {
   assert.deepStrictEqual(specsOf('npm test'), []);
   // Segment head is git, not npm — quoted text inside is never parsed as an install.
