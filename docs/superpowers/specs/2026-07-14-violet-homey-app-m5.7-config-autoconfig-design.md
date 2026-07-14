@@ -239,3 +239,29 @@ ist bewusst wie folgt, dieser Absatz dokumentiert nur die Abweichung:
    `{date,time}`-Envelope: alle Flags `null`, alle Kanal-/Namenslisten leer), wird in
    `device.js#_maybeRefreshConfig` wie ein Fetch-Fehlschlag behandelt — kein Overwrite
    persistierter guter Facts/Marker, Zählung als Fehlversuch, gedrosseltes Log (T-M57-T1).
+
+## Addendum (2026-07-14, 0.5.1 — Folgebuild)
+
+Zwei kleine Verbesserungen aus dem Live-Betrieb (Referenzgerät zeigte „Water temperature = -"
+bei vier aktiven Fühlern), umgesetzt als Patch-Build 0.5.1 im selben Milestone:
+
+1. **Smart-Auto Wassertemperatur (`lib/Capabilities.js#choosePrimaryTemperature`):** Die
+   Primär-Wassertemperatur (Haupt-Kachel, zugleich LSI-Eingang) blieb bei „Auto" leer, sobald
+   mehr als **ein** OK-Temperaturkanal existiert (heutige Regel: nur bei genau einem Kanal
+   auto-wählen). Neuer dritter Parameter `onewireNames` (aus `ConfigFacts`): bei „Auto" wird
+   jetzt der **eine** OK-Kanal gewählt, dessen `NAMES_onewire`-Label nach Pool aussieht
+   (`/schwimm|pool|becken|wasser/i`). Kein oder mehrdeutiger Namenstreffer → Rückfall auf die
+   Ein-Kanal-Regel (unverändert). Manuelle Kanalwahl gewinnt weiterhin. Kein neuer
+   Monotonie-/Sicherheitsaspekt: die Auswahl kann nur einen Wert **hinzufügen**, wo vorher
+   keiner war; bei Fehlgriff greift die manuelle Override-Auswahl.
+   Trade-off: Namensmatch ist eine Heuristik auf frei eingegebenem Text — bewusst konservativ
+   (genau ein Treffer), da es keinen autoritativen „Pool-Fühler"-Key in `getConfig` gibt
+   (live geprüft: nur `HEATER_dashboardsensor_*`/`_boilertempcontrol_sensor`, kein
+   Poolwasser-Fühler-Verweis).
+
+2. **Settings-Hints:** Hilfetexte (en+de) für die zuvor unerklärten Einstellungen
+   `waterTempChannel` (erklärt Smart-Auto + die benannten Sub-Kacheln als Zuordnungshilfe),
+   `writeUsername` (Lesen braucht keine Credentials), `pumpWarmupSeconds` (warum pH/ORP/Chlor
+   bei Pumpe-Aus „-" zeigen), `group_chlorine`/`group_eco` (Auto/Immer/Ausblenden-Semantik),
+   `dosing_low_threshold_days`, `control_pump_speed`. Reine Manifest-Ergänzung, keine Logik.
+   (Der ausführliche In-App-Quickstart-Guide ist ein eigener Milestone — App-Settings-HTML-Seite.)

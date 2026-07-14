@@ -316,7 +316,13 @@ class PoolDevice extends Homey.Device {
 
     await this._reconcileCapabilities(parsed, features);
 
-    const primaryChannel = choosePrimaryTemperature(parsed.tempChannels, this.getSetting('waterTempChannel'));
+    // Smart-auto (M5.7 0.5.1): pass the config onewire names so "auto" can pick
+    // the pool-named sensor when several are connected (spec addendum).
+    const primaryChannel = choosePrimaryTemperature(
+      parsed.tempChannels,
+      this.getSetting('waterTempChannel'),
+      this._configFacts ? this._configFacts.onewireNames : null,
+    );
 
     // LSI (M1 §6,§9): only when enabled AND fresh; temperature falls back to the
     // fixed setting when no water-temp sensor is available/selected.

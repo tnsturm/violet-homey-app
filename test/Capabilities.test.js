@@ -26,6 +26,51 @@ test('choosePrimaryTemperature returns null when auto with multiple channels', (
   assert.strictEqual(choosePrimaryTemperature([{ id: 1, value: 20 }, { id: 2, value: 21 }], 'auto'), null);
 });
 
+// M5.7 (0.5.1): with config names, "auto" picks the pool-named channel among
+// several (spec addendum). Manual selection and the single-channel fallback
+// keep their prior behaviour when names are absent or don't resolve.
+test('choosePrimaryTemperature auto picks the pool-named channel from config names', () => {
+  const chans = [{ id: 1, value: 30.1 }, { id: 2, value: 27.8 }, { id: 8, value: 30.3 }];
+  const names = { 1: 'Schwimmbad', 2: 'Außentemperatur', 8: 'Messzelle' };
+  assert.strictEqual(choosePrimaryTemperature(chans, 'auto', names), 30.1);
+});
+
+test('choosePrimaryTemperature auto matches pool-name variants (case-insensitive)', () => {
+  const variants = ['Pool', 'pool water', 'Schwimmbecken', 'Beckenwasser', 'WASSER'];
+  for (const name of variants) {
+    const chans = [{ id: 1, value: 25 }, { id: 2, value: 18 }];
+    assert.strictEqual(
+      choosePrimaryTemperature(chans, 'auto', { 1: name, 2: 'Außentemperatur' }), 25,
+      `expected ${name} to match as pool`,
+    );
+  }
+});
+
+test('choosePrimaryTemperature auto stays null when config names are ambiguous', () => {
+  // Two pool-named OK channels → undecidable; falls back to the multi-channel rule.
+  const chans = [{ id: 1, value: 30 }, { id: 2, value: 29 }];
+  assert.strictEqual(choosePrimaryTemperature(chans, 'auto', { 1: 'Pool oben', 2: 'Pool unten' }), null);
+});
+
+test('choosePrimaryTemperature auto falls back when no config name matches', () => {
+  const chans = [{ id: 1, value: 30 }, { id: 2, value: 29 }];
+  // No pool-ish name + multiple channels → null (today's rule).
+  assert.strictEqual(choosePrimaryTemperature(chans, 'auto', { 1: 'Solar', 2: 'Außentemperatur' }), null);
+  // Single channel + non-matching name → still the single channel.
+  assert.strictEqual(choosePrimaryTemperature([{ id: 4, value: 22 }], 'auto', { 4: 'Solar' }), 22);
+});
+
+test('choosePrimaryTemperature: a manual channel id wins over config names', () => {
+  const chans = [{ id: 1, value: 30.1 }, { id: 2, value: 27.8 }];
+  assert.strictEqual(choosePrimaryTemperature(chans, 2, { 1: 'Schwimmbad', 2: 'Außentemperatur' }), 27.8);
+});
+
+test('choosePrimaryTemperature: only OK channels count for the name match', () => {
+  // The pool-named channel is not among the OK channels → no phantom pick.
+  const chans = [{ id: 2, value: 27.8 }, { id: 8, value: 30.3 }];
+  assert.strictEqual(choosePrimaryTemperature(chans, 'auto', { 1: 'Schwimmbad', 2: 'Außentemperatur', 8: 'Messzelle' }), null);
+});
+
 test('desiredFeatureCapabilities respects detection and overrides', () => {
   assert.deepStrictEqual(
     desiredFeatureCapabilities({ features: { chlorine: true }, overrides: { chlorine: 'auto' } }),
