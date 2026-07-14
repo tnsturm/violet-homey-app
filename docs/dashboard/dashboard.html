@@ -672,20 +672,19 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
     {
       id: "M5.9",
       title: "package-guard (Slopsquatting-Abwehr im Dev-Loop)",
-      status: "active",
-      recommendedModel: { model: "Claude Fable 5", effort: "high", why: "Security-Gate mit eigenem Threat-Model (SR-01..SR-10) und Fail-closed-Semantik — die Verdict-/Parser-Korrektheit entscheidet, ob das Gate haelt; Urteilsqualitaet vor Geschwindigkeit (CLAUDE.md §11)." },
+      status: "done",
       startedAt: "2026-07-14",
-      finishedAt: null,
-      commit: null,
+      finishedAt: "2026-07-14",
+      commit: "2ac84ce",
       summary: "Deterministischer PreToolUse-Hook gegen halluzinierte/attacker-registrierte npm-Paketnamen (Slopsquatting, CSO Online 2025): blockt Install-Kommandos und package.json-Edits mit unverifizierten Namen (Existenz + Frische-/Adoptions-Heuristik, fail closed bei Registry-Ausfall). Dazu Layer 2 (CLAUDE.md Dependency-Hygiene-Regel: Existenzbeleg fuer neue Deps in Plans) und Layer 3 (CI: npm ci --ignore-scripts + npm audit). Tooling-only, kein Version-Bump (M4.5-Praezedenz). Spiegel in skill-agentic-loop-framework/templates (Framework-Artefakte-Regel). Threat-Model: docs/superpowers/security/2026-07-14-m5.9-package-guard-threat-model.md; Spec: docs/superpowers/specs/2026-07-14-m5.9-package-guard-design.md.",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
         { label: "Implementierung (TDD)", done: true },
-        { label: "Validate + Merge", done: false }
+        { label: "Validate + Merge", done: true }
       ],
-      currentActivity: "Reviews durch, Findings gefixt (202 Tests gruen) — wartet auf User-Entscheidung Merge/PR (CLAUDE.md §9)",
+      currentActivity: null,
       runtime: null,
       log: [
         { at: "2026-07-14", note: "Milestone gestartet (Branch m5.9-package-guard-slopsquatting); STRIDE-Threat-Model SR-01..SR-10 committet (9c4c092)" },
@@ -694,27 +693,10 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
         { at: "2026-07-14", note: "FRICTION: Rebase-Konflikt triage-inbox.md — Nightly-Triage lief auf dem Feature-Branch und committete dort; parallel hatte PR #5 (andere Session) npm audit --audit-level=high schon in CI verankert. Task 8 auf --ignore-scripts reduziert. Dependabot-PRs behandelt: #7 declined (@types/node-Floor = Node 18 wg. compatibility >=12.2.0), #8 merged (setup-node@7), Ignore-Rule auf main (90b9d9e)" },
         { at: "2026-07-14", note: "Tasks 1-6: Lib (parse/resolve/diff/verdict) + Hook-Shell per TDD (27 Tests, Stub-Registry, kein echtes Netz) + Registrierung in settings.json (beide Matcher-Gruppen). Live-Demo gegen echte Registry: runtime-dep + not-found geblockt (exit 2), typescript pass (exit 0). Hinweis: Hook greift fuer die Session-eigenen Bash-Calls erst nach Session-Neustart; Stdin-Demo ist der In-Session-Beleg" },
         { at: "2026-07-14", note: "Tasks 7-9: CLAUDE.md Dependency-Hygiene-Block (Layer 2); ci.yml npm ci --ignore-scripts (Layer 3, reduziert — audit seit PR #5); Framework-Spiegel committet (c197107 lokal, 19 Template-Tests gruen, BLOCK_RUNTIME_DEPS=false als einzige Divergenz, Plugin 0.1.16 + CHANGELOG). Gates: 198 Tests/0 fail/1 todo, typecheck OK, validate publish PASS" },
-        { at: "2026-07-14", note: "/code-review: 3 Findings gefixt (iterative overrides-flatten gegen Crash-Bypass, guard-error fail-closed bei guard-relevanter Aktion, -g/--global kein runtime-dep) — 53b2310. /security-review (Subagent-Fan-out + adversariale Verifikation): 2 High-Bypasses bestaetigt+gefixt (Vuln 1 VAR=val-Prefix versteckte Install; Vuln 2 npx --package-Wert ungeprueft) — d17c98e; per-segment ephemeral-Regression mitgefixt. Beide Fixes ins Framework gespiegelt (50bd01c, 965102c). Final: 202 Tests/0 fail/1 todo, typecheck OK. Live-Demo beider Bypasses jetzt exit 2" }
+        { at: "2026-07-14", note: "/code-review: 3 Findings gefixt (iterative overrides-flatten gegen Crash-Bypass, guard-error fail-closed bei guard-relevanter Aktion, -g/--global kein runtime-dep) — 53b2310. /security-review (Subagent-Fan-out + adversariale Verifikation): 2 High-Bypasses bestaetigt+gefixt (Vuln 1 VAR=val-Prefix versteckte Install; Vuln 2 npx --package-Wert ungeprueft) — d17c98e; per-segment ephemeral-Regression mitgefixt. Beide Fixes ins Framework gespiegelt (50bd01c, 965102c). Final: 202 Tests/0 fail/1 todo, typecheck OK. Live-Demo beider Bypasses jetzt exit 2" },
+        { at: "2026-07-14", note: "ABGESCHLOSSEN: PR #9 als Squash nach main gemergt (2ac84ce), CI gruen; Framework-Commits auf origin/main gepusht (965102c, Plugin 0.1.16 live). Dashboard finalisiert. Hinweis: Hook wird fuer neue Sessions auf main automatisch aktiv (in-Session erst nach Neustart)." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp, Branch m5.9-package-guard-slopsquatting. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ. Zweitrepo (Spiegel): C:/Users/TorstenSturm/source/repos/skill-agentic-loop-framework.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Violet Homey Pro App — Milestone M5.9 (package-guard: Slopsquatting-Abwehr im Dev-Loop). Tooling-only, KEIN Version-Bump/Changelog (M4.5-Praezedenz). Brainstorming + Spec + Plan sind FERTIG (Branch m5.9-package-guard-slopsquatting) — beim Wiedereinstieg: Plan docs/superpowers/plans/2026-07-14-m5.9-package-guard.md mit superpowers:executing-plans ab der ersten offenen Task fortsetzen.
-
-Aktualisiere beim Start den M5.9-Eintrag in docs/dashboard/dashboard.html: Steps abhaken, currentActivity/log pflegen; am Ende status "done" + commit. (Protokoll: CLAUDE.md §7-8, automatisch geladen.)
-
-Kontext laden: ZUERST das Threat-Model docs/superpowers/security/2026-07-14-m5.9-package-guard-threat-model.md (SR-01..SR-10, verbindlich) und die Spec docs/superpowers/specs/2026-07-14-m5.9-package-guard-design.md (Approach A: ein Hook, direkte Registry-HTTPS). Hook-Muster: .claude/hooks/secrets-guard.js + test/hooks/secrets-guard.test.js (spawnSync-Pattern).
-
-Aufgabe: Spec umsetzen — (1) .claude/hooks/lib/package-specs.js (pure Logik: parseInstallCommand, resolveSpecName, diffNewDeps, verdict) + .claude/hooks/package-guard.js (Shell: stdin, Registry-HTTPS mit 5s-Timeout, fail closed = verify-unavailable) per TDD in test/hooks/package-guard.test.js (Stub-Registry via node:http + PACKAGE_GUARD_REGISTRY_BASE/_DOWNLOADS_BASE, KEIN echtes Netz in Tests); Registrierung in .claude/settings.json (beide Matcher-Gruppen). (2) CLAUDE.md Dependency-Hygiene-Block (Spec §4). (3) ci.yml: npm ci --ignore-scripts + npm audit (blocking). (4) Spiegel ins Framework-Repo templates/ (BLOCK_RUNTIME_DEPS=false dort, einzige erlaubte Divergenz) + CHANGELOG. documenting-code-Skill fuer jede Quelldatei; /code-review + /security-review vor Merge (CLAUDE.md §9, §5).
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. npm test zeigt fail 0 inkl. neuer package-guard-Tests — Output im Chat gezeigt.
-2. Live-Demo: agentisches npm install eines nicht existenten Pakets wird vom Hook geblockt (exit 2, Rule-Id sichtbar) — im Chat gezeigt.
-3. Framework-Spiegel committet (Hook+Lib+Test+settings+CLAUDE.md-Block+CHANGELOG) — Commit-SHA im Chat genannt.
-4. /code-review und /security-review auf dem Diff gelaufen, Findings adressiert — Ergebnis im Chat zusammengefasst.
-
-/remote-control M5.9 — package-guard (Slopsquatting-Abwehr)`
+      prompt: null,
     },
     {
       id: "→M6",
