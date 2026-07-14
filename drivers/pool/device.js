@@ -151,6 +151,11 @@ class PoolDevice extends Homey.Device {
     const credentials = password ? { username: this.getSetting('writeUsername') || '', password } : null;
     try {
       const facts = await ConfigSource.fetchConfigFacts(this.getSetting('host'), { credentials });
+      // A 200-with-valid-JSON-but-no-whitelisted-signal envelope (e.g. bare
+      // {date,time}) carries nothing to detect on — treat exactly like a fetch
+      // failure: keep the last good facts, count an attempt, never persist
+      // (SR-13, T-M57-T1; spec §4 Fehlerpfade).
+      if (ConfigSource.factsEmpty(facts)) throw new Error('config source returned no usable keys (empty facts)');
       this._configFacts = facts;
       this._configAttempts = 0;
       await this.setStoreValue('configFacts', facts).catch(this.error);
@@ -160,8 +165,12 @@ class PoolDevice extends Homey.Device {
     } catch (err) {
       this._configAttempts += 1;
       const gate = this._configThrottle.failure(Date.now());
-      // Sanitized: message only — never the response body, never credentials (SR-12/SR-02).
-      if (gate) this.log('config source unavailable (falling back to history heuristic):', err instanceof Error ? err.message : String(err));
+      // Sanitized: message only — never the response body, never credentials
+      // (SR-12/SR-02). First failure via error() so it surfaces in Homey
+      // diagnostics reports; throttled repeats stay at log().
+      const msg = err instanceof Error ? err.message : String(err);
+      if (gate === 'first') this.error('config source unavailable (falling back to history heuristic):', msg);
+      else if (gate === 'repeat') this.log('config source unavailable (falling back to history heuristic):', msg);
     }
   }
 

@@ -4,7 +4,7 @@ const { test } = require('node:test');
 const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
-const { CONFIG_QUERY, buildConfigUrl, parseConfigFacts, fetchConfigFacts, createConfigLogThrottle } = require('../lib/ConfigSource');
+const { CONFIG_QUERY, buildConfigUrl, parseConfigFacts, fetchConfigFacts, createConfigLogThrottle, factsEmpty } = require('../lib/ConfigSource');
 
 const reference = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'fixtures/getconfig-reference.json'), 'utf8'),
@@ -131,6 +131,18 @@ test('fetchConfigFacts: restricted trotz Credentials → Error (kein zweiter Ret
 test('SR-11 grep: source of ConfigSource never contains getConfig?ALL', () => {
   const src = fs.readFileSync(path.join(__dirname, '../lib/ConfigSource.js'), 'utf8');
   assert.ok(!src.includes('getConfig?' + 'ALL'));
+});
+
+test('factsEmpty: bare {date,time} envelope (no whitelisted signal at all) → true (SR-13)', () => {
+  assert.strictEqual(factsEmpty(parseConfigFacts({ date: '14.07.2026', time: '15:24:20' })), true);
+});
+
+test('factsEmpty: reference fixture (full signal) → false', () => {
+  assert.strictEqual(factsEmpty(parseConfigFacts(reference)), false);
+});
+
+test('factsEmpty: a single known flag counts as signal → false', () => {
+  assert.strictEqual(factsEmpty(parseConfigFacts({ COVER_control_use: '0' })), false);
 });
 
 test('createConfigLogThrottle: first/repeat/recovered-Sequenz (SR-16)', () => {

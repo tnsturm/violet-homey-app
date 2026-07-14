@@ -123,6 +123,32 @@ test('Store-Facts überleben Restart; unveränderter Marker → kein Re-Fetch (S
   assert.ok(!device.getCapabilities().includes('cover_state'), 'stored facts drive detection');
 });
 
+test('Leere Facts (nur {date,time}) überschreiben gute Facts/Marker nicht (SR-13, T-M57-T1)', async () => {
+  configResult = referenceConfig;
+  const device = await makeDevice(
+    { COVER_STATE: 'OPEN' },
+    {},
+    { configFacts: referenceConfig, configMarker: 148 },
+  );
+  const before = configCalls;
+  // Nächster Poll: Marker bewegt sich, aber die Antwort trägt kein whitelisted
+  // Signal (leeres {date,time}-Envelope) — muss wie ein Fetch-Fehler behandelt werden.
+  configResult = ConfigSource.parseConfigFacts({});
+  currentFixture = { ...currentFixture, CONFIGCHANGEMARKER: 149 };
+  await device._tick();
+  assert.strictEqual(configCalls, before + 1, 'attempt was made');
+  assert.deepStrictEqual(device.__test.store.configFacts, referenceConfig, 'old facts kept');
+  assert.strictEqual(device.__test.store.configMarker, 148, 'old marker kept');
+  assert.ok(!device.getCapabilities().includes('cover_state'), 'detection still uses old (good) facts');
+
+  // Ein späterer guter Fetch funktioniert weiterhin.
+  configResult = { ...referenceConfig, coverControlUse: true, extension1Use: true };
+  currentFixture = { ...currentFixture, CONFIGCHANGEMARKER: 150 };
+  await device._tick();
+  assert.strictEqual(device.__test.store.configMarker, 150);
+  assert.ok(device.getCapabilities().includes('cover_state'), 'later good fetch applies');
+});
+
 test('Config-Fehler machen das Gerät nie unavailable (SR-16)', async () => {
   configResult = null;
   const device = await makeDevice({});

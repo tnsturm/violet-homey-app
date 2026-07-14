@@ -216,3 +216,26 @@ gehabt (SR-08): Config wird ausschließlich vom gepairten `host`-Setting gelesen
   `parseRangeToDays`-h-Suffix; `getOutputRuntimes`.
 - **M9:** Sollwerte/Dosierung (getOverallDosing), Setpoint-Cache-Muster.
 - **M6:** Notifications (`NOTIFY_*` bleibt bewusst außerhalb der Whitelist).
+
+## Addendum (2026-07-14, Final-Review)
+
+Drei Abweichungen vom obigen Entwurf, die im Final-Review sichtbar wurden — Implementierung
+ist bewusst wie folgt, dieser Absatz dokumentiert nur die Abweichung:
+
+1. **API-Form (§2):** Implementiert ist `fetchConfigFacts(host, opts)` — liefert bereits
+   geparste `ConfigFacts` und wirft bei Restricted/Fehlern einen generischen `Error`, statt
+   der in §2 skizzierten `fetchConfigRaw` + `ConfigRestrictedError`-Zweiteilung. Bewusste
+   Plan-Vereinfachung: `device.js` behandelt einen Restricted-Fehlschlag ohnehin genau wie
+   jeden anderen Fetch-Fehler (§4 Fehlerpfade) — ein eigener Error-Typ hätte keinen
+   Verzweigungspunkt gehabt, der ihn ausgewertet hätte.
+2. **Cover-Quadrant 4 (§3):** Wenn die Extension-Flags **unbekannt** sind (Keys fehlen,
+   `extension1Use`/`extension2Use` = `null`), ist die Formel `ext1 ∨ ext2` **permissiv**:
+   `coverControlUse === true` allein erkennt das Cover (siehe `lib/FeatureDetector.js`,
+   `extKnownOff` ist nur dann wahr, wenn beide Flags bekannt und explizit `false` sind). Die
+   in §3 notierte Formel `coverControlUse ∧ (extension1Use ∨ extension2Use)` gilt somit nur,
+   wenn die Extension-Keys tatsächlich bekannt sind — nicht als Blocker bei fehlenden Keys.
+3. **Empty-Facts-Guard (SR-13):** Ergänzt um `ConfigSource.factsEmpty(facts)` — eine
+   200-Antwort mit gültigem JSON, aber ohne jedes whitelisted Signal (bloßes
+   `{date,time}`-Envelope: alle Flags `null`, alle Kanal-/Namenslisten leer), wird in
+   `device.js#_maybeRefreshConfig` wie ein Fetch-Fehlschlag behandelt — kein Overwrite
+   persistierter guter Facts/Marker, Zählung als Fehlversuch, gedrosseltes Log (T-M57-T1).
