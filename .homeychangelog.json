@@ -58,5 +58,9 @@
   "0.4.7": {
     "en": "Store presentation refresh (Athom certification feedback): shorter app name and tagline, a new app-store image, and simplified line-art icons. No functional changes.",
     "de": "Überarbeiteter Store-Auftritt (Feedback aus der Athom-Zertifizierung): kürzerer App-Name und Tagline, ein neues App-Store-Bild sowie vereinfachte Strichgrafik-Icons. Keine Funktionsänderung."
+  },
+  "0.5.0": {
+    "en": "Automatic setup now reads the controller configuration: features disabled in the Violet GUI (e.g. an unused cover) no longer appear, temperature sensors show your own channel names, and configuration changes are detected automatically.",
+    "de": "Die automatische Einrichtung liest jetzt die Gerätekonfiguration: In der Violet-GUI deaktivierte Funktionen (z. B. eine ungenutzte Abdeckung) erscheinen nicht mehr, Temperatursensoren zeigen Ihre eigenen Kanalnamen, und Konfigurationsänderungen werden automatisch erkannt."
   }
 }
