@@ -86,6 +86,14 @@ Then carry those requirements into the plan as explicit verification steps (§4)
 
 Skip only for changes with no new attack surface (pure reads, docs, refactors, UI copy). When in doubt, do the threat model — it is cheap relative to a shipped vulnerability.
 
+### Dependency Hygiene (slopsquatting defense)
+
+LLM-hallucinated package names are a supply-chain attack vector (attackers pre-register them). Therefore:
+
+- No new dependency — runtime or dev, **including `npm:` alias targets** — enters a spec/plan without an **existence proof**: a registry lookup or context7 doc hit, recorded in the plan's Tech Stack/Global Constraints.
+- Agent-run installs use `--ignore-scripts`.
+- The `package-guard` hook (`.claude/hooks/package-guard.js`) enforces registry existence + freshness/adoption at install/manifest time (fail closed). Its override path is a human terminal install — never weaken the hook to get past it.
+
 ## 6. Platform-Specific Conventions
 
 **Check for a `<PLATFORM>.md` at the project root before assuming generic tooling.**
