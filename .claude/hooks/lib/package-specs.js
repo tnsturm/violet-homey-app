@@ -76,4 +76,66 @@ function resolveSpecName(spec) {
   return s;
 }
 
-module.exports = { parseInstallCommand, resolveSpecName };
+// Spec §3.1: dependency blocks the manifest path diffs. `overrides` is handled
+// separately (nested tree).
+const DEP_BLOCKS = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies'];
+
+/**
+ * Flatten an overrides tree to [key, spec] string pairs (spec §3.1: recursive).
+ * @param {object|undefined} node
+ * @param {[string, string][]} acc
+ * @returns {[string, string][]}
+ */
+function flattenOverrides(node, acc) {
+  for (const [k, v] of Object.entries(node || {})) {
+    if (typeof v === 'string') acc.push([k, v]);
+    else if (v && typeof v === 'object') flattenOverrides(v, acc);
+  }
+  return acc;
+}
+
+/**
+ * Registry name for a manifest entry: `npm:` aliases resolve the TARGET
+ * (SR-05); plain range specs resolve the KEY; skip-specs resolve to null.
+ * @param {string} key @param {string} spec
+ * @returns {string | null}
+ */
+function entryName(key, spec) {
+  if (spec.startsWith('npm:')) return resolveSpecName(spec);
+  if (SKIP_SPEC.test(spec)) return null;
+  return resolveSpecName(key);
+}
+
+/**
+ * Diff dependency blocks pre→post; return entries that are new or have a
+ * changed spec, alias-resolved to registry names (SR-01/-05/-06). A pure
+ * range bump also re-verifies — harmless over-checking; the attack case is
+ * the alias-target swap, which looks identical at this level.
+ * @param {Record<string, any>|null} preJson pre-edit package.json (null = no pre-edit file)
+ * @param {Record<string, any>} postJson post-edit package.json
+ * @returns {{name: string, spec: string, depBlock: string}[]}
+ */
+function diffNewDeps(preJson, postJson) {
+  /** @type {{name: string, spec: string, depBlock: string}[]} */
+  const out = [];
+  /** @param {string} blockName @param {[string, string][]} pairs @param {[string, string][]} prePairs */
+  const collect = (blockName, pairs, prePairs) => {
+    const pre = new Map(prePairs);
+    for (const [key, spec] of pairs) {
+      if (typeof spec !== 'string' || pre.get(key) === spec) continue;
+      const name = entryName(key, spec);
+      if (name) out.push({ name, spec, depBlock: blockName });
+    }
+  };
+  for (const b of DEP_BLOCKS) {
+    collect(b,
+      Object.entries((postJson || {})[b] || {}),
+      Object.entries((preJson || {})[b] || {}));
+  }
+  collect('overrides',
+    flattenOverrides((postJson || {}).overrides, []),
+    flattenOverrides((preJson || {}).overrides, []));
+  return out;
+}
+
+module.exports = { parseInstallCommand, resolveSpecName, diffNewDeps };

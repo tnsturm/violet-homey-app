@@ -7,7 +7,7 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert');
-const { parseInstallCommand, resolveSpecName } = require('../../.claude/hooks/lib/package-specs');
+const { parseInstallCommand, resolveSpecName, diffNewDeps } = require('../../.claude/hooks/lib/package-specs');
 
 /** @param {string} cmd */
 const specsOf = (cmd) => parseInstallCommand(cmd).map((e) => e.spec);
@@ -82,4 +82,42 @@ test('resolve: invalid npm names → null', () => {
   assert.strictEqual(resolveSpecName('UPPER_CASE'), null);
   assert.strictEqual(resolveSpecName('.hidden'), null);
   assert.strictEqual(resolveSpecName(''), null);
+});
+
+const PRE = { dependencies: {}, devDependencies: { typescript: '^5.0.0', '@types/node': 'npm:other-types@^1' } };
+
+test('diff: unchanged deps → empty (SR-01 no self-DoS)', () => {
+  assert.deepStrictEqual(diffNewDeps(PRE, PRE), []);
+});
+
+test('diff: new devDep detected with depBlock', () => {
+  const post = { ...PRE, devDependencies: { ...PRE.devDependencies, 'new-pkg': '^1.0.0' } };
+  assert.deepStrictEqual(diffNewDeps(PRE, post),
+    [{ name: 'new-pkg', spec: '^1.0.0', depBlock: 'devDependencies' }]);
+});
+
+test('diff: changed spec re-verifies; alias target resolved (SR-05)', () => {
+  const post = { ...PRE, devDependencies: { ...PRE.devDependencies, '@types/node': 'npm:evil-types@^2' } };
+  assert.deepStrictEqual(diffNewDeps(PRE, post),
+    [{ name: 'evil-types', spec: 'npm:evil-types@^2', depBlock: 'devDependencies' }]);
+});
+
+test('diff: runtime dep addition lands in dependencies block (SR-06)', () => {
+  const post = { ...PRE, dependencies: { sneaky: '1.0.0' } };
+  assert.deepStrictEqual(diffNewDeps(PRE, post),
+    [{ name: 'sneaky', spec: '1.0.0', depBlock: 'dependencies' }]);
+});
+
+test('diff: overrides walked recursively; git specs skipped', () => {
+  const post = {
+    ...PRE,
+    overrides: { a: { b: 'npm:deep-override@1' } },
+    devDependencies: { ...PRE.devDependencies, g: 'github:u/r' },
+  };
+  assert.deepStrictEqual(diffNewDeps(PRE, post),
+    [{ name: 'deep-override', spec: 'npm:deep-override@1', depBlock: 'overrides' }]);
+});
+
+test('diff: null pre (new file) → all entries new', () => {
+  assert.strictEqual(diffNewDeps(null, PRE).length, 2);
 });
