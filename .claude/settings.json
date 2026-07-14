@@ -7,14 +7,16 @@
           { "type": "command", "command": "node .claude/hooks/check-version-sync.js" },
           { "type": "command", "command": "node .claude/hooks/typecheck-gate.js" },
           { "type": "command", "command": "node .claude/hooks/test-gate.js" },
-          { "type": "command", "command": "node .claude/hooks/release-gate.js" }
+          { "type": "command", "command": "node .claude/hooks/release-gate.js" },
+          { "type": "command", "command": "node .claude/hooks/package-guard.js" }
         ]
       },
       {
         "matcher": "Edit|Write",
         "hooks": [
           { "type": "command", "command": "node .claude/hooks/secrets-guard.js" },
-          { "type": "command", "command": "node .claude/hooks/compose-guard.js" }
+          { "type": "command", "command": "node .claude/hooks/compose-guard.js" },
+          { "type": "command", "command": "node .claude/hooks/package-guard.js" }
         ]
       }
     ],

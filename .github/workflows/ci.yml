@@ -28,7 +28,10 @@ jobs:
           # `node --test` gesamt haengt vor der ersten Datei; 18 ist zudem EOL).
           node-version: 22
           cache: npm
-      - run: npm ci
+      # --ignore-scripts (M5.9 Spec §5, SR-07): keine Lifecycle-Skripte beim
+      # Install — die devDeps (Typen + tsc) brauchen keine; entschaerft
+      # kompromittierte Pakete zur Installzeit.
+      - run: npm ci --ignore-scripts
       - name: Audit (bekannte Schwachstellen — blockt vor Publish)
         # Enforced die Sicherheitshaelfte von Option 1: bricht ab bei high/critical
         # Advisories in den (dev-)Dependencies, bevor ein Release rausgeht.
