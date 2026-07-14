@@ -16,18 +16,20 @@ am Anfang der Datei — nie den Renderer darunter.
 - Während der Umsetzung (Steps abhaken, `currentActivity` aktualisieren)
 - Milestone-Abschluss (`status: done`)
 
-## Checkpoint-Einträge (`→Mx`)
+## Checkpoint-Einträge (`Mx.0`)
 
-Zwischen-Milestone-Checkpoints (`id: "→Mx"`, `title: "Zwischen-Check"`) sind milestone-förmige
-Objekte in derselben `milestones[]`-Liste (CLAUDE.md §7 Punkt 4) — gleiche Felder, gleiche
-Status-Lifecycle, gleiche Edit-Regeln wie ein echter Milestone. Sieben Steps, alle über den
-`milestone-checkpoint`-Skill abgedeckt: `/fewer-permission-prompts`,
+Zwischen-Milestone-Checkpoints (`id: "Mx.0"`, `title: "Housekeeping Agentic Loop"`) sind
+milestone-förmige Objekte in derselben `milestones[]`-Liste (CLAUDE.md §7 Punkt 4) — gleiche
+Felder, gleiche Status-Lifecycle, gleiche Edit-Regeln wie ein echter Milestone. Der
+Implementierungs-Milestone, den ein Checkpoint gatet, trägt die Nummer `Mx.1`. Acht Steps:
+`Branch-/Worktree-Cleanup` (AKTION 1 im Checkpoint-Prompt, vor dem Skill), dann die sieben
+über den `milestone-checkpoint`-Skill abgedeckten: `/fewer-permission-prompts`,
 `/claude-automation-recommender`, `Skill-Quellen geprüft`, `Workflow-Retrospektive`,
 `Memory-Konsolidierung`, `Framework-Drift geprüft` (M4.9), `Handover` (M4.8).
 
 ## Regeln
 
-- Nur das eine betroffene Objekt (`Mx` oder `→Mx`) anfassen, nicht andere Einträge.
+- Nur das eine betroffene Objekt (`Mx` oder `Mx.0`) anfassen, nicht andere Einträge.
 - Jeder neue Resume-Prompt (Milestone oder Checkpoint) endet mit `/remote-control <id> — <title>`.
 - Jeder neue Resume-Prompt enthält eine `/goal`-Zeile mit transcript-verifizierbarer
   Done-Bedingung (solange Claude Code < 2.1.139: stattdessen eine nummerierte

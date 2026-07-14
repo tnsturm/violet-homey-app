@@ -1,6 +1,6 @@
 ---
 name: milestone-checkpoint
-description: Between-milestone housekeeping for this project - tightens tool permissions, checks for new automation opportunities, checks/updates the Homey skill sources this project depends on, and runs a workflow retrospective that codifies recurring friction into hooks/docs/memory. Run between milestones per CLAUDE.md §7 point 4 / the dashboard's →Mx checkpoint entries.
+description: Between-milestone housekeeping for this project - tightens tool permissions, checks for new automation opportunities, checks/updates the Homey skill sources this project depends on, and runs a workflow retrospective that codifies recurring friction into hooks/docs/memory. Run between milestones per CLAUDE.md §7 point 4 / the dashboard's Mx.0 "Housekeeping Agentic Loop" checkpoint entries.
 disable-model-invocation: true
 ---
 
@@ -24,7 +24,7 @@ Fehler → Einrichtung läuft über den agentic-loop-framework-Bootstrap (Phase 
    abgeschlossenen Milestone in eine dauerhafte Absicherung überführen.
 5. **Memory-Konsolidierung** (siehe unten) — Memory-Dateien eindampfen, Ergebnis nur als Diff.
 6. **Framework-Drift prüfen** (siehe unten) — Projekt-Framework vs. skill-agentic-loop-framework abgleichen.
-7. Den aktiven `→Mx`-Checkpoint-Eintrag in `docs/dashboard/dashboard.html` aktualisieren:
+7. Den aktiven `Mx.0`-Checkpoint-Eintrag in `docs/dashboard/dashboard.html` aktualisieren:
    `status: "done"`, `finishedAt` = heute, alle Steps abgehakt, je ein `log[]`-Eintrag mit
    kurzer Zusammenfassung der Schritte 1–6. Dabei für JEDEN noch offenen Milestone im
    Datenblock `recommendedModel` prüfen/setzen (CLAUDE.md §11) — fehlt es (neuer Eintrag)
@@ -80,7 +80,7 @@ Chat verpuffen, direkt danach:
      `.claude/agents/<name>.md` anlegen, kurz smoke-testen (z. B. Dry-Run-Aufruf).
    - **Plugin**: `claude plugin marketplace add`/`claude plugin install` nur nach ausdrücklicher
      Zustimmung (Marketplace-Änderungen sind kein reiner Lese-Vorgang).
-4. Nicht ausgewählte Empfehlungen NICHT stillschweigend fallen lassen — im `→Mx`-`log[]`
+4. Nicht ausgewählte Empfehlungen NICHT stillschweigend fallen lassen — im `Mx.0`-`log[]`
    kurz vermerken, was umgesetzt und was bewusst zurückgestellt wurde.
 
 ## Schritt 3: Skill-Quellen prüfen
@@ -158,7 +158,7 @@ auftreten. Vollständiges Design: `docs/superpowers/specs/2026-07-05-workflow-re
    Smoke-Test mit (wie `secrets-guard` / `json-guard`) und wird in `.claude/settings.json` verdrahtet.
 5. **Anwenden + verifizieren** (Hook-Smoke-Test grün; Regel/Memory landet). Kleine, reversible
    Änderung, eigener Commit.
-6. **Protokollieren** im `→Mx`-`log[]`: `Problem → Root-Cause → Ebene → Änderung → verifiziert`.
+6. **Protokollieren** im `Mx.0`-`log[]`: `Problem → Root-Cause → Ebene → Änderung → verifiziert`.
 
 Ist das Signal leer (nichts wiederholte sich), ist dieser Schritt ein No-op — nur kurz vermerken.
 

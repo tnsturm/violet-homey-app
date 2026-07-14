@@ -161,8 +161,8 @@ Dann nutze die Skill superpowers:brainstorming, um M1 zu entwerfen. Ziel von M1:
 Nach dem Brainstorming: Spec schreiben, dann mit superpowers:writing-plans einen Task-fuer-Task-Plan erstellen und mit superpowers:subagent-driven-development umsetzen (gleicher Workflow wie M0: frischer Implementer + Review je Task, TDD, validate als Ground Truth, am Ende push nach origin/main). Wichtig: SDK-Spezifika ueber die Skill homey-app, Live-Inspektion via homey-cli (homey api …) gegen meinen Homey "Torstens Homey Pro" / die echte Violet unter Host \`violet\`.`
     },
     {
-      id: "→M2",
-      title: "Zwischen-Check",
+      id: "M2.0",
+      title: "Housekeeping Agentic Loop",
       status: "done",
       startedAt: "2026-07-02",
       finishedAt: "2026-07-02",
@@ -183,7 +183,7 @@ Nach dem Brainstorming: Spec schreiben, dann mit superpowers:writing-plans einen
       prompt: null
     },
     {
-      id: "M2",
+      id: "M2.1",
       title: "Volle Reads + Feature-Gruppen",
       status: "done",
       startedAt: "2026-07-01",
@@ -223,8 +223,8 @@ Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-d
 /remote-control M2 — Volle Reads + Feature-Gruppen`
     },
     {
-      id: "→M3",
-      title: "Zwischen-Check",
+      id: "M3.0",
+      title: "Housekeeping Agentic Loop",
       status: "done",
       startedAt: "2026-07-02",
       finishedAt: "2026-07-02",
@@ -253,7 +253,7 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
 /remote-control →M3 — Zwischen-Check`
     },
     {
-      id: "M3",
+      id: "M3.1",
       title: "Voller Schreib-/Steuerzugriff",
       status: "done",
       startedAt: "2026-07-02",
@@ -284,8 +284,8 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       prompt: null
     },
     {
-      id: "→M4",
-      title: "Zwischen-Check",
+      id: "M4.0",
+      title: "Housekeeping Agentic Loop",
       status: "done",
       startedAt: "2026-07-06",
       finishedAt: "2026-07-06",
@@ -310,7 +310,7 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       prompt: null
     },
     {
-      id: "M4",
+      id: "M4.1",
       title: "Publish-Readiness",
       status: "done",
       startedAt: "2026-07-07",
@@ -476,8 +476,8 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       prompt: null
     },
     {
-      id: "→M5",
-      title: "Zwischen-Check",
+      id: "M5.0",
+      title: "Housekeeping Agentic Loop",
       status: "done",
       startedAt: "2026-07-09",
       finishedAt: "2026-07-09",
@@ -504,7 +504,7 @@ Das aktualisiert automatisch den →M3-Eintrag in docs/dashboard/dashboard.html 
       prompt: null,
     },
     {
-      id: "M5",
+      id: "M5.1",
       title: "TS-Migration device.js — Re-Evaluation (Pfad B/C) → NO-GO",
       status: "done",
       startedAt: "2026-07-10",
@@ -699,15 +699,16 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       prompt: null,
     },
     {
-      id: "→M6",
-      title: "Zwischen-Check",
+      id: "M6.0",
+      title: "Housekeeping Agentic Loop",
       status: "todo",
       recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Housekeeping zwischen M5.8 und M6: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      summary: "Housekeeping zwischen M5.9 und M6.1: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
+        { label: "Branch-/Worktree-Cleanup", done: false },
         { label: "/fewer-permission-prompts", done: false },
         { label: "/claude-automation-recommender", done: false },
         { label: "Skill-Quellen geprüft", done: false },
@@ -723,20 +724,23 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
-Zwischen-Check vor M6 (CLAUDE.md §7 Punkt 4). M5.8 ist abgeschlossen, M6 startet als Naechstes.
+Housekeeping Agentic Loop vor M6.1 (CLAUDE.md §7 Punkt 4). M5.9 ist abgeschlossen, M6.1 startet als Naechstes.
 
-Fuehre aus: /milestone-checkpoint
+AKTION 1 — Branch-/Worktree-Cleanup: Pruefe lokal und auf origin, ob es nicht mehr benoetigte Branches und Worktrees gibt (git branch -vv, git branch -r, git worktree list). Zeige hinter jedem gefundenen Branch/Worktree eine kurze Erklaerung (wozu er gehoerte; gemergt, verwaist oder noch aktiv?) und biete per AskUserQuestion (multiSelect) an, welche geloescht werden sollen. Loesche danach die angewaehlten Branches (lokal + origin) und Worktrees (git worktree remove inkl. Verzeichnis auf der Festplatte).
 
-Das aktualisiert automatisch den →M6-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+Danach fuehre aus: /milestone-checkpoint
+
+Das aktualisiert automatisch den M6.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
 
 DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
-2. Der →M6-Eintrag im Dashboard steht auf done (alle 7 Steps abgehakt) — Diff gezeigt.
+1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
+2. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
+3. Der M6.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
 
-/remote-control →M6 — Zwischen-Check`
+/remote-control M6.0 — Housekeeping Agentic Loop`
     },
     {
-      id: "M6",
+      id: "M6.1",
       title: "Inbound-Alarme (HTTP → Flow-Trigger)",
       status: "todo",
       recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Brainstorming/Spec bereits fertig; verbleibend ist Plan+SDD für ein klar umrissenes Feature (HTTP-Listener + Flow-Trigger)." },
@@ -760,9 +764,9 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
-Violet Homey Pro App — Milestone M6 (Inbound-HTTP-Alarme → Flow-Trigger). Brainstorming + Spec sind bereits fertig und freigegeben. Die Gates aus M4.6-M4.8 sind aktiv (test-gate/typecheck-gate blocken rote Commits, stop-verify rote Turn-Enden, release-gate ungebumpte Installs; CI laeuft auf main).
+Violet Homey Pro App — Milestone M6.1 (Inbound-HTTP-Alarme → Flow-Trigger). Brainstorming + Spec sind bereits fertig und freigegeben. Die Gates aus M4.6-M4.8 sind aktiv (test-gate/typecheck-gate blocken rote Commits, stop-verify rote Turn-Enden, release-gate ungebumpte Installs; CI laeuft auf main).
 
-Lies zuerst die Spec docs/superpowers/specs/2026-06-26-violet-http-notifications-design.md. Aktualisiere beim Start den M6-Eintrag in docs/dashboard/dashboard.html: log "Plan gestartet", currentActivity pflegen; Steps Plan -> Implementierung (SDD) -> Validate + Push abhaken; am Ende status "done" + commit. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
+Lies zuerst die Spec docs/superpowers/specs/2026-06-26-violet-http-notifications-design.md. Aktualisiere beim Start den M6.1-Eintrag in docs/dashboard/dashboard.html: log "Plan gestartet", currentActivity pflegen; Steps Plan -> Implementierung (SDD) -> Validate + Push abhaken; am Ende status "done" + commit. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory. M0 fertig (HEAD 4d1aaf3). Dieses Feature ist unabhaengig von M1–M3 und kann jederzeit nach M0 gebaut werden.
 
@@ -774,18 +778,19 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 1. npm test zeigt fail 0 — Output im Chat gezeigt.
 2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
 
-/remote-control M6 — Inbound-Alarme (HTTP → Flow-Trigger)`
+/remote-control M6.1 — Inbound-Alarme (HTTP → Flow-Trigger)`
     },
     {
-      id: "→M7",
-      title: "Zwischen-Check",
+      id: "M7.0",
+      title: "Housekeeping Agentic Loop",
       status: "todo",
       recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Housekeeping zwischen M6 und M7: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      summary: "Housekeeping zwischen M6.1 und M7.1: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
+        { label: "Branch-/Worktree-Cleanup", done: false },
         { label: "/fewer-permission-prompts", done: false },
         { label: "/claude-automation-recommender", done: false },
         { label: "Skill-Quellen geprüft", done: false },
@@ -801,20 +806,23 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
-Zwischen-Check vor M7 (CLAUDE.md §7 Punkt 4). M6 ist abgeschlossen, M7 startet als Naechstes.
+Housekeeping Agentic Loop vor M7.1 (CLAUDE.md §7 Punkt 4). M6.1 ist abgeschlossen, M7.1 startet als Naechstes.
 
-Fuehre aus: /milestone-checkpoint
+AKTION 1 — Branch-/Worktree-Cleanup: Pruefe lokal und auf origin, ob es nicht mehr benoetigte Branches und Worktrees gibt (git branch -vv, git branch -r, git worktree list). Zeige hinter jedem gefundenen Branch/Worktree eine kurze Erklaerung (wozu er gehoerte; gemergt, verwaist oder noch aktiv?) und biete per AskUserQuestion (multiSelect) an, welche geloescht werden sollen. Loesche danach die angewaehlten Branches (lokal + origin) und Worktrees (git worktree remove inkl. Verzeichnis auf der Festplatte).
 
-Das aktualisiert automatisch den →M7-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+Danach fuehre aus: /milestone-checkpoint
+
+Das aktualisiert automatisch den M7.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
 
 DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
-2. Der →M7-Eintrag im Dashboard steht auf done (alle 7 Steps abgehakt) — Diff gezeigt.
+1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
+2. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
+3. Der M7.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
 
-/remote-control →M7 — Zwischen-Check`
+/remote-control M7.0 — Housekeeping Agentic Loop`
     },
     {
-      id: "M7",
+      id: "M7.1",
       title: "LabCOM-Cloud-Import (PoolLab)",
       status: "todo",
       recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Neue externe Cloud-API (PoolLab/LabCOM) mit unbekannter Auth/Feld-Struktur — Recherche nötig, aber additiver Read-Pfad ohne Sicherheitsrisiko." },
@@ -836,9 +844,9 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
-Violet Homey Pro App — Milestone M7 (LabCOM-Cloud-Import der Wasserchemie für den LSI).
+Violet Homey Pro App — Milestone M7.1 (LabCOM-Cloud-Import der Wasserchemie für den LSI).
 
-Aktualisiere beim Start den M7-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
+Aktualisiere beim Start den M7.1-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-06-29-violet-homey-app-m1-lsi-design.md) — dort ist definiert, wie die Chem-Werte (Calciumhärte, Gesamtalkalität, CYA, TDS/Salz) gespeichert und vom LSI gelesen werden (Device-Settings + Flow-Action „Wasserchemie setzen“). M0–M6 sollten fertig sein.
 
@@ -851,18 +859,19 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
 3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
 
-/remote-control M7 — LabCOM-Cloud-Import (PoolLab)`
+/remote-control M7.1 — LabCOM-Cloud-Import (PoolLab)`
     },
     {
-      id: "→M8",
-      title: "Zwischen-Check",
+      id: "M8.0",
+      title: "Housekeeping Agentic Loop",
       status: "todo",
       recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Housekeeping zwischen M7 und M8: Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      summary: "Housekeeping zwischen M7.1 und M8.1: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
+        { label: "Branch-/Worktree-Cleanup", done: false },
         { label: "/fewer-permission-prompts", done: false },
         { label: "/claude-automation-recommender", done: false },
         { label: "Skill-Quellen geprüft", done: false },
@@ -878,20 +887,23 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
-Zwischen-Check vor M8 (CLAUDE.md §7 Punkt 4). M7 ist abgeschlossen, M8 startet als Naechstes.
+Housekeeping Agentic Loop vor M8.1 (CLAUDE.md §7 Punkt 4). M7.1 ist abgeschlossen, M8.1 startet als Naechstes.
 
-Fuehre aus: /milestone-checkpoint
+AKTION 1 — Branch-/Worktree-Cleanup: Pruefe lokal und auf origin, ob es nicht mehr benoetigte Branches und Worktrees gibt (git branch -vv, git branch -r, git worktree list). Zeige hinter jedem gefundenen Branch/Worktree eine kurze Erklaerung (wozu er gehoerte; gemergt, verwaist oder noch aktiv?) und biete per AskUserQuestion (multiSelect) an, welche geloescht werden sollen. Loesche danach die angewaehlten Branches (lokal + origin) und Worktrees (git worktree remove inkl. Verzeichnis auf der Festplatte).
 
-Das aktualisiert automatisch den →M8-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+Danach fuehre aus: /milestone-checkpoint
+
+Das aktualisiert automatisch den M8.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
 
 DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
-2. Der →M8-Eintrag im Dashboard steht auf done (alle 7 Steps abgehakt) — Diff gezeigt.
+1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
+2. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
+3. Der M8.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
 
-/remote-control →M8 — Zwischen-Check`
+/remote-control M8.0 — Housekeeping Agentic Loop`
     },
     {
-      id: "M8",
+      id: "M8.1",
       title: "Empfehlungs-Modul (Wasserbalance)",
       status: "todo",
       recommendedModel: { model: "Claude Opus 4.8", effort: "high", why: "Korrektheitskritische Wasserchemie-Domänen-Logik (LSI-Treiber, CO₂-Ausgasung/Alkalitäts-Wechselwirkung) speist Nutzer-Empfehlungen — Denkqualität vor Tempo." },
@@ -913,9 +925,9 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
-Violet Homey Pro App — Milestone M8 (Empfehlungs-/Wasserbalance-Modul).
+Violet Homey Pro App — Milestone M8.1 (Empfehlungs-/Wasserbalance-Modul).
 
-Aktualisiere beim Start den M8-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
+Aktualisiere beim Start den M8.1-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-06-29-violet-homey-app-m1-lsi-design.md) — dort sind LSI-Mathe (lib/Lsi.js), Klassifizierung und die Chem-Eingaben definiert, auf denen dieses Modul aufsetzt. M0–M7 sollten fertig sein.
 
@@ -928,7 +940,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
 3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
 
-/remote-control M8 — Empfehlungs-Modul (Wasserbalance)`
+/remote-control M8.1 — Empfehlungs-Modul (Wasserbalance)`
     },
     {
       id: "M9",
