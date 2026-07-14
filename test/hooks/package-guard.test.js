@@ -7,7 +7,7 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert');
-const { parseInstallCommand, resolveSpecName, diffNewDeps } = require('../../.claude/hooks/lib/package-specs');
+const { parseInstallCommand, resolveSpecName, diffNewDeps, verdict } = require('../../.claude/hooks/lib/package-specs');
 
 /** @param {string} cmd */
 const specsOf = (cmd) => parseInstallCommand(cmd).map((e) => e.spec);
@@ -120,4 +120,20 @@ test('diff: overrides walked recursively; git specs skipped', () => {
 
 test('diff: null pre (new file) → all entries new', () => {
   assert.strictEqual(diffNewDeps(null, PRE).length, 2);
+});
+
+const NOW = Date.parse('2026-07-14T00:00:00Z');
+/** @param {number} d */
+const daysAgo = (d) => new Date(NOW - d * 86400000).toISOString();
+
+test('verdict: not-found / too-new / low-adoption / pass / boundaries', () => {
+  assert.deepStrictEqual(verdict({ exists: false, createdAt: null, weeklyDownloads: null }, NOW), { ok: false, rule: 'not-found' });
+  assert.deepStrictEqual(verdict({ exists: true, createdAt: daysAgo(10), weeklyDownloads: 9999 }, NOW), { ok: false, rule: 'too-new' });
+  assert.deepStrictEqual(verdict({ exists: true, createdAt: daysAgo(400), weeklyDownloads: 12 }, NOW), { ok: false, rule: 'low-adoption' });
+  assert.deepStrictEqual(verdict({ exists: true, createdAt: daysAgo(400), weeklyDownloads: 50000 }, NOW), { ok: true });
+  // Boundaries pass (spec §7): exactly 90 days, exactly 500 downloads.
+  assert.deepStrictEqual(verdict({ exists: true, createdAt: daysAgo(90), weeklyDownloads: 500 }, NOW), { ok: true });
+  // Missing metadata on an existing package → fail closed (SR-04).
+  assert.deepStrictEqual(verdict({ exists: true, createdAt: null, weeklyDownloads: 500 }, NOW), { ok: false, rule: 'verify-unavailable' });
+  assert.deepStrictEqual(verdict({ exists: true, createdAt: daysAgo(400), weeklyDownloads: null }, NOW), { ok: false, rule: 'verify-unavailable' });
 });

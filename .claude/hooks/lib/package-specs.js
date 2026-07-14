@@ -138,4 +138,26 @@ function diffNewDeps(preJson, postJson) {
   return out;
 }
 
-module.exports = { parseInstallCommand, resolveSpecName, diffNewDeps };
+/**
+ * Policy verdict for one package's registry metadata (spec §3.3 rules table;
+ * SR-01/SR-02/SR-04). Boundary semantics: exactly minAgeDays / exactly
+ * minWeeklyDownloads → pass.
+ * @param {{exists: boolean, createdAt: string|null, weeklyDownloads: number|null}} meta
+ * @param {number} nowMs
+ * @param {{minAgeDays?: number, minWeeklyDownloads?: number}} [opts]
+ * @returns {{ok: true} | {ok: false, rule: string}}
+ */
+function verdict(meta, nowMs, opts) {
+  const { minAgeDays = 90, minWeeklyDownloads = 500 } = opts || {};
+  if (!meta.exists) return { ok: false, rule: 'not-found' };
+  const createdMs = meta.createdAt ? Date.parse(meta.createdAt) : NaN;
+  if (!Number.isFinite(createdMs) || typeof meta.weeklyDownloads !== 'number') {
+    // SR-04: incomplete metadata = unverified → fail closed, never silently allow.
+    return { ok: false, rule: 'verify-unavailable' };
+  }
+  if ((nowMs - createdMs) / 86400000 < minAgeDays) return { ok: false, rule: 'too-new' };
+  if (meta.weeklyDownloads < minWeeklyDownloads) return { ok: false, rule: 'low-adoption' };
+  return { ok: true };
+}
+
+module.exports = { parseInstallCommand, resolveSpecName, diffNewDeps, verdict };
