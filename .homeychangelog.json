@@ -62,5 +62,9 @@
   "0.5.0": {
     "en": "Automatic setup now reads the controller configuration: features disabled in the Violet GUI (e.g. an unused cover) no longer appear, temperature sensors show your own channel names, and configuration changes are detected automatically.",
     "de": "Die automatische Einrichtung liest jetzt die Gerätekonfiguration: In der Violet-GUI deaktivierte Funktionen (z. B. eine ungenutzte Abdeckung) erscheinen nicht mehr, Temperatursensoren zeigen Ihre eigenen Kanalnamen, und Konfigurationsänderungen werden automatisch erkannt."
+  },
+  "0.5.1": {
+    "en": "The main water-temperature tile now fills automatically when several sensors are connected — it picks the sensor named like your pool. Added help texts to the settings that needed explaining.",
+    "de": "Die Haupt-Wassertemperatur-Kachel füllt sich jetzt automatisch, wenn mehrere Fühler angeschlossen sind — sie wählt den nach dem Pool benannten Fühler. Erklärende Hilfetexte zu den wichtigsten Einstellungen ergänzt."
   }
 }
