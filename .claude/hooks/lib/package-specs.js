@@ -52,4 +52,28 @@ function parseInstallCommand(command) {
   return out;
 }
 
-module.exports = { parseInstallCommand };
+// Spec §3.2: skip specs that don't resolve via the public registry — they are
+// not squattable by name registration and remain visually auditable.
+const SKIP_SPEC = /^(git\+|git:|github:|file:|link:|workspace:|https?:)/;
+// Official npm name grammar (validate-npm-package-name, condensed). Rejects a
+// bare `user/repo` github shorthand: unscoped names may not contain '/'.
+const NPM_NAME = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/;
+
+/**
+ * Resolve a dependency spec to the registry name actually fetched (SR-05:
+ * `npm:` aliases verify the TARGET, never the manifest key).
+ * @param {string} spec
+ * @returns {string | null} registry name, or null = skip (out of registry scope)
+ */
+function resolveSpecName(spec) {
+  let s = String(spec || '').trim();
+  if (!s || SKIP_SPEC.test(s)) return null;
+  if (s.startsWith('npm:')) s = s.slice(4);
+  // Strip a trailing @range (the @ after position 0 — handles @scope/name@range).
+  const at = s.indexOf('@', 1);
+  if (at > 0) s = s.slice(0, at);
+  if (!NPM_NAME.test(s)) return null;
+  return s;
+}
+
+module.exports = { parseInstallCommand, resolveSpecName };

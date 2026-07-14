@@ -7,7 +7,7 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert');
-const { parseInstallCommand } = require('../../.claude/hooks/lib/package-specs');
+const { parseInstallCommand, resolveSpecName } = require('../../.claude/hooks/lib/package-specs');
 
 /** @param {string} cmd */
 const specsOf = (cmd) => parseInstallCommand(cmd).map((e) => e.spec);
@@ -56,4 +56,30 @@ test('parse: savesToRuntimeDeps semantics', () => {
   assert.strictEqual(parseInstallCommand('npm install --no-save foo')[0].savesToRuntimeDeps, false);
   assert.strictEqual(parseInstallCommand('npx foo')[0].savesToRuntimeDeps, false);
   assert.strictEqual(parseInstallCommand('yarn add foo')[0].savesToRuntimeDeps, true);
+});
+
+test('resolve: plain, versioned, scoped', () => {
+  assert.strictEqual(resolveSpecName('lodash'), 'lodash');
+  assert.strictEqual(resolveSpecName('foo@^1.2.3'), 'foo');
+  assert.strictEqual(resolveSpecName('@scope/pkg@2.0.0'), '@scope/pkg');
+  assert.strictEqual(resolveSpecName('@scope/pkg'), '@scope/pkg');
+});
+
+test('resolve: npm: alias → target name (SR-05)', () => {
+  assert.strictEqual(resolveSpecName('npm:homey-apps-sdk-v3-types@^0.3.12'), 'homey-apps-sdk-v3-types');
+  assert.strictEqual(resolveSpecName('npm:@real/scope-pkg@1'), '@real/scope-pkg');
+});
+
+test('resolve: git/file/url/workspace specs skipped (spec §3.2)', () => {
+  for (const s of ['github:user/repo', 'git+https://x.git', 'git://x.git',
+                   'file:../local', 'link:../x', 'workspace:*',
+                   'https://x.example/a.tgz', 'http://x/a.tgz', 'user/repo']) {
+    assert.strictEqual(resolveSpecName(s), null, s);
+  }
+});
+
+test('resolve: invalid npm names → null', () => {
+  assert.strictEqual(resolveSpecName('UPPER_CASE'), null);
+  assert.strictEqual(resolveSpecName('.hidden'), null);
+  assert.strictEqual(resolveSpecName(''), null);
 });
