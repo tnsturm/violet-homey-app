@@ -545,51 +545,28 @@ DONE-BEDINGUNGEN:
     {
       id: "M5.7",
       title: "Config-basierte Autoconfig (getConfig + CONFIGCHANGEMARKER)",
-      status: "active",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Brainstorming über die per-Feature-Signalmatrix + klar umrissener Read-Pfad; die eine heikle Entscheidung (Monotonie-Bruch bei Config-Autorität) ist designseitig, kein Chemie-/Schreibrisiko." },
+      status: "done",
       startedAt: "2026-07-14",
-      finishedAt: null,
-      commit: null,
+      finishedAt: "2026-07-14",
+      commit: "d532c3c",
       summary: "Autoconfig-Umbau: Feature-Erkennung zusätzlich aus getConfig?ALL (Basic Auth, Credentials wie M3) speisen — per-Feature-Signalmatrix statt reiner History-Heuristik. Behebt realen Cover-False-Positive (COVER_STATE-Defaultwerte trotz deaktivierter Steuerung); Namen/Einheiten aus NAMES_*/ANALOG_*. Zusätzlich: CONFIGCHANGEMARKER bei jedem getReadings-Poll mit letztem Wert vergleichen; die Aktion auf eine erkannte Änderung ist im Brainstorming zu klären. Analyse-Basis: docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md.",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
         { label: "Implementierung (SDD)", done: true },
-        { label: "Validate + Push", done: false }
+        { label: "Validate + Push", done: true }
       ],
-      currentActivity: "Release (Version, Changelog, Install) + Final-Review",
+      currentActivity: null,
       runtime: null,
       log: [
         { at: "2026-07-13", note: "Milestone angelegt (API-Analyse-Session; übernimmt den Auto-Detection-Review aus dem aufgelösten M10)" },
         { at: "2026-07-14", note: "Session gestartet — Brainstorming/Design started" },
         { at: "2026-07-14", note: "Live-Verifikation: getConfig kann Multi-Key/Präfix OHNE Auth (nur ?ALL/Secrets gesperrt) — Design auf credential-freie Whitelist-Queries umgestellt; Spec + Threat-Model-Delta (SR-11…16) committet" },
-        { at: "2026-07-14", note: "Implementierung (SDD, 5 Tasks + 1 Review-Fix) fertig: ConfigSource, Signalmatrix, Device-Lifecycle, NAMES-Labels; npm test pass 229/fail 0, typecheck grün, validate debug PASS" }
+        { at: "2026-07-14", note: "Implementierung (SDD, 5 Tasks + 1 Review-Fix) fertig: ConfigSource, Signalmatrix, Device-Lifecycle, NAMES-Labels; npm test pass 229/fail 0, typecheck grün, validate debug PASS" },
+        { at: "2026-07-14", note: "Final-Review (fable): With fixes → empty-facts-Guard (SR-13) + Spec-Addendum (b28592a). Release 0.5.0: validate publish PASS, release-readiness PASS, Homey-Install OK. Live-Smoke: cover_state-Geister-Tile auf Referenzgerät entfernt, ow-Sensoren zeigen NAMES-Labels (Schwimmbad, Messzelle, …)" }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Violet Homey Pro App — Milestone M5.7 (Config-basierte Autoconfig via getConfig + CONFIGCHANGEMARKER).
-
-Aktualisiere beim Start den M5.7-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload Version bumpen (HOMEY.md) + versions.md pflegen. (Protokoll: CLAUDE.md §7-8 + HOMEY.md, automatisch geladen.)
-
-Kontext laden: ZUERST die Analyse-Notiz docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md (§3 getConfig-Struktur, §4 Signalmatrix + Cover-False-Positive + CONFIGCHANGEMARKER, §6 API-Fakten aus dem violet-hass-Review) — sie ist die fachliche Basis dieses Milestones. Dazu das Review der Home-Assistant-Schwester-Integration docs/superpowers/notes/2026-07-13-violet-hass-review.md. Dazu M2-Spec (docs/superpowers/specs/2026-07-01-violet-homey-app-m2-full-reads-design.md, Detection/Monotonie) und lib/FeatureDetector.js + lib/FeatureGroups.js. Credentials-Handling wie M3 (Device-Store, secrets-guard aktiv).
-
-Brainstorming-Input aus dem violet-hass-Review (Gut-Muster der Schwester-Integration, siehe Review-Notiz): (1) getConfig als Zweitquelle pro Poll — gezielte Key-Liste statt ?ALL; ZUERST live verifizieren, ob getConfig Mehrfach-Keys/Praefix-Queries kann (violet-hass uebergibt Listen wie ["NAMES_","DOSAGE_"]) — falls ja, Secrets-Gruppen (NET_/NOTIFY_/USER_) gar nicht erst anfragen statt filtern; (2) Sticky-Detection + Key-Restauration bei temporaer fehlenden Keys (= unsere Monotonie-Regel, dort unabhaengig erfunden — Trade-off-Diskussion uebernehmen); (3) eskalierendes, gedrosseltes Failure-Logging (1. Fehler Warnung, dann max. alle 5 min, Recovery-Meldung) als Vorbild fuer die Fetch-Fehlerpfade; (4) Setpoint-Cache mit Poll-Invalidierung (Writes optimistisch anzeigen, bis der naechste Poll den Key liefert) — primaer M9-relevant, aber im Brainstorming pruefen, ob das Muster schon fuer die bestehenden Write-Capabilities (z. B. pvsurplus_control) lohnt; (5) neue Praesenz-Signale SYSTEM_ext1module_alive_count/SYSTEM_ext2module_alive_count (Heartbeat je Relais-Erweiterung, komplementaer zu EXTENSION_n_use) und die Produktvariante "Dosing-Standalone" (Violet ohne Basismodul) in der Signalmatrix beruecksichtigen.
-
-Aufgabe: (a) getConfig?ALL beim Pairing und on-demand lesen (Basic Auth; Fallback ohne Credentials = heutige History-Heuristik) und die Feature-Erkennung auf eine per-Feature-Signalmatrix umbauen — Cover: COVER_control_use + EXTENSION_*_use als NEGATIV autoritatives Signal (behebt den realen False Positive: COVER_STATE="OPEN" als Defaultwert trotz "Nicht verwenden"); Solar/Heizung/Pumpe: *_control_use ODER *_pvsurplus_use ODER Historie ("Regelung aus" != "ungenutzt", siehe Solar-Fall in der Notiz); ADC/Impuls: ANALOG_adcN_use/IMPULS_inputN_use inkl. _units; Klartextnamen aus NAMES_* fuer Sub-Sensoren/Labels evaluieren. Der Monotonie-Bruch (Config darf Capabilities entfernen) ist eine explizite Design-Entscheidung im Brainstorming, inkl. Migration fuer Bestandsgeraete. (b) CONFIGCHANGEMARKER (undokumentiert, in getReadings enthalten, wird ohnehin gepollt) bei jedem Poll mit dem letzten Wert vergleichen; WELCHE Aktion auf eine erkannte Aenderung folgt (nur getConfig-Re-Read? Re-Reconcile? Nutzer-Benachrichtigung?) ist ausdruecklich noch offen und im Brainstorming zu klaeren.
-
-SICHERHEIT: getConfig?ALL enthaelt Klartext-Secrets (WLAN/SMTP/Push/PIN) und PII — nur die benoetigten Keys verarbeiten, Antwort nie roh loggen/persistieren. Read-only-Pfad mit vorhandenen Credentials; kurz gegen CLAUDE.md §5 pruefen, ob das bestehende M3-Threat-Model den neuen Nutzungspfad abdeckt oder ein Delta noetig ist.
-
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK via homey-app-Skill, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: violet).
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. npm test zeigt fail 0 — Output im Chat gezeigt.
-2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
-3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
-
-/remote-control M5.7 — Config-basierte Autoconfig (getConfig)`
+      prompt: null
     },
     {
       id: "M5.8",
