@@ -4,7 +4,7 @@ const { test } = require('node:test');
 const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
-const { CONFIG_QUERY, buildConfigUrl, parseConfigFacts } = require('../lib/ConfigSource');
+const { CONFIG_QUERY, buildConfigUrl, parseConfigFacts, fetchConfigFacts } = require('../lib/ConfigSource');
 
 const reference = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'fixtures/getconfig-reference.json'), 'utf8'),
@@ -68,4 +68,67 @@ test('parseConfigFacts: Platzhalter-Namen ("-", leer) werden gedroppt', () => {
   assert.strictEqual(f.onewireNames['3'], undefined);
   const adc6 = f.adcChannels.find((c) => c.id === 6);
   assert.strictEqual(adc6, undefined); // kein _use-Key → Kanal nicht gelistet
+});
+
+test('fetchConfigFacts: parsed facts on 200 JSON; URL is the whitelist URL', async () => {
+  const orig = global.fetch;
+  /** @type {Array<{url: string, opts: *}>} */
+  const calls = [];
+  global.fetch = /** @type {any} */ (async (/** @type {*} */ url, /** @type {*} */ opts) => {
+    calls.push({ url: String(url), opts });
+    return { ok: true, status: 200, text: async () => JSON.stringify(reference) };
+  });
+  try {
+    const f = await fetchConfigFacts('violet.test');
+    assert.strictEqual(f.heaterControlUse, true);
+    assert.strictEqual(calls.length, 1);
+    assert.strictEqual(calls[0].url, buildConfigUrl('violet.test'));
+    assert.strictEqual(calls[0].opts.redirect, 'error'); // Host-Pinning wie SR-08
+    assert.strictEqual(calls[0].opts.headers, undefined); // Default: KEIN Auth-Header
+  } finally { global.fetch = orig; }
+});
+
+test('fetchConfigFacts: restricted (Klartext-Body) + Credentials → einmaliger Auth-Retry (SR-14)', async () => {
+  const orig = global.fetch;
+  /** @type {Array<{url: string, opts: *}>} */
+  const calls = [];
+  global.fetch = /** @type {any} */ (async (/** @type {*} */ url, /** @type {*} */ opts) => {
+    calls.push({ url: String(url), opts });
+    if (calls.length === 1) return { ok: true, status: 200, text: async () => 'Access restricted, no Auth found' };
+    return { ok: true, status: 200, text: async () => JSON.stringify(reference) };
+  });
+  try {
+    const f = await fetchConfigFacts('violet.test', { credentials: { username: 'u', password: 'p' } });
+    assert.strictEqual(f.refillControlUse, true);
+    assert.strictEqual(calls.length, 2);
+    assert.ok(!calls[0].url.includes('u:p') && !calls[1].url.includes('u:p'), 'creds never in URL (SR-14)');
+    assert.match(calls[1].opts.headers.Authorization, /^Basic /);
+  } finally { global.fetch = orig; }
+});
+
+test('fetchConfigFacts: 401 ohne Credentials → Error ohne Body/Creds (SR-12/14)', async () => {
+  const orig = global.fetch;
+  global.fetch = /** @type {any} */ (async () => ({ ok: false, status: 401, text: async () => 'Access restricted, no Auth found' }));
+  try {
+    await assert.rejects(() => fetchConfigFacts('violet.test'), (/** @type {Error} */ err) => {
+      assert.match(err.message, /401|restricted/i);
+      assert.ok(!err.message.includes('Access restricted, no Auth found'), 'no raw body in errors');
+      return true;
+    });
+  } finally { global.fetch = orig; }
+});
+
+test('fetchConfigFacts: restricted trotz Credentials → Error (kein zweiter Retry)', async () => {
+  const orig = global.fetch;
+  let n = 0;
+  global.fetch = /** @type {any} */ (async () => { n += 1; return { ok: false, status: 401, text: async () => 'x' }; });
+  try {
+    await assert.rejects(() => fetchConfigFacts('violet.test', { credentials: { username: 'u', password: 'p' } }));
+    assert.strictEqual(n, 2);
+  } finally { global.fetch = orig; }
+});
+
+test('SR-11 grep: source of ConfigSource never contains getConfig?ALL', () => {
+  const src = fs.readFileSync(path.join(__dirname, '../lib/ConfigSource.js'), 'utf8');
+  assert.ok(!src.includes('getConfig?' + 'ALL'));
 });
