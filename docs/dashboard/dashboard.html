@@ -564,7 +564,8 @@ DONE-BEDINGUNGEN:
         { at: "2026-07-14", note: "Session gestartet — Brainstorming/Design started" },
         { at: "2026-07-14", note: "Live-Verifikation: getConfig kann Multi-Key/Präfix OHNE Auth (nur ?ALL/Secrets gesperrt) — Design auf credential-freie Whitelist-Queries umgestellt; Spec + Threat-Model-Delta (SR-11…16) committet" },
         { at: "2026-07-14", note: "Implementierung (SDD, 5 Tasks + 1 Review-Fix) fertig: ConfigSource, Signalmatrix, Device-Lifecycle, NAMES-Labels; npm test pass 229/fail 0, typecheck grün, validate debug PASS" },
-        { at: "2026-07-14", note: "Final-Review (fable): With fixes → empty-facts-Guard (SR-13) + Spec-Addendum (b28592a). Release 0.5.0: validate publish PASS, release-readiness PASS, Homey-Install OK. Live-Smoke: cover_state-Geister-Tile auf Referenzgerät entfernt, ow-Sensoren zeigen NAMES-Labels (Schwimmbad, Messzelle, …)" }
+        { at: "2026-07-14", note: "Final-Review (fable): With fixes → empty-facts-Guard (SR-13) + Spec-Addendum (b28592a). Release 0.5.0: validate publish PASS, release-readiness PASS, Homey-Install OK. Live-Smoke: cover_state-Geister-Tile auf Referenzgerät entfernt, ow-Sensoren zeigen NAMES-Labels (Schwimmbad, Messzelle, …)" },
+        { at: "2026-07-14", note: "Folgebuild 0.5.1 (e94e5bb): Smart-Auto Wassertemperatur (Pool-Fühler per NAMES-Match) + Settings-Hints. Behebt reales 'Water temperature = -' bei 4 Fühlern; Live-Smoke: Kachel zeigt 29,8 °C = Schwimmbad. release-readiness PASS, Install OK. Eigener Guide-Milestone M6.5 angelegt." }
       ],
       prompt: null
     },
@@ -722,6 +723,50 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
 
 /remote-control M6.1 — Inbound-Alarme (HTTP → Flow-Trigger)`
+    },
+    {
+      id: "M6.5",
+      title: "In-App Quick-Start-Guide (App-Settings-Seite)",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Offenes Design/Content-Urteil (Struktur + zweisprachige Texte einer Onboarding-Seite), aber kein Sicherheits-/Chemie-Risiko und keine kritische Codepfad-Berührung — mittleres Urteil, keine Flaggschiff-Tiefe nötig." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Eingebauter Quick-Start-Guide über eine App-Settings-HTML-Seite (/settings/index.html, self-contained, kein Server), erreichbar über das ⚙ am App-Kachel. Zweisprachig (en+de), erklärt die nicht-selbsterklärenden Konfigurationen (Pairing/Credentials-Optionalität, Wassertemperatur-Auswahl, Feature-Gruppen Auto/Force/Hide, LSI-Werte, Steuerung/Schreibzugriff, Diagnose) und verweist auf den Community-Post als ausführliche Referenz. Per-Setting-Hints wurden bereits in 0.5.1 nachgerüstet — diese Seite ist die zusammenhängende Kurzanleitung. Optional zusätzlich: Pairing-Intro-View. Auslöser: Nutzer-Feedback 2026-07-14 (viele Konfigurationen, deren Sinn sich nicht auf Anhieb erschließt).",
+      steps: [
+        { label: "Brainstorming", done: false },
+        { label: "Spec", done: false },
+        { label: "Plan", done: false },
+        { label: "Implementierung (SDD)", done: false },
+        { label: "Validate + Release", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-07-14", note: "Milestone angelegt (Nutzer-Feedback: In-App-Quickstart-Guide gewünscht; Per-Setting-Hints bereits in 0.5.1 erledigt, diese Seite ist die zusammenhängende Kurzanleitung)" }
+      ],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
+Violet Homey Pro App — Milestone M6.5 (In-App Quick-Start-Guide über eine App-Settings-Seite).
+
+Aktualisiere beim Start den M6.5-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload Version bumpen (HOMEY.md) + versions.md pflegen. (Protokoll: CLAUDE.md §7-8 + HOMEY.md, automatisch geladen.)
+
+Kontext: Nutzer-Feedback vom 2026-07-14 — die App hat viele Konfigurationen, deren Sinn sich nicht auf Anhieb erschließt. Per-Setting-Hints wurden in 0.5.1 bereits nachgerüstet (drivers/pool/driver.settings.compose.json). Dieser Milestone ergänzt eine ZUSAMMENHÄNGENDE Kurzanleitung als App-Settings-HTML-Seite.
+
+Aufgabe: Eine App-Settings-Seite (settings/index.html — Homey Apps SDK v3, self-contained HTML/CSS/JS, kein Server, kein externer Fetch; über Homey.get/set nur falls nötig) bauen, erreichbar über das ⚙ am App-Kachel in Homey. Inhalt zweisprachig (en+de, Sprachumschaltung oder beide untereinander): Kurz-Onboarding (Pairing/Host, Credentials sind optional — Lesen braucht keine, nur Schreibsteuerung + Config-Fallback), Wassertemperatur-Auswahl (Smart-Auto + manuelle Wahl, benannte Sub-Kacheln als Zuordnungshilfe), Feature-Gruppen (Auto/Immer/Ausblenden), LSI-Wasserchemie (welche Werte, woher), Steuerung/Schreibzugriff (Default aus, Klartext-HTTP-Hinweis), erweiterte Diagnose. Verweis (Link/Text) auf den Community-Post als ausführliche Referenz (homeyCommunityTopicId 157109). Homey-SDK-Spezifika der App-Settings-Seite über die Skill homey-app bzw. context7 verifizieren, NICHT raten.
+
+Optional (im Brainstorming entscheiden): zusätzlich eine Pairing-Intro-View ("Bevor du startest …") am Anfang des Hinzufügen-Assistenten.
+
+Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Store-Changelog-Freigabe: bei Publish Version-Notes (en+de) vom Nutzer freigeben lassen. Dev-Gate: npx homey app validate --level=debug muss PASSEN. Live-Sicht der Seite über homey app run/install gegen "Torstens Homey Pro".
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. npm test zeigt fail 0 — Output im Chat gezeigt.
+2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
+3. Die App-Settings-Seite ist im Manifest registriert und wird in Homey angezeigt — Beleg (Screenshot/read_page oder App-Settings-Route) im Chat gezeigt.
+
+/remote-control M6.5 — In-App Quick-Start-Guide`
     },
     {
       id: "M7.0",
