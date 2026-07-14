@@ -179,3 +179,12 @@ test('alarm_dosing_blocked: CL_DOSING_CONTROLLER alone is normal operation, not 
   const u = buildM2Updates(raw, { dosingChannels: ['cl'] });
   assert.strictEqual(u['alarm_dosing_blocked.cl'], false);
 });
+
+// M5.7 (SR-15): config-getriebene Entfernung nur via Detection; force gewinnt.
+test('M5.7: cover verschwindet aus desired caps bei negativer Detection — außer bei force', () => {
+  const features = /** @type {*} */ ({ cover: false, dosingChannels: [], okTempChannels: [] });
+  const auto = desiredM2Capabilities({ features, overrides: {} });
+  assert.ok(!auto.includes('cover_state'));
+  const forced = desiredM2Capabilities({ features, overrides: { cover: 'force' } });
+  assert.ok(forced.includes('cover_state'));
+});

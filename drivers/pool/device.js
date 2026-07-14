@@ -29,6 +29,10 @@ const {
   diagAnnotatable,
   diagRawValue,
 } = require('../../lib/FeatureGroups');
+// Namespace require (not destructured): the device config tests stub
+// ConfigSource.fetchConfigFacts at runtime — a top-level destructure would
+// bind the pre-stub reference and miss it (M5.7 spec §4).
+const ConfigSource = require('../../lib/ConfigSource');
 
 // Per-channel dosing tile labels (shared by capability reconcile and the
 // diagnostics title annotation) — the base title a `<base>.<ch>` tile shows.
@@ -60,6 +64,16 @@ class PoolDevice extends Homey.Device {
   _m2AlarmState = {};
   /** @type {Object<string, *>} capId → FlowCardTriggerDevice */
   _m2Triggers = {};
+  /** @type {?import('../../lib/ConfigSource').ConfigFacts} */
+  _configFacts = null;
+  /** @type {number} consecutive failed config fetches (spec §4.3: stop after 3) */
+  _configAttempts = 0;
+  /** @type {?number} CONFIGCHANGEMARKER seen on the previous poll */
+  _lastSeenMarker = null;
+  /** @type {ReturnType<typeof ConfigSource.createConfigLogThrottle>} */
+  _configThrottle = ConfigSource.createConfigLogThrottle();
+  /** @type {Object<string, string>} capId → applied onewire title (churn guard, spec §5) */
+  _owTitleState = {};
 
   async onInit() {
     this._failures = 0;
@@ -98,6 +112,10 @@ class PoolDevice extends Homey.Device {
         : { target: 'PVSURPLUS', state: 'OFF' }, 'pvsurplus_control');
     });
 
+    // M5.7 (spec §4.1): config facts persist in the device store (whitelisted
+    // by construction, SR-12); the init tick refreshes them if needed.
+    this._configFacts = this.getStoreValue('configFacts') || null;
+
     this._startPolling();
     this.log('Pool device initialized');
   }
@@ -110,6 +128,50 @@ class PoolDevice extends Homey.Device {
     const password = this.getStoreValue('writePassword') || '';
     if (!password) throw new Error(this.homey.__('error.write_creds_missing'));
     return { username, password };
+  }
+
+  // M5.7 config lifecycle (spec §4): fetch facts (a) until first success, max 3
+  // consecutive attempts, (b) whenever CONFIGCHANGEMARKER moves vs the stored
+  // fetch-time marker (config changed — incl. offline changes), or (c) after the
+  // attempt budget, when the marker moves between polls. Errors never touch
+  // availability (SR-16); credentials only as restricted-fallback (SR-14).
+  /** @param {?number} marker CONFIGCHANGEMARKER from this poll, or null. */
+  async _maybeRefreshConfig(marker) {
+    const storedMarker = /** @type {?number} */ (this.getStoreValue('configMarker'));
+    const markerMoved = marker !== null && storedMarker !== null && marker !== storedMarker;
+    const markerMovedBetweenPolls = marker !== null && this._lastSeenMarker !== null && marker !== this._lastSeenMarker;
+    const needFirstFacts = this._configFacts === null
+      && (this._configAttempts < 3 || markerMovedBetweenPolls);
+    this._lastSeenMarker = marker;
+    if (!needFirstFacts && !markerMoved) return;
+
+    // Write creds double as the restricted-fallback for the config read (SR-14);
+    // absent creds keep the default credential-free path.
+    const password = this.getStoreValue('writePassword') || '';
+    const credentials = password ? { username: this.getSetting('writeUsername') || '', password } : null;
+    try {
+      const facts = await ConfigSource.fetchConfigFacts(this.getSetting('host'), { credentials });
+      // A 200-with-valid-JSON-but-no-whitelisted-signal envelope (e.g. bare
+      // {date,time}) carries nothing to detect on — treat exactly like a fetch
+      // failure: keep the last good facts, count an attempt, never persist
+      // (SR-13, T-M57-T1; spec §4 Fehlerpfade).
+      if (ConfigSource.factsEmpty(facts)) throw new Error('config source returned no usable keys (empty facts)');
+      this._configFacts = facts;
+      this._configAttempts = 0;
+      await this.setStoreValue('configFacts', facts).catch(this.error);
+      if (marker !== null) await this.setStoreValue('configMarker', marker).catch(this.error);
+      if (this._configThrottle.success(Date.now()) === 'recovered') this.log('config source recovered');
+      if (markerMoved) this.log('config change detected (marker', storedMarker, '→', marker, ') — re-detected features');
+    } catch (err) {
+      this._configAttempts += 1;
+      const gate = this._configThrottle.failure(Date.now());
+      // Sanitized: message only — never the response body, never credentials
+      // (SR-12/SR-02). First failure via error() so it surfaces in Homey
+      // diagnostics reports; throttled repeats stay at log().
+      const msg = err instanceof Error ? err.message : String(err);
+      if (gate === 'first') this.error('config source unavailable (falling back to history heuristic):', msg);
+      else if (gate === 'repeat') this.log('config source unavailable (falling back to history heuristic):', msg);
+    }
   }
 
   // Gate every write on the interlock (SR-07), then log the attempt before sending
@@ -234,7 +296,12 @@ class PoolDevice extends Homey.Device {
     }
 
     const parsed = parseReadings(raw);
-    const features = detectFeatures(raw);
+
+    // M5.7 (spec §4.2): compare the always-polled CONFIGCHANGEMARKER, refresh
+    // facts when needed, and let THIS tick's reconcile see the new detection.
+    const rawMarker = Number(raw.CONFIGCHANGEMARKER);
+    await this._maybeRefreshConfig(Number.isFinite(rawMarker) ? rawMarker : null);
+    const features = detectFeatures(raw, this._configFacts);
     // Prefer the controller clock for warmup math; fall back to local time if absent.
     const now = parsed.timeUnix || Math.floor(Date.now() / 1000);
 
@@ -249,7 +316,13 @@ class PoolDevice extends Homey.Device {
 
     await this._reconcileCapabilities(parsed, features);
 
-    const primaryChannel = choosePrimaryTemperature(parsed.tempChannels, this.getSetting('waterTempChannel'));
+    // Smart-auto (M5.7 0.5.1): pass the config onewire names so "auto" can pick
+    // the pool-named sensor when several are connected (spec addendum).
+    const primaryChannel = choosePrimaryTemperature(
+      parsed.tempChannels,
+      this.getSetting('waterTempChannel'),
+      this._configFacts ? this._configFacts.onewireNames : null,
+    );
 
     // LSI (M1 §6,§9): only when enabled AND fresh; temperature falls back to the
     // fixed setting when no water-temp sensor is available/selected.
@@ -363,14 +436,19 @@ class PoolDevice extends Homey.Device {
       if (!wantLsi && this.hasCapability(cap)) await this.removeCapability(cap).catch(this.error);
     }
 
-    // 2) One read-only sub-sensor per OK temperature channel so the user can
-    //    identify the water channel (spec §8); drop sub-sensors that vanished.
+    // 2) One read-only sub-sensor per OK temperature channel (M0 spec §8);
+    //    titles prefer the user's NAMES_onewireN label (M5.7 spec §5), falling
+    //    back to "Sensor <id>". setCapabilityOptions only on actual change
+    //    (churn rule, mirrors the diagnostics-title guard).
     const wanted = new Set(parsed.tempChannels.map((c) => channelSubCapId(c.id)));
     for (const ch of parsed.tempChannels) {
       const cap = channelSubCapId(ch.id);
-      if (!this.hasCapability(cap)) {
-        await this.addCapability(cap).catch(this.error);
-        await this.setCapabilityOptions(cap, { title: { en: `Sensor ${ch.id}`, de: `Sensor ${ch.id}` } }).catch(this.error);
+      const name = (this._configFacts && this._configFacts.onewireNames[String(ch.id)]) || `Sensor ${ch.id}`;
+      const isNew = !this.hasCapability(cap);
+      if (isNew) await this.addCapability(cap).catch(this.error);
+      if (isNew || this._owTitleState[cap] !== name) {
+        await this.setCapabilityOptions(cap, { title: { en: name, de: name } }).catch(this.error);
+        this._owTitleState[cap] = name;
       }
     }
     for (const cap of [...this.getCapabilities()]) {

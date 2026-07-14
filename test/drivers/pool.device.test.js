@@ -22,6 +22,11 @@ VioletClient.fetchReadings = async () => {
   return currentFixture;
 };
 
+const ConfigSource = require('../../lib/ConfigSource');
+// Hermetic tests: never let device.js hit the network for config (M5.7); the
+// rejecting stub keeps these tests on the config-less fallback path.
+ConfigSource.fetchConfigFacts = async () => { throw new Error('config disabled in test'); };
+
 const { detectFeatures } = require('../../lib/FeatureDetector');
 const { desiredM2Capabilities } = require('../../lib/FeatureGroups');
 const PoolDevice = require('../../drivers/pool/device.js');

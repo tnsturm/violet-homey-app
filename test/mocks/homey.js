@@ -74,6 +74,9 @@ class Device {
     return Object.prototype.hasOwnProperty.call(this.__test.store, key) ? this.__test.store[key] : null;
   }
 
+  /** @param {string} key @param {*} value */
+  async setStoreValue(key, value) { this.__test.store[key] = value; }
+
   /** @param {string} cap @param {*} fn */
   registerCapabilityListener(cap, fn) {
     this.__listeners[cap] = fn;

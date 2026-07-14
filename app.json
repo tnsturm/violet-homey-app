@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "de.neunbft.violet",
-  "version": "0.4.7",
+  "version": "0.5.1",
   "compatibility": ">=12.2.0",
   "sdk": 3,
   "platforms": [
@@ -727,7 +727,11 @@
             "en": "Write username (optional)",
             "de": "Schreib-Benutzername (optional)"
           },
-          "value": ""
+          "value": "",
+          "hint": {
+            "en": "Optional. Reading works without credentials. Only needed to enable control (write), and as a fallback if your controller restricts config reads. Leave empty for read-only monitoring.",
+            "de": "Optional. Das Auslesen funktioniert ohne Zugangsdaten. Nur nötig, um die Steuerung (Schreibzugriff) zu aktivieren, und als Rückfall, falls dein Regler Konfig-Lesezugriffe sperrt. Für reine Überwachung leer lassen."
+          }
         },
         {
           "id": "pollIntervalSeconds",
@@ -749,7 +753,11 @@
           },
           "value": 120,
           "min": 0,
-          "max": 1800
+          "max": 1800,
+          "hint": {
+            "en": "pH/ORP/chlorine and the LSI are shown only after the pump has circulated water this long — a stagnant sensor is not representative, so they read '-' while the pump is off. 0 = trust immediately.",
+            "de": "pH/Redox/Chlor und der LSI werden erst angezeigt, wenn die Pumpe so lange Wasser umgewälzt hat — ein stehender Fühler ist nicht repräsentativ, daher zeigen sie bei ausgeschalteter Pumpe '-'. 0 = sofort vertrauen."
+          }
         },
         {
           "id": "waterTempChannel",
@@ -759,6 +767,10 @@
             "de": "Wassertemperatur-Sensor"
           },
           "value": "auto",
+          "hint": {
+            "en": "This is the main pool-water temperature (also used for the LSI). Auto picks the sensor whose Violet name looks like the pool (e.g. 'Schwimmbad'). With several sensors and no clear name it stays '-': pick your pool sensor here — the temperature tiles below are labelled with your Violet names, so you can tell which Sensor number is which.",
+            "de": "Das ist die Haupt-Poolwassertemperatur (auch für den LSI). Auto wählt den Fühler, dessen Violet-Name nach Pool aussieht (z. B. 'Schwimmbad'). Bei mehreren Fühlern ohne eindeutigen Namen bleibt sie '-': Wähle hier deinen Pool-Fühler — die Temperatur-Kacheln unten tragen deine Violet-Namen, so erkennst du, welche Sensor-Nummer welche ist."
+          },
           "values": [
             {
               "id": "auto",
@@ -861,6 +873,10 @@
             "de": "Chlor-Messung"
           },
           "value": "auto",
+          "hint": {
+            "en": "Auto shows the tile only when the hardware is detected; Always show forces it; Hide removes it. The same three choices apply to the feature groups further below.",
+            "de": "Auto zeigt die Kachel nur, wenn die Hardware erkannt wird; Immer anzeigen erzwingt sie; Ausblenden entfernt sie. Dieselben drei Optionen gelten für die Funktionsgruppen weiter unten."
+          },
           "values": [
             {
               "id": "auto",
@@ -1049,6 +1065,10 @@
                 "de": "Eco-Modus"
               },
               "value": "auto",
+              "hint": {
+                "en": "Auto follows hardware detection; Always show forces the tile; Hide removes it (and breaks any Flows that use it). Applies to every feature group here.",
+                "de": "Auto folgt der Hardware-Erkennung; Immer anzeigen erzwingt die Kachel; Ausblenden entfernt sie (und bricht Flows, die sie nutzen). Gilt für jede Funktionsgruppe hier."
+              },
               "values": [
                 {
                   "id": "auto",
@@ -1395,7 +1415,11 @@
               },
               "value": 7,
               "min": 1,
-              "max": 60
+              "max": 60,
+              "hint": {
+                "en": "Fire the chemical-low alarm when a canister's remaining range drops below this many days.",
+                "de": "Löst den Chemie-Reichweite-Alarm aus, wenn die Restreichweite eines Kanisters unter so viele Tage fällt."
+              }
             },
             {
               "id": "show_advanced_diagnostics",
@@ -1455,6 +1479,10 @@
                 "de": "Pumpendrehzahl für Kachel-AN"
               },
               "value": "default",
+              "hint": {
+                "en": "Speed stage used when you switch the pump ON via the tile. 'Keep configured' leaves the controller's own program untouched.",
+                "de": "Drehzahlstufe beim Einschalten der Pumpe über die Kachel. 'Konfigurierte behalten' lässt das Regler-Programm unangetastet."
+              },
               "values": [
                 {
                   "id": "default",
