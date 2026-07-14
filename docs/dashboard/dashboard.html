@@ -682,17 +682,18 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
-        { label: "Implementierung (TDD)", done: false },
+        { label: "Implementierung (TDD)", done: true },
         { label: "Validate + Merge", done: false }
       ],
-      currentActivity: "Plan committet; als Naechstes: Implementierung (TDD, Task 1)",
+      currentActivity: "Implementierung fertig, Gates gruen (198 Tests/0 fail, typecheck, validate publish) — /code-review + /security-review laufen",
       runtime: null,
       log: [
         { at: "2026-07-14", note: "Milestone gestartet (Branch m5.9-package-guard-slopsquatting); STRIDE-Threat-Model SR-01..SR-10 committet (9c4c092)" },
         { at: "2026-07-14", note: "Brainstorming abgeschlossen (User-Entscheidungen: alle 3 Layer, Existenz+Heuristik, fail closed, M5.9); Design-Spec committet (44631ef)" },
         { at: "2026-07-14", note: "Kurz pausiert (erst-nach-M5.8-Entscheidung), noch am selben Tag revidiert: Fortsetzung sofort wegen ungeschuetztem Interim (User). Implementation-Plan geschrieben (docs/superpowers/plans/2026-07-14-m5.9-package-guard.md)" },
         { at: "2026-07-14", note: "FRICTION: Rebase-Konflikt triage-inbox.md — Nightly-Triage lief auf dem Feature-Branch und committete dort; parallel hatte PR #5 (andere Session) npm audit --audit-level=high schon in CI verankert. Task 8 auf --ignore-scripts reduziert. Dependabot-PRs behandelt: #7 declined (@types/node-Floor = Node 18 wg. compatibility >=12.2.0), #8 merged (setup-node@7), Ignore-Rule auf main (90b9d9e)" },
-        { at: "2026-07-14", note: "Tasks 1-6: Lib (parse/resolve/diff/verdict) + Hook-Shell per TDD (27 Tests, Stub-Registry, kein echtes Netz) + Registrierung in settings.json (beide Matcher-Gruppen). Live-Demo gegen echte Registry: runtime-dep + not-found geblockt (exit 2), typescript pass (exit 0). Hinweis: Hook greift fuer die Session-eigenen Bash-Calls erst nach Session-Neustart; Stdin-Demo ist der In-Session-Beleg" }
+        { at: "2026-07-14", note: "Tasks 1-6: Lib (parse/resolve/diff/verdict) + Hook-Shell per TDD (27 Tests, Stub-Registry, kein echtes Netz) + Registrierung in settings.json (beide Matcher-Gruppen). Live-Demo gegen echte Registry: runtime-dep + not-found geblockt (exit 2), typescript pass (exit 0). Hinweis: Hook greift fuer die Session-eigenen Bash-Calls erst nach Session-Neustart; Stdin-Demo ist der In-Session-Beleg" },
+        { at: "2026-07-14", note: "Tasks 7-9: CLAUDE.md Dependency-Hygiene-Block (Layer 2); ci.yml npm ci --ignore-scripts (Layer 3, reduziert — audit seit PR #5); Framework-Spiegel committet (c197107 lokal, 19 Template-Tests gruen, BLOCK_RUNTIME_DEPS=false als einzige Divergenz, Plugin 0.1.16 + CHANGELOG). Gates: 198 Tests/0 fail/1 todo, typecheck OK, validate publish PASS" }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp, Branch m5.9-package-guard-slopsquatting. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ. Zweitrepo (Spiegel): C:/Users/TorstenSturm/source/repos/skill-agentic-loop-framework.
 
