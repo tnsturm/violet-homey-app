@@ -160,4 +160,21 @@ function verdict(meta, nowMs, opts) {
   return { ok: true };
 }
 
-module.exports = { parseInstallCommand, resolveSpecName, diffNewDeps, verdict };
+/**
+ * All names a manifest already vouches for: dependency-block KEYS (what a
+ * reinstall command names) plus alias-resolved registry TARGETS. Used to keep
+ * existing deps from ever re-blocking (SR-01 no-self-DoS).
+ * @param {Record<string, any>|null} manifest parsed package.json
+ * @returns {Set<string>}
+ */
+function knownDepNames(manifest) {
+  const known = new Set();
+  for (const b of DEP_BLOCKS) {
+    for (const key of Object.keys((manifest || {})[b] || {})) known.add(key);
+  }
+  for (const [key] of flattenOverrides((manifest || {}).overrides, [])) known.add(key);
+  for (const { name } of diffNewDeps(null, manifest || {})) known.add(name);
+  return known;
+}
+
+module.exports = { parseInstallCommand, resolveSpecName, diffNewDeps, verdict, knownDepNames };
