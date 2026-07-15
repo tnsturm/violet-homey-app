@@ -215,3 +215,50 @@ test('M5.7: cover verschwindet aus desired caps bei negativer Detection — auß
   const forced = desiredM2Capabilities({ features, overrides: { cover: 'force' } });
   assert.ok(forced.includes('cover_state'));
 });
+
+test('M5.8 §3: desiredM2Capabilities gated Messeingaenge auf use=1', () => {
+  const features = { pump: true, dosingChannels: [],
+    adcChannels: [
+      { id: 1, use: true, units: 'Bar', name: 'Filterdruck', decimals: 2 },
+      { id: 2, use: false, units: 'cm', name: 'Schwallwasser', decimals: null },
+    ],
+    impulsChannels: [
+      { id: 1, use: true, units: 'cm/s', name: 'Anströmung' },
+      { id: 2, use: false, units: 'm³/h', name: 'Förderleistung' },
+    ] };
+  const caps = desiredM2Capabilities({ features, overrides: {}, diagnosticsEnabled: false });
+  assert.ok(caps.includes('measure_adc.1'));
+  assert.ok(!caps.includes('measure_adc.2'));
+  assert.ok(caps.includes('measure_impulse.1'));
+  assert.ok(!caps.includes('measure_impulse.2'));
+});
+
+test('M5.8 §3: inputs-Override force zeigt auch use=0, hide entfernt alle', () => {
+  const features = { pump: true, dosingChannels: [],
+    adcChannels: [{ id: 2, use: false, units: 'cm', name: '', decimals: null }],
+    impulsChannels: [{ id: 1, use: true, units: 'cm/s', name: '' }] };
+  const forced = desiredM2Capabilities({ features, overrides: { inputs: 'force' }, diagnosticsEnabled: false });
+  assert.ok(forced.includes('measure_adc.2'));
+  const hidden = desiredM2Capabilities({ features, overrides: { inputs: 'hide' }, diagnosticsEnabled: false });
+  assert.ok(!hidden.some((c) => c.startsWith('measure_adc.') || c.startsWith('measure_impulse.')));
+});
+
+test('M5.8 §3: ohne ConfigFacts (leere Kanallisten) keine Eingangs-Kacheln', () => {
+  const caps = desiredM2Capabilities({ features: { pump: true, dosingChannels: [], adcChannels: [], impulsChannels: [] }, overrides: {}, diagnosticsEnabled: false });
+  assert.ok(!caps.some((c) => c.startsWith('measure_adc.') || c.startsWith('measure_impulse.')));
+});
+
+test('M5.8 §3: buildM2Updates liefert ADC/IMP-Rohwerte (Pumpe-AN-Fixture: 0.48 Bar / 10.2)', () => {
+  const raw = require('./fixtures/getReadings.all.json');
+  const u = buildM2Updates(raw, { dosingChannels: [] });
+  assert.strictEqual(u['measure_adc.1'], 0.48);
+  assert.strictEqual(u['measure_impulse.1'], 10.2);
+});
+
+test('M5.8 §3/§7: Pumpe-AUS-Werte kommen roh durch, fehlende Felder fehlen', () => {
+  const u = buildM2Updates({ ADC1_value: -0.11, IMP1_value: 0 }, { dosingChannels: [] });
+  assert.strictEqual(u['measure_adc.1'], -0.11);
+  assert.strictEqual(u['measure_impulse.1'], 0);
+  assert.ok(!('measure_adc.2' in u));
+  assert.ok(!('measure_impulse.2' in u));
+});
