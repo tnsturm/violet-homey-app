@@ -13,11 +13,10 @@ water turns corrosive or scale‑forming. Every reading feeds Homey **Insights**
 ![Platform](https://img.shields.io/badge/platform-Homey%20Pro%20(local)-6A4C93)
 ![Compatibility](https://img.shields.io/badge/Homey-%E2%89%A512.2.0-6A4C93)
 
-> ⚠️ **Status: Test / beta.** Currently published on the Homey App Store's *test* channel —
-> it runs on the author's pool but hasn't been through full store certification yet. Feedback
-> and issue reports are very welcome.
+> ✅ **Status: Live on the Homey App Store**, certified by Athom. Feedback and issue
+> reports are very welcome.
 >
-> **Install (test channel):** https://homey.app/en-us/app/de.neunbft.violet/Violet-+-BADU-Blue-Pool-Control/test/
+> **Install:** https://homey.app/de-de/app/de.neunbft.violet/Violet-Poolsteuerung/
 
 * * *
 
