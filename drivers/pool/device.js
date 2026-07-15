@@ -26,6 +26,7 @@ const {
   DOSING_SUBCAPS,
   DIAGNOSTIC_CAPS,
   dosingChannelPrefix,
+  stateReasons,
   diagAnnotatable,
   diagRawValue,
 } = require('../../lib/FeatureGroups');
@@ -388,7 +389,7 @@ class PoolDevice extends Homey.Device {
       const ch = dot > 0 ? cap.slice(dot + 1) : ''; // dosing alarms are always dotted
       if (base === 'alarm_dosing_blocked') {
         const stateVal = raw[`${dosingChannelPrefix(ch)}_STATE`];
-        const reason = Array.isArray(stateVal) ? stateVal.join(', ') : '';
+        const reason = stateReasons(stateVal).join(', ');
         fireEdge(cap, val, this._m2Triggers.dosing_blocked, { channel: CH_LABEL[ch] || ch, reason });
       } else if (base === 'alarm_dosing_low') {
         fireEdge(cap, val, this._m2Triggers.dosing_low, { channel: CH_LABEL[ch] || ch, days_left: m2[`measure_dosing_days_left.${ch}`] ?? 0 });
