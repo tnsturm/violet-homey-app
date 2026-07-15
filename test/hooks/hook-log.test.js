@@ -42,6 +42,23 @@ test('logHook: no process.cwd() fallback — undefined cwd never writes (fixture
   assert.doesNotThrow(() => logHook('secrets-guard', 'block', undefined));
 });
 
+test('logHook: HOOK_LOG_DISABLE suppresses writes even with a real, existing cwd (M6.0 retro)', () => {
+  // The M4.8 fixture-safety fix only covers an undefined cwd. Several hooks'
+  // own main() computes `input.cwd || process.cwd()`, so a test that omits
+  // tool_input.cwd still hands logHook a REAL, existing cwd — the case that
+  // wrote 466 fake package-guard "block" records into the real hook-log.jsonl
+  // (found live, M6.0 retro). This is the regression test for the fix.
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hook-log-'));
+  fs.mkdirSync(path.join(dir, '.claude', 'hooks'), { recursive: true });
+  process.env.HOOK_LOG_DISABLE = '1';
+  try {
+    logHook('package-guard', 'block', dir);
+  } finally {
+    delete process.env.HOOK_LOG_DISABLE;
+  }
+  assert.strictEqual(fs.existsSync(path.join(dir, '.claude', 'hooks', 'hook-log.jsonl')), false);
+});
+
 test('spawnEnv: strips the node:test child markers, keeps the rest', () => {
   const { spawnEnv } = require('../../.claude/hooks/lib/spawn-env');
   process.env.NODE_TEST_CONTEXT = 'child-v8';

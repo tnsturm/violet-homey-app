@@ -205,7 +205,11 @@ function withStub(routes, fn) {
 function runHook(input, env) {
   const r = spawnSync(process.execPath, [HOOK], {
     input: JSON.stringify(input), encoding: 'utf8',
-    env: { ...process.env, ...(env || {}) },
+    // HOOK_LOG_DISABLE: these calls omit tool_input.cwd, so the hook's own
+    // `input.cwd || process.cwd()` resolves to THIS repo — without the flag,
+    // every block()/pass() here would write a fake record to the real
+    // hook-log.jsonl (found live, M6.0 retro: 466 polluted entries).
+    env: { ...process.env, HOOK_LOG_DISABLE: '1', ...(env || {}) },
   });
   return { code: r.status, err: (r.stderr || '').trim() };
 }
@@ -218,7 +222,8 @@ function runHook(input, env) {
  */
 function runHookAsync(input, env) {
   return new Promise((resolve) => {
-    const child = spawn(process.execPath, [HOOK], { env: { ...process.env, ...(env || {}) } });
+    // See runHook() above re: HOOK_LOG_DISABLE.
+    const child = spawn(process.execPath, [HOOK], { env: { ...process.env, HOOK_LOG_DISABLE: '1', ...(env || {}) } });
     let err = '';
     child.stderr.on('data', (c) => { err += c; });
     child.on('close', (code) => resolve({ code, err: err.trim() }));
@@ -338,6 +343,7 @@ test('hook: deep overrides nesting cannot crash-bypass the analysis (code-review
     encoding: 'utf8',
     env: {
       ...process.env,
+      HOOK_LOG_DISABLE: '1', // see runHook() above re: real-repo cwd fallback
       PACKAGE_GUARD_REGISTRY_BASE: 'http://127.0.0.1:9', PACKAGE_GUARD_DOWNLOADS_BASE: 'http://127.0.0.1:9',
       PACKAGE_GUARD_TIMEOUT_MS: '500',
     },

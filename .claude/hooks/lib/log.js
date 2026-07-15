@@ -18,12 +18,22 @@ const path = require('path');
  * fallback: hook smoke tests spawn hooks without a payload cwd while the suite
  * itself runs in the real repo, and a fallback made those fixture decisions
  * pollute the real log (found live during the M4.8 E2E verify).
+ *
+ * That fix only covers callers that pass `cwd` straight through: several hooks'
+ * own `main()` computes `input.cwd || process.cwd()` BEFORE calling logHook, so
+ * an unset payload cwd silently resolves to the real repo again — confirmed live
+ * (M6.0 retro, 2026-07-15): package-guard's test suite alone wrote 466 fake
+ * "block" records into the real hook-log.jsonl this way. `HOOK_LOG_DISABLE` is
+ * the explicit test-only opt-out for exactly that case (dev telemetry, not a
+ * security/audit log — the block DECISION itself is unaffected either way):
+ * hook test harnesses set it so any cwd a hook computes internally still can't
+ * produce telemetry.
  * @param {string} hook Hook name, e.g. `test-gate`.
  * @param {'block'|'pass'} decision Outcome at a real decision point (D3).
  * @param {string|undefined} cwd Guarded repo root (the hook-input cwd), or undefined to skip.
  */
 function logHook(hook, decision, cwd) {
-  if (!cwd) return; // no explicit cwd -> no telemetry (fixture safety, D2)
+  if (!cwd || process.env.HOOK_LOG_DISABLE) return; // fixture safety, D2 + M6.0 retro
   try {
     fs.appendFileSync(
       path.join(cwd, '.claude', 'hooks', 'hook-log.jsonl'),
