@@ -579,20 +579,21 @@ DONE-BEDINGUNGEN:
       commit: null,
       summary: "Brainstormen, welche restlichen getReadings-Werte ausgelesen werden sollen, und umsetzen (ehem. M10-Reads): Filterdruck (ADC1_value) + Anströmung/Durchfluss (IMP1/IMP2) plus Kandidaten aus den neu dokumentierten Feldern (REMAINING_RANGE inkl. h-Suffix, onewireN_freeze-/faultcount, *STATE als Pipe-String, OMNI_DC*, last_error_id …). Analyse-Basis: docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md §1. Direkt nach M5.7 (nutzt dessen Einheiten/Namen aus getConfig).",
       steps: [
-        { label: "Brainstorming", done: false },
+        { label: "Brainstorming", done: true },
         { label: "Spec", done: false },
         { label: "Plan", done: false },
         { label: "Implementierung (SDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: "Brainstorming: Kandidaten-Bewertung + Live-Verifikation (ADC1/IMP1/IMP2)",
+      currentActivity: "Spec committet — wartet auf User-Review vor writing-plans",
       runtime: null,
       log: [
         { at: "2026-07-13", note: "Milestone angelegt (API-Analyse-Session; übernimmt die Reads aus dem aufgelösten M10)" },
         { at: "2026-07-14", note: "Session gestartet — Brainstorming/Design started" },
         { at: "2026-07-14", note: "FRICTION: zugewiesener Session-Worktree (agentic-loop-framework-i18n-f6c53b) war leer/nicht registriert → Arbeit im Haupt-Checkout; Homey-Cloud-MCP meldete homey_offline → Fallback homey-cli." },
         { at: "2026-07-14", note: "Live-Verifikation (Pumpe AUS, 23:30): ADC1=-0.11/IMP1=0/IMP2=0; Fixture (Pumpe AN, RPM1): ADC1=0.48 Bar, IMP1=10.2, IMP2=8.87. getConfig: ADC1=Filterdruck/Bar/use=1, IMP1=Anströmung/cm|s/use=1, IMP2=Förderleistung/m³|h/use=0 (liefert trotzdem Werte!), NAMES-Key der Impulseingänge = NAMES_impulscountN. DOS-Range 33h (h-Suffix) + >99d live; SOLARSTATE Pipe-String + PUMPSTATE=[] gleichzeitig belegt; getOutputRuntimes = getReadings-Runtimes ohne Mehrwert; ow-freezecount inkrementiert im Juli (3→6) → Delta-Alarm wäre False-Positive-Falle. Pumpe-Schalttest übersprungen: control_enabled=false (User-Interlock respektiert), Fixture deckt Pumpe-AN ab." },
-        { at: "2026-07-15", note: "Gegentest Pumpe AN (live, 09:52, Stufe 2): ADC1=0.31 Bar (vs. -0.11 aus), IMP1=16.3 cm/s (vs. 0) — beide bestätigt. KORREKTUR: IMP2=0 trotz Pumpe an (Fixture-Wert 8.87 war historisch) → use=1-Gating final validiert, IMP2-Frage erledigt. Druck ist drehzahlabhängig (0.31@Stufe2 vs. 0.48@Stufe1 im Fixture) → Hinweis für Alarm-Schwelle. SOLARSTATE-Pipe-String, DOS 33h/>99d, last_error_id inkrementiert weiter (900) — alles erneut belegt." }
+        { at: "2026-07-15", note: "Gegentest Pumpe AN (live, 09:52, Stufe 2): ADC1=0.31 Bar (vs. -0.11 aus), IMP1=16.3 cm/s (vs. 0) — beide bestätigt. KORREKTUR: IMP2=0 trotz Pumpe an (Fixture-Wert 8.87 war historisch) → use=1-Gating final validiert, IMP2-Frage erledigt. Druck ist drehzahlabhängig (0.31@Stufe2 vs. 0.48@Stufe1 im Fixture) → Hinweis für Alarm-Schwelle. SOLARSTATE-Pipe-String, DOS 33h/>99d, last_error_id inkrementiert weiter (900) — alles erneut belegt." },
+        { at: "2026-07-15", note: "User-Abstimmung: Ansatz A (config-gesteuerte generische Kanal-Caps), KEINE Alarme in M5.8 (vertagt auf Trigger-Milestone: Violet-Alarme annehmen vs. eigene Homey-Logik + Sicherheits-Flows), STATE-Diagnose-Annotation mitnehmen. 5 GUI-Screenshots bestätigen alle getConfig-Annahmen 1:1 (Pumpe 'Ungeregelt' — pump_speed_stage=2-Beobachtung als Follow-up notiert). Neu belegt: ANALOG_adcN_decimal/_offset/_range_*-Keys. Spec committet (2026-07-15-…-m5.8-getreadings-completion-design.md) — wartet auf User-Review." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
