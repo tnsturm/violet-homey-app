@@ -90,7 +90,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-07-14",
+  updatedAt: "2026-07-15",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -508,7 +508,7 @@ window.DASHBOARD_STATUS = {
         { label: "Athom-Zertifizierung einreichen (öffentlich) + Feedback abarbeiten", done: true },
         { label: "versions.md-Zeile (Live) + Dashboard-Close", done: false }
       ],
-      currentActivity: "App ist ÖFFENTLICH LIVE (0.4.7, https://homey.app/de-de/app/de.neunbft.violet/Violet-Poolsteuerung/). Noch offen: EN-Community-Thread editieren (Beta-Hinweis raus, finaler Store-Link), DE-Post auf poolsteuerung.de veröffentlichen, Cross-Links beidseitig ergänzen, Dashboard-Close.",
+      currentActivity: "App ist ÖFFENTLICH LIVE (0.4.7). Noch offen: kurze EN-Mitteilung im Community-Thread posten (Entwurf fertig, wartet auf Forum-Login des Users; User-Entscheid 2026-07-15: poolsteuerung.de-DE-Post entfällt ersatzlos), danach Dashboard-Close.",
       runtime: null,
       log: [
         { at: "2026-07-10", note: "Milestone angelegt (User-Entscheid) als eigener Go-Live-Schritt zwischen M5 und dem →M6-Checkpoint. Erkenntnisse aus der Publish-Session 2026-07-10: (1) v0.4.4 ist als PRIVATER Store-Test publiziert + Homey-installiert (versions.md; code-gleich zu 0.4.3, Typsicherheits-Wartung, Live-Smoke grün). (2) Write-Passwort ROTIERT + dokumentiert (docs/superpowers/security/credential-rotation.md) → release-gate (c) erfüllt, kein Publish-Blocker mehr. (3) homeyCommunityTopicId = numerische ID eines SELBST angelegten Homey-Community-Threads (KEIN app-live nötig — kein Henne-Ei; optionaler Store-Link, kein harter Blocker; Doku apps.developer.homey.app/the-basics/app/manifest). (4) Zertifizierung nur für ÖFFENTLICH/Live nötig, Test nicht; bei Cert-Einreichung 'publish directly after approval' bewusst setzen. (5) homey app publish ist INTERAKTIV (keine --yes-Flags in CLI 4.1.1) → der Entwickler führt den Befehl selbst aus (Version-Update? N, Changelog hinterlegt, bestätigen Y, dann in den Developer Tools Test/Live setzen). (6) Store verlangt monoton steigende Versionen; jedes Release-Event bekommt eine eigene Nummer (0.4.4 = aktueller Store-Test). (7) Launch-Posts + README liegen fertig, aber UNTRACKED in docs/marketing/ + README.md + Design-Spec — als Teil dieses Milestones committen und nach der Live-Freigabe veröffentlichen." },
@@ -571,20 +571,19 @@ DONE-BEDINGUNGEN:
     {
       id: "M5.8",
       title: "getReadings-Vervollständigung (Filterdruck, Durchfluss, restliche Werte)",
-      status: "active",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Reads-Milestone im M2-Stil mit Brainstorming-Anteil (Wert-Auswahl aus der Analyse-Notiz) — moderates Urteil, kein Sicherheitsrisiko." },
+      status: "done",
       startedAt: "2026-07-14",
-      finishedAt: null,
-      commit: null,
+      finishedAt: "2026-07-15",
+      commit: "daeb5bb",
       summary: "Brainstormen, welche restlichen getReadings-Werte ausgelesen werden sollen, und umsetzen (ehem. M10-Reads): Filterdruck (ADC1_value) + Anströmung/Durchfluss (IMP1/IMP2) plus Kandidaten aus den neu dokumentierten Feldern (REMAINING_RANGE inkl. h-Suffix, onewireN_freeze-/faultcount, *STATE als Pipe-String, OMNI_DC*, last_error_id …). Analyse-Basis: docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md §1. Direkt nach M5.7 (nutzt dessen Einheiten/Namen aus getConfig).",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
         { label: "Implementierung (SDD)", done: true },
-        { label: "Validate + Push", done: false }
+        { label: "Validate + Push", done: true }
       ],
-      currentActivity: "Code-complete (0.6.1 installiert, Live-Smoke grün) — wartet auf User-Entscheid Push/PR (CLAUDE.md §9)",
+      currentActivity: null,
       runtime: null,
       log: [
         { at: "2026-07-13", note: "Milestone angelegt (API-Analyse-Session; übernimmt die Reads aus dem aufgelösten M10)" },
@@ -595,30 +594,10 @@ DONE-BEDINGUNGEN:
         { at: "2026-07-15", note: "User-Abstimmung: Ansatz A (config-gesteuerte generische Kanal-Caps), KEINE Alarme in M5.8 (vertagt auf Trigger-Milestone: Violet-Alarme annehmen vs. eigene Homey-Logik + Sicherheits-Flows), STATE-Diagnose-Annotation mitnehmen. 5 GUI-Screenshots bestätigen alle getConfig-Annahmen 1:1 (Pumpe 'Ungeregelt' — pump_speed_stage=2-Beobachtung als Follow-up notiert). Neu belegt: ANALOG_adcN_decimal/_offset/_range_*-Keys. Spec committet (2026-07-15-…-m5.8-getreadings-completion-design.md) — wartet auf User-Review." },
         { at: "2026-07-15", note: "Spec vom User freigegeben. Spec-Korrektur: Release-Version 0.6.0 statt 0.5.2 (HOMEY.md: neuer Milestone → minor-Bump). Plan geschrieben (7 Tasks, TDD): docs/superpowers/plans/2026-07-15-m5.8-getreadings-completion.md — Start SDD. Baseline: 240 Tests / pass 239 / todo 1." },
         { at: "2026-07-15", note: "SDD fertig (6 Impl-Tasks + Review-Fix-Runde, alle Task-Reviews Approved): Messeingangs-Caps + Parser-Fixes + STATE-Parser (todo-Test entfroren!) + Diag-Annotation. Gates: npm test 258/258 fail 0 todo 0, typecheck clean, validate publish PASS. Whole-Branch-Review (fable): 'Ready to merge' nach 1 Important-Fix (Churn-Guard-Invalidierung beim Cap-Remove, f756d54). /security-review: keine Findings. Bump 0.6.0 + Changelog en/de + versions.md. Zwischendurch: M5.5-Live-Status (App ÖFFENTLICH im Store!) aus Parallel-Session als b91c983 gesichert." },
-        { at: "2026-07-15", note: "Release 0.6.0: release-readiness PASS, Homey-Install OK. Live-Smoke fand Upgrade-Pfad-Bug: persistierte M5.7-Facts ohne impuls-name → Impuls-Kachel zeigte Fallback-Titel. Hotfix d1ca58d (FACTS_SCHEMA_VERSION-Guard, TDD, 260/260 pass, Reviewer bestätigt Ready-to-merge) → Folgebuild 0.6.1." }
+        { at: "2026-07-15", note: "Release 0.6.0: release-readiness PASS, Homey-Install OK. Live-Smoke fand Upgrade-Pfad-Bug: persistierte M5.7-Facts ohne impuls-name → Impuls-Kachel zeigte Fallback-Titel. Hotfix d1ca58d (FACTS_SCHEMA_VERSION-Guard, TDD, 260/260 pass, Reviewer bestätigt Ready-to-merge) → Folgebuild 0.6.1." },
+        { at: "2026-07-15", note: "Abschluss: 0.6.1 installiert + Live-Smoke grün ('Filterdruck' 0.32 Bar / 'Anströmung' 16 cm/s mit Config-Namen). 0.6.2 vorbereitet (code-identisch, kumulativer Store-Changelog en+de user-approved) für homey app publish durch den User; versions.md-Zeile 0.6.2 folgt NACH dem Publish (release-gate Doppel-Release-Schutz). PR #11 squash-gemerged (daeb5bb), CI grün. FRICTION: Session-Worktree leer → Projekt-Hooks (release-gate etc.) feuerten in dieser Session nicht — M6.0-Retro-Punkt." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Violet Homey Pro App — Milestone M5.8 (getReadings-Vervollstaendigung: Filterdruck, Durchfluss, restliche Werte).
-
-Aktualisiere beim Start den M5.8-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload Version bumpen (HOMEY.md) + versions.md pflegen. (Protokoll: CLAUDE.md §7-8 + HOMEY.md, automatisch geladen.)
-
-Kontext laden: ZUERST die Analyse-Notiz docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md (§1 undokumentierte Felder inkl. Live-Werten, §6 API-Fakten aus dem violet-hass-Review) + das Review der Home-Assistant-Schwester-Integration docs/superpowers/notes/2026-07-13-violet-hass-review.md + M2-Spec und Field-Classification (docs/superpowers/specs/2026-07-01-violet-homey-app-m2-full-reads-design.md, docs/superpowers/notes/2026-07-01-m2-field-classification.md). M5.7 sollte fertig sein — dessen getConfig-Anbindung liefert Einheiten (ANALOG_adcN_units) und Klartextnamen (NAMES_*).
-
-Brainstorming-Input aus dem violet-hass-Review: (1) ADC3_value dient dort als Flow-Fallback, wenn IMP2_value fehlt — bei der Durchfluss-Wert-Auswahl beruecksichtigen; (2) neuer Endpoint getOutputRuntimes (Laufzeiten der Ausgaenge separat abfragbar) — als alternative/ergaenzende Quelle fuer die Runtime-Werte evaluieren (live verifizieren); (3) deren Firmware-Kaskade mit geratenen Feldnamen ist das Gegenbeispiel — jede Feld-Uebernahme hier MUSS gegen den Live-Abgleich in Notiz §1 belegt sein.
-
-Aufgabe: BRAINSTORMEN, welche restlichen getReadings-Werte als Capabilities/Diagnostik ausgelesen werden sollen, dann umsetzen. Gesetzte Kandidaten (ehem. M10-Aufgabe A): Filterdruck = ADC1_value (bei Referenz-Hardware aktiv, Einheit Bar aus getConfig) und Anstroemung/Durchfluss = IMP1_value/IMP2_value — ROHE Werte, ZUERST live an der echten Violet verifizieren (Pumpe an vs. aus), bevor Einheiten/Schwellen festgelegt werden; optional Alarm "Rueckspuelen noetig" (steigender Druck) bzw. "kein Durchfluss trotz Pumpe an". Weitere Kandidaten aus der Notiz §1 bewerten: DOS_n_REMAINING_RANGE mit h-Suffix (parseRangeToDays in lib/FeatureGroups.js erweitern!), onewireN_freezecount/faultcount (Delta-basierte Alarme, M2-Deferral), PUMPSTATE/SOLARSTATE/HEATERSTATE als Pipe-String "wert|GRUND" (Array-Annahme korrigieren), OMNI_DC0..5, last_error_id, SYSTEM_*_alive_faultcount. Skip-Liste der M2-Klassifikation respektieren — kein Tile-Zoo.
-
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK via homey-app-Skill, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: violet).
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. npm test zeigt fail 0 — Output im Chat gezeigt.
-2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
-3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
-
-/remote-control M5.8 — getReadings-Vervollstaendigung`
+      prompt: null
     },
     {
       id: "M5.9",
