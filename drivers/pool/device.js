@@ -25,6 +25,7 @@ const {
   M2_GROUPS,
   DOSING_SUBCAPS,
   DIAGNOSTIC_CAPS,
+  INPUT_SUBCAPS,
   dosingChannelPrefix,
   stateReasons,
   diagAnnotatable,
@@ -75,6 +76,10 @@ class PoolDevice extends Homey.Device {
   _configThrottle = ConfigSource.createConfigLogThrottle();
   /** @type {Object<string, string>} capId → applied onewire title (churn guard, spec §5) */
   _owTitleState = {};
+  // M5.8 (Spec §3): letzter Options-Stand je Eingangs-Kachel (Churn-Guard,
+  // Muster _owTitleState) — setCapabilityOptions nur bei echter Änderung.
+  /** @type {Object<string, string>} */
+  _inputOptState = {};
 
   async onInit() {
     this._failures = 0;
@@ -275,7 +280,7 @@ class PoolDevice extends Homey.Device {
       this._tick().catch(this.error);
     }
     // Toggling control adds/removes the control capabilities — reconcile promptly.
-    if (changedKeys.includes('control_enabled') || changedKeys.includes('show_advanced_diagnostics')) this._tick().catch(this.error);
+    if (changedKeys.includes('control_enabled') || changedKeys.includes('show_advanced_diagnostics') || changedKeys.includes('group_inputs')) this._tick().catch(this.error);
   }
 
   async onUninit() {
@@ -463,6 +468,7 @@ class PoolDevice extends Homey.Device {
     const m2Overrides = /** @type {Object<string, *>} */ ({});
     for (const g of Object.keys(M2_GROUPS)) m2Overrides[g] = this.getSetting(`group_${g}`) || undefined;
     m2Overrides.dosing = this.getSetting('group_dosing') || undefined;
+    m2Overrides.inputs = this.getSetting('group_inputs') || undefined;
     const diagnosticsEnabled = this.getSetting('show_advanced_diagnostics') === true;
     const desiredM2 = new Set(desiredM2Capabilities({ features, overrides: m2Overrides, diagnosticsEnabled }));
 
@@ -480,6 +486,28 @@ class PoolDevice extends Homey.Device {
         }
       }
     }
+    // M5.8 (Spec §3): Eingangs-Kacheln tragen Titel/Einheit/Dezimalstellen aus
+    // der Violet-Config (NAMES_*, *_units, *_decimal); Fallback-Titel generisch,
+    // Fallback-Dezimalstellen = Manifest-Default (adc 2, impuls 1).
+    const inputChannels = /** @type {Array<[string, Array<*>]>} */ ([
+      ['measure_adc', (features.adcChannels || [])],
+      ['measure_impulse', (features.impulsChannels || [])],
+    ]);
+    for (const [base, chans] of inputChannels) {
+      for (const ch of chans) {
+        const cap = `${base}.${ch.id}`;
+        if (!this.hasCapability(cap)) continue;
+        const fallback = base === 'measure_adc'
+          ? { en: `Analog input ${ch.id}`, de: `Analogeingang ${ch.id}` }
+          : { en: `Pulse input ${ch.id}`, de: `Impulseingang ${ch.id}` };
+        const title = ch.name ? { en: ch.name, de: ch.name } : fallback;
+        const decimals = (typeof ch.decimals === 'number') ? ch.decimals : (base === 'measure_adc' ? 2 : 1);
+        const key = `${title.en}|${ch.units}|${decimals}`;
+        if (this._inputOptState[cap] === key) continue;
+        await this.setCapabilityOptions(cap, { title, units: ch.units, decimals }).catch(this.error);
+        this._inputOptState[cap] = key;
+      }
+    }
     // Remove M2 caps no longer desired (Hide override / channel gone). The managed
     // set is derived from the registry so it can never drift or miss an alarm cap
     // (a hand-listed prefix list omitted alarm_overflow_* in an earlier draft).
@@ -487,6 +515,7 @@ class PoolDevice extends Homey.Device {
       ...Object.values(M2_GROUPS).flatMap((g) => g.capIds),
       ...DOSING_SUBCAPS,
       ...DIAGNOSTIC_CAPS,
+      ...INPUT_SUBCAPS,
     ]);
     const baseOf = (/** @type {string} */ cap) => (cap.includes('.') ? cap.slice(0, cap.indexOf('.')) : cap);
     for (const cap of [...this.getCapabilities()]) {

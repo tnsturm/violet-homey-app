@@ -1407,6 +1407,42 @@
               ]
             },
             {
+              "id": "group_inputs",
+              "type": "radio",
+              "label": {
+                "en": "Measurement inputs (analog/pulse)",
+                "de": "Messeingänge (Analog/Impuls)"
+              },
+              "value": "auto",
+              "hint": {
+                "en": "Auto shows the inputs enabled in the Violet configuration, with their configured name and unit (e.g. filter pressure in bar). Always show also lists disabled inputs — their raw values may be meaningless. Hide removes all input tiles.",
+                "de": "Auto zeigt die in der Violet-Konfiguration aktivierten Eingänge mit konfiguriertem Namen und Einheit (z. B. Filterdruck in Bar). Immer anzeigen listet auch deaktivierte Eingänge — deren Rohwerte können bedeutungslos sein. Ausblenden entfernt alle Eingangs-Kacheln."
+              },
+              "values": [
+                {
+                  "id": "auto",
+                  "label": {
+                    "en": "Auto (if enabled in Violet)",
+                    "de": "Auto (wenn in Violet aktiviert)"
+                  }
+                },
+                {
+                  "id": "force",
+                  "label": {
+                    "en": "Always show",
+                    "de": "Immer anzeigen"
+                  }
+                },
+                {
+                  "id": "hide",
+                  "label": {
+                    "en": "Hide",
+                    "de": "Ausblenden"
+                  }
+                }
+              ]
+            },
+            {
               "id": "dosing_low_threshold_days",
               "type": "number",
               "label": {
@@ -1791,6 +1827,18 @@
         "de": "Licht an"
       }
     },
+    "measure_adc": {
+      "type": "number",
+      "title": {
+        "en": "Analog input",
+        "de": "Analogeingang"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 2
+    },
     "measure_chlorine": {
       "type": "number",
       "title": {
@@ -1850,6 +1898,18 @@
         "de": "Chemie-Reichweite"
       },
       "decimals": 0
+    },
+    "measure_impulse": {
+      "type": "number",
+      "title": {
+        "en": "Pulse input",
+        "de": "Impulseingang"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 1
     },
     "measure_lsi": {
       "type": "number",

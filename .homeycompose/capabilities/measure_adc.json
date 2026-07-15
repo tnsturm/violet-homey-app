@@ -1,0 +1,9 @@
+{
+  "type": "number",
+  "title": { "en": "Analog input", "de": "Analogeingang" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "decimals": 2
+}

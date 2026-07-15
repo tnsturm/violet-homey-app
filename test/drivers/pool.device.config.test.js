@@ -175,3 +175,36 @@ test('ohne Facts bleibt der Sensor-Fallback-Titel (Spec §5)', async () => {
   const titled = device._log.setOptions.filter((/** @type {*} */ o) => o.cap === 'measure_temperature.ow1');
   assert.ok(titled.every((/** @type {*} */ o) => !o.options.title || o.options.title.en === 'Sensor 1'));
 });
+
+test('M5.8 §3: use=1-Eingaenge werden Caps mit Titel/Einheit/Dezimalstellen aus der Config', async () => {
+  configResult = referenceConfig;
+  const device = await makeDevice({ ADC1_value: 0.48, IMP1_value: 10.2 });
+  assert.ok(device.hasCapability('measure_adc.1'));
+  assert.ok(device.hasCapability('measure_impulse.1'));
+  assert.ok(!device.hasCapability('measure_adc.4'));
+  assert.ok(!device.hasCapability('measure_impulse.2'));
+  const optCalls = device._log.setOptions.filter((/** @type {*} */ o) => o.cap === 'measure_adc.1');
+  const opts = optCalls[optCalls.length - 1].options;
+  assert.strictEqual(opts.title.de, 'Filterdruck');
+  assert.strictEqual(opts.units, 'Bar');
+  assert.strictEqual(opts.decimals, 2);
+  const adcVal = device._log.setValue.filter((/** @type {*} */ o) => o.cap === 'measure_adc.1');
+  const impVal = device._log.setValue.filter((/** @type {*} */ o) => o.cap === 'measure_impulse.1');
+  assert.strictEqual(adcVal[adcVal.length - 1].value, 0.48);
+  assert.strictEqual(impVal[impVal.length - 1].value, 10.2);
+});
+
+test('M5.8 §3: group_inputs=hide entfernt alle Eingangs-Kacheln', async () => {
+  configResult = referenceConfig;
+  const device = await makeDevice({ ADC1_value: 0.48 }, { group_inputs: 'hide' });
+  assert.ok(!device.getCapabilities().some((/** @type {string} */ c) => c.startsWith('measure_adc.') || c.startsWith('measure_impulse.')));
+});
+
+test('M5.8 §3: Fallback-Titel ohne NAMES-Label', async () => {
+  const noNames = { ...referenceConfig, adcChannels: referenceConfig.adcChannels.map((/** @type {*} */ c) => ({ ...c, name: '' })) };
+  configResult = noNames;
+  const device = await makeDevice({ ADC1_value: 0.48 });
+  const optCalls = device._log.setOptions.filter((/** @type {*} */ o) => o.cap === 'measure_adc.1');
+  const opts = optCalls[optCalls.length - 1].options;
+  assert.strictEqual(opts.title.de, 'Analogeingang 1');
+});
