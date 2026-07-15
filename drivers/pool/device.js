@@ -120,7 +120,12 @@ class PoolDevice extends Homey.Device {
 
     // M5.7 (spec §4.1): config facts persist in the device store (whitelisted
     // by construction, SR-12); the init tick refreshes them if needed.
-    this._configFacts = this.getStoreValue('configFacts') || null;
+    // M5.8 (spec §4): Facts älterer Schema-Version verwerfen — sonst fehlen
+    // neue Kanal-Felder (impuls name/adc decimals) bis zum nächsten
+    // CONFIGCHANGEMARKER-Move (live-belegter Upgrade-Bug 0.5.1→0.6.0).
+    this._configFacts = this.getStoreValue('configFactsSchema') === ConfigSource.FACTS_SCHEMA_VERSION
+      ? (this.getStoreValue('configFacts') || null)
+      : null;
 
     this._startPolling();
     this.log('Pool device initialized');
@@ -165,6 +170,7 @@ class PoolDevice extends Homey.Device {
       this._configFacts = facts;
       this._configAttempts = 0;
       await this.setStoreValue('configFacts', facts).catch(this.error);
+      await this.setStoreValue('configFactsSchema', ConfigSource.FACTS_SCHEMA_VERSION).catch(this.error);
       if (marker !== null) await this.setStoreValue('configMarker', marker).catch(this.error);
       if (this._configThrottle.success(Date.now()) === 'recovered') this.log('config source recovered');
       if (markerMoved) this.log('config change detected (marker', storedMarker, '→', marker, ') — re-detected features');
