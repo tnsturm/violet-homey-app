@@ -262,3 +262,10 @@ test('M5.8 §3/§7: Pumpe-AUS-Werte kommen roh durch, fehlende Felder fehlen', (
   assert.ok(!('measure_adc.2' in u));
   assert.ok(!('measure_impulse.2' in u));
 });
+
+test('M5.8 §6: diagRawValue haengt STATE-Gruende an (Pipe-String live belegt)', () => {
+  const raw = { SOLAR: 2, SOLARSTATE: '0|BLOCKED_BY_SENSOR_FAULT', PUMP: 1, PUMPSTATE: [], HEATER: 0, HEATERSTATE: ['BLOCKED_BY_ESC'] };
+  assert.strictEqual(diagRawValue('solar_active', raw), '2 | BLOCKED_BY_SENSOR_FAULT');
+  assert.strictEqual(diagRawValue('pump_running', raw), '1');
+  assert.strictEqual(diagRawValue('heater_active', raw), '0 | BLOCKED_BY_ESC');
+});
