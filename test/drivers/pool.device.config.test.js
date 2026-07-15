@@ -208,3 +208,24 @@ test('M5.8 §3: Fallback-Titel ohne NAMES-Label', async () => {
   const opts = optCalls[optCalls.length - 1].options;
   assert.strictEqual(opts.title.de, 'Analogeingang 1');
 });
+
+test('Review-Fix M5.8: hide→auto Re-Add setzt Optionen erneut (Churn-Guard-Invalidierung bei Cap-Remove)', async () => {
+  configResult = referenceConfig;
+  const device = await makeDevice({ ADC1_value: 0.48 }); // group_inputs default = auto
+  assert.ok(device.hasCapability('measure_adc.1'));
+  const beforeCount = device._log.setOptions.filter((/** @type {*} */ o) => o.cap === 'measure_adc.1').length;
+  assert.ok(beforeCount >= 1, 'expected initial setOptions call');
+
+  device.__test.settings.group_inputs = 'hide';
+  await device._tick();
+  assert.ok(!device.hasCapability('measure_adc.1'), 'cap removed while hidden');
+
+  device.__test.settings.group_inputs = 'auto';
+  await device._tick();
+  assert.ok(device.hasCapability('measure_adc.1'), 'cap re-added after switching back to auto');
+
+  const afterCalls = device._log.setOptions.filter((/** @type {*} */ o) => o.cap === 'measure_adc.1');
+  assert.ok(afterCalls.length > beforeCount,
+    `expected setOptions to run again after re-add, got ${afterCalls.length} vs before ${beforeCount}`);
+  assert.strictEqual(afterCalls[afterCalls.length - 1].options.title.de, 'Filterdruck');
+});

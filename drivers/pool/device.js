@@ -521,6 +521,7 @@ class PoolDevice extends Homey.Device {
     for (const cap of [...this.getCapabilities()]) {
       if (M2_MANAGED_BASES.has(baseOf(cap)) && !desiredM2.has(cap)) {
         await this.removeCapability(cap).catch(this.error);
+        delete this._inputOptState[cap]; // M5.8: Re-Add muss Optionen neu setzen (Churn-Guard invalidieren)
       }
     }
 

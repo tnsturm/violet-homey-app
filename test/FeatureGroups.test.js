@@ -93,6 +93,7 @@ test('stateReasons: Array-, Pipe-String- und Skalar-Formate (Spec §5, live bele
   assert.deepStrictEqual(stateReasons('0'), []);
   assert.deepStrictEqual(stateReasons(0), []);
   assert.deepStrictEqual(stateReasons(undefined), []);
+  assert.deepStrictEqual(stateReasons('0|'), []); // Review-Fix M5.8: leere Pipe-Segmente verworfen
 });
 
 test('stateBlocked: nur BLOCKED_BY_* gilt als Block (Spec §5; Notiz §2-Vokabular)', () => {

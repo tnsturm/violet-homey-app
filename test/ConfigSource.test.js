@@ -155,6 +155,13 @@ test('M5.8 §4: adcChannels tragen decimals (Key vorhanden → Zahl, sonst null)
   assert.strictEqual(adc2.decimals, null);
 });
 
+test('Review-Fix M5.8: leerer decimal-String coerct nicht zu 0, sondern zu null', () => {
+  const facts = parseConfigFacts({ ANALOG_adc1_use: '1', ANALOG_adc1_units: 'Bar', ANALOG_adc1_decimal: '' });
+  const adc1 = facts.adcChannels.find((c) => c.id === 1);
+  assert.ok(adc1);
+  assert.strictEqual(adc1.decimals, null);
+});
+
 test('M5.8 §4: impulsChannels tragen den NAMES_impulscount-Namen', () => {
   const facts = parseConfigFacts(reference);
   const impuls1 = facts.impulsChannels.find((c) => c.id === 1);
