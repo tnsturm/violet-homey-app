@@ -632,43 +632,34 @@ DONE-BEDINGUNGEN:
     {
       id: "M6.0",
       title: "Housekeeping Agentic Loop",
-      status: "todo",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
-      startedAt: null,
-      finishedAt: null,
-      commit: null,
+      status: "done",
+      startedAt: "2026-07-15",
+      finishedAt: "2026-07-15",
+      commit: "4192fce",
       summary: "Housekeeping zwischen M5.9 und M6.1: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
-        { label: "Branch-/Worktree-Cleanup", done: false },
-        { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false },
-        { label: "Skill-Quellen geprüft", done: false },
-        { label: "Workflow-Retrospektive", done: false },
-        { label: "Memory-Konsolidierung", done: false },
-        { label: "Framework-Drift geprüft", done: false },
-        { label: "Handover", done: false }
+        { label: "Branch-/Worktree-Cleanup", done: true },
+        { label: "/fewer-permission-prompts", done: true },
+        { label: "/claude-automation-recommender", done: true },
+        { label: "Skill-Quellen geprüft", done: true },
+        { label: "Workflow-Retrospektive", done: true },
+        { label: "Memory-Konsolidierung", done: true },
+        { label: "Framework-Drift geprüft", done: true },
+        { label: "Handover", done: true }
       ],
       currentActivity: null,
       runtime: null,
-      log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Housekeeping Agentic Loop vor M6.1 (CLAUDE.md §7 Punkt 4). M5.9 ist abgeschlossen, M6.1 startet als Naechstes.
-
-AKTION 1 — Branch-/Worktree-Cleanup: Pruefe lokal und auf origin, ob es nicht mehr benoetigte Branches und Worktrees gibt (git branch -vv, git branch -r, git worktree list). Zeige hinter jedem gefundenen Branch/Worktree eine kurze Erklaerung (wozu er gehoerte; gemergt, verwaist oder noch aktiv?) und biete per AskUserQuestion (multiSelect) an, welche geloescht werden sollen. Loesche danach die angewaehlten Branches (lokal + origin) und Worktrees (git worktree remove inkl. Verzeichnis auf der Festplatte).
-
-Danach fuehre aus: /milestone-checkpoint
-
-Das aktualisiert automatisch den M6.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
-2. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Drift-Check, Handover) — Ergebnisse im Chat zusammengefasst.
-3. Der M6.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
-
-/remote-control M6.0 — Housekeeping Agentic Loop`
+      log: [
+        { at: "2026-07-15", note: "AKTION 1 Branch-/Worktree-Cleanup: 9 lokale Branches geloescht (gemergt/verwaist, 2 davon per Squash-Merge — force-delete nach PR-Verifikation #10/#11 MERGED), origin/claude/context7-docs-skills geloescht (gemergt via PR #2). claude/write-path-security-reviewer bewusst behalten (nicht gemergt, kein PR, inhaltlich relevant fuer M6.1). Worktree .claude/worktrees/hallucination-package-versioning-314b82 aus Git entfernt (Metadaten sauber); das leere Verzeichnis liess sich wegen eines Windows-Datei-Locks nicht loeschen — Nutzer-Nacharbeit noetig (Fenster/Terminal schliessen + Ordner manuell entfernen)." },
+        { at: "2026-07-15", note: "Schritt 0+1: GitHub-MCP verbunden, echter list_branches-Call bestaetigt funktional. fewer-permission-prompts: 50 Transkripte/827 Bash-Calls gescannt, 2 neue curl-Allowlist-Eintraege (violet get*-Endpunkte) — bewusst NICHT breiter gefasst, da dieselbe curl-Familie auch setFunctionManually (Schreibpfad) fuer Security-Tests aufruft." },
+        { at: "2026-07-15", note: "Schritt 2 automation-recommender: write-path-security-reviewer-Subagent aus dem verwaisten Branch reaktiviert (.claude/agents/write-path-security-reviewer.md, Scope deckt explizit den M4-Inbound-Alarm-Listener ab — direkt relevant fuer M6.1). Zweite Empfehlung (violet-live-smoke-Skill) beim Umsetzen verworfen: existiert bereits als scripts/live-smoke.js, ueber release-readiness Punkt 8 eingebunden." },
+        { at: "2026-07-15", note: "Schritt 3 Skill-Quellen: homey-cli-skill/homey-app-skill frisch geklont (/tmp war geleert), inhaltlich deckungsgleich mit den installierten Kopien — kein Sync noetig. Superpowers-Version 6.1.1 bestaetigt (Aktualitaet von hier aus nicht pruefbar)." },
+        { at: "2026-07-15", note: "Schritt 4 Workflow-Retro: hook-log.jsonl zeigte package-guard:block 466x seit M5.0 (naechstgroesster Cluster: 3) — extremer Ausreisser. Root-Cause: package-guard.test.js spawnt den Hook ohne isoliertes cwd, main()s process.cwd()-Fallback loeste auf das echte Repo auf; die eigene Testsuite schrieb bei jedem Lauf echte Block-Eintraege in die reale hook-log.jsonl (die M4.8-Absicherung deckte nur logHook(..., undefined) ab, nicht diesen Fallback-Fall). Fix: HOOK_LOG_DISABLE-Testflag in lib/log.js + an 4 Spawn-Stellen verdrahtet (2. Durchgang noetig — eine 4. Stelle war zunaechst uebersehen), verifiziert: 0 neue Eintraege ueber die volle 261-Test-Suite (commit bf60614). Follow-up fuer die uebrigen 10 Hook-Testdateien (gleiches Pattern, kleinere Skala) als eigene Session ausgelagert (task_bd78372f)." },
+        { at: "2026-07-15", note: "Schritt 5 Memory-Konsolidierung: project-status.md (Luecke M5.5/M5.7-M5.9 geschlossen, stale write-path-security-reviewer-Follow-up aufgeloest) + loop-dev-roadmap.md (34→~14 Zeilen, abgeschlossene 12-Punkte-Ideenliste zu Ergebnis+Verweis eingedampft, Robobun-Backlog + noch offener changelog-lang-guard-Nebenbefund erhalten) als Diff vorgelegt — User waehlte 'Apply as shown', beide angewendet. MEMORY.md-Index-Zeile fuer project-status aktualisiert." },
+        { at: "2026-07-15", note: "Schritt 6 Framework-Drift: 3 Funde im skill-agentic-loop-framework-Repo gefixt — lib/log.js HOOK_LOG_DISABLE gespiegelt, templates/test/hooks/package-guard.test.js hatte denselben Pollution-Bug im Template selbst (mitgefixt, sonst haette jedes neue Projekt ihn geerbt), homey/README.md: changelog-lang-guard fehlte in Hook-Tabelle + Phase-3-Abschnitt (Datei+Test existierten schon, nur nie dokumentiert — bestaetigt den seit 2026-07-10 offenen loop-dev-roadmap-Nebenbefund, jetzt geschlossen). Umgekehrte Richtung: CLAUDE.md §7 Punkt 4 hier ergaenzt (Branch/Worktree-Satz fehlte, Framework hatte ihn per fruehreren Mirror bereits). Framework: CHANGELOG + plugin.json 0.1.17→0.1.18, Commit 9646828 (lokal, kein Push nach User-Freigabe)." },
+        { at: "2026-07-15", note: "Schritt 7+8: Dashboard-Eintrag auf done gesetzt, recommendedModel entfernt (Konvention: nur fuer offene Milestones). M6.1 hat bereits ein recommendedModel — kein Nachtrag noetig. Handover-Push vorbereitet." }
+      ],
+      prompt: null
     },
     {
       id: "M6.1",
