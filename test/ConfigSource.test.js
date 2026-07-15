@@ -33,11 +33,11 @@ test('parseConfigFacts: reference fixture → normalized facts', () => {
   assert.strictEqual(f.pumpPvsurplusUse, true);
   assert.strictEqual(f.backwashControlUse, false);
   assert.strictEqual(f.refillControlUse, true);
-  assert.deepStrictEqual(f.adcChannels[0], { id: 1, use: true, units: 'Bar', name: 'Filterdruck' });
+  assert.deepStrictEqual(f.adcChannels[0], { id: 1, use: true, units: 'Bar', name: 'Filterdruck', decimals: 2 });
   assert.strictEqual(f.adcChannels.length, 6);
   assert.deepStrictEqual(f.impulsChannels, [
-    { id: 1, use: true, units: 'cm/s' },
-    { id: 2, use: false, units: 'm³/h' },
+    { id: 1, use: true, units: 'cm/s', name: 'Anströmung' },
+    { id: 2, use: false, units: 'm³/h', name: 'Förderleistung' },
   ]);
   assert.strictEqual(f.onewireNames['1'], 'Schwimmbad');
   assert.strictEqual(f.onewireNames['9'], undefined); // leer → weggelassen
@@ -143,6 +143,32 @@ test('factsEmpty: reference fixture (full signal) → false', () => {
 
 test('factsEmpty: a single known flag counts as signal → false', () => {
   assert.strictEqual(factsEmpty(parseConfigFacts({ COVER_control_use: '0' })), false);
+});
+
+test('M5.8 §4: adcChannels tragen decimals (Key vorhanden → Zahl, sonst null)', () => {
+  const facts = parseConfigFacts(reference);
+  const adc1 = facts.adcChannels.find((c) => c.id === 1);
+  const adc2 = facts.adcChannels.find((c) => c.id === 2);
+  assert.ok(adc1);
+  assert.ok(adc2);
+  assert.strictEqual(adc1.decimals, 2);
+  assert.strictEqual(adc2.decimals, null);
+});
+
+test('M5.8 §4: impulsChannels tragen den NAMES_impulscount-Namen', () => {
+  const facts = parseConfigFacts(reference);
+  const impuls1 = facts.impulsChannels.find((c) => c.id === 1);
+  const impuls2 = facts.impulsChannels.find((c) => c.id === 2);
+  assert.ok(impuls1);
+  assert.ok(impuls2);
+  assert.strictEqual(impuls1.name, 'Anströmung');
+  assert.strictEqual(impuls2.name, 'Förderleistung');
+});
+
+test('M5.8 §4: CONFIG_QUERY enthaelt die neuen Keys und weiter keine Secret-Gruppen', () => {
+  assert.ok(CONFIG_QUERY.includes('NAMES_impulscount'));
+  for (let i = 1; i <= 6; i += 1) assert.ok(CONFIG_QUERY.includes(`ANALOG_adc${i}_decimal`));
+  for (const k of CONFIG_QUERY) assert.ok(!/^(NET_|NOTIFY_|USER_|AUTH_|BACKUP_|SERVICES_)/.test(k), k);
 });
 
 test('createConfigLogThrottle: first/repeat/recovered-Sequenz (SR-16)', () => {
