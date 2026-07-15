@@ -581,10 +581,10 @@ DONE-BEDINGUNGEN:
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
-        { label: "Implementierung (SDD)", done: false },
+        { label: "Implementierung (SDD)", done: true },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: "SDD-Umsetzung (7 Tasks, subagent-driven)",
+      currentActivity: "Release 0.6.0: release-readiness + Homey-Install + Live-Smoke",
       runtime: null,
       log: [
         { at: "2026-07-13", note: "Milestone angelegt (API-Analyse-Session; übernimmt die Reads aus dem aufgelösten M10)" },
@@ -593,7 +593,8 @@ DONE-BEDINGUNGEN:
         { at: "2026-07-14", note: "Live-Verifikation (Pumpe AUS, 23:30): ADC1=-0.11/IMP1=0/IMP2=0; Fixture (Pumpe AN, RPM1): ADC1=0.48 Bar, IMP1=10.2, IMP2=8.87. getConfig: ADC1=Filterdruck/Bar/use=1, IMP1=Anströmung/cm|s/use=1, IMP2=Förderleistung/m³|h/use=0 (liefert trotzdem Werte!), NAMES-Key der Impulseingänge = NAMES_impulscountN. DOS-Range 33h (h-Suffix) + >99d live; SOLARSTATE Pipe-String + PUMPSTATE=[] gleichzeitig belegt; getOutputRuntimes = getReadings-Runtimes ohne Mehrwert; ow-freezecount inkrementiert im Juli (3→6) → Delta-Alarm wäre False-Positive-Falle. Pumpe-Schalttest übersprungen: control_enabled=false (User-Interlock respektiert), Fixture deckt Pumpe-AN ab." },
         { at: "2026-07-15", note: "Gegentest Pumpe AN (live, 09:52, Stufe 2): ADC1=0.31 Bar (vs. -0.11 aus), IMP1=16.3 cm/s (vs. 0) — beide bestätigt. KORREKTUR: IMP2=0 trotz Pumpe an (Fixture-Wert 8.87 war historisch) → use=1-Gating final validiert, IMP2-Frage erledigt. Druck ist drehzahlabhängig (0.31@Stufe2 vs. 0.48@Stufe1 im Fixture) → Hinweis für Alarm-Schwelle. SOLARSTATE-Pipe-String, DOS 33h/>99d, last_error_id inkrementiert weiter (900) — alles erneut belegt." },
         { at: "2026-07-15", note: "User-Abstimmung: Ansatz A (config-gesteuerte generische Kanal-Caps), KEINE Alarme in M5.8 (vertagt auf Trigger-Milestone: Violet-Alarme annehmen vs. eigene Homey-Logik + Sicherheits-Flows), STATE-Diagnose-Annotation mitnehmen. 5 GUI-Screenshots bestätigen alle getConfig-Annahmen 1:1 (Pumpe 'Ungeregelt' — pump_speed_stage=2-Beobachtung als Follow-up notiert). Neu belegt: ANALOG_adcN_decimal/_offset/_range_*-Keys. Spec committet (2026-07-15-…-m5.8-getreadings-completion-design.md) — wartet auf User-Review." },
-        { at: "2026-07-15", note: "Spec vom User freigegeben. Spec-Korrektur: Release-Version 0.6.0 statt 0.5.2 (HOMEY.md: neuer Milestone → minor-Bump). Plan geschrieben (7 Tasks, TDD): docs/superpowers/plans/2026-07-15-m5.8-getreadings-completion.md — Start SDD. Baseline: 240 Tests / pass 239 / todo 1." }
+        { at: "2026-07-15", note: "Spec vom User freigegeben. Spec-Korrektur: Release-Version 0.6.0 statt 0.5.2 (HOMEY.md: neuer Milestone → minor-Bump). Plan geschrieben (7 Tasks, TDD): docs/superpowers/plans/2026-07-15-m5.8-getreadings-completion.md — Start SDD. Baseline: 240 Tests / pass 239 / todo 1." },
+        { at: "2026-07-15", note: "SDD fertig (6 Impl-Tasks + Review-Fix-Runde, alle Task-Reviews Approved): Messeingangs-Caps + Parser-Fixes + STATE-Parser (todo-Test entfroren!) + Diag-Annotation. Gates: npm test 258/258 fail 0 todo 0, typecheck clean, validate publish PASS. Whole-Branch-Review (fable): 'Ready to merge' nach 1 Important-Fix (Churn-Guard-Invalidierung beim Cap-Remove, f756d54). /security-review: keine Findings. Bump 0.6.0 + Changelog en/de + versions.md. Zwischendurch: M5.5-Live-Status (App ÖFFENTLICH im Store!) aus Parallel-Session als b91c983 gesichert." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 

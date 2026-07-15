@@ -66,5 +66,9 @@
   "0.5.1": {
     "en": "The main water-temperature tile now fills automatically when several sensors are connected — it picks the sensor named like your pool. Added help texts to the settings that needed explaining.",
     "de": "Die Haupt-Wassertemperatur-Kachel füllt sich jetzt automatisch, wenn mehrere Fühler angeschlossen sind — sie wählt den nach dem Pool benannten Fühler. Erklärende Hilfetexte zu den wichtigsten Einstellungen ergänzt."
+  },
+  "0.6.0": {
+    "en": "New: measurement-input tiles (e.g. filter pressure, flow) straight from your Violet configuration, with your names, units and decimals; canister range now also parses hour values (33h) and >99d.",
+    "de": "Neu: Messeingangs-Kacheln (z. B. Filterdruck, Anströmung) direkt aus der Violet-Konfiguration, mit Euren Namen, Einheiten und Nachkommastellen; Kanister-Reichweite versteht jetzt auch Stundenwerte (33h) und >99d."
   }
 }
