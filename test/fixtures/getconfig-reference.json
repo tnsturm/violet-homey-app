@@ -43,5 +43,8 @@
   "NAMES_adc5": "Versorgung",
   "NAMES_adc6": "-",
   "date": "14.07.2026",
-  "time": "15:24:20"
+  "time": "15:24:20",
+  "ANALOG_adc1_decimal": "2",
+  "NAMES_impulscount1": "Anströmung",
+  "NAMES_impulscount2": "Förderleistung"
 }

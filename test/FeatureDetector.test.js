@@ -107,6 +107,6 @@ test('M5.7 adc/impuls-Kanäle werden durchgereicht (M5.8-Vorleistung)', () => {
   const facts = parseConfigFacts(referenceConfig);
   const f = detectFeatures({}, facts);
   assert.strictEqual(f.adcChannels.length, 6);
-  assert.deepStrictEqual(f.impulsChannels[0], { id: 1, use: true, units: 'cm/s' });
+  assert.deepStrictEqual(f.impulsChannels[0], { id: 1, use: true, units: 'cm/s', name: 'Anströmung' });
   assert.deepStrictEqual(detectFeatures({}).adcChannels, []);
 });

@@ -1,0 +1,9 @@
+{
+  "type": "number",
+  "title": { "en": "Pulse input", "de": "Impulseingang" },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "decimals": 1
+}

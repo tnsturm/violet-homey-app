@@ -16,6 +16,7 @@ let currentFixture = null;
 VioletClient.fetchReadings = async () => currentFixture;
 
 const ConfigSource = require('../../lib/ConfigSource');
+const { FACTS_SCHEMA_VERSION } = require('../../lib/ConfigSource');
 /** @type {?import('../../lib/ConfigSource').ConfigFacts} */
 let configResult = null;
 let configError = /** @type {?Error} */ (null);
@@ -117,7 +118,9 @@ test('Marker-Änderung refresht Facts im selben Tick (Spec §4.2)', async () => 
 
 test('Store-Facts überleben Restart; unveränderter Marker → kein Re-Fetch (Spec §4.1)', async () => {
   configResult = referenceConfig;
-  const device = await makeDevice({ COVER_STATE: 'OPEN' }, {}, { configFacts: referenceConfig, configMarker: 148 });
+  // M5.8 Hotfix: nur Facts der aktuellen Schema-Version überleben ohne Re-Fetch
+  // (siehe FACTS_SCHEMA_VERSION-Tests unten für den alte-Schema-Fall).
+  const device = await makeDevice({ COVER_STATE: 'OPEN' }, {}, { configFacts: referenceConfig, configFactsSchema: FACTS_SCHEMA_VERSION, configMarker: 148 });
   await device._tick();
   assert.strictEqual(configCalls, 0, 'facts from store, marker unchanged → no fetch');
   assert.ok(!device.getCapabilities().includes('cover_state'), 'stored facts drive detection');
@@ -174,4 +177,90 @@ test('ohne Facts bleibt der Sensor-Fallback-Titel (Spec §5)', async () => {
   await device._tick();
   const titled = device._log.setOptions.filter((/** @type {*} */ o) => o.cap === 'measure_temperature.ow1');
   assert.ok(titled.every((/** @type {*} */ o) => !o.options.title || o.options.title.en === 'Sensor 1'));
+});
+
+test('M5.8 §3: use=1-Eingaenge werden Caps mit Titel/Einheit/Dezimalstellen aus der Config', async () => {
+  configResult = referenceConfig;
+  const device = await makeDevice({ ADC1_value: 0.48, IMP1_value: 10.2 });
+  assert.ok(device.hasCapability('measure_adc.1'));
+  assert.ok(device.hasCapability('measure_impulse.1'));
+  assert.ok(!device.hasCapability('measure_adc.4'));
+  assert.ok(!device.hasCapability('measure_impulse.2'));
+  const optCalls = device._log.setOptions.filter((/** @type {*} */ o) => o.cap === 'measure_adc.1');
+  const opts = optCalls[optCalls.length - 1].options;
+  assert.strictEqual(opts.title.de, 'Filterdruck');
+  assert.strictEqual(opts.units, 'Bar');
+  assert.strictEqual(opts.decimals, 2);
+  const adcVal = device._log.setValue.filter((/** @type {*} */ o) => o.cap === 'measure_adc.1');
+  const impVal = device._log.setValue.filter((/** @type {*} */ o) => o.cap === 'measure_impulse.1');
+  assert.strictEqual(adcVal[adcVal.length - 1].value, 0.48);
+  assert.strictEqual(impVal[impVal.length - 1].value, 10.2);
+});
+
+test('M5.8 §3: group_inputs=hide entfernt alle Eingangs-Kacheln', async () => {
+  configResult = referenceConfig;
+  const device = await makeDevice({ ADC1_value: 0.48 }, { group_inputs: 'hide' });
+  assert.ok(!device.getCapabilities().some((/** @type {string} */ c) => c.startsWith('measure_adc.') || c.startsWith('measure_impulse.')));
+});
+
+test('M5.8 §3: Fallback-Titel ohne NAMES-Label', async () => {
+  const noNames = { ...referenceConfig, adcChannels: referenceConfig.adcChannels.map((/** @type {*} */ c) => ({ ...c, name: '' })) };
+  configResult = noNames;
+  const device = await makeDevice({ ADC1_value: 0.48 });
+  const optCalls = device._log.setOptions.filter((/** @type {*} */ o) => o.cap === 'measure_adc.1');
+  const opts = optCalls[optCalls.length - 1].options;
+  assert.strictEqual(opts.title.de, 'Analogeingang 1');
+});
+
+test('Review-Fix M5.8: hide→auto Re-Add setzt Optionen erneut (Churn-Guard-Invalidierung bei Cap-Remove)', async () => {
+  configResult = referenceConfig;
+  const device = await makeDevice({ ADC1_value: 0.48 }); // group_inputs default = auto
+  assert.ok(device.hasCapability('measure_adc.1'));
+  const beforeCount = device._log.setOptions.filter((/** @type {*} */ o) => o.cap === 'measure_adc.1').length;
+  assert.ok(beforeCount >= 1, 'expected initial setOptions call');
+
+  device.__test.settings.group_inputs = 'hide';
+  await device._tick();
+  assert.ok(!device.hasCapability('measure_adc.1'), 'cap removed while hidden');
+
+  device.__test.settings.group_inputs = 'auto';
+  await device._tick();
+  assert.ok(device.hasCapability('measure_adc.1'), 'cap re-added after switching back to auto');
+
+  const afterCalls = device._log.setOptions.filter((/** @type {*} */ o) => o.cap === 'measure_adc.1');
+  assert.ok(afterCalls.length > beforeCount,
+    `expected setOptions to run again after re-add, got ${afterCalls.length} vs before ${beforeCount}`);
+  assert.strictEqual(afterCalls[afterCalls.length - 1].options.title.de, 'Filterdruck');
+});
+
+// M5.8 Hotfix (live-belegter Upgrade-Bug 0.5.1→0.6.0): Facts persistiert unter
+// der M5.7-Form (impuls ohne name, adc ohne decimals) müssen verworfen und
+// einmalig neu geholt werden — auch wenn CONFIGCHANGEMARKER unverändert ist.
+test('M5.8 Hotfix: Facts alter Schema-Version werden verworfen und neu geholt (Upgrade-Bug 0.5.1→0.6.0)', async () => {
+  const oldShapeFacts = {
+    ...referenceConfig,
+    impulsChannels: referenceConfig.impulsChannels.map(({ /** @type {*} */ name, ...c }) => c),
+    adcChannels: referenceConfig.adcChannels.map(({ /** @type {*} */ decimals, ...c }) => c),
+  };
+  configResult = referenceConfig;
+  const device = await makeDevice(
+    { ADC1_value: 0.48, IMP1_value: 10.2 },
+    {},
+    { configFacts: oldShapeFacts, configMarker: 148 }, // kein configFactsSchema → alte (M5.7) Form
+  );
+  assert.ok(configCalls >= 1, 'refetch happened despite stored facts + unmoved marker');
+  const titled = device._log.setOptions.filter((/** @type {*} */ o) => o.cap === 'measure_impulse.1');
+  const opts = titled[titled.length - 1].options;
+  assert.strictEqual(opts.title.de, 'Anströmung', `expected configured impuls name, got ${JSON.stringify(opts.title)}`);
+  assert.strictEqual(device.__test.store.configFactsSchema, FACTS_SCHEMA_VERSION, 'schema version persisted after successful refetch');
+});
+
+test('M5.8 Hotfix: passende Schema-Version + unveränderter Marker → kein Re-Fetch', async () => {
+  configResult = referenceConfig;
+  const device = await makeDevice(
+    { COVER_STATE: 'OPEN' },
+    {},
+    { configFacts: referenceConfig, configFactsSchema: FACTS_SCHEMA_VERSION, configMarker: 148 },
+  );
+  assert.strictEqual(configCalls, 0, 'matching schema + unmoved marker → no refetch');
 });

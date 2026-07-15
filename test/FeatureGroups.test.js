@@ -6,7 +6,8 @@ const {
   parseDurationToHours,
   parseRangeToDays,
   stateIsActive,
-  faultQueueActive,
+  stateReasons,
+  stateBlocked,
   dosingChannelPrefix,
   diagAnnotatable,
   diagRawValue,
@@ -61,6 +62,23 @@ test('parseRangeToDays returns null on unparseable input', () => {
   assert.strictEqual(parseRangeToDays(undefined), null);
 });
 
+test('parseRangeToDays: h-Suffix wird in Tage umgerechnet (Spec §5, live "33h")', () => {
+  assert.strictEqual(parseRangeToDays('33h'), 1.38); // 33/24, 2 Nachkommastellen
+  assert.strictEqual(parseRangeToDays('24h'), 1);
+});
+
+test('parseRangeToDays: ">"-Praefix wird akzeptiert (Spec §5, live ">99d")', () => {
+  assert.strictEqual(parseRangeToDays('>99d'), 99);
+  assert.strictEqual(parseRangeToDays('> 99d'), 99);
+});
+
+test('parseRangeToDays: bestehende d/w/m-Semantik unveraendert', () => {
+  assert.strictEqual(parseRangeToDays('37d'), 37);
+  assert.strictEqual(parseRangeToDays('6w'), 42);
+  assert.strictEqual(parseRangeToDays('2m'), 60);
+  assert.strictEqual(parseRangeToDays('kaputt'), null);
+});
+
 test('stateIsActive is true only for "ON" (case-insensitive)', () => {
   assert.strictEqual(stateIsActive('ON'), true);
   assert.strictEqual(stateIsActive('on'), true);
@@ -68,11 +86,25 @@ test('stateIsActive is true only for "ON" (case-insensitive)', () => {
   assert.strictEqual(stateIsActive(undefined), false);
 });
 
-test('faultQueueActive is true for a non-empty array only', () => {
-  assert.strictEqual(faultQueueActive(['BLOCKED_BY_MAX_AMOUNT']), true);
-  assert.strictEqual(faultQueueActive([]), false);
-  assert.strictEqual(faultQueueActive('OK'), false);
-  assert.strictEqual(faultQueueActive(undefined), false);
+test('stateReasons: Array-, Pipe-String- und Skalar-Formate (Spec §5, live belegt)', () => {
+  assert.deepStrictEqual(stateReasons(['BLOCKED_BY_MAX_AMOUNT']), ['BLOCKED_BY_MAX_AMOUNT']);
+  assert.deepStrictEqual(stateReasons([]), []);
+  assert.deepStrictEqual(stateReasons('0|BLOCKED_BY_SENSOR_FAULT'), ['BLOCKED_BY_SENSOR_FAULT']);
+  assert.deepStrictEqual(stateReasons('0'), []);
+  assert.deepStrictEqual(stateReasons(0), []);
+  assert.deepStrictEqual(stateReasons(undefined), []);
+  assert.deepStrictEqual(stateReasons('0|'), []); // Review-Fix M5.8: leere Pipe-Segmente verworfen
+});
+
+test('stateBlocked: nur BLOCKED_BY_* gilt als Block (Spec §5; Notiz §2-Vokabular)', () => {
+  assert.strictEqual(stateBlocked(['BLOCKED_BY_MAX_AMOUNT']), true);
+  assert.strictEqual(stateBlocked('0|BLOCKED_BY_SENSOR_FAULT'), true);
+  assert.strictEqual(stateBlocked(['CL_DOSING_CONTROLLER']), false);
+  assert.strictEqual(stateBlocked(['TRESHOLDS_REACHED']), false);
+  assert.strictEqual(stateBlocked(['MANUAL_DOSING']), false);
+  assert.strictEqual(stateBlocked([]), false);
+  assert.strictEqual(stateBlocked('OK'), false);
+  assert.strictEqual(stateBlocked(undefined), false);
 });
 
 test('dosingChannelPrefix maps channel keys to Violet field prefixes', () => {
@@ -168,13 +200,9 @@ test('desiredM2Capabilities: diagnostics gated by diagnosticsEnabled', () => {
   assert.ok(desiredM2Capabilities({ features, overrides: {}, diagnosticsEnabled: true }).includes('last_error_id'));
 });
 
-// Known M2 defect, frozen as { todo: true } (M4.7 spec §6; CLAUDE.md §4 rule):
-// faultQueueActive flags ANY non-empty DOS_n_STATE, but CL_DOSING_CONTROLLER is
-// normal controller operation (live-verified, versions.md 0.3.1) — real blocks
-// are BLOCKED_BY_*/fault codes. This test encodes the CORRECT expectation and
-// shows up as `todo` on every run without failing the suite; the fixing session
-// removes the todo flag.
-test('alarm_dosing_blocked: CL_DOSING_CONTROLLER alone is normal operation, not a block', { todo: true }, () => {
+// M5.8 (Spec §5): entfroren — stateBlocked wertet nur BLOCKED_BY_* als Block;
+// CL_DOSING_CONTROLLER ist Normalbetrieb (live-verifiziert, versions.md 0.3.1).
+test('alarm_dosing_blocked: CL_DOSING_CONTROLLER alone is normal operation, not a block', () => {
   const raw = require('./fixtures/dosing-normal-controller-state.json');
   const u = buildM2Updates(raw, { dosingChannels: ['cl'] });
   assert.strictEqual(u['alarm_dosing_blocked.cl'], false);
@@ -187,4 +215,58 @@ test('M5.7: cover verschwindet aus desired caps bei negativer Detection — auß
   assert.ok(!auto.includes('cover_state'));
   const forced = desiredM2Capabilities({ features, overrides: { cover: 'force' } });
   assert.ok(forced.includes('cover_state'));
+});
+
+test('M5.8 §3: desiredM2Capabilities gated Messeingaenge auf use=1', () => {
+  const features = { pump: true, dosingChannels: [],
+    adcChannels: [
+      { id: 1, use: true, units: 'Bar', name: 'Filterdruck', decimals: 2 },
+      { id: 2, use: false, units: 'cm', name: 'Schwallwasser', decimals: null },
+    ],
+    impulsChannels: [
+      { id: 1, use: true, units: 'cm/s', name: 'Anströmung' },
+      { id: 2, use: false, units: 'm³/h', name: 'Förderleistung' },
+    ] };
+  const caps = desiredM2Capabilities({ features, overrides: {}, diagnosticsEnabled: false });
+  assert.ok(caps.includes('measure_adc.1'));
+  assert.ok(!caps.includes('measure_adc.2'));
+  assert.ok(caps.includes('measure_impulse.1'));
+  assert.ok(!caps.includes('measure_impulse.2'));
+});
+
+test('M5.8 §3: inputs-Override force zeigt auch use=0, hide entfernt alle', () => {
+  const features = { pump: true, dosingChannels: [],
+    adcChannels: [{ id: 2, use: false, units: 'cm', name: '', decimals: null }],
+    impulsChannels: [{ id: 1, use: true, units: 'cm/s', name: '' }] };
+  const forced = desiredM2Capabilities({ features, overrides: { inputs: 'force' }, diagnosticsEnabled: false });
+  assert.ok(forced.includes('measure_adc.2'));
+  const hidden = desiredM2Capabilities({ features, overrides: { inputs: 'hide' }, diagnosticsEnabled: false });
+  assert.ok(!hidden.some((c) => c.startsWith('measure_adc.') || c.startsWith('measure_impulse.')));
+});
+
+test('M5.8 §3: ohne ConfigFacts (leere Kanallisten) keine Eingangs-Kacheln', () => {
+  const caps = desiredM2Capabilities({ features: { pump: true, dosingChannels: [], adcChannels: [], impulsChannels: [] }, overrides: {}, diagnosticsEnabled: false });
+  assert.ok(!caps.some((c) => c.startsWith('measure_adc.') || c.startsWith('measure_impulse.')));
+});
+
+test('M5.8 §3: buildM2Updates liefert ADC/IMP-Rohwerte (Pumpe-AN-Fixture: 0.48 Bar / 10.2)', () => {
+  const raw = require('./fixtures/getReadings.all.json');
+  const u = buildM2Updates(raw, { dosingChannels: [] });
+  assert.strictEqual(u['measure_adc.1'], 0.48);
+  assert.strictEqual(u['measure_impulse.1'], 10.2);
+});
+
+test('M5.8 §3/§7: Pumpe-AUS-Werte kommen roh durch, fehlende Felder fehlen', () => {
+  const u = buildM2Updates({ ADC1_value: -0.11, IMP1_value: 0 }, { dosingChannels: [] });
+  assert.strictEqual(u['measure_adc.1'], -0.11);
+  assert.strictEqual(u['measure_impulse.1'], 0);
+  assert.ok(!('measure_adc.2' in u));
+  assert.ok(!('measure_impulse.2' in u));
+});
+
+test('M5.8 §6: diagRawValue haengt STATE-Gruende an (Pipe-String live belegt)', () => {
+  const raw = { SOLAR: 2, SOLARSTATE: '0|BLOCKED_BY_SENSOR_FAULT', PUMP: 1, PUMPSTATE: [], HEATER: 0, HEATERSTATE: ['BLOCKED_BY_ESC'] };
+  assert.strictEqual(diagRawValue('solar_active', raw), '2 | BLOCKED_BY_SENSOR_FAULT');
+  assert.strictEqual(diagRawValue('pump_running', raw), '1');
+  assert.strictEqual(diagRawValue('heater_active', raw), '0 | BLOCKED_BY_ESC');
 });

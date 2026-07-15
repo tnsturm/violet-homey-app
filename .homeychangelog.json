@@ -66,5 +66,17 @@
   "0.5.1": {
     "en": "The main water-temperature tile now fills automatically when several sensors are connected — it picks the sensor named like your pool. Added help texts to the settings that needed explaining.",
     "de": "Die Haupt-Wassertemperatur-Kachel füllt sich jetzt automatisch, wenn mehrere Fühler angeschlossen sind — sie wählt den nach dem Pool benannten Fühler. Erklärende Hilfetexte zu den wichtigsten Einstellungen ergänzt."
+  },
+  "0.6.0": {
+    "en": "New: measurement-input tiles (e.g. filter pressure, flow) straight from your Violet configuration, with your names, units and decimals; canister range now also parses hour values (33h) and >99d.",
+    "de": "Neu: Messeingangs-Kacheln (z. B. Filterdruck, Anströmung) direkt aus der Violet-Konfiguration, mit Euren Namen, Einheiten und Nachkommastellen; Kanister-Reichweite versteht jetzt auch Stundenwerte (33h) und >99d."
+  },
+  "0.6.1": {
+    "en": "Fix: after upgrading, input tiles now pick up your configured names and decimals immediately (stored configuration facts are refreshed once).",
+    "de": "Fix: Nach einem Upgrade übernehmen die Eingangs-Kacheln Eure konfigurierten Namen und Nachkommastellen sofort (gespeicherte Konfigurations-Fakten werden einmalig neu gelesen)."
+  },
+  "0.6.2": {
+    "en": "The app now reads your Violet’s configuration: new input tiles (e.g. filter pressure, flow) with your own names, units and decimals; temperature sensors show your configured names, and “Auto” picks the right pool sensor; ghost tiles for features disabled in the Violet disappear; canister range now also understands hour values.",
+    "de": "Die App liest jetzt Eure Violet-Konfiguration: neue Eingangs-Kacheln (z. B. Filterdruck, Anströmung) mit Euren Namen, Einheiten und Nachkommastellen; Temperaturfühler zeigen Eure Klartextnamen, „Auto“ wählt den richtigen Pool-Fühler; Geister-Kacheln für in der Violet deaktivierte Funktionen verschwinden; die Kanister-Reichweite versteht jetzt auch Stundenwerte."
   }
 }

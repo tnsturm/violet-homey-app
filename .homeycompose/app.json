@@ -1,6 +1,6 @@
 {
   "id": "de.neunbft.violet",
-  "version": "0.5.1",
+  "version": "0.6.2",
   "compatibility": ">=12.2.0",
   "sdk": 3,
   "platforms": [
