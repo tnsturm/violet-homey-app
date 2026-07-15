@@ -61,6 +61,23 @@ test('parseRangeToDays returns null on unparseable input', () => {
   assert.strictEqual(parseRangeToDays(undefined), null);
 });
 
+test('parseRangeToDays: h-Suffix wird in Tage umgerechnet (Spec §5, live "33h")', () => {
+  assert.strictEqual(parseRangeToDays('33h'), 1.38); // 33/24, 2 Nachkommastellen
+  assert.strictEqual(parseRangeToDays('24h'), 1);
+});
+
+test('parseRangeToDays: ">"-Praefix wird akzeptiert (Spec §5, live ">99d")', () => {
+  assert.strictEqual(parseRangeToDays('>99d'), 99);
+  assert.strictEqual(parseRangeToDays('> 99d'), 99);
+});
+
+test('parseRangeToDays: bestehende d/w/m-Semantik unveraendert', () => {
+  assert.strictEqual(parseRangeToDays('37d'), 37);
+  assert.strictEqual(parseRangeToDays('6w'), 42);
+  assert.strictEqual(parseRangeToDays('2m'), 60);
+  assert.strictEqual(parseRangeToDays('kaputt'), null);
+});
+
 test('stateIsActive is true only for "ON" (case-insensitive)', () => {
   assert.strictEqual(stateIsActive('ON'), true);
   assert.strictEqual(stateIsActive('on'), true);
