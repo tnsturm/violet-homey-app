@@ -59,7 +59,9 @@
       "Bash(npm test)",
       "Bash(npm run typecheck)",
       "Bash(npx tsc -p tsconfig.checkjs.json)",
-      "Bash(homey select current)"
+      "Bash(homey select current)",
+      "Bash(curl -s --max-time 10 \"http://violet/get*)",
+      "Bash(curl -s -m 10 \"http://violet/get*)"
     ]
   }
 }
