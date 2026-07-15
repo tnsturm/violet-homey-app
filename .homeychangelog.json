@@ -70,5 +70,9 @@
   "0.6.0": {
     "en": "New: measurement-input tiles (e.g. filter pressure, flow) straight from your Violet configuration, with your names, units and decimals; canister range now also parses hour values (33h) and >99d.",
     "de": "Neu: Messeingangs-Kacheln (z. B. Filterdruck, Anströmung) direkt aus der Violet-Konfiguration, mit Euren Namen, Einheiten und Nachkommastellen; Kanister-Reichweite versteht jetzt auch Stundenwerte (33h) und >99d."
+  },
+  "0.6.1": {
+    "en": "Fix: after upgrading, input tiles now pick up your configured names and decimals immediately (stored configuration facts are refreshed once).",
+    "de": "Fix: Nach einem Upgrade übernehmen die Eingangs-Kacheln Eure konfigurierten Namen und Nachkommastellen sofort (gespeicherte Konfigurations-Fakten werden einmalig neu gelesen)."
   }
 }
