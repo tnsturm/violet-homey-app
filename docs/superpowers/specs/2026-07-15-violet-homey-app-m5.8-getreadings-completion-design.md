@@ -159,7 +159,8 @@ CLAUDE.md §5 (reine Reads); /security-review auf dem Diff läuft trotzdem vor M
 
 ## §10 Release
 
-Version nach Schema 0.5.Y (M5-Reihe): nächster deploybarer Build = **0.5.2**; Changelog en+de
+Version nach HOMEY.md (neuer Milestone → `npx homey app version minor`, wie M5.7 → 0.5.0):
+erster deploybarer M5.8-Build = **0.6.0**; Changelog en+de
 mit User-Freigabe (Store-Changelog-Regel); versions.md-Zeile pro Install. Dev-Gate
 `npx homey app validate --level=debug`, Done-Gates: npm test fail 0, validate publish PASS,
 release-readiness PASS vor Install.
