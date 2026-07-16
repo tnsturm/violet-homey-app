@@ -664,7 +664,7 @@ DONE-BEDINGUNGEN:
     {
       id: "M6.1",
       title: "Inbound-Alarme (HTTP → Flow-Trigger)",
-      status: "todo",
+      status: "active",
       recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Brainstorming/Spec bereits fertig; verbleibend ist Plan+SDD für ein klar umrissenes Feature (HTTP-Listener + Flow-Trigger)." },
       startedAt: "2026-06-26",
       finishedAt: null,
@@ -677,10 +677,12 @@ DONE-BEDINGUNGEN:
         { label: "Implementierung (SDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: null,
+      currentActivity: "Plan-Phase: Threat Model (neuer HTTP-Listener, CLAUDE.md §5) + writing-plans auf separatem Branch",
       runtime: null,
       log: [
-        { at: "2026-06-26", note: "Brainstorming + Spec abgeschlossen und freigegeben" }
+        { at: "2026-06-26", note: "Brainstorming + Spec abgeschlossen und freigegeben" },
+        { at: "2026-07-15", note: "Session gestartet; auf User-Wunsch Brainstorming-Re-Run statt direktem Plan: getReadings-Fehlerfelder live geprueft (nur last_error_id, keine Subject/Timestamp-Begleitfelder) und HA-Integration Xerolux/violet-hass als Prior-Art gesichtet (reines Polling, kein NOTIFY-Empfaenger, aber ~180-Codes-Mapping error_codes.py)." },
+        { at: "2026-07-16", note: "User-Entscheidung: Option A (NOTIFY-Listener, Spec bleibt) — als Experiment auf separatem Branch claude/violet-http-notifications-m6-1-1976f1, damit andere Milestones parallel laufen koennen. Spec-Nachtrag §10 dokumentiert die verworfene Polling-Alternative. Haupt-Checkout geht zurueck auf main; M6.1 laeuft im eigenen Worktree." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 

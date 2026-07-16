@@ -1,7 +1,7 @@
 # Violet Homey App — Inbound HTTP Alarm Notifications (Design Spec)
 
 - **Date:** 2026-06-26
-- **Status:** Approved design (pending written-spec review)
+- **Status:** Approved design (re-confirmed 2026-07-16 after re-brainstorm — see §10)
 - **Project:** Homey Pro app for the PoolDigital "Violet" pool controller
 - **This spec covers:** Milestone **M4** — Inbound HTTP alarm notifications: receiving the Violet's outbound HTTP "NOTIFY" alarm requests on Homey and exposing them as a device Flow trigger. Feature-independent of M1–M3 (buildable any time after M0); sequenced in the roadmap as **M4**, before publish-readiness (now **M5**).
 
@@ -116,3 +116,32 @@ Violet  ──HTTP GET ?ERRORCODE&SUBJECT──►  PoolDevice's HTTP listener (
 - No error-code→text mapping table or dropdown (free-text filter only).
 - No multi-device alarm routing beyond "fire on all Pool devices".
 - No outbound write/control (that is M3).
+
+---
+
+## 10. Nachtrag 2026-07-16 — Re-Brainstorm: Polling-Alternative geprüft und verworfen
+
+Before starting M6.1 implementation, the user asked whether **polling `getReadings` error
+fields** would be simpler than the embedded listener (also considering end-user setup
+effort on the Violet). Findings:
+
+- **`getReadings?ALL` (live, fw 1.2.1, 401 keys) exposes exactly one generic error field:
+  `last_error_id`** (int). No subject text, no timestamp, no active/cleared flag, no
+  history. Clearing semantics unconfirmed; events between two polls are lost (only the
+  last code is visible). Live evidence: `last_error_id = 902` while
+  `SOLARSTATE = "0|BLOCKED_BY_SENSOR_FAULT"` was active.
+- **Home Assistant prior art ([Xerolux/violet-hass](https://github.com/Xerolux/violet-hass)): polling-only, no NOTIFY receiver.**
+  Its `http_control.py` is outbound control. To render `last_error_id` it maintains a
+  hand-curated ~180-entry bilingual `error_codes.py` (codes 0–210 + A1–A8) — and even
+  that list lacks the live-observed `902`. HA exposes it as a diagnostic *sensor*
+  ("Letzte Fehler-ID"), not as a reliable alarm *event*.
+- The component-level `*_STATE`/`BLOCKED_BY_*`/faultcount fields are already covered by
+  this app's polled `alarm_*` capabilities (M2/M5.8) — a polling variant would largely
+  duplicate those without gaining the controller's alarm text.
+
+**Decision (user, 2026-07-16): keep this approved design (embedded NOTIFY listener,
+Option A).** Push latency and the controller-localized `SUBJECT` text are exactly what an
+alarm feature needs; `last_error_id` polling would deliver neither. The milestone runs as
+an **experiment on a separate branch** (`claude/violet-http-notifications-m6-1-…`) so other
+milestones can proceed in parallel; specs and plans for M6.1 are committed on that branch
+until merge.
