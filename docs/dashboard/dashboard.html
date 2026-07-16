@@ -677,7 +677,7 @@ DONE-BEDINGUNGEN:
         { label: "Implementierung (SDD)", done: true },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: "Release (Plan Task 6): Changelog-Freigabe (en+de) durch User, Version-Bump 0.7.0, Install + Live-Verifikation an echter Violet (NOTIFY-Port umstellen), dann §9-Entscheidung Push/PR",
+      currentActivity: "0.7.0 auf Torstens Homey Pro installiert (Listener live, Negativ-Check 400 OK). Offen: Live-Verifikation mit echtem Violet-Alarm (NOTIFY-Empfaenger 5080→22222 umstellen, User dabei) + §9-Entscheidung Push/PR.",
       runtime: null,
       log: [
         { at: "2026-06-26", note: "Brainstorming + Spec abgeschlossen und freigegeben" },
@@ -685,7 +685,8 @@ DONE-BEDINGUNGEN:
         { at: "2026-07-16", note: "User-Entscheidung: Option A (NOTIFY-Listener, Spec bleibt) — als Experiment auf separatem Branch claude/violet-http-notifications-m6-1-1976f1, damit andere Milestones parallel laufen koennen. Spec-Nachtrag §10 dokumentiert die verworfene Polling-Alternative. Haupt-Checkout geht zurueck auf main; M6.1 laeuft im eigenen Worktree." },
         { at: "2026-07-16", note: "Plan fertig: Threat Model SR-M6-01..09 (erster Inbound-Listener der App, CLAUDE.md §5) + 6-Task-TDD-Plan committet (1633678). NOTIFY-Parameternamen ERRORCODE/SUBJECT live aus dem bestehenden Relay-Flow bestaetigt (Micro Web Server, Pfad violetmessage, GET)." },
         { at: "2026-07-16", note: "SDD Tasks 1-5 fertig (543b943..87707cd): lib/NotifyServer.js (parseAlarm total + Singleton-Server mit Limits/Rate-Gate), alarm_received-Card + notifyPort-Setting, Device-Wiring mit serialisiertem Lifecycle, READMEs. Reviews: 4 Task-Reviews (je 1 Important gefixt: NUL-Byte, Registry-Race, titleFormatted, Mock-Binding), write-path-security-reviewer alle SRs PASS (Rebind-Race gefixt bb90e58), /security-review 0 Findings, Final-Review READY TO MERGE. Gates im Chat gezeigt: npm test 294/294 fail 0, validate publish PASS." },
-        { at: "2026-07-16", note: "FRICTION: Task-5-Docs-Subagent hat auf main im Haupt-Checkout committet statt im Worktree (a7c12bd) — main per reset --keep zurueckgesetzt, Commit als f0098ab auf den Branch cherry-gepickt; Fixer-Dispatches enthalten seitdem einen expliziten Worktree-Check. Zweite Friction: LLM-geschriebene \\u-Escapes landeten zweimal als rohe Steuerbytes in Dateien (Plan + NotifyServer.js) — Fix jeweils per Node-Skript statt Editor-Tool." }
+        { at: "2026-07-16", note: "FRICTION: Task-5-Docs-Subagent hat auf main im Haupt-Checkout committet statt im Worktree (a7c12bd) — main per reset --keep zurueckgesetzt, Commit als f0098ab auf den Branch cherry-gepickt; Fixer-Dispatches enthalten seitdem einen expliziten Worktree-Check. Zweite Friction: LLM-geschriebene \\u-Escapes landeten zweimal als rohe Steuerbytes in Dateien (Plan + NotifyServer.js) — Fix jeweils per Node-Skript statt Editor-Tool." },
+        { at: "2026-07-16", note: "Release 0.7.0: Changelog en+de user-approved (nur bump+install, Live-Test spaeter), release-readiness GO (inkl. live-smoke PASS), homey app install auf Torstens Homey Pro erfolgreich (Commit 98c44b2, versions.md-Zeile ergaenzt). Listener live verifiziert per Negativ-Check: GET ohne ERRORCODE → 400 Bad Request, statisch. Violet-NOTIFY-Empfaenger ist noch NICHT umgestellt (weiter 5080/Micro Web Server) — Alarm-Ende-zu-Ende-Test folgt gemeinsam mit User." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
