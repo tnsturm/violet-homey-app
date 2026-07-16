@@ -1,0 +1,18 @@
+{
+  "id": "alarm_received",
+  "title": { "en": "An alarm was received", "de": "Ein Alarm wurde empfangen" },
+  "hint": { "en": "Fires when the Violet pushes an alarm via its NOTIFY feature (HTTP). In the Violet's notification settings, set Homey's IP and the listener port from this device's settings as receiver — any path works.", "de": "Wird ausgelöst, wenn die Violet einen Alarm über ihre NOTIFY-Funktion (HTTP) sendet. In den Benachrichtigungs-Einstellungen der Violet die Homey-IP und den Empfangsport aus den Geräte-Einstellungen als Empfänger eintragen — der Pfad ist egal." },
+  "tokens": [
+    { "name": "errorcode", "type": "string", "title": { "en": "Error code", "de": "Fehlercode" }, "example": "1234" },
+    { "name": "subject", "type": "string", "title": { "en": "Description", "de": "Beschreibung" }, "example": "Filterdruck zu niedrig" }
+  ],
+  "args": [
+    {
+      "name": "errorcode",
+      "type": "text",
+      "required": false,
+      "title": { "en": "Error code filter (optional)", "de": "Fehlercode-Filter (optional)" },
+      "placeholder": { "en": "empty = every alarm", "de": "leer = jeder Alarm" }
+    }
+  ]
+}

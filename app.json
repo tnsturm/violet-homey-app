@@ -32,6 +32,52 @@
   "flow": {
     "triggers": [
       {
+        "id": "alarm_received",
+        "title": {
+          "en": "An alarm was received",
+          "de": "Ein Alarm wurde empfangen"
+        },
+        "hint": {
+          "en": "Fires when the Violet pushes an alarm via its NOTIFY feature (HTTP). In the Violet's notification settings, set Homey's IP and the listener port from this device's settings as receiver — any path works.",
+          "de": "Wird ausgelöst, wenn die Violet einen Alarm über ihre NOTIFY-Funktion (HTTP) sendet. In den Benachrichtigungs-Einstellungen der Violet die Homey-IP und den Empfangsport aus den Geräte-Einstellungen als Empfänger eintragen — der Pfad ist egal."
+        },
+        "tokens": [
+          {
+            "name": "errorcode",
+            "type": "string",
+            "title": {
+              "en": "Error code",
+              "de": "Fehlercode"
+            },
+            "example": "1234"
+          },
+          {
+            "name": "subject",
+            "type": "string",
+            "title": {
+              "en": "Description",
+              "de": "Beschreibung"
+            },
+            "example": "Filterdruck zu niedrig"
+          }
+        ],
+        "args": [
+          {
+            "name": "errorcode",
+            "type": "text",
+            "required": false,
+            "title": {
+              "en": "Error code filter (optional)",
+              "de": "Fehlercode-Filter (optional)"
+            },
+            "placeholder": {
+              "en": "empty = every alarm",
+              "de": "leer = jeder Alarm"
+            }
+          }
+        ]
+      },
+      {
         "id": "backwash_valve_fault",
         "title": {
           "en": "Backwash valve fault",
@@ -743,6 +789,21 @@
           "value": 60,
           "min": 60,
           "max": 900
+        },
+        {
+          "id": "notifyPort",
+          "type": "number",
+          "label": {
+            "en": "Alarm listener port (Violet NOTIFY)",
+            "de": "Alarm-Empfangsport (Violet NOTIFY)"
+          },
+          "value": 22222,
+          "min": 1024,
+          "max": 65535,
+          "hint": {
+            "en": "Port this app listens on for the Violet's NOTIFY alarm pushes (plain HTTP, LAN only — never port-forward it). Enter the same port as notification receiver on the Violet; the path does not matter. Default 22222 avoids Homey's own ports and the ephemeral range.",
+            "de": "Port, auf dem diese App die NOTIFY-Alarme der Violet empfängt (reines HTTP, nur LAN — niemals ins Internet weiterleiten). Denselben Port in der Violet als Benachrichtigungs-Empfänger eintragen; der Pfad ist egal. Standard 22222 vermeidet Homeys eigene Ports und den Ephemeral-Bereich."
+          }
         },
         {
           "id": "pumpWarmupSeconds",
