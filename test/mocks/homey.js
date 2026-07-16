@@ -68,8 +68,9 @@ class Device {
   // M6.1 (Task 4): records `this.error(...)` calls as joined strings so tests
   // can assert a clear error was logged (e.g. EADDRINUSE) without depending on
   // exact call shape (single formatted string vs. multiple args).
+  // Arrow field preserves `this` binding when passed as bare callback (e.g. `.catch(this.error)`).
   /** @param {Array<*>} args */
-  error(...args) { this._log.errors.push(args.map((a) => (typeof a === 'string' ? a : String(a))).join(' ')); }
+  error = (...args) => { this._log.errors.push(args.map((a) => (typeof a === 'string' ? a : String(a))).join(' ')); }
 
   /** @param {string} key */
   getSetting(key) {
