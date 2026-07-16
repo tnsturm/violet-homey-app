@@ -106,3 +106,9 @@ test('duplicate params: first value wins', () => {
 test('lowercase param names are NOT accepted (contract is exact, confirmed live)', () => {
   assert.strictEqual(parseAlarm('GET', '/x?errorcode=1&subject=s'), null);
 });
+
+test('subject sanitization strips C1 controls and Unicode line/paragraph separators (SR-M6-03)', () => {
+  // a + U+009B (C1 control) + b + U+2028 (LINE SEPARATOR) + c
+  const parsed = parseAlarm('GET', '/x?ERRORCODE=1&SUBJECT=a%C2%9Bb%E2%80%A8c');
+  assert.deepStrictEqual(parsed, { errorcode: '1', subject: 'a b c' });
+});

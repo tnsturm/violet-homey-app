@@ -140,3 +140,21 @@ test('trigger-only data path: an alarm changes no capability and no setting (SR-
     assert.strictEqual(JSON.stringify(device.__test.settings), settingsBefore);
   } finally { await device.onUninit(); }
 });
+
+test('rapid unawaited rebinds leave exactly one live listener — no orphan (SR-M6-07)', async () => {
+  const portA = await freePort();
+  const portB = await freePort();
+  const device = await makeDevice({ notifyPort: portA });
+  try {
+    device.__test.settings.notifyPort = portB;
+    // Two overlapping lifecycle transitions, deliberately not awaited in between.
+    const p1 = device._startNotifyServer();
+    const p2 = device._startNotifyServer();
+    await Promise.all([p1, p2]);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    const res = await get(portB, '/x?ERRORCODE=5&SUBJECT=new');
+    assert.strictEqual(res.status, 200);
+    await assert.rejects(get(portA, '/x?ERRORCODE=6&SUBJECT=old'));
+    assert.strictEqual((device._log.triggers.alarm_received || []).length, 1);
+  } finally { await device.onUninit(); }
+});

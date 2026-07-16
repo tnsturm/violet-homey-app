@@ -83,6 +83,13 @@ class PoolDevice extends Homey.Device {
   _inputOptState = {};
   /** @type {?{ close: () => Promise<void> }} M6.1 NOTIFY listener handle (spec §3) */
   _notify = null;
+  // M6.1 (SR-M6-07): serializes every listener lifecycle transition (start/rebind/
+  // close) through one chain so an in-flight bind can never interleave with a
+  // second caller — otherwise the loser's handle is never closed (orphaned
+  // unauthenticated listener until app restart). Always resolved (errors caught),
+  // so it can be chained on forever.
+  /** @type {Promise<void>} serializes listener rebind/close transitions (SR-M6-07) */
+  _notifyOp = Promise.resolve();
 
   async onInit() {
     this._failures = 0;
@@ -290,11 +297,20 @@ class PoolDevice extends Homey.Device {
     this._tick().catch(this.error);
   }
 
-  // M6.1 (spec §3/§6): listener lifecycle mirrors _startPolling — (re)bind on init
-  // and on notifyPort change, close in onUninit. Bind failures (EADDRINUSE — e.g.
-  // the old Micro Web Server still holding the port) only log; the device keeps
-  // polling (SR-M6-07).
-  async _startNotifyServer() {
+  // M6.1 (spec §3/§6, SR-M6-07): public entry point — appends the (re)bind onto
+  // the _notifyOp chain instead of running it directly, so a rebind that arrives
+  // while a previous start/close is still in flight waits its turn rather than
+  // racing it (see _notifyOp field comment). Returns the chain so callers that
+  // do await it (onInit, onSettings) still observe completion.
+  _startNotifyServer() {
+    this._notifyOp = this._notifyOp.then(() => this._doStartNotifyServer()).catch(this.error);
+    return this._notifyOp;
+  }
+
+  // The actual (re)bind — only ever called from within the _notifyOp chain.
+  // Bind failures (EADDRINUSE — e.g. the old Micro Web Server still holding the
+  // port) only log; the device keeps polling (SR-M6-07).
+  async _doStartNotifyServer() {
     if (this._notify) { await this._notify.close().catch(this.error); this._notify = null; }
     const port = this.getSetting('notifyPort') || 22222;
     try {
@@ -336,7 +352,13 @@ class PoolDevice extends Homey.Device {
 
   async onUninit() {
     if (this._poll) this.homey.clearInterval(this._poll);
-    if (this._notify) { await this._notify.close().catch(this.error); this._notify = null; }
+    // SR-M6-07: append the close as another _notifyOp link (not a bare close)
+    // so an in-flight start/rebind finishes first — otherwise it could re-open
+    // the listener right after this close and leak it past device teardown.
+    this._notifyOp = this._notifyOp.then(async () => {
+      if (this._notify) { await this._notify.close().catch(this.error); this._notify = null; }
+    }).catch(this.error);
+    await this._notifyOp;
   }
 
   async _tick() {
