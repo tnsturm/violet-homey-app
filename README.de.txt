@@ -1,3 +1,5 @@
 Bindet deinen PoolDigital-Violet- oder BADU-Blue-Poolregler über das lokale Netzwerk in Homey ein. Zeigt Wasserchemie und Temperaturen, Pumpen- und Anlagenstatus sowie Dosierung in Echtzeit und steuert Filterpumpe, Licht und PV-Überschuss-Modus.
 
 Ein optionales Langelier-Index-Sicherheitsnetz (LSI) warnt, bevor das Wasser korrosiv oder kalkabscheidend wird. Alle Werte fließen in Homey Insights und Flow.
+
+Alarm-Benachrichtigungen (NOTIFY): die App kann die Alarm-Pushes der Violet empfangen und löst den Flow-Trigger 'Ein Alarm wurde empfangen' aus. In den Benachrichtigungs-Einstellungen der Violet die Homey-IP und den 'Alarm-Empfangsport' aus den Geräte-Einstellungen als Empfänger eintragen (beliebiger Pfad, reines HTTP GET). Hinweis: die Violet unterstützt für NOTIFY weder HTTPS noch Authentifizierung — jedes Gerät im LAN könnte so eine Anfrage senden. Der Trigger ist reine Anzeige-/Automations-Information und kann den Pool niemals steuern. Den Port nur im LAN nutzen; niemals ins Internet weiterleiten.

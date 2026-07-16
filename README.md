@@ -217,6 +217,19 @@ Reads never need credentials.
 
 * * *
 
+## Alarm notifications (NOTIFY)
+
+The app can receive the Violet's alarm pushes and fire the **"An alarm was received"** Flow
+trigger. To set it up, configure the Violet's notification settings to send alarms to your
+Homey's IP and the **Alarm listener port** from the device settings (any path, plain HTTP
+GET).
+
+**Security note:** The Violet supports neither HTTPS nor authentication for NOTIFY, so any
+device on your LAN could send such a request. However, the trigger is display and automation
+data only — it can never control the pool. Keep the port **LAN‑only**; never port‑forward it.
+
+* * *
+
 ## Roadmap
 
 This release covers monitoring, the LSI safety net and basic control. Planned for coming
