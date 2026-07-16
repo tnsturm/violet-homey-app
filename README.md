@@ -235,7 +235,6 @@ data only — it can never control the pool. Keep the port **LAN‑only**; never
 This release covers monitoring, the LSI safety net and basic control. Planned for coming
 versions:
 
-- **Live alarm push** — the controller's own alarm/error notifications as Flow triggers.
 - **PoolLab / LabCOM import** — auto‑import chemistry values (calcium hardness, alkalinity, CYA) to feed the LSI instead of entering them by hand.
 - **Water‑balance recommendations** — advisory guidance on reaching a good LSI band, including fresh‑water CO₂ out‑gassing effects.
 - **Dosing & setpoints** — adjust target pH/ORP and dosing from Homey.
