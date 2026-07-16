@@ -673,16 +673,17 @@ DONE-BEDINGUNGEN:
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
-        { label: "Plan", done: false },
+        { label: "Plan", done: true },
         { label: "Implementierung (SDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: "Plan-Phase: Threat Model (neuer HTTP-Listener, CLAUDE.md §5) + writing-plans auf separatem Branch",
+      currentActivity: "Implementierung (SDD): frischer Implementer + Review je Task nach Plan 2026-07-16",
       runtime: null,
       log: [
         { at: "2026-06-26", note: "Brainstorming + Spec abgeschlossen und freigegeben" },
         { at: "2026-07-15", note: "Session gestartet; auf User-Wunsch Brainstorming-Re-Run statt direktem Plan: getReadings-Fehlerfelder live geprueft (nur last_error_id, keine Subject/Timestamp-Begleitfelder) und HA-Integration Xerolux/violet-hass als Prior-Art gesichtet (reines Polling, kein NOTIFY-Empfaenger, aber ~180-Codes-Mapping error_codes.py)." },
-        { at: "2026-07-16", note: "User-Entscheidung: Option A (NOTIFY-Listener, Spec bleibt) — als Experiment auf separatem Branch claude/violet-http-notifications-m6-1-1976f1, damit andere Milestones parallel laufen koennen. Spec-Nachtrag §10 dokumentiert die verworfene Polling-Alternative. Haupt-Checkout geht zurueck auf main; M6.1 laeuft im eigenen Worktree." }
+        { at: "2026-07-16", note: "User-Entscheidung: Option A (NOTIFY-Listener, Spec bleibt) — als Experiment auf separatem Branch claude/violet-http-notifications-m6-1-1976f1, damit andere Milestones parallel laufen koennen. Spec-Nachtrag §10 dokumentiert die verworfene Polling-Alternative. Haupt-Checkout geht zurueck auf main; M6.1 laeuft im eigenen Worktree." },
+        { at: "2026-07-16", note: "Plan fertig: Threat Model SR-M6-01..09 (erster Inbound-Listener der App, CLAUDE.md §5) + 6-Task-TDD-Plan committet (1633678). NOTIFY-Parameternamen ERRORCODE/SUBJECT live aus dem bestehenden Relay-Flow bestaetigt (Micro Web Server, Pfad violetmessage, GET)." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
