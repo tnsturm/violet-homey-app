@@ -674,16 +674,18 @@ DONE-BEDINGUNGEN:
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
-        { label: "Implementierung (SDD)", done: false },
+        { label: "Implementierung (SDD)", done: true },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: "Implementierung (SDD): frischer Implementer + Review je Task nach Plan 2026-07-16",
+      currentActivity: "Release (Plan Task 6): Changelog-Freigabe (en+de) durch User, Version-Bump 0.7.0, Install + Live-Verifikation an echter Violet (NOTIFY-Port umstellen), dann §9-Entscheidung Push/PR",
       runtime: null,
       log: [
         { at: "2026-06-26", note: "Brainstorming + Spec abgeschlossen und freigegeben" },
         { at: "2026-07-15", note: "Session gestartet; auf User-Wunsch Brainstorming-Re-Run statt direktem Plan: getReadings-Fehlerfelder live geprueft (nur last_error_id, keine Subject/Timestamp-Begleitfelder) und HA-Integration Xerolux/violet-hass als Prior-Art gesichtet (reines Polling, kein NOTIFY-Empfaenger, aber ~180-Codes-Mapping error_codes.py)." },
         { at: "2026-07-16", note: "User-Entscheidung: Option A (NOTIFY-Listener, Spec bleibt) — als Experiment auf separatem Branch claude/violet-http-notifications-m6-1-1976f1, damit andere Milestones parallel laufen koennen. Spec-Nachtrag §10 dokumentiert die verworfene Polling-Alternative. Haupt-Checkout geht zurueck auf main; M6.1 laeuft im eigenen Worktree." },
-        { at: "2026-07-16", note: "Plan fertig: Threat Model SR-M6-01..09 (erster Inbound-Listener der App, CLAUDE.md §5) + 6-Task-TDD-Plan committet (1633678). NOTIFY-Parameternamen ERRORCODE/SUBJECT live aus dem bestehenden Relay-Flow bestaetigt (Micro Web Server, Pfad violetmessage, GET)." }
+        { at: "2026-07-16", note: "Plan fertig: Threat Model SR-M6-01..09 (erster Inbound-Listener der App, CLAUDE.md §5) + 6-Task-TDD-Plan committet (1633678). NOTIFY-Parameternamen ERRORCODE/SUBJECT live aus dem bestehenden Relay-Flow bestaetigt (Micro Web Server, Pfad violetmessage, GET)." },
+        { at: "2026-07-16", note: "SDD Tasks 1-5 fertig (543b943..87707cd): lib/NotifyServer.js (parseAlarm total + Singleton-Server mit Limits/Rate-Gate), alarm_received-Card + notifyPort-Setting, Device-Wiring mit serialisiertem Lifecycle, READMEs. Reviews: 4 Task-Reviews (je 1 Important gefixt: NUL-Byte, Registry-Race, titleFormatted, Mock-Binding), write-path-security-reviewer alle SRs PASS (Rebind-Race gefixt bb90e58), /security-review 0 Findings, Final-Review READY TO MERGE. Gates im Chat gezeigt: npm test 294/294 fail 0, validate publish PASS." },
+        { at: "2026-07-16", note: "FRICTION: Task-5-Docs-Subagent hat auf main im Haupt-Checkout committet statt im Worktree (a7c12bd) — main per reset --keep zurueckgesetzt, Commit als f0098ab auf den Branch cherry-gepickt; Fixer-Dispatches enthalten seitdem einen expliziten Worktree-Check. Zweite Friction: LLM-geschriebene \\u-Escapes landeten zweimal als rohe Steuerbytes in Dateien (Plan + NotifyServer.js) — Fix jeweils per Node-Skript statt Editor-Tool." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
