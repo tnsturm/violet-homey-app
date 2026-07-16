@@ -102,6 +102,20 @@ test('singleton per port: second create attaches, both fire, close is refcounted
   });
 });
 
+test('concurrent unawaited creates on one port share one server — no spurious EADDRINUSE (spec §3)', async () => {
+  const port = await freePort();
+  /** @type {string[]} */
+  const calls = [];
+  const [h1, h2] = await Promise.all([
+    createNotifyServer({ port, onAlarm: () => calls.push('a') }),
+    createNotifyServer({ port, onAlarm: () => calls.push('b') }),
+  ]);
+  try {
+    await get(port, '/x?ERRORCODE=1&SUBJECT=s');
+    assert.deepStrictEqual(calls.sort(), ['a', 'b']);
+  } finally { await h1.close(); await h2.close(); }
+});
+
 test('trigger-rate limit: flood fires onAlarm at most triggersPerWindow times (SR-M6-06)', async () => {
   const port = await freePort();
   let fired = 0;
