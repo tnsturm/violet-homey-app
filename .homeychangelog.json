@@ -82,5 +82,9 @@
   "0.7.0": {
     "en": "New: receive the Violet's alarm notifications (NOTIFY) directly - the 'An alarm was received' Flow trigger delivers error code and description. Configurable listener port (default 22222); no extra apps needed.",
     "de": "Neu: Alarm-Benachrichtigungen (NOTIFY) der Violet direkt empfangen - der Flow-Trigger 'Ein Alarm wurde empfangen' liefert Fehlercode und Beschreibung. Konfigurierbarer Empfangsport (Standard 22222); keine Zusatz-Apps mehr nötig."
+  },
+  "0.7.1": {
+    "en": "Fix: the 'An alarm was received' Flow trigger now correctly fires Flows (the card is now bound to the Pool device - please re-select the device in existing Flows).",
+    "de": "Fix: der Flow-Trigger 'Ein Alarm wurde empfangen' löst Flows jetzt korrekt aus (die Karte ist nun an das Pool-Gerät gebunden - bitte in bestehenden Flows das Gerät neu auswählen)."
   }
 }
