@@ -90,5 +90,9 @@
   "0.7.2": {
     "en": "Fix: all alarm Flow triggers (LSI warning, dosing blocked/low, overflow, backwash valve) now correctly fire Flows. The cards are now bound to the Pool device - please re-select the device once in existing Flows using them.",
     "de": "Fix: alle Alarm-Flow-Trigger (LSI-Warnung, Dosierung blockiert/niedrig, Überlauf, Rückspülventil) lösen Flows jetzt korrekt aus. Die Karten sind nun an das Pool-Gerät gebunden - bitte in bestehenden Flows einmalig das Gerät neu auswählen."
+  },
+  "0.7.3": {
+    "en": "New: receive the Violet's alarm notifications (NOTIFY) directly - the 'An alarm was received' Flow trigger delivers error code and description; configurable listener port (default 22222), no extra apps needed. Fixed: all alarm Flow triggers (LSI warning, dosing blocked/low, overflow, backwash valve) now correctly fire Flows - please re-select the Pool device once in existing Flows using these cards.",
+    "de": "Neu: Alarm-Benachrichtigungen (NOTIFY) der Violet direkt empfangen - der Flow-Trigger 'Ein Alarm wurde empfangen' liefert Fehlercode und Beschreibung; konfigurierbarer Empfangsport (Standard 22222), keine Zusatz-Apps nötig. Behoben: alle Alarm-Flow-Trigger (LSI-Warnung, Dosierung blockiert/niedrig, Überlauf, Rückspülventil) lösen Flows jetzt korrekt aus - bitte in bestehenden Flows einmalig das Pool-Gerät neu auswählen."
   }
 }
