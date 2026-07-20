@@ -759,22 +759,22 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       ],
       currentActivity: null,
       runtime: null,
-      log: [],
+      log: [
+        { at: "2026-07-20", note: "Vorab-Fix (User-Befund): Der Branch-/Worktree-Cleanup stand nur als AKTION-1-Prosa in jedem Checkpoint-Prompt + CLAUDE.md §7, aber nicht im milestone-checkpoint-Skill selbst — /milestone-checkpoint allein haette ihn uebersprungen. Jetzt Schritt 1 des Skills (lokal + Framework-Template, alte Schritte 1-8 → 2-9, Framework-Abgleich 6a/6b → 7a/7b); CLAUDE.md §7 Punkt 4, Bootstrap-SKILL.md Phase 5 und die 3 offenen Checkpoint-Prompts (M7.0/M8.0/M9.0) entsprechend angepasst. Framework: CHANGELOG 0.1.20 + plugin.json-Bump." }
+      ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
 Housekeeping Agentic Loop vor M7.1 (CLAUDE.md §7 Punkt 4). M6.1 ist abgeschlossen, M7.1 startet als Naechstes.
 
-AKTION 1 — Branch-/Worktree-Cleanup: Pruefe lokal und auf origin, ob es nicht mehr benoetigte Branches und Worktrees gibt (git branch -vv, git branch -r, git worktree list). Zeige hinter jedem gefundenen Branch/Worktree eine kurze Erklaerung (wozu er gehoerte; gemergt, verwaist oder noch aktiv?) und biete per AskUserQuestion (multiSelect) an, welche geloescht werden sollen. Loesche danach die angewaehlten Branches (lokal + origin) und Worktrees (git worktree remove inkl. Verzeichnis auf der Festplatte).
-
-Danach fuehre aus: /milestone-checkpoint
+Fuehre aus: /milestone-checkpoint — der Branch-/Worktree-Cleanup ist Schritt 1 des Skills.
 
 Das aktualisiert automatisch den M7.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
 
 DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
 1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
-2. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Abgleich 6a Drift + 6b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
+2. Alle Checkpoint-Schritte 1-9 durchlaufen (inkl. Branch-/Worktree-Cleanup als Schritt 1, Memory-Konsolidierung als Diff, Framework-Abgleich 7a Drift + 7b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
 3. Der M7.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
 
 /remote-control M7.0 — Housekeeping Agentic Loop`
@@ -847,15 +847,13 @@ Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; A
 
 Housekeeping Agentic Loop vor M8.1 (CLAUDE.md §7 Punkt 4). M7.1 ist abgeschlossen, M8.1 startet als Naechstes.
 
-AKTION 1 — Branch-/Worktree-Cleanup: Pruefe lokal und auf origin, ob es nicht mehr benoetigte Branches und Worktrees gibt (git branch -vv, git branch -r, git worktree list). Zeige hinter jedem gefundenen Branch/Worktree eine kurze Erklaerung (wozu er gehoerte; gemergt, verwaist oder noch aktiv?) und biete per AskUserQuestion (multiSelect) an, welche geloescht werden sollen. Loesche danach die angewaehlten Branches (lokal + origin) und Worktrees (git worktree remove inkl. Verzeichnis auf der Festplatte).
-
-Danach fuehre aus: /milestone-checkpoint
+Fuehre aus: /milestone-checkpoint — der Branch-/Worktree-Cleanup ist Schritt 1 des Skills.
 
 Das aktualisiert automatisch den M8.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
 
 DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
 1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
-2. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Abgleich 6a Drift + 6b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
+2. Alle Checkpoint-Schritte 1-9 durchlaufen (inkl. Branch-/Worktree-Cleanup als Schritt 1, Memory-Konsolidierung als Diff, Framework-Abgleich 7a Drift + 7b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
 3. Der M8.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
 
 /remote-control M8.0 — Housekeeping Agentic Loop`
@@ -928,15 +926,13 @@ Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; A
 
 Housekeeping Agentic Loop vor M9.1 (CLAUDE.md §7 Punkt 4). M8.1 ist abgeschlossen, M9.1 startet als Naechstes.
 
-AKTION 1 — Branch-/Worktree-Cleanup: Pruefe lokal und auf origin, ob es nicht mehr benoetigte Branches und Worktrees gibt (git branch -vv, git branch -r, git worktree list). Zeige hinter jedem gefundenen Branch/Worktree eine kurze Erklaerung (wozu er gehoerte; gemergt, verwaist oder noch aktiv?) und biete per AskUserQuestion (multiSelect) an, welche geloescht werden sollen. Loesche danach die angewaehlten Branches (lokal + origin) und Worktrees (git worktree remove inkl. Verzeichnis auf der Festplatte).
-
-Danach fuehre aus: /milestone-checkpoint
+Fuehre aus: /milestone-checkpoint — der Branch-/Worktree-Cleanup ist Schritt 1 des Skills.
 
 Das aktualisiert automatisch den M9.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
 
 DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
 1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
-2. Alle Checkpoint-Schritte 1-8 durchlaufen (inkl. Memory-Konsolidierung als Diff, Framework-Abgleich 6a Drift + 6b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
+2. Alle Checkpoint-Schritte 1-9 durchlaufen (inkl. Branch-/Worktree-Cleanup als Schritt 1, Memory-Konsolidierung als Diff, Framework-Abgleich 7a Drift + 7b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
 3. Der M9.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
 
 /remote-control M9.0 — Housekeeping Agentic Loop`

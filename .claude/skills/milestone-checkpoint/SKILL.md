@@ -12,28 +12,38 @@ mehrere Skills einzeln aufzurufen.
 ## Schritt 0: GitHub-MCP-Verbindung prüfen
 
 `claude mcp get github` → „Connected"? Zusätzlich ein echter Lese-Call (z. B. `list_branches`
-gegen ein Repo) — Status allein reicht nicht (Stolperfallen: Schritt 2). Kein Server oder
+gegen ein Repo) — Status allein reicht nicht (Stolperfallen: Schritt 3). Kein Server oder
 Fehler → Einrichtung läuft über den agentic-loop-framework-Bootstrap (Phase 0), nicht hier.
 
 ## Schritte
 
-1. `/fewer-permission-prompts` ausführen.
-2. `/claude-automation-recommender` ausführen, Ergebnisse zur Direktumsetzung anbieten (siehe unten).
-3. Skill-Quellen prüfen (siehe unten).
-4. **Workflow-Retrospektive / Optimizer** ausführen (siehe unten) — wiederkehrende Reibung aus dem
+1. **Branch-/Worktree-Cleanup** (siehe unten).
+2. `/fewer-permission-prompts` ausführen.
+3. `/claude-automation-recommender` ausführen, Ergebnisse zur Direktumsetzung anbieten (siehe unten).
+4. Skill-Quellen prüfen (siehe unten).
+5. **Workflow-Retrospektive / Optimizer** ausführen (siehe unten) — wiederkehrende Reibung aus dem
    abgeschlossenen Milestone in eine dauerhafte Absicherung überführen.
-5. **Memory-Konsolidierung** (siehe unten) — Memory-Dateien eindampfen, Ergebnis nur als Diff.
-6. **Framework-Abgleich** (siehe unten) — 6a: Drift Projekt → Framework;
-   6b: Native-Feature-Review (was kann Claude Code inzwischen selbst, das wir noch von Hand machen?).
-7. Den aktiven `Mx.0`-Checkpoint-Eintrag in `docs/dashboard/dashboard.html` aktualisieren:
+6. **Memory-Konsolidierung** (siehe unten) — Memory-Dateien eindampfen, Ergebnis nur als Diff.
+7. **Framework-Abgleich** (siehe unten) — 7a: Drift Projekt → Framework;
+   7b: Native-Feature-Review (was kann Claude Code inzwischen selbst, das wir noch von Hand machen?).
+8. Den aktiven `Mx.0`-Checkpoint-Eintrag in `docs/dashboard/dashboard.html` aktualisieren:
    `status: "done"`, `finishedAt` = heute, alle Steps abgehakt, je ein `log[]`-Eintrag mit
-   kurzer Zusammenfassung der Schritte 1–6. Dabei für JEDEN noch offenen Milestone im
+   kurzer Zusammenfassung der Schritte 1–7. Dabei für JEDEN noch offenen Milestone im
    Datenblock `recommendedModel` prüfen/setzen (CLAUDE.md §11) — fehlt es (neuer Eintrag)
    oder ist der verbleibende Scope seit der letzten Bewertung spürbar anders geworden,
    jetzt neu ableiten; sonst unverändert lassen.
-8. **Handover** (siehe unten) — den nächsten Milestone als Push aufs Handy übergeben.
+9. **Handover** (siehe unten) — den nächsten Milestone als Push aufs Handy übergeben.
 
-## Schritt 2: /claude-automation-recommender-Ergebnisse anbieten
+## Schritt 1: Branch-/Worktree-Cleanup
+
+Prüfe lokal und auf origin, ob es nicht mehr benötigte Branches und Worktrees gibt
+(`git branch -vv`, `git branch -r`, `git worktree list`). Zeige hinter jedem gefundenen
+Branch/Worktree eine kurze Erklärung (wozu er gehörte; gemergt, verwaist oder noch aktiv?)
+und biete per `AskUserQuestion` (multiSelect) an, welche gelöscht werden sollen. Lösche
+danach die angewählten Branches (lokal + origin) und Worktrees (`git worktree remove`
+inkl. Verzeichnis auf der Festplatte). Ergebnis im `Mx.0`-`log[]` vermerken.
+
+## Schritt 3: /claude-automation-recommender-Ergebnisse anbieten
 
 Der Recommender ist read-only (er schlägt nur vor). Damit die Vorschläge nicht folgenlos im
 Chat verpuffen, direkt danach:
@@ -44,9 +54,9 @@ Chat verpuffen, direkt danach:
 2. Per `AskUserQuestion` (multiSelect) genau diese Liste als Optionen anbieten: „Welche
    Empfehlungen jetzt direkt umsetzen?" — plus die implizite Möglichkeit, keine auszuwählen.
 3. Für jede ausgewählte Empfehlung **in derselben Session direkt umsetzen**, passend zum Typ:
-   - **Hook**: gleiches Muster wie Schritt 4 (Hook-Datei + Smoke-Test, in `.claude/settings.json`
+   - **Hook**: gleiches Muster wie Schritt 5 (Hook-Datei + Smoke-Test, in `.claude/settings.json`
      verdrahten, Suite grün verifizieren, eigener Commit); ist die Änderung generisch, greift
-     Schritt 6a (Drift) dafür mit.
+     Schritt 7a (Drift) dafür mit.
    - **MCP-Server**: zuerst unterscheiden, WELCHE Registrierung gemeint ist — ein
      `plugin:<kategorie>:<name>`-Eintrag (z. B. `plugin:engineering:github`) ist ein
      rollenbasiertes **Cowork-Plugin-Bundle**, dessen Auth/Aktivierung NUR über die
@@ -84,7 +94,7 @@ Chat verpuffen, direkt danach:
 4. Nicht ausgewählte Empfehlungen NICHT stillschweigend fallen lassen — im `Mx.0`-`log[]`
    kurz vermerken, was umgesetzt und was bewusst zurückgestellt wurde.
 
-## Schritt 3: Skill-Quellen prüfen
+## Schritt 4: Skill-Quellen prüfen
 
 Drei Quellen, drei unterschiedliche Update-Wege — nicht alle sind automatisierbar.
 
@@ -173,7 +183,7 @@ die §5-Checkliste gilt auch für Plugin-Skills (sie fallen unter `disableSkillS
 <repo>` scheitert an beiden, da keines ein `.claude-plugin/marketplace.json`-Manifest hat (getestet
 2026-07-02). Ein Fork nur für dieses Manifest wäre mehr Wartungsaufwand als der jetzige Ansatz.
 
-## Schritt 4: Workflow-Retrospektive (Optimizer)
+## Schritt 5: Workflow-Retrospektive (Optimizer)
 
 Wiederkehrende, gleichartige Fehler in dauerhafte Absicherung überführen, damit sie nicht erneut
 auftreten. Vollständiges Design: `docs/superpowers/specs/2026-07-05-workflow-retro-optimizer-design.md`.
@@ -199,7 +209,7 @@ auftreten. Vollständiges Design: `docs/superpowers/specs/2026-07-05-workflow-re
 
 Ist das Signal leer (nichts wiederholte sich), ist dieser Schritt ein No-op — nur kurz vermerken.
 
-## Schritt 5: Memory-Konsolidierung (Dreaming-Muster, M4.8)
+## Schritt 6: Memory-Konsolidierung (Dreaming-Muster, M4.8)
 
 Sessions seit dem letzten Checkpoint sichten (`search_session_transcripts`, falls verfügbar —
 sonst Dashboard-`log[]` und `git log` als Quellen), dann die Dateien im Memory-Ordner
@@ -212,12 +222,12 @@ sonst Dashboard-`log[]` und `git log` als Quellen), dann die Dateien im Memory-O
 - **HARTE REGELN**: das Ergebnis IMMER als Diff zum Review präsentieren, NIE direkt anwenden;
   offene Follow-ups und Security-Notizen NIE löschen; im Zweifel behalten.
 
-## Schritt 6: Framework-Abgleich
+## Schritt 7: Framework-Abgleich
 
-Zwei Richtungen. 6a fragt „hat dieses Projekt etwas gelernt, das jedes Projekt braucht?",
-6b fragt „hat die Plattform etwas gelernt, das unsere eigene Mechanik überflüssig macht?".
+Zwei Richtungen. 7a fragt „hat dieses Projekt etwas gelernt, das jedes Projekt braucht?",
+7b fragt „hat die Plattform etwas gelernt, das unsere eigene Mechanik überflüssig macht?".
 
-### 6a: Drift Projekt → Framework (M4.9)
+### 7a: Drift Projekt → Framework (M4.9)
 
 `git log --since=<letzter Checkpoint> --oneline -- .claude/hooks .claude/skills CLAUDE.md`
 im Projekt sichten: Ist eine der Änderungen GENERISCH (in jedem Projekt sinnvoll)? Dann in
@@ -225,7 +235,7 @@ im Projekt sichten: Ist eine der Änderungen GENERISCH (in jedem Projekt sinnvol
 (`templates/` bzw. `homey/`) nachziehen + CHANGELOG-Eintrag; Commit dort nach §9-Freigabe.
 Kein Drift → kurz vermerken.
 
-### 6b: Native-Feature-Review (Framework → Plattform)
+### 7b: Native-Feature-Review (Framework → Plattform)
 
 Das Framework wächst nur, wenn nie jemand fragt, was es abwerfen kann. Claude Code entwickelt
 sich schnell; jede explizite Anweisung, jeder Skill, Hook und Agent, den wir von Hand pflegen,
@@ -256,16 +266,16 @@ Verdikt + Datum). NICHT jedes Mal alle Zeilen neu aufrollen — nur Zeilen, dere
    ist nicht dasselbe wie ein Modell, dem man Vorsicht sagt. Im Zweifel **replace** für
    Prosa-Regeln, die nur beschreiben, was Claude ohnehin per Default tut.
 4. **Anwenden**: `replace`-Verdikte als eine kleine, reversible Änderung mit eigenem Commit;
-   generische fließen über 6a ins Framework + CHANGELOG. Bei JEDER angefassten Zeile das
+   generische fließen über 7a ins Framework + CHANGELOG. Bei JEDER angefassten Zeile das
    `Zuletzt geprüft`-Datum aktualisieren — auch bei denen, die geblieben sind.
 5. **Protokollieren** im `Mx.0`-`log[]`: `<n> Zeilen geprüft → <n> ersetzt / <n> behalten`,
    mit Namen der Ersetzungen. Nichts geändert → in einer Zeile vermerken; das ist ein
    gültiges und häufiges Ergebnis.
 
-## Schritt 8: Handover (M4.8)
+## Schritt 9: Handover (M4.8)
 
 1. Aus dem `DASHBOARD_STATUS`-Block den NÄCHSTEN Milestone mit `status: "todo"` (erster in
-   Listenreihenfolge) lesen. Hat er kein `recommendedModel` (siehe Schritt 7), jetzt
+   Listenreihenfolge) lesen. Hat er kein `recommendedModel` (siehe Schritt 8), jetzt
    nachtragen, bevor die Push-Benachrichtigung rausgeht — der Handover ist der Moment, in
    dem jemand entscheidet, mit welchem Modell die nächste Session startet.
 2. Push-Benachrichtigung aufs Handy senden (PushNotification): Titel `Nächster Milestone: <id>
