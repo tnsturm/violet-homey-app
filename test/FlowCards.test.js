@@ -10,18 +10,16 @@
 // the same defect in the shipped store version (frozen here as todo-tests
 // first, per CLAUDE.md §4) and were fixed the same way in 0.7.2 — store
 // users' existing flows on these cards must re-select the device once.
+// Workflow retro (2026-07-20, M7.0 checkpoint): the defect recurred 7x (1 +
+// 6) because the original test only enumerated the cards known at the time.
+// Generalized to loop over every trigger in app.json — a driver with a
+// single device type (pool) means EVERY flow trigger is device-scoped, so
+// this invariant covers any future new card without a test-list update.
 
 const { test } = require('node:test');
 const assert = require('node:assert');
 
 const app = require('../app.json');
-
-/** @param {string} id @returns {*} */
-function triggerCard(id) {
-  const card = (app.flow.triggers || []).find((/** @type {*} */ t) => t.id === id);
-  assert.ok(card, `trigger card ${id} exists in app.json`);
-  return card;
-}
 
 /** @param {*} card */
 function assertDeviceArg(card) {
@@ -31,12 +29,8 @@ function assertDeviceArg(card) {
   assert.strictEqual(dev.filter, 'driver_id=pool', `${card.id}: device arg filters on the pool driver`);
 }
 
-test('alarm_received defines the device arg getDeviceTriggerCard requires', () => {
-  assertDeviceArg(triggerCard('alarm_received'));
-});
-
-for (const id of ['lsi_warning', 'dosing_blocked', 'dosing_low', 'overflow_dryrun', 'overflow_overfill', 'backwash_valve_fault']) {
-  test(`${id} defines the device arg getDeviceTriggerCard requires`, () => {
-    assertDeviceArg(triggerCard(id));
+for (const card of app.flow.triggers) {
+  test(`${card.id} defines the device arg getDeviceTriggerCard requires`, () => {
+    assertDeviceArg(card);
   });
 }
