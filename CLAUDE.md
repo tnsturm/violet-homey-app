@@ -94,6 +94,18 @@ LLM-hallucinated package names are a supply-chain attack vector (attackers pre-r
 - Agent-run installs use `--ignore-scripts`.
 - The `package-guard` hook (`.claude/hooks/package-guard.js`) enforces registry existence + freshness/adoption at install/manifest time (fail closed). Its override path is a human terminal install — never weaken the hook to get past it.
 
+### Extension Hygiene (third-party skills, agents, hooks, MCP)
+
+A skill is more privileged than a dependency: `` !`cmd` `` dynamic-context blocks in a SKILL.md execute during preprocessing — **before the model sees the skill** — so no amount of model-side judgment can stop them. Skills also arrive without an install step: `.claude/skills/` in a cloned repo loads once the workspace is trusted. Therefore:
+
+- **No external skill, agent, command, hook, or MCP server enters this project or `~/.claude/` without a read of its actual source** — first adoption AND every update. Read the diff, not the README.
+- **Review checklist** (block on any hit, ask the user): `` !`…` `` / ```` ```! ```` dynamic-context blocks · `allowed-tools` frontmatter granting Bash/Write/network · outbound network calls (`curl`, `fetch`, webhooks, telemetry) · credential paths (`~/.ssh`, `~/.aws`, `gh auth`, `.env`, keychain) · install/postinstall scripts · obfuscation (base64, `eval`, minified blobs) · bundled hooks that self-register into `settings.json`.
+- **`disableSkillShellExecution: true` is the default posture** in `.claude/settings.json` (§10 layer 2). It neutralizes the whole dynamic-context attack class. Turn it off only deliberately, for a named skill that needs it, and record why.
+- **Cloning a repo is an adoption decision.** Before working in a foreign checkout, check whether it carries `.claude/skills/`, `.claude/agents/`, or `.claude/hooks/`, and apply the checklist to those files before trusting the workspace.
+- Curated indexes (awesome-lists, marketplaces) are **discovery aids, not trust signals** — listing implies no review. The checklist applies unchanged to anything found through them.
+
+The `milestone-checkpoint` skill enforces this at update time (its Schritt 3).
+
 ## 6. Platform-Specific Conventions
 
 **Check for a `<PLATFORM>.md` at the project root before assuming generic tooling.**

@@ -63,5 +63,6 @@
       "Bash(curl -s --max-time 10 \"http://violet/get*)",
       "Bash(curl -s -m 10 \"http://violet/get*)"
     ]
-  }
+  },
+  "disableSkillShellExecution": true
 }

@@ -25,7 +25,7 @@ Implementierungs-Milestone, den ein Checkpoint gatet, trägt die Nummer `Mx.1`. 
 `Branch-/Worktree-Cleanup` (AKTION 1 im Checkpoint-Prompt, vor dem Skill), dann die sieben
 über den `milestone-checkpoint`-Skill abgedeckten: `/fewer-permission-prompts`,
 `/claude-automation-recommender`, `Skill-Quellen geprüft`, `Workflow-Retrospektive`,
-`Memory-Konsolidierung`, `Framework-Drift geprüft` (M4.9), `Handover` (M4.8).
+`Memory-Konsolidierung`, `Framework-Abgleich (Drift + Native-Features)` (M4.9), `Handover` (M4.8).
 
 ## Regeln
 

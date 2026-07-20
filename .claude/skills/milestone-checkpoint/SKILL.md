@@ -23,7 +23,8 @@ Fehler → Einrichtung läuft über den agentic-loop-framework-Bootstrap (Phase 
 4. **Workflow-Retrospektive / Optimizer** ausführen (siehe unten) — wiederkehrende Reibung aus dem
    abgeschlossenen Milestone in eine dauerhafte Absicherung überführen.
 5. **Memory-Konsolidierung** (siehe unten) — Memory-Dateien eindampfen, Ergebnis nur als Diff.
-6. **Framework-Drift prüfen** (siehe unten) — Projekt-Framework vs. skill-agentic-loop-framework abgleichen.
+6. **Framework-Abgleich** (siehe unten) — 6a: Drift Projekt → Framework;
+   6b: Native-Feature-Review (was kann Claude Code inzwischen selbst, das wir noch von Hand machen?).
 7. Den aktiven `Mx.0`-Checkpoint-Eintrag in `docs/dashboard/dashboard.html` aktualisieren:
    `status: "done"`, `finishedAt` = heute, alle Steps abgehakt, je ein `log[]`-Eintrag mit
    kurzer Zusammenfassung der Schritte 1–6. Dabei für JEDEN noch offenen Milestone im
@@ -45,7 +46,7 @@ Chat verpuffen, direkt danach:
 3. Für jede ausgewählte Empfehlung **in derselben Session direkt umsetzen**, passend zum Typ:
    - **Hook**: gleiches Muster wie Schritt 4 (Hook-Datei + Smoke-Test, in `.claude/settings.json`
      verdrahten, Suite grün verifizieren, eigener Commit); ist die Änderung generisch, greift
-     Schritt 6 (Framework-Drift) dafür mit.
+     Schritt 6a (Drift) dafür mit.
    - **MCP-Server**: zuerst unterscheiden, WELCHE Registrierung gemeint ist — ein
      `plugin:<kategorie>:<name>`-Eintrag (z. B. `plugin:engineering:github`) ist ein
      rollenbasiertes **Cowork-Plugin-Bundle**, dessen Auth/Aktivierung NUR über die
@@ -87,6 +88,38 @@ Chat verpuffen, direkt danach:
 
 Drei Quellen, drei unterschiedliche Update-Wege — nicht alle sind automatisierbar.
 
+Jede Quelle hier ist Fremdcode, der in einem vertrauten Kontext landet. Alle drei sind durch
+CLAUDE.md §5 „Extension Hygiene" gedeckt: **Review vor Adoption, Review vor Update.**
+Außerdem einmal pro Checkpoint prüfen, dass `disableSkillShellExecution` in
+`.claude/settings.json` noch `true` ist und keine neu adoptierte Quelle stillschweigend
+verlangt hat, ihn abzuschalten.
+
+### Review-Gate für beide Git-Checkout-Quellen (homey-cli-skill, homey-app-skill)
+
+Gilt für beide unten stehenden Quellen — ein Update wird NIE ungelesen nachgezogen, denn
+dieser Pfad schreibt Fremdcode nach `~/.claude/skills/`:
+
+1. **Eingehenden Diff sichten**, bevor er `~/.claude/` erreicht:
+   ```bash
+   git -C /tmp/<repo> diff HEAD..origin/HEAD
+   ```
+2. **Mechanischer Vorfilter** gegen die §5-Checkliste — jeder Treffer ist ein STOPP,
+   keine Warnung:
+   ```bash
+   git -C /tmp/<repo> diff HEAD..origin/HEAD | \
+     grep -nE '!`|```!|allowed-tools|curl |wget |fetch\(|child_process|eval\(|atob\(|base64 -d|\.ssh|\.aws|gh auth|\.env|postinstall'
+   ```
+3. **Verdikt:**
+   - Sauber (kein Checklisten-Treffer, Diff passt plausibel zu seinen Commit-Messages) →
+     nachziehen und kopieren; keine Rückfrage nötig.
+   - Jeder Treffer, oder ein Diff zu groß/undurchsichtig zum wirklichen Lesen → NICHT kopieren.
+     Die Funde wörtlich zeigen (Datei + Zeile) und den Nutzer fragen. Die alte Version bleibt
+     solange liegen — ein veralteter Skill ist strikt sicherer als ein ungeprüfter.
+4. Ein frischer Klon (weil `/tmp` geleert wurde) ist eine ERSTADOPTION — dann den ganzen Baum
+   sichten, nicht nur einen Diff.
+5. Verdikt im `Mx.0`-`log[]` protokollieren (Quelle, Commit-Range, sauber/blockiert) — ein
+   nicht protokollierter Review sieht hinterher aus wie gar kein Review.
+
 ### homey-cli-skill (github.com/timvdhoorn/homey-cli-skill)
 
 ```bash
@@ -97,7 +130,8 @@ git -C /tmp/homey-cli-skill log HEAD..origin/HEAD --oneline
 Existiert `/tmp/homey-cli-skill` nicht (z. B. weil `/tmp` zwischenzeitlich geleert wurde), frisch
 klonen: `git clone https://github.com/timvdhoorn/homey-cli-skill.git /tmp/homey-cli-skill`.
 
-Ist die Ausgabe **nicht leer** (Update vorhanden), automatisch nachziehen — keine Rückfrage nötig:
+Ist die Ausgabe **nicht leer** (Update vorhanden), zuerst das Review-Gate oben durchlaufen.
+Erst nach sauberem Verdikt:
 
 ```bash
 git -C /tmp/homey-cli-skill pull --quiet
@@ -114,7 +148,7 @@ git -C /tmp/homey-app-skill fetch --quiet
 git -C /tmp/homey-app-skill log HEAD..origin/HEAD --oneline
 ```
 
-Bei Update:
+Bei Update — ebenfalls erst nach sauberem Verdikt des Review-Gates oben:
 
 ```bash
 git -C /tmp/homey-app-skill pull --quiet
@@ -131,6 +165,9 @@ was einen Neustart braucht und nicht aus einer laufenden Session heraus ausgelö
 
 Nur melden: `claude plugin list | grep superpowers` (installierte Version), und den Nutzer bitten,
 bei Bedarf selbst `claude plugin update superpowers` in einer interaktiven Session auszuführen.
+
+Marketplace ≠ geprüft. Beim Melden dazusagen, dass der Inhalt von hier aus nicht inspiziert wurde;
+die §5-Checkliste gilt auch für Plugin-Skills (sie fallen unter `disableSkillShellExecution`).
 
 **Kein Marketplace-Ersatz für homey-cli-skill/homey-app-skill**: `claude plugin marketplace add
 <repo>` scheitert an beiden, da keines ein `.claude-plugin/marketplace.json`-Manifest hat (getestet
@@ -175,13 +212,55 @@ sonst Dashboard-`log[]` und `git log` als Quellen), dann die Dateien im Memory-O
 - **HARTE REGELN**: das Ergebnis IMMER als Diff zum Review präsentieren, NIE direkt anwenden;
   offene Follow-ups und Security-Notizen NIE löschen; im Zweifel behalten.
 
-## Schritt 6: Framework-Drift prüfen (M4.9)
+## Schritt 6: Framework-Abgleich
+
+Zwei Richtungen. 6a fragt „hat dieses Projekt etwas gelernt, das jedes Projekt braucht?",
+6b fragt „hat die Plattform etwas gelernt, das unsere eigene Mechanik überflüssig macht?".
+
+### 6a: Drift Projekt → Framework (M4.9)
 
 `git log --since=<letzter Checkpoint> --oneline -- .claude/hooks .claude/skills CLAUDE.md`
 im Projekt sichten: Ist eine der Änderungen GENERISCH (in jedem Projekt sinnvoll)? Dann in
 `C:/Users/TorstenSturm/source/repos/skill-agentic-loop-framework` die entsprechende Vorlage
 (`templates/` bzw. `homey/`) nachziehen + CHANGELOG-Eintrag; Commit dort nach §9-Freigabe.
 Kein Drift → kurz vermerken.
+
+### 6b: Native-Feature-Review (Framework → Plattform)
+
+Das Framework wächst nur, wenn nie jemand fragt, was es abwerfen kann. Claude Code entwickelt
+sich schnell; jede explizite Anweisung, jeder Skill, Hook und Agent, den wir von Hand pflegen,
+ist ein Kandidat für Ersetzung durch eine native Funktion — und ein dupliziertes Feature ist
+schlimmer als keins, weil es stillschweigend vom echten Verhalten wegdriftet.
+
+Ledger: `docs/dashboard/native-feature-review.md` (eine Zeile je Artefakt, trägt das letzte
+Verdikt + Datum). NICHT jedes Mal alle Zeilen neu aufrollen — nur Zeilen, deren
+`Zuletzt geprüft` älter ist als die aktuellen Release Notes, brauchen einen frischen Blick.
+
+1. **Plattform-Delta holen** seit den `Zuletzt geprüft`-Daten des Ledgers: Claude-Code-Release-Notes
+   / `CHANGELOG`, `code.claude.com/docs` (Memory, Skills, Hooks, Subagents, Settings,
+   Slash-Commands) und die installierte Version (`claude --version`). Claude Desktop
+   mitdenken — Features können dort zuerst landen.
+2. **Eigene Artefakte inventarisieren**: `CLAUDE.md`-Abschnitte, `.claude/skills/`,
+   `.claude/hooks/`, `.claude/agents/`, dazu die stehenden Regeln dieses Skills. Neue Artefakte
+   seit dem letzten Checkpoint bekommen eine frische Ledger-Zeile.
+3. **Verdikt je Kandidat**, und die Latte hoch hängen:
+   - **replace** — die native Funktion deckt das Artefakt *vollständig* ab UND ist per Default an
+     oder hier explizit aktiviert. Unseres entfernen, einen Einzeiler als Zeiger auf die native
+     Funktion stehen lassen, damit die nächste Session es nicht „hilfsbereit" wieder einführt.
+   - **keep + note** — Teilüberlappung (native deckt den Normalfall, unseres einen
+     projektspezifischen Rand; oder unseres ist ein fail-closed Guard und das native nur
+     beratend). Notieren, was die native Funktion NICHT abdeckt — diese Notiz ist der Grund,
+     warum das Artefakt noch existiert, und das Erste, was beim nächsten Mal zu prüfen ist.
+   - **keep** — kein natives Äquivalent.
+   Im Zweifel **keep** für alles mechanisch Erzwingende (Hooks, Gates): Ein Hook, der blockt,
+   ist nicht dasselbe wie ein Modell, dem man Vorsicht sagt. Im Zweifel **replace** für
+   Prosa-Regeln, die nur beschreiben, was Claude ohnehin per Default tut.
+4. **Anwenden**: `replace`-Verdikte als eine kleine, reversible Änderung mit eigenem Commit;
+   generische fließen über 6a ins Framework + CHANGELOG. Bei JEDER angefassten Zeile das
+   `Zuletzt geprüft`-Datum aktualisieren — auch bei denen, die geblieben sind.
+5. **Protokollieren** im `Mx.0`-`log[]`: `<n> Zeilen geprüft → <n> ersetzt / <n> behalten`,
+   mit Namen der Ersetzungen. Nichts geändert → in einer Zeile vermerken; das ist ein
+   gültiges und häufiges Ergebnis.
 
 ## Schritt 8: Handover (M4.8)
 
@@ -200,5 +279,7 @@ Kein Drift → kurz vermerken.
 Am Ende kurz zusammenfassen: was wurde aktualisiert (homey-cli-skill / homey-app-skill, falls
 zutreffend), die installierte Superpowers-Version (ohne Aussage darüber, ob sie veraltet ist —
 das lässt sich von hier aus nicht feststellen), welche Recommender-Empfehlungen umgesetzt bzw.
-zurückgestellt wurden, und das Ergebnis der Workflow-Retrospektive (welche wiederkehrenden
-Probleme in welche Ebene codifiziert wurden, oder „keine neue Reibung").
+zurückgestellt wurden, das Ergebnis der Workflow-Retrospektive (welche wiederkehrenden
+Probleme in welche Ebene codifiziert wurden, oder „keine neue Reibung") und das Ergebnis des
+Native-Feature-Reviews (welche Artefakte zugunsten einer nativen Funktion abgeschafft wurden,
+oder „keine Plattform-Überlappung diesmal").
