@@ -90,7 +90,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-07-15",
+  updatedAt: "2026-07-20",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -664,43 +664,34 @@ DONE-BEDINGUNGEN:
     {
       id: "M6.1",
       title: "Inbound-Alarme (HTTP → Flow-Trigger)",
-      status: "todo",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Brainstorming/Spec bereits fertig; verbleibend ist Plan+SDD für ein klar umrissenes Feature (HTTP-Listener + Flow-Trigger)." },
+      status: "done",
       startedAt: "2026-06-26",
-      finishedAt: null,
-      commit: null,
+      finishedAt: "2026-07-20",
+      commit: "dfd4faf",
       summary: "Eingehende Violet-Alarme (NOTIFY: HTTP GET ?ERRORCODE&SUBJECT) per eingebettetem HTTP-Listener (Default-Port 22222, konfigurierbar) als Geraete-Flow-Trigger am Pool-Device. Ersetzt den Micro-Web-Server-Umweg. Unabhaengig von M1-M3.",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
-        { label: "Plan", done: false },
-        { label: "Implementierung (SDD)", done: false },
-        { label: "Validate + Push", done: false }
+        { label: "Plan", done: true },
+        { label: "Implementierung (SDD)", done: true },
+        { label: "Validate + Push", done: true }
       ],
       currentActivity: null,
       runtime: null,
       log: [
-        { at: "2026-06-26", note: "Brainstorming + Spec abgeschlossen und freigegeben" }
+        { at: "2026-06-26", note: "Brainstorming + Spec abgeschlossen und freigegeben" },
+        { at: "2026-07-15", note: "Session gestartet; auf User-Wunsch Brainstorming-Re-Run statt direktem Plan: getReadings-Fehlerfelder live geprueft (nur last_error_id, keine Subject/Timestamp-Begleitfelder) und HA-Integration Xerolux/violet-hass als Prior-Art gesichtet (reines Polling, kein NOTIFY-Empfaenger, aber ~180-Codes-Mapping error_codes.py)." },
+        { at: "2026-07-16", note: "User-Entscheidung: Option A (NOTIFY-Listener, Spec bleibt) — als Experiment auf separatem Branch claude/violet-http-notifications-m6-1-1976f1, damit andere Milestones parallel laufen koennen. Spec-Nachtrag §10 dokumentiert die verworfene Polling-Alternative. Haupt-Checkout geht zurueck auf main; M6.1 laeuft im eigenen Worktree." },
+        { at: "2026-07-16", note: "Plan fertig: Threat Model SR-M6-01..09 (erster Inbound-Listener der App, CLAUDE.md §5) + 6-Task-TDD-Plan committet (1633678). NOTIFY-Parameternamen ERRORCODE/SUBJECT live aus dem bestehenden Relay-Flow bestaetigt (Micro Web Server, Pfad violetmessage, GET)." },
+        { at: "2026-07-16", note: "SDD Tasks 1-5 fertig (543b943..87707cd): lib/NotifyServer.js (parseAlarm total + Singleton-Server mit Limits/Rate-Gate), alarm_received-Card + notifyPort-Setting, Device-Wiring mit serialisiertem Lifecycle, READMEs. Reviews: 4 Task-Reviews (je 1 Important gefixt: NUL-Byte, Registry-Race, titleFormatted, Mock-Binding), write-path-security-reviewer alle SRs PASS (Rebind-Race gefixt bb90e58), /security-review 0 Findings, Final-Review READY TO MERGE. Gates im Chat gezeigt: npm test 294/294 fail 0, validate publish PASS." },
+        { at: "2026-07-16", note: "FRICTION: Task-5-Docs-Subagent hat auf main im Haupt-Checkout committet statt im Worktree (a7c12bd) — main per reset --keep zurueckgesetzt, Commit als f0098ab auf den Branch cherry-gepickt; Fixer-Dispatches enthalten seitdem einen expliziten Worktree-Check. Zweite Friction: LLM-geschriebene \\u-Escapes landeten zweimal als rohe Steuerbytes in Dateien (Plan + NotifyServer.js) — Fix jeweils per Node-Skript statt Editor-Tool." },
+        { at: "2026-07-16", note: "Release 0.7.0: Changelog en+de user-approved (nur bump+install, Live-Test spaeter), release-readiness GO (inkl. live-smoke PASS), homey app install auf Torstens Homey Pro erfolgreich (Commit 98c44b2, versions.md-Zeile ergaenzt). Listener live verifiziert per Negativ-Check: GET ohne ERRORCODE → 400 Bad Request, statisch. Violet-NOTIFY-Empfaenger ist noch NICHT umgestellt (weiter 5080/Micro Web Server) — Alarm-Ende-zu-Ende-Test folgt gemeinsam mit User." },
+        { at: "2026-07-20", note: "Live-Debugging mit User (Flow VioletPoolSurveillance feuerte nicht trotz 200 OK): Root Cause per systematic-debugging — der alarm_received-Karte fehlte das device-Arg (driver_id=pool); getDeviceTriggerCard matcht ohne device-Arg keinen Flow (SDK-Doku via context7 bestaetigt). Fix f55b7fb (Karte + TDD-Test), Release 0.7.1 installiert (60a059f). BEIFANG: alle 6 M1/M2-Trigger-Karten im Store-Stand haben denselben Defekt (Flows darauf konnten nie feuern) — als todo-Tests eingefroren (test/FlowCards.test.js, CLAUDE.md §4), Fix auf main als Follow-up. User muss im Flow die Trigger-Karte neu setzen (Pool-Geraet auswaehlen)." },
+        { at: "2026-07-20", note: "Spawn-Task umgesetzt (auf dem M6.1-Branch statt main, da unmerged — Test + Muster liegen hier): device-Arg auf allen 6 M1/M2-Trigger-Karten ergaenzt (77165a5, TDD: todo-Tests scharf → 6 RED → Fix → 7/7 GREEN), Release 0.7.2 installiert (f39d41f), Listener-Check nach Neustart OK. Damit erreicht der komplette Alarm-Trigger-Satz der App erstmals Flows; Store-Nutzer brauchen den Fix via Publish nach dem M6.1-Merge." },
+        { at: "2026-07-20", note: "USER-BESTAETIGT: Re-Test erfolgreich — Flow VioletPoolSurveillance feuert (Push + Timeline) auf Browser-NOTIFY an Port 22222; die 6 M1/M2-Karten zeigen jetzt die Geraetebindung. Offen fuer Milestone-Close: Violet-NOTIFY-Empfaenger 5080→22222 umstellen + Test mit echtem Controller-Alarm, dann §9-Entscheidung." },
+        { at: "2026-07-20", note: "MILESTONE DONE: Live-Test Ende-zu-Ende bestaetigt (Violet -> Port 22222 -> Flow mit Push+Timeline). Wichtiger Live-Befund: der NOTIFY-Empfangsport laesst sich NUR ueber die undokumentierte Formular-Seite modifyParameter.htm?NOTIFY_http_baseport aendern (nicht ueber die normale Violet-Weboberflaeche) - dokumentiert in allen 3 READMEs + notifyPort-Settings-Hint en+de (dfd4faf, validate PASS, 301/301 Tests). Abschluss-Stand 0.7.2 installiert; naechster Schritt Par.9-Entscheidung (User tendiert PR), danach Store-Publish + M7.0-Checkpoint." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Violet Homey Pro App — Milestone M6.1 (Inbound-HTTP-Alarme → Flow-Trigger). Brainstorming + Spec sind bereits fertig und freigegeben. Die Gates aus M4.6-M4.8 sind aktiv (test-gate/typecheck-gate blocken rote Commits, stop-verify rote Turn-Enden, release-gate ungebumpte Installs; CI laeuft auf main).
-
-Lies zuerst die Spec docs/superpowers/specs/2026-06-26-violet-http-notifications-design.md. Aktualisiere beim Start den M6.1-Eintrag in docs/dashboard/dashboard.html: log "Plan gestartet", currentActivity pflegen; Steps Plan -> Implementierung (SDD) -> Validate + Push abhaken; am Ende status "done" + commit. (Dashboard-Protokoll: CLAUDE.md §7, bereits automatisch geladen.)
-
-Kontext laden: Projekt-Status-Memory. M0 fertig (HEAD 4d1aaf3). Dieses Feature ist unabhaengig von M1–M3 und kann jederzeit nach M0 gebaut werden.
-
-Aufgabe (aus der Spec): eingebetteter HTTP-Listener im Pool-Device (neue lib/NotifyServer.js mit reiner, testbarer parseAlarm-Funktion + Singleton-Bind, EADDRINUSE sauber abfangen), Geraete-Flow-Trigger "Alarm empfangen" via getDeviceTriggerCard (Tokens errorcode + subject, optionaler Freitext-Code-Filter per registerRunListener), neue Device-Einstellung notifyPort (Default 22222, konfigurierbar). Vor dem Coden an echter Hardware bestaetigen, dass die Violet die Tokens exakt als ERRORCODE/SUBJECT sendet und ob die Werte URL-codiert ankommen — das praegt nur parseAlarm, nicht die Architektur.
-
-Vorgehen wie M0: superpowers:writing-plans -> subagent-driven-development (frischer Implementer + Review je Task, TDD). Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika ueber die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: violet).
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. npm test zeigt fail 0 — Output im Chat gezeigt.
-2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
-
-/remote-control M6.1 — Inbound-Alarme (HTTP → Flow-Trigger)`
+      prompt: null
     },
     {
       id: "M6.5",

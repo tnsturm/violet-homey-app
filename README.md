@@ -217,12 +217,36 @@ Reads never need credentials.
 
 * * *
 
+## Alarm notifications (NOTIFY)
+
+The app can receive the Violet's alarm pushes and fire the **"An alarm was received"** Flow
+trigger. To set it up, configure the Violet's notification settings to send alarms to your
+Homey's IP and the **Alarm listener port** from the device settings (any path, plain HTTP
+GET).
+
+**Setting the receiver port on the Violet:** the Violet's regular web interface lets you
+configure the notification receiver, but **not its port** — the port can only be changed on
+an undocumented parameter page (live-verified 2026-07-20, controller fw 1.2.1). Open
+
+```
+http://<violet-ip>/modifyParameter.htm?NOTIFY_http_baseport
+```
+
+in a browser (log in if prompted): the page shows an input form for
+`NOTIFY_http_baseport` — enter the app's listener port (default **22222**) and save. The
+controller's default is 80.
+
+**Security note:** The Violet supports neither HTTPS nor authentication for NOTIFY, so any
+device on your LAN could send such a request. However, the trigger is display and automation
+data only — it can never control the pool. Keep the port **LAN‑only**; never port‑forward it.
+
+* * *
+
 ## Roadmap
 
 This release covers monitoring, the LSI safety net and basic control. Planned for coming
 versions:
 
-- **Live alarm push** — the controller's own alarm/error notifications as Flow triggers.
 - **PoolLab / LabCOM import** — auto‑import chemistry values (calcium hardness, alkalinity, CYA) to feed the LSI instead of entering them by hand.
 - **Water‑balance recommendations** — advisory guidance on reaching a good LSI band, including fresh‑water CO₂ out‑gassing effects.
 - **Dosing & setpoints** — adjust target pH/ORP and dosing from Homey.

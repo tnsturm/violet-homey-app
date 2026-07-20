@@ -8,6 +8,7 @@
 // Runtime-error i18n (boundary wrapping): spec 2026-07-13-device-identity-design.md.
 
 const Homey = require('homey');
+const NotifyServer = require('../../lib/NotifyServer');
 const { fetchReadings, parseReadings } = require('../../lib/VioletClient');
 const { sendWrite } = require('../../lib/WriteClient');
 const { detectFeatures } = require('../../lib/FeatureDetector');
@@ -80,6 +81,15 @@ class PoolDevice extends Homey.Device {
   // Muster _owTitleState) — setCapabilityOptions nur bei echter Änderung.
   /** @type {Object<string, string>} */
   _inputOptState = {};
+  /** @type {?{ close: () => Promise<void> }} M6.1 NOTIFY listener handle (spec §3) */
+  _notify = null;
+  // M6.1 (SR-M6-07): serializes every listener lifecycle transition (start/rebind/
+  // close) through one chain so an in-flight bind can never interleave with a
+  // second caller — otherwise the loser's handle is never closed (orphaned
+  // unauthenticated listener until app restart). Always resolved (errors caught),
+  // so it can be chained on forever.
+  /** @type {Promise<void>} serializes listener rebind/close transitions (SR-M6-07) */
+  _notifyOp = Promise.resolve();
 
   async onInit() {
     this._failures = 0;
@@ -101,6 +111,14 @@ class PoolDevice extends Homey.Device {
       backwash_valve_fault: this.homey.flow.getDeviceTriggerCard('backwash_valve_fault'),
     };
     this._m2AlarmState = {};
+
+    // M6.1 inbound NOTIFY alarms (spec §5): device trigger + optional exact-code filter.
+    /** @type {*} Homey FlowCardTriggerDevice (SDK type is loose here). */
+    this._alarmReceived = this.homey.flow.getDeviceTriggerCard('alarm_received');
+    this._alarmReceived.registerRunListener((/** @type {*} */ args, /** @type {*} */ state) => {
+      const filter = String(args.errorcode || '').trim();
+      return filter === '' || filter === state.errorcode;
+    });
 
     // M3 control tiles (spec §5/§8). Registered by id regardless of current
     // presence; taps route here once the cap is added. Each gates on the interlock.
@@ -128,6 +146,7 @@ class PoolDevice extends Homey.Device {
       : null;
 
     this._startPolling();
+    this._startNotifyServer().catch(this.error);
     this.log('Pool device initialized');
   }
 
@@ -278,6 +297,46 @@ class PoolDevice extends Homey.Device {
     this._tick().catch(this.error);
   }
 
+  // M6.1 (spec §3/§6, SR-M6-07): public entry point — appends the (re)bind onto
+  // the _notifyOp chain instead of running it directly, so a rebind that arrives
+  // while a previous start/close is still in flight waits its turn rather than
+  // racing it (see _notifyOp field comment). Returns the chain so callers that
+  // do await it (onInit, onSettings) still observe completion.
+  _startNotifyServer() {
+    this._notifyOp = this._notifyOp.then(() => this._doStartNotifyServer()).catch(this.error);
+    return this._notifyOp;
+  }
+
+  // The actual (re)bind — only ever called from within the _notifyOp chain.
+  // Bind failures (EADDRINUSE — e.g. the old Micro Web Server still holding the
+  // port) only log; the device keeps polling (SR-M6-07).
+  async _doStartNotifyServer() {
+    if (this._notify) { await this._notify.close().catch(this.error); this._notify = null; }
+    const port = this.getSetting('notifyPort') || 22222;
+    try {
+      this._notify = await NotifyServer.createNotifyServer({
+        port,
+        onAlarm: (alarm) => this._fireAlarm(alarm),
+        log: (/** @type {string} */ m) => this.log(m),
+        error: (/** @type {string} */ m) => this.error(m),
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      this.error(`NOTIFY listener not started on port ${port}: ${msg}`
+        + (/** @type {*} */ (err).code === 'EADDRINUSE' ? ' — port in use (old Micro Web Server?); free it or change the notifyPort setting and the Violet NOTIFY port' : ''));
+    }
+  }
+
+  // SR-M6-04: trigger-only data path — one audit log line (SR-M6-08, input already
+  // sanitized/truncated by parseAlarm) + the Flow trigger. Never touches
+  // capabilities, settings, or WriteClient.
+  /** @param {{ errorcode: string, subject: string, remoteAddress: string }} alarm */
+  _fireAlarm(alarm) {
+    this.log(`NOTIFY alarm received: code=${alarm.errorcode} from=${alarm.remoteAddress} subject="${alarm.subject}"`);
+    this._alarmReceived.trigger(this, { errorcode: alarm.errorcode, subject: alarm.subject }, { errorcode: alarm.errorcode })
+      .catch(this.error);
+  }
+
   /** @param {{changedKeys: string[]}} event */
   async onSettings({ changedKeys }) {
     if (changedKeys.includes('pollIntervalSeconds')) this._startPolling();
@@ -287,10 +346,19 @@ class PoolDevice extends Homey.Device {
     }
     // Toggling control adds/removes the control capabilities — reconcile promptly.
     if (changedKeys.includes('control_enabled') || changedKeys.includes('show_advanced_diagnostics') || changedKeys.includes('group_inputs')) this._tick().catch(this.error);
+    // M6.1 (spec §6): rebind the NOTIFY listener when its port setting changes.
+    if (changedKeys.includes('notifyPort')) this._startNotifyServer().catch(this.error);
   }
 
   async onUninit() {
     if (this._poll) this.homey.clearInterval(this._poll);
+    // SR-M6-07: append the close as another _notifyOp link (not a bare close)
+    // so an in-flight start/rebind finishes first — otherwise it could re-open
+    // the listener right after this close and leak it past device teardown.
+    this._notifyOp = this._notifyOp.then(async () => {
+      if (this._notify) { await this._notify.close().catch(this.error); this._notify = null; }
+    }).catch(this.error);
+    await this._notifyOp;
   }
 
   async _tick() {

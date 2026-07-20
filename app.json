@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "de.neunbft.violet",
-  "version": "0.6.2",
+  "version": "0.7.2",
   "compatibility": ">=12.2.0",
   "sdk": 3,
   "platforms": [
@@ -32,6 +32,61 @@
   "flow": {
     "triggers": [
       {
+        "id": "alarm_received",
+        "title": {
+          "en": "An alarm was received",
+          "de": "Ein Alarm wurde empfangen"
+        },
+        "titleFormatted": {
+          "en": "An alarm was received ([[errorcode]])",
+          "de": "Ein Alarm wurde empfangen ([[errorcode]])"
+        },
+        "hint": {
+          "en": "Fires when the Violet pushes an alarm via its NOTIFY feature (HTTP). In the Violet's notification settings, set Homey's IP and the listener port from this device's settings as receiver — any path works.",
+          "de": "Wird ausgelöst, wenn die Violet einen Alarm über ihre NOTIFY-Funktion (HTTP) sendet. In den Benachrichtigungs-Einstellungen der Violet die Homey-IP und den Empfangsport aus den Geräte-Einstellungen als Empfänger eintragen — der Pfad ist egal."
+        },
+        "tokens": [
+          {
+            "name": "errorcode",
+            "type": "string",
+            "title": {
+              "en": "Error code",
+              "de": "Fehlercode"
+            },
+            "example": "1234"
+          },
+          {
+            "name": "subject",
+            "type": "string",
+            "title": {
+              "en": "Description",
+              "de": "Beschreibung"
+            },
+            "example": "Filterdruck zu niedrig"
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          },
+          {
+            "name": "errorcode",
+            "type": "text",
+            "required": false,
+            "title": {
+              "en": "Error code filter (optional)",
+              "de": "Fehlercode-Filter (optional)"
+            },
+            "placeholder": {
+              "en": "empty = every alarm",
+              "de": "leer = jeder Alarm"
+            }
+          }
+        ]
+      },
+      {
         "id": "backwash_valve_fault",
         "title": {
           "en": "Backwash valve fault",
@@ -41,6 +96,13 @@
           "en": "Fires when the backwash multiport (OMNI) valve reports a non-OK state.",
           "de": "Wird ausgelöst, wenn das Rückspül-Mehrwegeventil (OMNI) einen nicht-OK-Zustand meldet."
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          }
+        ],
         "tokens": [
           {
             "name": "state",
@@ -63,6 +125,13 @@
           "en": "Fires when a dosing channel hits its safety cap (chemistry stops being corrected).",
           "de": "Wird ausgelöst, wenn ein Dosierkanal seine Sicherheitsgrenze erreicht (Chemie wird nicht mehr korrigiert)."
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          }
+        ],
         "tokens": [
           {
             "name": "channel",
@@ -94,6 +163,13 @@
           "en": "Fires when a dosing canister drops below the configured days-left threshold.",
           "de": "Wird ausgelöst, wenn ein Dosierkanister unter die eingestellte Reichweite fällt."
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          }
+        ],
         "tokens": [
           {
             "name": "channel",
@@ -130,6 +206,11 @@
           "de": "Wird ausgelöst, wenn die Wasserbalance in ein korrosives oder kalkbildendes Band wechselt."
         },
         "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          },
           {
             "type": "dropdown",
             "name": "filter",
@@ -218,6 +299,13 @@
           "en": "Fires when the overflow tank reports a dry-run (equipment risk).",
           "de": "Wird ausgelöst, wenn der Überlaufbehälter Trockenlauf meldet (Anlagenrisiko)."
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          }
+        ],
         "tokens": []
       },
       {
@@ -230,6 +318,13 @@
           "en": "Fires when the overflow tank reports overfill (flood risk).",
           "de": "Wird ausgelöst, wenn der Überlaufbehälter Überfüllung meldet (Überflutungsrisiko)."
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          }
+        ],
         "tokens": []
       }
     ],
@@ -743,6 +838,21 @@
           "value": 60,
           "min": 60,
           "max": 900
+        },
+        {
+          "id": "notifyPort",
+          "type": "number",
+          "label": {
+            "en": "Alarm listener port (Violet NOTIFY)",
+            "de": "Alarm-Empfangsport (Violet NOTIFY)"
+          },
+          "value": 22222,
+          "min": 1024,
+          "max": 65535,
+          "hint": {
+            "en": "Port this app listens on for the Violet's NOTIFY alarm pushes (plain HTTP, LAN only — never port-forward it). The Violet's regular web UI cannot change its receiver port: open http://<violet-ip>/modifyParameter.htm?NOTIFY_http_baseport in a browser and enter this port in the form there (the path does not matter). Default 22222 avoids Homey's own ports and the ephemeral range.",
+            "de": "Port, auf dem diese App die NOTIFY-Alarme der Violet empfängt (reines HTTP, nur LAN — niemals ins Internet weiterleiten). Der Empfangsport lässt sich nicht über die normale Violet-Weboberfläche ändern: dazu im Browser http://<violet-ip>/modifyParameter.htm?NOTIFY_http_baseport öffnen und diesen Port im Formular eintragen (der Pfad ist egal). Standard 22222 vermeidet Homeys eigene Ports und den Ephemeral-Bereich."
+          }
         },
         {
           "id": "pumpWarmupSeconds",

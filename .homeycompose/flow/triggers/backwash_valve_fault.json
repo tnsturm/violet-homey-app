@@ -2,6 +2,13 @@
   "id": "backwash_valve_fault",
   "title": { "en": "Backwash valve fault", "de": "Rückspülventil-Fehler" },
   "hint": { "en": "Fires when the backwash multiport (OMNI) valve reports a non-OK state.", "de": "Wird ausgelöst, wenn das Rückspül-Mehrwegeventil (OMNI) einen nicht-OK-Zustand meldet." },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=pool"
+    }
+  ],
   "tokens": [
     { "name": "state", "type": "string", "title": { "en": "State", "de": "Zustand" }, "example": "ERROR" }
   ]

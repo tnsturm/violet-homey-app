@@ -22,6 +22,15 @@
     "max": 900
   },
   {
+    "id": "notifyPort",
+    "type": "number",
+    "label": { "en": "Alarm listener port (Violet NOTIFY)", "de": "Alarm-Empfangsport (Violet NOTIFY)" },
+    "value": 22222,
+    "min": 1024,
+    "max": 65535,
+    "hint": { "en": "Port this app listens on for the Violet's NOTIFY alarm pushes (plain HTTP, LAN only — never port-forward it). The Violet's regular web UI cannot change its receiver port: open http://<violet-ip>/modifyParameter.htm?NOTIFY_http_baseport in a browser and enter this port in the form there (the path does not matter). Default 22222 avoids Homey's own ports and the ephemeral range.", "de": "Port, auf dem diese App die NOTIFY-Alarme der Violet empfängt (reines HTTP, nur LAN — niemals ins Internet weiterleiten). Der Empfangsport lässt sich nicht über die normale Violet-Weboberfläche ändern: dazu im Browser http://<violet-ip>/modifyParameter.htm?NOTIFY_http_baseport öffnen und diesen Port im Formular eintragen (der Pfad ist egal). Standard 22222 vermeidet Homeys eigene Ports und den Ephemeral-Bereich." }
+  },
+  {
     "id": "pumpWarmupSeconds",
     "type": "number",
     "label": { "en": "Pump warmup before trusting readings (seconds)", "de": "Pumpen-Vorlaufzeit, bevor Werte als gültig gelten (Sekunden)" },

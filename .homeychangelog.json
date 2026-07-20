@@ -78,5 +78,17 @@
   "0.6.2": {
     "en": "The app now reads your Violet’s configuration: new input tiles (e.g. filter pressure, flow) with your own names, units and decimals; temperature sensors show your configured names, and “Auto” picks the right pool sensor; ghost tiles for features disabled in the Violet disappear; canister range now also understands hour values.",
     "de": "Die App liest jetzt Eure Violet-Konfiguration: neue Eingangs-Kacheln (z. B. Filterdruck, Anströmung) mit Euren Namen, Einheiten und Nachkommastellen; Temperaturfühler zeigen Eure Klartextnamen, „Auto“ wählt den richtigen Pool-Fühler; Geister-Kacheln für in der Violet deaktivierte Funktionen verschwinden; die Kanister-Reichweite versteht jetzt auch Stundenwerte."
+  },
+  "0.7.0": {
+    "en": "New: receive the Violet's alarm notifications (NOTIFY) directly - the 'An alarm was received' Flow trigger delivers error code and description. Configurable listener port (default 22222); no extra apps needed.",
+    "de": "Neu: Alarm-Benachrichtigungen (NOTIFY) der Violet direkt empfangen - der Flow-Trigger 'Ein Alarm wurde empfangen' liefert Fehlercode und Beschreibung. Konfigurierbarer Empfangsport (Standard 22222); keine Zusatz-Apps mehr nötig."
+  },
+  "0.7.1": {
+    "en": "Fix: the 'An alarm was received' Flow trigger now correctly fires Flows (the card is now bound to the Pool device - please re-select the device in existing Flows).",
+    "de": "Fix: der Flow-Trigger 'Ein Alarm wurde empfangen' löst Flows jetzt korrekt aus (die Karte ist nun an das Pool-Gerät gebunden - bitte in bestehenden Flows das Gerät neu auswählen)."
+  },
+  "0.7.2": {
+    "en": "Fix: all alarm Flow triggers (LSI warning, dosing blocked/low, overflow, backwash valve) now correctly fire Flows. The cards are now bound to the Pool device - please re-select the device once in existing Flows using them.",
+    "de": "Fix: alle Alarm-Flow-Trigger (LSI-Warnung, Dosierung blockiert/niedrig, Überlauf, Rückspülventil) lösen Flows jetzt korrekt aus. Die Karten sind nun an das Pool-Gerät gebunden - bitte in bestehenden Flows einmalig das Gerät neu auswählen."
   }
 }
