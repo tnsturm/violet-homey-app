@@ -27,7 +27,8 @@
           { "type": "command", "command": "node .claude/hooks/run-matching-test.js" },
           { "type": "command", "command": "node .claude/hooks/json-guard.js" },
           { "type": "command", "command": "node .claude/hooks/dashboard-guard.js" },
-          { "type": "command", "command": "node .claude/hooks/changelog-lang-guard.js" }
+          { "type": "command", "command": "node .claude/hooks/changelog-lang-guard.js" },
+          { "type": "command", "command": "node .claude/hooks/docs-header-guard.js" }
         ]
       }
     ],
@@ -61,7 +62,9 @@
       "Bash(npx tsc -p tsconfig.checkjs.json)",
       "Bash(homey select current)",
       "Bash(curl -s --max-time 10 \"http://violet/get*)",
-      "Bash(curl -s -m 10 \"http://violet/get*)"
+      "Bash(curl -s -m 10 \"http://violet/get*)",
+      "Bash(curl -s --max-time 15 \"http://violet/get*)",
+      "mcp__github__search_code"
     ]
   },
   "disableSkillShellExecution": true
