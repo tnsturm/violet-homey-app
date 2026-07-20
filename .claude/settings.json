@@ -28,7 +28,8 @@
           { "type": "command", "command": "node .claude/hooks/json-guard.js" },
           { "type": "command", "command": "node .claude/hooks/dashboard-guard.js" },
           { "type": "command", "command": "node .claude/hooks/changelog-lang-guard.js" },
-          { "type": "command", "command": "node .claude/hooks/docs-header-guard.js" }
+          { "type": "command", "command": "node .claude/hooks/docs-header-guard.js" },
+          { "type": "command", "command": "node .claude/hooks/control-bytes-guard.js" }
         ]
       }
     ],
