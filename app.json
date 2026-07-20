@@ -96,6 +96,13 @@
           "en": "Fires when the backwash multiport (OMNI) valve reports a non-OK state.",
           "de": "Wird ausgelöst, wenn das Rückspül-Mehrwegeventil (OMNI) einen nicht-OK-Zustand meldet."
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          }
+        ],
         "tokens": [
           {
             "name": "state",
@@ -118,6 +125,13 @@
           "en": "Fires when a dosing channel hits its safety cap (chemistry stops being corrected).",
           "de": "Wird ausgelöst, wenn ein Dosierkanal seine Sicherheitsgrenze erreicht (Chemie wird nicht mehr korrigiert)."
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          }
+        ],
         "tokens": [
           {
             "name": "channel",
@@ -149,6 +163,13 @@
           "en": "Fires when a dosing canister drops below the configured days-left threshold.",
           "de": "Wird ausgelöst, wenn ein Dosierkanister unter die eingestellte Reichweite fällt."
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          }
+        ],
         "tokens": [
           {
             "name": "channel",
@@ -185,6 +206,11 @@
           "de": "Wird ausgelöst, wenn die Wasserbalance in ein korrosives oder kalkbildendes Band wechselt."
         },
         "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          },
           {
             "type": "dropdown",
             "name": "filter",
@@ -273,6 +299,13 @@
           "en": "Fires when the overflow tank reports a dry-run (equipment risk).",
           "de": "Wird ausgelöst, wenn der Überlaufbehälter Trockenlauf meldet (Anlagenrisiko)."
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          }
+        ],
         "tokens": []
       },
       {
@@ -285,6 +318,13 @@
           "en": "Fires when the overflow tank reports overfill (flood risk).",
           "de": "Wird ausgelöst, wenn der Überlaufbehälter Überfüllung meldet (Überflutungsrisiko)."
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=pool"
+          }
+        ],
         "tokens": []
       }
     ],

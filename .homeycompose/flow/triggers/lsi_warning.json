@@ -5,6 +5,11 @@
   "hint": { "en": "Fires when the water balance enters a corrosive or scale-forming band.", "de": "Wird ausgelöst, wenn die Wasserbalance in ein korrosives oder kalkbildendes Band wechselt." },
   "args": [
     {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=pool"
+    },
+    {
       "type": "dropdown",
       "name": "filter",
       "title": { "en": "When", "de": "Wann" },

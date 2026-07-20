@@ -6,10 +6,10 @@
 // Trigger cards" + /arguments): without it the card mounts app-wide in the
 // Flow editor and `.trigger(device, ...)` can never match a flow — the flow
 // silently never runs even though the trigger call succeeds.
-// alarm_received (M6.1) is asserted hard; the five M1/M2 cards share the
-// defect in the shipped store version and are frozen as todo-tests per the
-// known-defect protocol (CLAUDE.md §4) — fixing them is a main-branch task
-// (existing store flows must be migrated deliberately, not as a side effect).
+// alarm_received was fixed in 0.7.1 (f55b7fb); the six M1/M2 cards carried
+// the same defect in the shipped store version (frozen here as todo-tests
+// first, per CLAUDE.md §4) and were fixed the same way in 0.7.2 — store
+// users' existing flows on these cards must re-select the device once.
 
 const { test } = require('node:test');
 const assert = require('node:assert');
@@ -36,7 +36,7 @@ test('alarm_received defines the device arg getDeviceTriggerCard requires', () =
 });
 
 for (const id of ['lsi_warning', 'dosing_blocked', 'dosing_low', 'overflow_dryrun', 'overflow_overfill', 'backwash_valve_fault']) {
-  test(`${id} defines the device arg getDeviceTriggerCard requires`, { todo: true }, () => {
+  test(`${id} defines the device arg getDeviceTriggerCard requires`, () => {
     assertDeviceArg(triggerCard(id));
   });
 }
