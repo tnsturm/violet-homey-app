@@ -1,0 +1,7 @@
+# Die Root-app.json ist generiert: Homey Compose baut sie bei jedem build/run/
+# validate aus .homeycompose/app.json neu und schreibt sie mit LF. Ohne diese
+# Zeile will git sie unter core.autocrlf=true als CRLF im Arbeitsverzeichnis
+# sehen, sodass jedes `homey app validate` die Datei als geaendert markiert —
+# inhaltlich identisch, nur 2355 fehlende \r. Bewusst nur diese eine Datei:
+# ein pauschales *.json wuerde alle JSON-Dateien einmalig umnormalisieren.
+app.json text eol=lf
