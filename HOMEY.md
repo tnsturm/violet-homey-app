@@ -23,6 +23,31 @@ Beide Befehle aktualisieren `.homeycompose/app.json`; das generierte Root-`app.j
 
 **JSON-Authoring-Regel (aus Workflow-Retro 2026-07-05, 3× denselben Bug getroffen):** `.homeychangelog.json` und die Manifeste sind **striktes JSON**. Beim Bearbeiten von Hand geraten die ASCII-`"`-String-Delimiter leicht zu typografischen „Smart Quotes" (`" "`) → ungültiges JSON, das `homey app validate` (kulant) bis zum Commit durchlässt. Deshalb: JSON-Dateien **programmatisch bauen** (`node` + `JSON.stringify`; deutsche Innen-Anführungszeichen als `„…"` = U+201E/U+201C), **nie die Delimiter von Hand tippen**, und vor dem Commit mit `JSON.parse` prüfen. Der `json-guard`-PostToolUse-Hook (`.claude/hooks/json-guard.js`) erzwingt das automatisch für Manifest-/Changelog-JSON.
 
+## App-Store-Readme & Community-Kurzanleitung
+
+`README.txt` / `README.de.txt` sind das, was Athom im Store-Review sieht und was auf der
+Store-Seite erscheint (nicht `README.md` — das ist reine GitHub-Doku). Laut Store Guidelines
+(§1.3 readme, <https://apps.developer.homey.app/app-store/guidelines#1-3-readme>): **1–2
+Absätze**, reiner Fließtext, **keine URLs**, keine Feature-Tabellen/Changelogs. Technisches
+Setup-Detail (z. B. die NOTIFY-Port-Einrichtung) gehört NICHT ins Readme, sondern:
+
+- als **Hint-Text** direkt am betreffenden Geräte-Setting (siehe
+  `drivers/pool/driver.settings.compose.json`), und
+- in die **Community-Kurzanleitung**.
+
+Die ausführliche, nicht-technische Anleitung für alle Funktionen lebt im
+Homey-Community-Thema (`homeyCommunityTopicId` im Manifest, aktuell `157109`), nicht im
+Readme. Quelltext dafür liegt versioniert in `docs/community/quickstart-guide.en.md` /
+`quickstart-guide.de.md` — bei inhaltlichen Änderungen zuerst dort editieren, dann den
+Forenbeitrag von Hand nachziehen (kein API-/MCP-Zugriff auf die Homey Community vorhanden,
+daher kein automatisierter Post).
+
+**Bei jedem Milestone, das nutzerseitig sichtbares Verhalten ändert** (neue Fähigkeiten,
+geänderte Settings, neue Flow-Karten, geänderter Setup-Ablauf): während Brainstorming/Spec
+("Concept Writing") prüfen, ob die Kurzanleitung einen Update braucht, geplante Änderungen
+im Design-Doc vermerken, und nach dem Release Datei + Forenbeitrag aktualisieren. Rein
+interne Milestones (Refactoring, Tests, Housekeeping) sind ausgenommen.
+
 ## Release-Checkliste (Umsetzung von CLAUDE.md §8 für Homey)
 
 1. Code-Stand committen.
