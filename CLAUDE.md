@@ -160,7 +160,19 @@ Per release:
 
 An ephemeral dev-run command (one that tears itself down on stop) is not a release and needs no bump/log entry.
 
-## 9. Finishing a Branch
+## 9. Branch Lifecycle
+
+### Starting: one worktree per session
+
+**A milestone or feature session works in its own git worktree — never in a checkout another session may be using.**
+
+Use `superpowers:using-git-worktrees` at session start. Exempt: short read-only or single-file sessions (nightly triage, dashboard edits, a quick doc fix) — they stay in the primary checkout.
+
+Why: two agent sessions sharing one working directory collide in ways git cannot arbitrate. Observed 2026-07-21 — a parallel milestone session edited `HOMEY.md`/`README.txt` mid-session, so `git status` showed foreign changes that had to be reasoned about before every commit, and that session's `git push` swept along a finished-but-unpushed commit from the other session that nobody had decided to ship. Isolation is cheap; untangling a shared tree is not. The `milestone-checkpoint` skill already cleans worktrees up afterwards (§7, its step 1).
+
+Corollary for automations: a routine that writes **only its own ledger file** (e.g. the nightly triage writing `docs/dashboard/triage-inbox.md`) commits it directly on `main` — its findings must be readable on `main`, because every new milestone session reads them first (§7). The moment an automation touches anything beyond that ledger — code, version bumps, shared docs — it needs a branch and a PR.
+
+### Finishing: review, then ask
 
 **Before any git action on a finished branch, run `/code-review` — then ask how to proceed.**
 
