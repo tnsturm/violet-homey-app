@@ -741,43 +741,36 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
     {
       id: "M7.0",
       title: "Housekeeping Agentic Loop",
-      status: "todo",
+      status: "done",
       recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
-      startedAt: null,
-      finishedAt: null,
-      commit: null,
+      startedAt: "2026-07-21",
+      finishedAt: "2026-07-21",
+      commit: "6687f4f",
       summary: "Housekeeping zwischen M6.1 und M7.1: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
-        { label: "Branch-/Worktree-Cleanup", done: false },
-        { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false },
-        { label: "Skill-Quellen geprüft", done: false },
-        { label: "Workflow-Retrospektive", done: false },
-        { label: "Memory-Konsolidierung", done: false },
-        { label: "Framework-Abgleich (Drift + Native-Features)", done: false },
-        { label: "Handover", done: false }
+        { label: "Branch-/Worktree-Cleanup", done: true },
+        { label: "/fewer-permission-prompts", done: true },
+        { label: "/claude-automation-recommender", done: true },
+        { label: "Skill-Quellen geprüft", done: true },
+        { label: "Workflow-Retrospektive", done: true },
+        { label: "Memory-Konsolidierung", done: true },
+        { label: "Framework-Abgleich (Drift + Native-Features)", done: true },
+        { label: "Handover", done: true }
       ],
       currentActivity: null,
       runtime: null,
       log: [
-        { at: "2026-07-20", note: "Vorab-Fix (User-Befund): Der Branch-/Worktree-Cleanup stand nur als AKTION-1-Prosa in jedem Checkpoint-Prompt + CLAUDE.md §7, aber nicht im milestone-checkpoint-Skill selbst — /milestone-checkpoint allein haette ihn uebersprungen. Jetzt Schritt 1 des Skills (lokal + Framework-Template, alte Schritte 1-8 → 2-9, Framework-Abgleich 6a/6b → 7a/7b); CLAUDE.md §7 Punkt 4, Bootstrap-SKILL.md Phase 5 und die 3 offenen Checkpoint-Prompts (M7.0/M8.0/M9.0) entsprechend angepasst. Framework: CHANGELOG 0.1.20 + plugin.json-Bump." }
+        { at: "2026-07-20", note: "Vorab-Fix (User-Befund): Der Branch-/Worktree-Cleanup stand nur als AKTION-1-Prosa in jedem Checkpoint-Prompt + CLAUDE.md §7, aber nicht im milestone-checkpoint-Skill selbst — /milestone-checkpoint allein haette ihn uebersprungen. Jetzt Schritt 1 des Skills (lokal + Framework-Template, alte Schritte 1-8 → 2-9, Framework-Abgleich 6a/6b → 7a/7b); CLAUDE.md §7 Punkt 4, Bootstrap-SKILL.md Phase 5 und die 3 offenen Checkpoint-Prompts (M7.0/M8.0/M9.0) entsprechend angepasst. Framework: CHANGELOG 0.1.20 + plugin.json-Bump." },
+        { at: "2026-07-21", note: "Schritt 1 Branch-/Worktree-Cleanup: 4 lokale Branches geloescht (framework-violetapp-skills-532552, m6-housekeeping-cleanup-6e8718 — beide Ancestor/Cherry-Pick-Inhalt bereits in main; violet-http-notifications-m6-1-1976f1 — origin-Gegenstueck war schon geloescht, PR #12 laut GitHub 0 offene PRs bereits gemergt; write-path-security-reviewer inkl. origin — Inhalt bereits identisch in main). 2 Worktrees aus Git deregistriert (m6-1-inbound-alarms, m6-housekeeping-cleanup-6e8718). 2 leere Ordnerhuellen bleiben auf der Platte (Windows-Datei-Lock durch einen verwaisten node --test --watch-Prozess bzw. Auto-Mode blockte den rm -rf fuer einen 2. vorbestehenden Waisenordner agentic-loop-framework-i18n-f6c53b von 07-15) — User-Nacharbeit noetig. Stray detached HEAD (aus einer frueheren Session) zurueck auf main gelegt." },
+        { at: "2026-07-21", note: "Schritt 2 fewer-permission-prompts: 50 Transkripte gescannt, Allowlist war schon gut kuratiert — 2 neue Eintraege (curl --max-time 15 violet-Variante, mcp__github__search_code)." },
+        { at: "2026-07-21", note: "Schritt 3 automation-recommender: Codebase bereits stark instrumentiert, MCP/Skills/Plugins/weitere Subagents uebersprungen (keine ueberzeugende neue Idee). 1 Hook umgesetzt: docs-header-guard (PostToolUse, prueft mechanisch den von documenting-code verlangten Spec-Header auf lib/+drivers/-Edits; bewusst NICHT die JSDoc-Vollstaendigkeit, da der Bestand dort nicht durchgehend konform ist und das rueckwirkend Rauschen erzeugen wuerde)." },
+        { at: "2026-07-21", note: "Schritt 4 Skill-Quellen: disableSkillShellExecution weiterhin true. homey-cli-skill + homey-app-skill beide aktuell (HEAD..origin/HEAD leer). Superpowers 6.1.1 bestaetigt (Aktualitaet von hier aus nicht pruefbar)." },
+        { at: "2026-07-21", note: "Schritt 5 Workflow-Retro: 2 wiederkehrende Probleme kodifiziert. (1) Der fehlende-device-Arg-Defekt aus M6.1 trat 7x auf (alarm_received + 6 M1/M2-Karten), weil test/FlowCards.test.js nur bekannte Karten-IDs hart codierte — auf eine Schleife ueber alle app.json-Trigger verallgemeinert (7/7 gruen), deckt jede kuenftige Karte automatisch ab. (2) \\u-Escape-Korruption (rohe Steuerbytes statt Text) trat 2x waehrend M6.1 auf — neuer control-bytes-guard-Hook (PostToolUse), gegen alle 199 getrackten Textdateien false-positiv-frei verifiziert. Beide Fixes mit eigenem Commit, Suite 311/311 gruen." },
+        { at: "2026-07-21", note: "Schritt 6 Memory-Konsolidierung: Diff fuer 4 Dateien vorgelegt (project-status.md: M0-M5.9 auf Kurzform verdichtet + 2 stale Fakten korrigiert [write-path-security-reviewer-Branch-Entscheidung aufgeloest; 'kein Homey-MCP' war ueberholt — HomeyPro2026-Connector jetzt verbunden]; MEMORY.md-Index; hook-log-pollution-audit.md 'unmerged branch' → bestaetigt gemerged; loop-dev-roadmap.md Nebenbefund changelog-lang-guard offen → erledigt) — User waehlte 'alle 4 anwenden'." },
+        { at: "2026-07-21", note: "Schritt 7a Framework-Drift: control-bytes-guard ins skill-agentic-loop-framework-Repo portiert (Hook+Test+settings.json-Wiring+CHANGELOG, 0.1.20→0.1.21, Template-Suite 39/39 gruen, User-Freigabe vor Commit eingeholt). docs-header-guard bewusst NICHT portiert (haengt an einem projekt-eigenen Skill, im Framework-Template nicht vorhanden). Extension-Hygiene/Native-Feature-Review-Drift aus einer vorherigen Session war schon gespiegelt. Schritt 7b Native-Feature-Review: alle 8 bestehenden Ledger-Zeilen vom 2026-07-20 (kein Neu-Review noetig, keine neueren Release Notes) — 1 neue Zeile ergaenzt: Homey-MCP-Connector 'HomeyPro2026' (claude.ai, account-weit) entdeckt, ueberschneidet sich mit der Dritt-Skill homey-cli — als keep + note geloggt, volle Faehigkeiten-Gegenueberstellung noch offen." },
+        { at: "2026-07-21", note: "Schritt 8+9: Dashboard-Eintrag auf done gesetzt. M7.1 hat bereits ein recommendedModel, kein Nachtrag noetig — Handover-Push vorbereitet." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Housekeeping Agentic Loop vor M7.1 (CLAUDE.md §7 Punkt 4). M6.1 ist abgeschlossen, M7.1 startet als Naechstes.
-
-Fuehre aus: /milestone-checkpoint — der Branch-/Worktree-Cleanup ist Schritt 1 des Skills.
-
-Das aktualisiert automatisch den M7.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
-2. Alle Checkpoint-Schritte 1-9 durchlaufen (inkl. Branch-/Worktree-Cleanup als Schritt 1, Memory-Konsolidierung als Diff, Framework-Abgleich 7a Drift + 7b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
-3. Der M7.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
-
-/remote-control M7.0 — Housekeeping Agentic Loop`
+      prompt: null
     },
     {
       id: "M7.1",
