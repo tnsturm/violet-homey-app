@@ -19,6 +19,11 @@ jobs:
   ci:
     name: Test + Typecheck + Validate
     runs-on: ubuntu-latest
+    # Der Gesamtlauf dauert ~30 s. Ohne Limit laeuft ein haengender Schritt bis zum
+    # 6-h-Default-Timeout (2026-07-20: sechs Laeufe je 6 h durch einen geleakten
+    # NOTIFY-Listener-Handle, siehe docs/dashboard/triage-inbox.md). 10 min sind
+    # grosszuegig fuer den Normalfall und machen einen Hang binnen Minuten sichtbar.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7

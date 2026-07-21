@@ -4,7 +4,7 @@
 // store persistence), cover reconcile break, onewire labels (spec §4, §5, §6).
 // Load order matters: install mocks/stubs BEFORE requiring device.js.
 
-const { test } = require('node:test');
+const { test, after } = require('node:test');
 const assert = require('node:assert');
 
 const { installHomeyMock } = require('../mocks/homey');
@@ -56,7 +56,31 @@ async function makeDevice(rawExtra, settings = {}, store = {}) {
   device.__test.store = { ...store };
   await device.onInit();
   await new Promise((resolve) => setImmediate(resolve));
+  openDevices.push(device);
   return device;
+}
+
+/** @type {*[]} */
+const openDevices = [];
+
+// M6.1 spec §6: onInit() binds the NOTIFY listener, and only onUninit() frees it.
+// An undisposed device therefore leaves a live 0.0.0.0:<notifyPort> handle and the
+// test process never exits — that hung CI for six runs (2026-07-20). It stayed
+// invisible locally because port 22222 is occupied there, so the bind fails and no
+// handle is created. Dispose every device, then assert the absence of the handle.
+after(async () => {
+  for (const device of openDevices) await device.onUninit();
+  // A closed server can linger one tick as an unreaped handle, so its mere presence
+  // proves nothing — a LEAKED listener is one that still reports a bound address.
+  assert.deepStrictEqual(boundHandleAddresses(), [], 'a NOTIFY listener leaked — this test process would hang instead of exiting');
+});
+
+/** Addresses of every still-bound handle (stdio pipes report no port). @returns {*[]} */
+function boundHandleAddresses() {
+  return /** @type {*} */ (process)._getActiveHandles()
+    .filter((/** @type {*} */ h) => typeof h.address === 'function')
+    .map((/** @type {*} */ h) => h.address())
+    .filter((/** @type {*} */ a) => a && a.port);
 }
 
 test('config wird beim ersten Tick geholt und im Store persistiert (Spec §4.1)', async () => {
