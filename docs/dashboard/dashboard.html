@@ -90,7 +90,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-07-20",
+  updatedAt: "2026-07-22",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -855,7 +855,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       id: "M8.1",
       title: "Empfehlungs-Modul (Wasserbalance)",
       status: "todo",
-      recommendedModel: { model: "Claude Opus 4.8", effort: "high", why: "Korrektheitskritische Wasserchemie-Domänen-Logik (LSI-Treiber, CO₂-Ausgasung/Alkalitäts-Wechselwirkung) speist Nutzer-Empfehlungen — Denkqualität vor Tempo." },
+      recommendedModel: { model: "Claude Fable 5", effort: "high", why: "Flagship (§11-Palette): korrektheitskritische Wasserchemie-Domänen-Logik (LSI-Treiber, CO₂-Ausgasung/Alkalitäts-Wechselwirkung) speist Nutzer-Empfehlungen — Denkqualität vor Tempo; high statt xhigh, da kein Security-/Schreibpfad-Risiko." },
       startedAt: null,
       finishedAt: null,
       commit: null,
@@ -934,7 +934,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       id: "M9.1",
       title: "Dosierung & Sollwerte (setConfig)",
       status: "todo",
-      recommendedModel: { model: "Claude Opus 4.8", effort: "xhigh", why: "Höchstes Risiko im Projekt: reverse-engineerter undokumentierter Schreib-Endpoint direkt in die Wasserchemie-Dosierung + eigenes Threat-Model/Security-Review — stärkste verfügbare Urteilsfähigkeit für Clamping/Sicherheit." },
+      recommendedModel: { model: "Claude Fable 5", effort: "xhigh", why: "Flagship (§11-Palette), höchstes Risiko im Projekt: reverse-engineerter undokumentierter Schreib-Endpoint direkt in die Wasserchemie-Dosierung + eigenes Threat-Model/Security-Review — stärkste Urteilsfähigkeit für Clamping/Sicherheit; Refusal-Friction ggf. als FRICTION loggen (§11), Milestone bleibt auf dem Flagship." },
       startedAt: null,
       finishedAt: null,
       commit: null,
