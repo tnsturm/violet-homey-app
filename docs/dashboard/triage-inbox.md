@@ -4,17 +4,20 @@ Nächtliche Befund-Sammlung der `violet-nightly-triage`-Routine (M4.8, Spec §4)
 **jede neue Milestone-Session und der release-readiness-Subagent lesen diese Datei zuerst**
 (CLAUDE.md §7). Die Routine pflegt die Abschnitte (Einträge wandern), sie hängt nicht endlos an.
 
-**Stand:** 2026-07-21 (nightly-triage-Lauf)
+**Stand:** 2026-07-22 (nightly-triage-Lauf)
 
 ## Offen
 
-- 2026-07-09 · Follow-up · App-Crash-Trace (M3) nicht reproduzierbar — braucht User-Trace oder Store-Test-Crash-Reports; beobachten. Stand 2026-07-21: unverändert, keine neuen Traces.
-- 2026-07-09 · Follow-up · Branch `claude/write-path-security-reviewer`: merge-vs-drop bei M6 entscheiden. Stand 2026-07-21: unverändert offen — beim M7.0-Checkpoint gezielt entscheiden.
-- 2026-07-14 · Routine/Design (offen) · Soll die Nightly-Routine ihren Start-Branch fest auf `main` pinnen? Historisch lief sie auf dem jeweils ausgecheckten Feature-Branch (Regel „nicht wechseln"), was die gemeldeten Test-Zahlen verfälschte. Stand 2026-07-21: Lauf fand erneut auf `main` statt (311 Tests, Baseline korrekt) — Symptom trat nicht auf, die Design-Frage bleibt offen, solange die Routine keinen Branch fixiert.
+- 2026-07-09 · Follow-up · App-Crash-Trace (M3) nicht reproduzierbar — braucht User-Trace oder Store-Test-Crash-Reports; beobachten. Stand 2026-07-22: unverändert, keine neuen Traces.
+- 2026-07-14 · Routine/Design (offen) · Soll die Nightly-Routine ihren Start-Branch fest auf `main` pinnen? Historisch lief sie auf dem jeweils ausgecheckten Feature-Branch (Regel „nicht wechseln"), was die gemeldeten Test-Zahlen verfälschte. Stand 2026-07-22: Lauf fand erneut auf `main` statt (311 Tests, Baseline korrekt) — Symptom trat nicht auf, die Design-Frage bleibt offen, solange die Routine keinen Branch fixiert.
 
-## Neu (2026-07-21)
+## Neu (2026-07-22)
 
-- 2026-07-21 · Lauf · **Lokal grün, CI rot** (auf `main`): npm test 311 Tests / pass 311 / fail 0 / todo 0 (9,8 s) · `homey app validate --level publish` exit 0 · Versions-Sync app.json == .homeycompose/app.json (0.7.3) · CI-Lauf 29804169882 (main, schedule) hing in `npm test` → als eigener Befund aufgenommen und noch am selben Tag behoben (siehe „Erledigt").
+- 2026-07-22 · Lauf · **ALLES GRÜN** (auf `main`): npm test 311 Tests / pass 311 / fail 0 / todo 0 (7,1 s) · `homey app validate --level publish` exit 0 · Versions-Sync app.json == .homeycompose/app.json (0.7.3) · CI-Lauf 29893916010 (main, schedule) completed/success (26 s).
+
+## Erledigt (2026-07-22)
+
+- Branch `claude/write-path-security-reviewer` merge-vs-drop-Entscheidung (offen seit 2026-07-09) → **GESCHLOSSEN**: Branch existiert weder lokal noch auf `origin` (`git branch --list`/`-r` leer), also beim M7.0-Housekeeping-Checkpoint (2026-07-21) aufgelöst. Follow-up damit erledigt.
 
 ## Erledigt (2026-07-21)
 
