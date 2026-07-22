@@ -131,6 +131,7 @@ Use a single-file `dashboard.html` (or equivalent): opens directly in a browser,
 **Rules:**
 - Every new milestone (or checkpoint) entered into the dashboard gets a `recommendedModel` at creation time, not as an afterthought — assign it per §11 before the entry is committed.
 - Every resume prompt (milestone or checkpoint) ends with `/remote-control <id> — <title>` so the spawned session is reachable from the Claude mobile app.
+- Resume prompts state the **goal and the machine-checkable done condition**, never a step-by-step procedure. For flagship sessions (§11 palette) this is load-bearing, not stylistic: over-prescriptive prompts measurably reduce flagship output quality. Give the full task spec up front and let the session plan its own path.
 - Log friction the moment it occurs: append a `log[]` entry prefixed `FRICTION:` to the active milestone (repeated errors, blocked tools, wrong assumptions, rework). The workflow retro in `milestone-checkpoint` reads these entries as its primary signal source — unlogged friction is invisible to it.
 - New milestone sessions and the release-readiness subagent read `docs/dashboard/triage-inbox.md`
   FIRST (when present) — surface open findings before starting new work.
@@ -199,12 +200,14 @@ Everyday sessions run in the default mode with the allowlist; autonomous loop se
 
 **Don't pay flagship prices for mechanical work — and never economize on the checker or on high-risk judgment calls.**
 
+**Current palette:** *workhorse* = Claude Sonnet 5, *flagship* = Claude Fable 5. The tier rules below reference these roles, not model names — when the palette changes, edit only this line. Within a tier, tune `effort` before switching models; the model switch happens only at the judgment boundary.
+
 ### Subagents
 
 Subagents inherit the session model by default. Assign tiers explicitly via frontmatter in `.claude/agents/*.md` (`model:` + `effort:`):
 
-- **Mechanical/checklist/extraction agents** (run commands, compare outputs, grep & report — e.g. `release-readiness`): `model: haiku` or `sonnet`, `effort: low`/`medium`.
-- **Review/judge/security agents** (e.g. `security-reviewer`): `model: inherit` — feedback quality is the loop bottleneck (§4), and a weak verifier defeats the maker/checker split.
+- **Mechanical/checklist/extraction agents** (run commands, compare outputs, grep & report — e.g. `release-readiness`): workhorse, `effort: low`/`medium`.
+- **Review/judge/security agents** (e.g. `security-reviewer`): `model: inherit` — feedback quality is the loop bottleneck (§4), and a weak verifier defeats the maker/checker split. In a flagship session the checker inherits the flagship — that is the point, not a cost bug.
 - In multi-agent workflows, set effort per stage: low for finder/collector stages, high only for verify/judge stages.
 - Global session-wide override if ever needed: `CLAUDE_CODE_SUBAGENT_MODEL`.
 
@@ -213,10 +216,14 @@ Subagents inherit the session model by default. Assign tiers explicitly via fron
 Every open milestone in the dashboard (§7) carries a `recommendedModel: { model, effort, why }` — a suggestion for which Claude model/tier and reasoning effort best fits *that milestone's own* main-loop session (distinct from the subagents it spawns internally). Set it when the milestone entry is created (checkpoint or milestone-planning session), and re-derive it if the milestone's scope changes materially.
 
 Judge by the nature of the remaining work, not by project phase or milestone number:
-- **Mechanical/checklist work** (checkpoints, scoped reads-milestones with brainstorming/spec already done): a mid-tier model (e.g. Sonnet), `effort: low`/`medium`.
-- **Open design/brainstorming, external-integration research, or moderate ambiguity**: mid-tier model, `effort: medium`.
-- **High-stakes judgment calls** (GO/NO-GO decisions against measurable criteria, touching the one untested/production-crash-prone code path, correctness-critical domain logic feeding user-facing decisions, or any milestone with its own threat-model/security-review): the flagship model (e.g. Opus), `effort: high`/`xhigh` — judgment quality outweighs speed or cost here.
-- One-line `why` always states *what about this milestone's remaining work* drives the tier — not a generic restating of the milestone title.
+- **Mechanical/checklist work** (checkpoints, scoped reads-milestones with brainstorming/spec already done): workhorse, `effort: low`/`medium`.
+- **Open design/brainstorming, external-integration research, or moderate ambiguity**: workhorse, `effort: medium`/`high`.
+- **High-stakes judgment calls** (GO/NO-GO decisions against measurable criteria, touching the one untested/production-crash-prone code path, correctness-critical domain logic feeding user-facing decisions, or any milestone with its own threat-model/security-review): flagship, `effort: high`/`xhigh` — judgment quality outweighs speed or cost here (`max` only for single correctness-critical decisions where cost is irrelevant).
+- One-line `why` always states *what about this milestone's remaining work* drives the tier — and, with a two-model palette, what drives the effort level within it.
+
+**Security milestones on the flagship:** safety classifiers may refuse benign adversarial work (STRIDE modeling, exploit-shaped test cases, credential-path review). Log each refusal as a `FRICTION:` entry (§7), rephrase toward the defensive intent, and only drop the affected sub-step to the workhorse if it persists — the milestone itself stays on the flagship.
+
+**Autonomous loops default to the workhorse:** scheduled routines and long unattended loops (nightly triage, `/goal` sessions) run on the workhorse unless the loop's core is a judgment call — flagship turns can run many minutes at flagship rates, and both compound unattended. A flagship autonomous loop is a deliberate per-case decision recorded in the milestone's `why`.
 
 This is a recommendation surfaced to whoever starts that milestone session (human or automation deciding which model to launch it with) — not an enforced gate.
 
