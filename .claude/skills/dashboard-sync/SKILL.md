@@ -21,20 +21,19 @@ am Anfang der Datei — nie den Renderer darunter.
 Zwischen-Milestone-Checkpoints (`id: "Mx.0"`, `title: "Housekeeping Agentic Loop"`) sind
 milestone-förmige Objekte in derselben `milestones[]`-Liste (CLAUDE.md §7 Punkt 4) — gleiche
 Felder, gleiche Status-Lifecycle, gleiche Edit-Regeln wie ein echter Milestone. Der
-Implementierungs-Milestone, den ein Checkpoint gatet, trägt die Nummer `Mx.1`. Acht Steps:
-`Branch-/Worktree-Cleanup` (AKTION 1 im Checkpoint-Prompt, vor dem Skill), dann die sieben
+Implementierungs-Milestone, den ein Checkpoint gatet, trägt die Nummer `Mx.1`. Neun Steps:
+`Branch-/Worktree-Cleanup` (AKTION 1 im Checkpoint-Prompt, vor dem Skill), dann die acht
 über den `milestone-checkpoint`-Skill abgedeckten: `/fewer-permission-prompts`,
-`/claude-automation-recommender`, `Skill-Quellen geprüft`, `Workflow-Retrospektive`,
-`Memory-Konsolidierung`, `Framework-Abgleich (Drift + Native-Features)` (M4.9), `Handover` (M4.8).
+`/doctor-Lauf`, `/claude-automation-recommender`, `Skill-Quellen geprüft`,
+`Workflow-Retrospektive`, `Memory-Konsolidierung`,
+`Framework-Abgleich (Drift + Native-Features)` (M4.9), `Handover` (M4.8).
 
 ## Regeln
 
 - Nur das eine betroffene Objekt (`Mx` oder `Mx.0`) anfassen, nicht andere Einträge.
 - Jeder neue Resume-Prompt (Milestone oder Checkpoint) endet mit `/remote-control <id> — <title>`.
 - Jeder neue Resume-Prompt enthält eine `/goal`-Zeile mit transcript-verifizierbarer
-  Done-Bedingung (solange Claude Code < 2.1.139: stattdessen eine nummerierte
-  Klartext-Checkliste "DONE-BEDINGUNGEN (transcript-verifizierbar; ...)" unmittelbar
-  vor der `/remote-control`-Zeile — Muster in der M4.6-Spec §6).
+  Done-Bedingung.
 - **Am Start**: `status: "active"`, `startedAt` setzen, einen `log[]`-Eintrag anhängen,
   Top-Level `updatedAt` bumpen.
 - **Während der Arbeit**: `steps[].done` abhaken (feste Reihenfolge: Brainstorming → Spec →

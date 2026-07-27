@@ -1,73 +1,31 @@
 # CLAUDE.md
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+Project instructions. A rule earns its place here only if it carries information a fresh session doesn't have — a project fact, an incident-derived lesson, or a convention that differs from defaults. Model-default behavior (surgical edits, simplicity, stating assumptions) is deliberately NOT restated. Exception: security fail-closed rules stay non-negotiable bans — their value lies in not being judgment calls.
 
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+## 0. Default Skills
 
-## 0. Always-On Skills
+**Two skill sets are the default way of working here — applied by judgment, not as ritual.**
 
-**These two skill sets are mandatory for this project — apply them by default, not on request.**
+- **Superpowers workflow skills** (`superpowers:*`) are the normal path for substantive work: `brainstorming` before feature/design work, `writing-plans` before multi-step changes, `test-driven-development` for features/bugfixes, `systematic-debugging` for bugs, and the review/verification skills before completion. Whether a task is substantive is your call — a one-file fix, a doc edit, or a question needs no ritual. When you deliberately skip a process skill on substantive work, say so in one sentence; that traceability replaces the obligation.
+- **`/documenting-code`** (this project's own skill): apply to source files with spec-relevant logic — file header, decision-point comments with §-refs, JSDoc on pure `/lib` exports. Pure mechanics (rename, format fix) only need the existing header kept accurate.
 
-- **Superpowers workflow skills** (`superpowers:*`): use them as the standard way of working — `brainstorming` before any creative/feature work, `writing-plans` before multi-step code, `test-driven-development` for features/bugfixes, `systematic-debugging` for bugs, and the code-review/verification skills before completion. When in doubt whether one applies, invoke it (see `using-superpowers`).
-- **`/documenting-code`** (this project's own skill): apply whenever you write or modify a source file — add the spec-referenced file header, decision-point comments with §-refs, and JSDoc on pure `/lib` exports.
-
-These override the default "just write the code" behavior; user instructions still take precedence over both.
+User instructions take precedence over both.
 
 ## 1. Think Before Coding
 
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
-
-Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
+If multiple interpretations of a request exist, name them — don't pick one silently. Push back when a simpler approach exists.
 
 ## 2. Simplicity First
 
-**Minimum code that solves the problem. Nothing speculative.**
-
-- No features beyond what was asked.
-- No abstractions for single-use code.
-- No "flexibility" or "configurability" that wasn't requested.
-- No error handling for impossible scenarios.
-- If you write 200 lines and it could be 50, rewrite it.
-
-Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+Minimum code that solves the problem — nothing speculative. Kept as the tie-breaker when in doubt; the rest is model default.
 
 ## 3. Surgical Changes
 
-**Touch only what you must. Clean up only your own mess.**
-
-When editing existing code:
-- Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
-- Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it - don't delete it.
-
-When your changes create orphans:
-- Remove imports/variables/functions that YOUR changes made unused.
-- Don't remove pre-existing dead code unless asked.
-
-The test: Every changed line should trace directly to the user's request.
+Model default, with one project nuance: unrelated dead code you notice gets mentioned, not deleted.
 
 ## 4. Goal-Driven Execution
 
-**Define success criteria. Loop until verified.**
-
-Transform tasks into verifiable goals:
-- "Add validation" → "Write tests for invalid inputs, then make them pass"
-- "Fix the bug" → "Write a test that reproduces it, then make it pass"
-- "Refactor X" → "Ensure tests pass before and after"
-
-For multi-step tasks, state a brief plan:
-```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
-```
-
-Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+State verifiable success criteria before multi-step work ("write a test that reproduces it, then make it pass" — never "make it work"); strong criteria let you loop independently. How you format the plan is your call.
 
 Known defects are frozen immediately as `{ todo: true }` tests encoding the CORRECT
 expectation — every run lists them without going red; the fixing session removes the flag.
@@ -104,7 +62,7 @@ A skill is more privileged than a dependency: `` !`cmd` `` dynamic-context block
 - **Cloning a repo is an adoption decision.** Before working in a foreign checkout, check whether it carries `.claude/skills/`, `.claude/agents/`, or `.claude/hooks/`, and apply the checklist to those files before trusting the workspace.
 - Curated indexes (awesome-lists, marketplaces) are **discovery aids, not trust signals** — listing implies no review. The checklist applies unchanged to anything found through them.
 
-The `milestone-checkpoint` skill enforces this at update time (its Schritt 3).
+The `milestone-checkpoint` skill enforces this at update time (its Schritt 4).
 
 ## 6. Platform-Specific Conventions
 
@@ -124,7 +82,7 @@ Use a single-file `dashboard.html` (or equivalent): opens directly in a browser,
 1. **At start:** `status: "active"`, `startedAt: "<YYYY-MM-DD>"`, append a `log` entry ("Brainstorming/Design started"), bump the top-level `updatedAt`.
 2. **During the run:** tick off `steps[].done` as completed (fixed workflow: **Brainstorming → Spec → Plan → Implementation (TDD/SDD) → Validate + Release**); keep `currentActivity` current (or `null`); append coarse-grained entries to `log`; before every deployable release, bump the version and log it (§8 — see the platform file for the exact command).
 3. **At the end:** `status: "done"`, `finishedAt`, `commit: "<short-sha>"`, all `steps[].done = true`, `currentActivity: null`, bump `updatedAt`.
-4. **Between milestones:** once a milestone is closed and before starting the next, run the project's `milestone-checkpoint` skill (its step 1 is a branch/worktree cleanup — check locally and on origin for no-longer-needed branches and worktrees, show a short explanation per candidate, offer selectable deletion, then delete the selected branches (local + origin) and worktrees (git + disk) — followed by `/fewer-permission-prompts`, `/claude-automation-recommender`, and a check of this project's third-party skill sources). Track this as its own checkpoint entry in the milestones list (same object shape as a milestone, `id: "Mx.0"`, `title: "Housekeeping Agentic Loop"`; the implementation milestone it gates is numbered `Mx.1`), not just prose.
+4. **Between milestones:** once a milestone is closed and before starting the next, run the project's `milestone-checkpoint` skill (its step 1 is a branch/worktree cleanup — check locally and on origin for no-longer-needed branches and worktrees, show a short explanation per candidate, offer selectable deletion, then delete the selected branches (local + origin) and worktrees (git + disk) — followed by `/fewer-permission-prompts`, a `/doctor` run (user-typed — the command blocks model invocation), `/claude-automation-recommender`, and a check of this project's third-party skill sources). Track this as its own checkpoint entry in the milestones list (same object shape as a milestone, `id: "Mx.0"`, `title: "Housekeeping Agentic Loop"`; the implementation milestone it gates is numbered `Mx.1`), not just prose.
 
 **Fields per milestone:** `id`, `title`, `status` (`done`|`active`|`todo`), `startedAt`/`finishedAt`, `commit`, `summary`, `steps[]` (`{label, done}`), `currentActivity`, `runtime`, `log[]` (`{at, note}`), `prompt` (full resume prompt; `null` once done), `recommendedModel` (`{model, effort, why}` — see §11; set for every open milestone, drop once `status` is `done`).
 
@@ -257,4 +215,4 @@ CLAUDE.md-Protokollregeln, dem Checkpoint-Ablauf oder den Dashboard-/Template-Fo
 **in derselben Session** in das Framework-Repo `skill-agentic-loop-framework`
 (`plugin/skills/agentic-loop-framework/templates/` bzw. `homey/`) gespiegelt + dessen
 CHANGELOG ergänzt. Projekt-spezifisches (z. B. Violet-Live-Smoke, konkrete Allowlist-Einträge)
-bleibt hier. Der milestone-checkpoint prüft Drift (Schritt 6).
+bleibt hier. Der milestone-checkpoint prüft Drift (Schritt 7a).

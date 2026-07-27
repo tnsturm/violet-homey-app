@@ -11,7 +11,9 @@ Surgical Changes, comments explain *why* not *what*).
 
 ## When this applies
 
-Any time you create or modify a `.js` source file in this repo.
+Creating or modifying `.js` source files with spec-relevant logic. Pure mechanics
+(rename, formatting, moving code unchanged) only need the existing header kept
+accurate — whether a change is substantive is your call.
 
 ## The three building blocks
 

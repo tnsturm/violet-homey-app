@@ -21,7 +21,7 @@ Beide Befehle aktualisieren `.homeycompose/app.json`; das generierte Root-`app.j
 
 `.homeychangelog.json` für jede neue Version mit einer klaren, nutzerverständlichen Änderungsnotiz füllen — **en + de**.
 
-**JSON-Authoring-Regel (aus Workflow-Retro 2026-07-05, 3× denselben Bug getroffen):** `.homeychangelog.json` und die Manifeste sind **striktes JSON**. Beim Bearbeiten von Hand geraten die ASCII-`"`-String-Delimiter leicht zu typografischen „Smart Quotes" (`" "`) → ungültiges JSON, das `homey app validate` (kulant) bis zum Commit durchlässt. Deshalb: JSON-Dateien **programmatisch bauen** (`node` + `JSON.stringify`; deutsche Innen-Anführungszeichen als `„…"` = U+201E/U+201C), **nie die Delimiter von Hand tippen**, und vor dem Commit mit `JSON.parse` prüfen. Der `json-guard`-PostToolUse-Hook (`.claude/hooks/json-guard.js`) erzwingt das automatisch für Manifest-/Changelog-JSON.
+**JSON-Authoring-Regel:** Manifest-/Changelog-JSON **programmatisch bauen** (`node` + `JSON.stringify`; deutsche Innen-Anführungszeichen als `„…"` = U+201E/U+201C) — Hand-getippte Delimiter geraten zu Smart Quotes, die `homey app validate` durchlässt. Der `json-guard`-PostToolUse-Hook (`.claude/hooks/json-guard.js`) erzwingt das mechanisch.
 
 ## App-Store-Readme & Community-Kurzanleitung
 

@@ -1,6 +1,6 @@
 ---
 name: milestone-checkpoint
-description: Between-milestone housekeeping for this project - tightens tool permissions, checks for new automation opportunities, checks/updates the Homey skill sources this project depends on, and runs a workflow retrospective that codifies recurring friction into hooks/docs/memory. Run between milestones per CLAUDE.md §7 point 4 / the dashboard's Mx.0 "Housekeeping Agentic Loop" checkpoint entries.
+description: Between-milestone housekeeping for this project - tightens tool permissions, prompts a native /doctor health check, checks for new automation opportunities, checks/updates the Homey skill sources this project depends on, and runs a workflow retrospective that codifies recurring friction into hooks/docs/memory. Run between milestones per CLAUDE.md §7 point 4 / the dashboard's Mx.0 "Housekeeping Agentic Loop" checkpoint entries.
 disable-model-invocation: true
 ---
 
@@ -19,6 +19,7 @@ Fehler → Einrichtung läuft über den agentic-loop-framework-Bootstrap (Phase 
 
 1. **Branch-/Worktree-Cleanup** (siehe unten).
 2. `/fewer-permission-prompts` ausführen.
+2b. **/doctor-Lauf** (siehe unten) — nativer Setup-Health-Check; der Nutzer muss ihn selbst eintippen.
 3. `/claude-automation-recommender` ausführen, Ergebnisse zur Direktumsetzung anbieten (siehe unten).
 4. Skill-Quellen prüfen (siehe unten).
 5. **Workflow-Retrospektive / Optimizer** ausführen (siehe unten) — wiederkehrende Reibung aus dem
@@ -43,6 +44,25 @@ und biete per `AskUserQuestion` (multiSelect) an, welche gelöscht werden sollen
 danach die angewählten Branches (lokal + origin) und Worktrees (`git worktree remove`
 inkl. Verzeichnis auf der Festplatte). Ergebnis im `Mx.0`-`log[]` vermerken.
 
+## Schritt 2b: /doctor-Lauf
+
+Der native `/doctor` (Alias `/checkup`, Claude Code ≥ 2.1.220) deckt read-only mit maximal zwei
+Bestätigungs-Gates ab: Installations-Gesundheit, ungenutzte Skills/MCP-Server/Plugins vs.
+Kontext-Kosten, CLAUDE.md-Dedup/-Kürzung/-Lazy-Migration, langsame Hooks, Kontext-schwere
+Extensions, Versions-Aktualität — plus zwei Permission-Vorschläge (Checks 8/9).
+
+- Der Command ist `disableModelInvocation` — die Session kann ihn NICHT selbst starten. Per
+  `AskUserQuestion` den Nutzer bitten, jetzt `/doctor` einzutippen. Läuft die Session
+  unbeaufsichtigt (Remote/autonom), Schritt überspringen, im `Mx.0`-`log[]` vermerken und im
+  Handover-Push (Schritt 9) als offenen Punkt nennen.
+- **Check 8 (Auto Mode als Default) am Gate ablehnen** — kollidiert mit CLAUDE.md §10
+  (Default-Mode + Allowlist für Alltagssessions; Auto Mode nur situativ für autonome Loops).
+  Eine Revision von §10 wäre eine eigene, bewusste Entscheidung, kein Nebeneffekt.
+- **Check 9 ergänzt Schritt 2, ersetzt ihn nicht**: `/fewer-permission-prompts` kuratiert
+  häufigkeitsbasiert die git-portable Projekt-Allowlist (§10 Layer 2); /doctor Check 9 ist
+  denial-basiert, strenger, und schreibt nur nach `.claude/settings.local.json`. Beide sinnvoll.
+- Ergebnis (angewendete + abgelehnte Vorschläge) im `Mx.0`-`log[]` festhalten.
+
 ## Schritt 3: /claude-automation-recommender-Ergebnisse anbieten
 
 Der Recommender ist read-only (er schlägt nur vor). Damit die Vorschläge nicht folgenlos im
@@ -59,34 +79,20 @@ Chat verpuffen, direkt danach:
      Schritt 7a (Drift) dafür mit.
    - **MCP-Server**: zuerst unterscheiden, WELCHE Registrierung gemeint ist — ein
      `plugin:<kategorie>:<name>`-Eintrag (z. B. `plugin:engineering:github`) ist ein
-     rollenbasiertes **Cowork-Plugin-Bundle**, dessen Auth/Aktivierung NUR über die
-     Cowork-eigenen Einstellungen läuft (`setup-cowork`/`cowork-plugin-management`-Skills),
-     NICHT über `claude plugin`/`claude mcp` aus der Session heraus — das nur dokumentieren
-     + den Nutzer dorthin verweisen. Existiert daneben ein **eigenständiges** Plugin mit
-     einfachem Namen im `claude-plugins-official`-Marktplatz (z. B. `github`, prüfbar via
-     dem lokalen `marketplace.json`-Manifest), das ist unabhängig vom Bundle und direkt
-     installierbar: `claude plugin install <name>` (kein OAuth nötig für den Install-Schritt
-     selbst; der MCP-Server dahinter kann trotzdem einen separaten Auth-Schritt brauchen —
-     `claude mcp list` danach prüfen, Status "Failed to connect"/"Needs authentication"
-     dem Nutzer melden statt stillschweigend als erledigt zu verbuchen).
-     Zusätzliche Stolperfallen bei einem neu per `claude mcp add` registrierten
-     eigenständigen MCP-Server (nicht Cowork-Bundle), Erkenntnisse vom 2026-07-09
-     (GitHub-MCP-Server): **(1) Scope-Default**: `claude mcp add` registriert ohne
-     `--scope`-Flag standardmäßig `--scope local` (nur im damaligen Projektverzeichnis
-     nutzbar) — für projektübergreifende Nutzung `--scope user` angeben. **(2)
-     Session-Neustart nötig**: eine bereits laufende Session lädt die Tools eines
-     gerade neu verbundenen Servers NICHT nach, selbst wenn `claude mcp get <name>`
-     sofort „Connected" zeigt — erst eine neue Session sieht sie über `ToolSearch`.
-     **(3) „Connected" ≠ nutzbar**: der Verbindungsstatus prüft nur den Handshake,
-     nicht die Token-Rechte. Ein fine-grained PAT ohne Repo-Freigabe liefert 404 auf
-     jeden Repo-Call; mit Lesezugriff aber ohne Schreibrechten liefert er 403 bei
-     Schreibaktionen (`create_branch`, `push_files`, …) — `get_me` läuft in beiden
-     kaputten Zuständen anstandslos durch und ist daher **kein** verlässlicher
-     Health-Check. Vor dem Vertrauen auf einen neuen MCP-Server mindestens einen
-     echten Schreib-Call smoke-testen (Branch anlegen + Datei pushen + wieder
-     löschen), nicht nur Status/`get_me` prüfen. Für den GitHub-MCP-Server konkret:
-     Repo-Permissions **Contents (R/W), Pull requests (R/W), Issues (R/W)** setzen
-     (Metadata R ist Pflicht-Default).
+     rollenbasiertes **Cowork-Plugin-Bundle**: Auth/Aktivierung läuft NUR über die
+     Cowork-eigenen Einstellungen (`setup-cowork`/`cowork-plugin-management`), nicht aus
+     der Session — dokumentieren + Nutzer dorthin verweisen. Ein **eigenständiges** Plugin
+     gleichen Namens im `claude-plugins-official`-Marktplatz (prüfbar via lokalem
+     `marketplace.json`) ist davon unabhängig und direkt installierbar
+     (`claude plugin install <name>`); danach `claude mcp list` prüfen und
+     "Failed to connect"/"Needs authentication" melden statt still als erledigt verbuchen.
+     Bekannte Fakten zu `claude mcp add` (Erkenntnisse 2026-07-09, GitHub-MCP):
+     Scope-Default ist `local` (projektgebunden; projektübergreifend → `--scope user`) ·
+     eine laufende Session lädt Tools eines neu verbundenen Servers nicht nach (erst die
+     nächste Session sieht sie) · „Connected" prüft nur den Handshake, nicht Token-Rechte —
+     `get_me` läuft auch mit kaputtem PAT (404/403 auf echte Calls) anstandslos durch, also
+     vor dem Vertrauen einen echten Schreib-Call smoke-testen (Branch anlegen + Datei pushen
+     + wieder löschen). GitHub-PAT konkret: **Contents, Pull requests, Issues je R/W**.
    - **Skill/Subagent**: Datei unter `.claude/skills/<name>/SKILL.md` bzw.
      `.claude/agents/<name>.md` anlegen, kurz smoke-testen (z. B. Dry-Run-Aufruf).
    - **Plugin**: `claude plugin marketplace add`/`claude plugin install` nur nach ausdrücklicher
@@ -213,7 +219,8 @@ Ist das Signal leer (nichts wiederholte sich), ist dieser Schritt ein No-op — 
 
 Sessions seit dem letzten Checkpoint sichten (`search_session_transcripts`, falls verfügbar —
 sonst Dashboard-`log[]` und `git log` als Quellen), dann die Dateien im Memory-Ordner
-(`MEMORY.md` + Einzeldateien) konsolidieren:
+(`MEMORY.md` + Einzeldateien) konsolidieren. Nur der Memory-Ordner — die CLAUDE.md-Seite
+(Dedup, Kürzen, Lazy-Migration) deckt der /doctor-Lauf (Schritt 2b, Checks 2–4) ab:
 
 - **Deduplizieren/kürzen**: Erledigtes eindampfen (z. B. trägt `project-status` volle
   Detailhistorien abgeschlossener Milestones, die eine Zeile + Verweis sein können).
@@ -248,8 +255,8 @@ Verdikt + Datum). NICHT jedes Mal alle Zeilen neu aufrollen — nur Zeilen, dere
 
 1. **Plattform-Delta holen** seit den `Zuletzt geprüft`-Daten des Ledgers: Claude-Code-Release-Notes
    / `CHANGELOG`, `code.claude.com/docs` (Memory, Skills, Hooks, Subagents, Settings,
-   Slash-Commands) und die installierte Version (`claude --version`). Claude Desktop
-   mitdenken — Features können dort zuerst landen.
+   Slash-Commands). Versions-Aktualität selbst prüft der /doctor-Lauf (Schritt 2b, Check 7) —
+   hier nicht doppeln. Claude Desktop mitdenken — Features können dort zuerst landen.
 2. **Eigene Artefakte inventarisieren**: `CLAUDE.md`-Abschnitte, `.claude/skills/`,
    `.claude/hooks/`, `.claude/agents/`, dazu die stehenden Regeln dieses Skills. Neue Artefakte
    seit dem letzten Checkpoint bekommen eine frische Ledger-Zeile.
