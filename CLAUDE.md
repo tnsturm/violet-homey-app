@@ -200,7 +200,7 @@ Everyday sessions run in the default mode with the allowlist; autonomous loop se
 
 **Don't pay flagship prices for mechanical work — and never economize on the checker or on high-risk judgment calls.**
 
-**Current palette:** *workhorse* = Claude Sonnet 5, *flagship* = Claude Fable 5. The tier rules below reference these roles, not model names — when the palette changes, edit only this line. Within a tier, tune `effort` before switching models; the model switch happens only at the judgment boundary.
+**Current palette:** *workhorse* = Claude Sonnet 5, *implementer* = Claude Opus 5, *flagship* = Claude Fable 5. The tier rules below reference these roles, not model names — when the palette changes, edit only this line. Milestone sessions still know only two tiers (workhorse/flagship); the implementer exists as a delegation target inside flagship sessions (see Flagship orchestration below). Within a tier, tune `effort` before switching models; the model switch happens only at the judgment boundary.
 
 ### Subagents
 
@@ -219,13 +219,17 @@ Judge by the nature of the remaining work, not by project phase or milestone num
 - **Mechanical/checklist work** (checkpoints, scoped reads-milestones with brainstorming/spec already done): workhorse, `effort: low`/`medium`.
 - **Open design/brainstorming, external-integration research, or moderate ambiguity**: workhorse, `effort: medium`/`high`.
 - **High-stakes judgment calls** (GO/NO-GO decisions against measurable criteria, touching the one untested/production-crash-prone code path, correctness-critical domain logic feeding user-facing decisions, or any milestone with its own threat-model/security-review): flagship, `effort: high`/`xhigh` — judgment quality outweighs speed or cost here (`max` only for single correctness-critical decisions where cost is irrelevant).
-- One-line `why` always states *what about this milestone's remaining work* drives the tier — and, with a two-model palette, what drives the effort level within it.
+- One-line `why` always states *what about this milestone's remaining work* drives the tier — and, with the role-based palette, what drives the effort level within it.
 
 **Security milestones on the flagship:** safety classifiers may refuse benign adversarial work (STRIDE modeling, exploit-shaped test cases, credential-path review). Log each refusal as a `FRICTION:` entry (§7), rephrase toward the defensive intent, and only drop the affected sub-step to the workhorse if it persists — the milestone itself stays on the flagship.
 
 **Autonomous loops default to the workhorse:** scheduled routines and long unattended loops (nightly triage, `/goal` sessions) run on the workhorse unless the loop's core is a judgment call — flagship turns can run many minutes at flagship rates, and both compound unattended. A flagship autonomous loop is a deliberate per-case decision recorded in the milestone's `why`.
 
 This is a recommendation surfaced to whoever starts that milestone session (human or automation deciding which model to launch it with) — not an enforced gate.
+
+### Flagship orchestration
+
+In a flagship milestone session, the main loop acts as **orchestrator**: decompose the goal into tasks, delegate implementation to subagents — *implementer* (via the Agent tool's `model` parameter or agent frontmatter) for complex or ambiguous implementation work, *workhorse* for mechanical work — run independent tasks in parallel, and review every result before integrating it (review subagents stay `model: inherit`, so they inherit the flagship). **Delegation is the default, not a ban:** trivial edits and short verification commands the orchestrator does itself — for a one-line fix, handing over context costs more flagship tokens than the fix. This pattern applies only to flagship sessions; workhorse sessions implement directly. It lives here as a standing rule, not in resume prompts — those stay goal + done condition (§7).
 
 ---
 
