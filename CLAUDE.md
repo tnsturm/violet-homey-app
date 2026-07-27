@@ -15,6 +15,11 @@ User instructions take precedence over both.
 
 If multiple interpretations of a request exist, name them — don't pick one silently. Push back when a simpler approach exists.
 
+During brainstorming, before converging on a design:
+
+- **Hunt unknown unknowns:** bring your own domain knowledge to the table — name risks, constraints, and pitfalls in this territory the user hasn't mentioned, don't only extract what they already know.
+- **Architecture changers first:** order clarifying questions by impact — questions whose answers would change the architecture come before detail questions.
+
 ## 2. Simplicity First
 
 Minimum code that solves the problem — nothing speculative. Kept as the tie-breaker when in doubt; the rest is model default.
