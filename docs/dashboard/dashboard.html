@@ -90,7 +90,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-07-27",
+  updatedAt: "2026-07-29",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -832,46 +832,27 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
     {
       id: "M8.1",
       title: "Empfehlungs-Modul (Wasserbalance)",
-      status: "active",
-      recommendedModel: { model: "Claude Fable 5", effort: "high", why: "Flagship (§11-Palette): korrektheitskritische Wasserchemie-Domänen-Logik (LSI-Treiber, CO₂-Ausgasung/Alkalitäts-Wechselwirkung) speist Nutzer-Empfehlungen — Denkqualität vor Tempo; high statt xhigh, da kein Security-/Schreibpfad-Risiko." },
+      status: "done",
       startedAt: "2026-07-27",
-      finishedAt: null,
-      commit: null,
+      finishedAt: "2026-07-29",
+      commit: "2d6462d",
       summary: "Beratungsmodul: Wie bringt man das Ausgangs-Leitungswasser (aus den veröffentlichten Werten der Wasserwerke) in ein günstiges LSI-Band? Welche aktuellen Werte sind die echten Treiber für einen schnellen, günstigen LSI? Inkl. CO₂-Ausgasung bei Frischwasser (pH steigt; niedrige Alkalität → starke pH-Schwankungen). Nachgelagert zu M1/M4.",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
         { label: "Implementierung (SDD)", done: true },
-        { label: "Validate + Push", done: false }
+        { label: "Validate + Push", done: true }
       ],
-      currentActivity: "Implementierung fertig (Review READY TO MERGE, Security-Review 0 Findings) — wartet auf User-Entscheid Push/PR, danach Release 0.8.0.",
+      currentActivity: null,
       runtime: null,
       log: [
         { at: "2026-07-27", note: "Session gestartet (Fable 5, --permission-mode auto). Triage-Inbox gesichtet: alles grün (Nightly 2026-07-22: 311 Tests fail 0, validate publish PASS), keine Blocker. M5.5 im selben Zug geschlossen (User-Bestätigung). Brainstorming/Design started." },
         { at: "2026-07-29", note: "Brainstorming abgeschlossen (User-Entscheide: Flow-Actions + Timeline; Füllwasser als Wasserwerks-Rohwerte °dH/K_S4,3/pH mit Ca-Anteil-Annahme 75%; Kadenz = Bandwechsel-Edge + auf Abruf; M3-Kopplung nur lesend; Rechenkern Ansatz A = Dosierfaktoren + computeLSI-Verifikation; Dosiermittel-Palette als Settings-Dropdowns auf User-Wunsch). Spec geschrieben + committet (a0f6287, Worktree-Branch worktree-m8.1-water-balance-advisor) und vom User freigegeben. §5-Check: keine neue Angriffsfläche, Threat-Model mit Begründung übersprungen (Spec §10). Worktree mit npm ci + Baseline 311/311 grün." },
-        { at: "2026-07-29", note: "Plan (8 Tasks, c4dab47) + SDD komplett: Tasks 1-7 je Implementer-Subagent (Sonnet mechanisch / Opus Integration+Text) + Task-Review (inherit=Fable), alle Approved; 1 Important-Fix in Task 4 (vakuoser Truncation-Test, mit Mutation-Check verifiziert). Final-Review (Fable): CRITICAL gefunden — pH-Säure-Empfehlung beschrieb 3 inkonsistente Zustände, prognostizierte eigene Empfehlung ins severe_corrosive; Fix 693e184 (gekoppelter Bisektions-Solve über TA-Drop, Balanced-Band strippt Mengen, handledByViolet unterdrückt pH-Dosis) + Spec-Addendum (9b5ec00/9fecf0e, Modell-Grenzen + Store-Publish-Follow-ups: TA<80-Warnung, measure_after_outgassing). Re-Review: READY TO MERGE (Gates unabhängig verifiziert). GATES: npm test 366/366 fail 0, typecheck exit 0, validate --level publish PASS. /security-review: 0 Findings. Wartet auf §9-Entscheid Push/PR." }
+        { at: "2026-07-29", note: "Plan (8 Tasks, c4dab47) + SDD komplett: Tasks 1-7 je Implementer-Subagent (Sonnet mechanisch / Opus Integration+Text) + Task-Review (inherit=Fable), alle Approved; 1 Important-Fix in Task 4 (vakuoser Truncation-Test, mit Mutation-Check verifiziert). Final-Review (Fable): CRITICAL gefunden — pH-Säure-Empfehlung beschrieb 3 inkonsistente Zustände, prognostizierte eigene Empfehlung ins severe_corrosive; Fix 693e184 (gekoppelter Bisektions-Solve über TA-Drop, Balanced-Band strippt Mengen, handledByViolet unterdrückt pH-Dosis) + Spec-Addendum (9b5ec00/9fecf0e, Modell-Grenzen + Store-Publish-Follow-ups: TA<80-Warnung, measure_after_outgassing). Re-Review: READY TO MERGE (Gates unabhängig verifiziert). GATES: npm test 366/366 fail 0, typecheck exit 0, validate --level publish PASS. /security-review: 0 Findings. Wartet auf §9-Entscheid Push/PR." },
+        { at: "2026-07-29", note: "ABSCHLUSS: PR #15 squash-gemerged (2d6462d, CI 26s grün, User-Entscheid). Release 0.8.0: Bump minor + Store-Changelog en/de (User-approved) = e1f4de2, release-readiness GO (7/7 Checks), homey app install auf Torstens Homey Pro (1. Versuch transienter 'Missing File'-Fehler, Retry OK), Live-Check: 0.8.0 running/not crashed. versions.md-Zeile ergänzt. OFFEN als Nachlauf: (a) Community-Forum-Post (Topic 157109) manuell um Advisor-Abschnitt ergänzen — Quelltext liegt in docs/community/quickstart-guide.{en,de}.md; (b) vor künftigem Store-Publish die 2 Spec-Addendum-Follow-ups (TA<80-Warnung, measure_after_outgassing an TA-Senkung)." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Violet Homey Pro App — Milestone M8.1 (Empfehlungs-/Wasserbalance-Modul).
-
-Aktualisiere beim Start den M8.1-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
-
-Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-06-29-violet-homey-app-m1-lsi-design.md) — dort sind LSI-Mathe (lib/Lsi.js), Klassifizierung und die Chem-Eingaben definiert, auf denen dieses Modul aufsetzt. M0–M7 sollten fertig sein.
-
-Aufgabe (beratend, kein Zwang zum Schreiben auf die Violet): Empfehlungen, mit welchen chemischen Maßnahmen man (a) das initiale Leitungswasser — ausgehend von den veröffentlichten Messwerten der Wasserwerke — in ein günstiges LSI-Band bringt und (b) aus den aktuellen Werten die wirklichen "Treiber" identifiziert, um schnell auf einen günstigen LSI zu kommen (welche Stellgröße bringt am meisten). Wichtig: Hinweis auf CO₂-Ausgasung beim Einlass von frischem Leitungswasser (erhöht den pH-Wert) und die Wechselwirkung mit niedriger Alkalität (starke pH-Schwankungen, schlechte Pufferung). Mögliche Ausgabe: berechnete Mengenempfehlungen + erklärende Hinweise (Flow-Tokens/Notification oder Settings-Hinweis); ggf. Anbindung an M3-Dosierung als Option.
-
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. npm test zeigt fail 0 — Output im Chat gezeigt.
-2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
-3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
-
-/remote-control M8.1 — Empfehlungs-Modul (Wasserbalance)`
+      prompt: null
     },
     {
       id: "M9.0",
