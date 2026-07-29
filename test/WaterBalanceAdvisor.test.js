@@ -57,18 +57,22 @@ test('chlorine side-effect matrix (spec §4.3)', () => {
 const BASE = { volumeM3: 50, products: { phMinus: 'h2so4_15', chlorine: 'naocl' }, dosingCtx: { violetDosesPh: false }, fill: null };
 
 test('adviseBalance: low TA is the clear driver; amount uses 16.8 g/m³ per 10 ppm (spec §4.4)', () => {
-  // pH 7.4, 26°C, CH 250 ok, TA 50 low → LSI clearly negative, TA lever dominates.
-  const r = adviseBalance({ ...BASE, pH: 7.4, tempC: 26, chPpm: 250, taPpm: 50, cya: 0 });
+  // pH 7.4, 26°C, CH 250 ok, TA 40 low → LSI clearly negative, TA lever dominates.
+  const r = adviseBalance({ ...BASE, pH: 7.4, tempC: 26, chPpm: 250, taPpm: 40, cya: 0 });
   assert.equal(r.status, 'ok');
   assert.ok(r.lsiNow !== null && r.lsiNow < -0.3);
   assert.equal(r.drivers[0].param, 'ta');
   assert.equal(r.drivers[0].direction, 'raise');
   assert.ok(r.drivers[0].target >= 80 && r.drivers[0].target <= 120);
   const grams = r.drivers[0].measure.amount.value;
-  const expected = 16.8 * 50 * (r.drivers[0].target - 50) / 10;
+  const expected = 16.8 * 50 * (r.drivers[0].target - 40) / 10;
   assert.ok(Math.abs(grams - expected) <= 10); // rounded to 10 g
   assert.equal(r.drivers[0].measure.amount.unit, 'g');
   assert.equal(r.drivers[0].measure.chemical, 'nahco3');
+  // Ranking invariant: drivers are sorted by |deltaLsi| descending.
+  for (let i = 1; i < r.drivers.length; i++) {
+    assert.ok(Math.abs(r.drivers[i - 1].deltaLsi) >= Math.abs(r.drivers[i].deltaLsi));
+  }
 });
 
 test('adviseBalance: high pH driver → acid measure in mL for h2so4_15 (spec §4.2)', () => {
@@ -80,11 +84,61 @@ test('adviseBalance: high pH driver → acid measure in mL for h2so4_15 (spec §
   assert.ok(r.drivers[0].measure.amount.value > 0);
 });
 
+test('adviseBalance: pH acid dose, pH target and predicted LSI describe ONE state (spec §4.5)', () => {
+  // Review Finding 1: target was solved at constant TA, the dose came from the
+  // §4.5 buffer model and predictedLsi from a third state. All three must now
+  // agree — the acid dose is exactly the TA drop implied by the pH target, and
+  // computeLSI on that (pH, TA) pair is the predicted value.
+  const r = adviseBalance({ ...BASE, pH: 8.0, tempC: 28, chPpm: 300, taPpm: 110, cya: 0 });
+  const ph = r.drivers[0];
+  assert.equal(ph.param, 'ph');
+  assert.equal(ph.direction, 'lower');
+  // TA drop implied by the rendered pH target via the §4.5 buffer model.
+  const taAfter = 110 * Math.pow(10, ph.target - 8.0);
+  const mL = ph.measure.amount.value;
+  const expected = 60 * 50 * (110 - taAfter) / 10; // h2so4_15: 60 mL/m³ per 10 ppm TA
+  // Tolerance covers only the two roundings: pH target to 2 decimals (≈0.6 ppm
+  // TA ⇒ ≈190 mL) and the dose to 10 mL — not a second, different model.
+  assert.ok(Math.abs(mL - expected) <= 250, `dose ${mL} mL must match the target's TA drop (${expected})`);
+  // predictedLsi is computeLSI on that same coupled state, not on a TA-constant one.
+  const check = computeLSI({ pH: ph.target, tempC: 28, calciumHardnessPpm: 300, totalAlkalinityPpm: taAfter, cya: 0 });
+  assert.ok(check !== null && Math.abs(/** @type {number} */ (r.predictedLsi) - check) <= 0.01);
+  assert.equal(r.predictedLsi, ph.lsiAfter);
+  assert.ok(Math.abs(/** @type {number} */ (r.predictedLsi)) < 0.05, `coupled solve must land at LSI 0, got ${r.predictedLsi}`);
+});
+
 test('adviseBalance: predictedLsi comes from computeLSI on the adjusted state (spec §3 invariant)', () => {
-  const r = adviseBalance({ ...BASE, pH: 7.4, tempC: 26, chPpm: 250, taPpm: 50, cya: 0 });
+  const r = adviseBalance({ ...BASE, pH: 7.4, tempC: 26, chPpm: 250, taPpm: 40, cya: 0 });
   const check = computeLSI({ pH: 7.4, tempC: 26, calciumHardnessPpm: 250, totalAlkalinityPpm: r.drivers[0].target, cya: 0 });
+  assert.equal(r.drivers[0].param, 'ta'); // the TA lever moves TA only — no coupling
   assert.equal(r.predictedLsi, check);
+  assert.equal(r.predictedLsi, r.drivers[0].lsiAfter); // top lever's own post-state
   assert.ok(r.predictedLsi !== null && r.lsiNow !== null && Math.abs(r.predictedLsi) < Math.abs(r.lsiNow)); // strictly closer to 0
+});
+
+test('adviseBalance: no recommendation overshoots into the opposite band (review regression, spec §4.4/§4.5)', () => {
+  // Every driver's post-state LSI — and the predicted LSI the text quotes —
+  // must stay on the side of 0 the water started on. The pre-fix advisor sent
+  // pH 8.0 / TA 110 / CH 300 / 28 °C from +0.55 to −0.69 (severe_corrosive).
+  const grid = [
+    { pH: 8.0, tempC: 28, chPpm: 300, taPpm: 110 },
+    { pH: 7.8, tempC: 28, chPpm: 300, taPpm: 110 },
+    { pH: 8.2, tempC: 26, chPpm: 250, taPpm: 100 },
+    { pH: 6.9, tempC: 20, chPpm: 150, taPpm: 40 },
+  ];
+  for (const s of grid) {
+    for (const fill of [null, { chPpm: 150, taPpm: 60 }]) {
+      const r = adviseBalance({ ...BASE, fill, ...s, cya: 0 });
+      assert.equal(r.status, 'ok');
+      const scaling = /** @type {number} */ (r.lsiNow) > 0;
+      const seen = [.../** @type {Array<*>} */ (r.drivers).map((d) => d.lsiAfter), r.predictedLsi];
+      for (const lsi of seen) {
+        assert.ok(typeof lsi === 'number' && Number.isFinite(lsi), 'every post-state LSI is a number');
+        if (scaling) assert.ok(lsi >= -0.3, `scaling water ${JSON.stringify(s)} must not be pushed to LSI ${lsi}`);
+        else assert.ok(lsi <= 0.5, `corrosive water ${JSON.stringify(s)} must not be pushed to LSI ${lsi}`);
+      }
+    }
+  }
 });
 
 test('adviseBalance: clamps hold — extreme water clamps targets to band edges (spec §4.4)', () => {
@@ -96,11 +150,28 @@ test('adviseBalance: clamps hold — extreme water clamps targets to band edges 
   }
 });
 
-test('adviseBalance: balanced water → no drivers ≥0.05, status ok (spec §4.4)', () => {
-  // Construct a state with LSI ≈ 0: pH 7.5, 26°C, CH 250, TA 100 → verify then assert empty-ish.
-  const r = adviseBalance({ ...BASE, pH: 7.5, tempC: 26, chPpm: 250, taPpm: 100, cya: 0 });
-  if (r.lsiNow !== null && Math.abs(r.lsiNow) < 0.05) assert.equal(r.drivers.length, 0);
-  else assert.ok(r.drivers.every((d) => Math.abs(d.deltaLsi) >= 0.05));
+test('adviseBalance: LSI ≈ 0 → no drivers at all, status ok (spec §4.4)', () => {
+  // pH 7.55, 26 °C, CH 250, TA 100 sits at LSI -0.02 — every lever's achievable
+  // gain is below DRIVER_MIN_DELTA, so the list is empty unconditionally.
+  const r = adviseBalance({ ...BASE, pH: 7.55, tempC: 26, chPpm: 250, taPpm: 100, cya: 0 });
+  assert.equal(r.status, 'ok');
+  assert.ok(r.lsiNow !== null && Math.abs(r.lsiNow) < 0.05, `fixture must be near zero, got ${r.lsiNow}`);
+  assert.equal(r.drivers.length, 0);
+  assert.equal(r.predictedLsi, r.lsiNow);
+});
+
+test('adviseBalance: balanced band keeps informational levers but strips every dose (spec §5)', () => {
+  // Review Finding 2: LSI +0.23 is classified 'ok', yet the old advisor still
+  // attached litres of acid to it. Targets stay (informational), doses do not.
+  const r = adviseBalance({ ...BASE, pH: 7.8, tempC: 26, chPpm: 250, taPpm: 100, cya: 0 });
+  assert.equal(r.band, 'balanced');
+  assert.ok(r.lsiNow !== null && Math.abs(r.lsiNow) > 0.05);
+  assert.ok(r.drivers.length > 0, 'the levers stay visible');
+  for (const d of r.drivers) {
+    assert.equal(d.measure, null, `${d.param} must carry no dose in the balanced band`);
+    assert.ok(d.notes.includes('fine_tuning'));
+    assert.ok(Number.isFinite(d.target));
+  }
 });
 
 test('adviseBalance: volumeM3 null → amounts null + needs_volume note (spec §4.4.4)', () => {
@@ -109,10 +180,15 @@ test('adviseBalance: volumeM3 null → amounts null + needs_volume note (spec §
   assert.ok(r.drivers[0].notes.includes('needs_volume'));
 });
 
-test('adviseBalance: violetDosesPh annotates the pH lever (spec §4.4.5, §8)', () => {
+test('adviseBalance: violetDosesPh annotates the pH lever and suppresses its dose (spec §4.3(2), §8)', () => {
   const r = adviseBalance({ ...BASE, dosingCtx: { violetDosesPh: true }, pH: 8.2, tempC: 26, chPpm: 250, taPpm: 100, cya: 0 });
   const ph = r.drivers.find((d) => d.param === 'ph');
   assert.ok(ph && ph.handledByViolet === true && ph.notes.includes('violet_doses_ph'));
+  assert.equal(ph.measure, null, 'no hand-dosing amount next to "the Violet doses pH itself"');
+  assert.ok(Number.isFinite(ph.target), 'the pH target is still stated');
+  // Only the pH lever is suppressed — TA/CH still carry their amounts.
+  const ta = r.drivers.find((d) => d.param === 'ta');
+  assert.ok(ta && ta.measure && ta.measure.amount.value > 0);
 });
 
 test('adviseBalance: aeration listed when pH < equilibrium − 0.3 and pH needs raising (spec §4.6)', () => {
@@ -123,7 +199,9 @@ test('adviseBalance: aeration listed when pH < equilibrium − 0.3 and pH needs 
 });
 
 test('adviseBalance: TA lowering with fill water configured → dilution measure in % (spec §4.7)', () => {
-  const r = adviseBalance({ ...BASE, products: { phMinus: 'none', chlorine: 'naocl' }, fill: { chPpm: 100, taPpm: 60 }, pH: 7.5, tempC: 26, chPpm: 250, taPpm: 240, cya: 0 });
+  // pH 7.8 (not 7.5) so the water is genuinely scale-forming — inside the
+  // balanced band the advisor deliberately shows no measures at all (§5).
+  const r = adviseBalance({ ...BASE, products: { phMinus: 'none', chlorine: 'naocl' }, fill: { chPpm: 100, taPpm: 60 }, pH: 7.8, tempC: 26, chPpm: 250, taPpm: 240, cya: 0 });
   const ta = r.drivers.find((d) => d.param === 'ta');
   assert.ok(ta && ta.direction === 'lower');
   assert.equal(ta.measure.chemical, 'dilution');
@@ -136,7 +214,9 @@ test('adviseBalance: TA lowering with fill water configured → dilution measure
 test('adviseBalance: fill water itself over target → fill_water_is_source honesty note (spec §4.7)', () => {
   const r = adviseBalance({ ...BASE, fill: { chPpm: 450, taPpm: 100 }, pH: 7.8, tempC: 26, chPpm: 500, taPpm: 100, cya: 0 });
   const ch = r.drivers.find((d) => d.param === 'ch');
-  if (ch) assert.ok(ch.notes.includes('fill_water_is_source'));
+  assert.ok(ch, 'the CH lever must be part of this fixture');
+  assert.ok(ch.notes.includes('fill_water_is_source'));
+  assert.equal(ch.measure, null, 'no dilution amount when the fill water is the source');
 });
 
 test('adviseBalance: trichlor product → chlorineNote trichlor_drift (spec §4.3)', () => {

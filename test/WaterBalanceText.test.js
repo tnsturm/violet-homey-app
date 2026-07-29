@@ -12,15 +12,18 @@ const { adviseBalance, adviseFillWater } = require('../lib/WaterBalanceAdvisor')
 const BASE = { volumeM3: 50, products: { phMinus: 'h2so4_15', chlorine: 'naocl' }, dosingCtx: { violetDosesPh: false }, fill: null };
 
 // Fixtures (real advisor output — see WaterBalanceAdvisor.test.js for the math):
-// lowTa:  LSI -0.47 corrosive, driver ta 50→120, 5880 g nahco3, predicted -0.09
-// highPh: LSI +0.63 scaling,  driver ph 8.2→7.56, 20510 mL h2so4_15, trichlor note
-const lowTa = adviseBalance({ ...BASE, pH: 7.4, tempC: 26, chPpm: 250, taPpm: 50, cya: 0 });
+// lowTa:  LSI -0.57 severely corrosive, driver ta 40→120, 6720 g nahco3, predicted -0.09
+// highPh: LSI +0.63 scaling, driver ph 8.2→7.88 (coupled acid/TA solve, §4.5),
+//         15580 mL h2so4_15, predicted -0.01, trichlor note
+const lowTa = adviseBalance({ ...BASE, pH: 7.4, tempC: 26, chPpm: 250, taPpm: 40, cya: 0 });
 const highPh = adviseBalance({
   ...BASE, pH: 8.2, tempC: 26, chPpm: 250, taPpm: 100, cya: 0,
   products: { phMinus: 'h2so4_15', chlorine: 'trichlor' },
 });
 const incomplete = adviseBalance({});
-const noVolume = adviseBalance({ ...BASE, volumeM3: null, pH: 7.4, tempC: 26, chPpm: 250, taPpm: 50, cya: 0 });
+const noVolume = adviseBalance({ ...BASE, volumeM3: null, pH: 7.4, tempC: 26, chPpm: 250, taPpm: 40, cya: 0 });
+// Balanced band (LSI +0.23, severity 'ok'): levers stay, doses are stripped (§5).
+const balancedFine = adviseBalance({ ...BASE, pH: 7.8, tempC: 26, chPpm: 250, taPpm: 100, cya: 0 });
 const violetPh = adviseBalance({
   ...BASE, pH: 8.2, tempC: 26, chPpm: 250, taPpm: 100, cya: 0, dosingCtx: { violetDosesPh: true },
 });
@@ -31,10 +34,10 @@ test('renderAdvice de: driver name, amount with unit, band, comma decimals, hedg
   const s = renderAdvice(lowTa, 'de');
   assert.match(s, /Alkalität/);            // leverName('ta','de')
   assert.match(s, /Natron \(NaHCO₃\)/);    // chemName('nahco3','de')
-  assert.match(s, /5880 g/);
+  assert.match(s, /6720 g/);
   assert.match(s, /korrosiv/);
-  assert.match(s, /-0,47/);                // de comma decimals, signed LSI
-  assert.ok(!s.includes('-0.47'), 'de must not use dot decimals');
+  assert.match(s, /-0,57/);                // de comma decimals, signed LSI
+  assert.ok(!s.includes('-0.57'), 'de must not use dot decimals');
   assert.match(s, /≈ ?-0,09/);             // predicted LSI hedged (spec §4.5 honesty rule)
 });
 
@@ -42,16 +45,16 @@ test('renderAdvice en: english lever/chemical names and dot decimals', () => {
   const s = renderAdvice(lowTa, 'en');
   assert.match(s, /alkalinity/);
   assert.match(s, /baking soda \(NaHCO₃\)/);
-  assert.match(s, /5880 g/);
+  assert.match(s, /6720 g/);
   assert.match(s, /corrosive/);
-  assert.match(s, /-0\.47/);
-  assert.ok(!s.includes('-0,47'), 'en must not use comma decimals');
+  assert.match(s, /-0\.57/);
+  assert.ok(!s.includes('-0,57'), 'en must not use comma decimals');
   assert.match(s, /≈ ?-0\.09/);
 });
 
 test('renderAdvice: pH-lowering advice names the acid product with its concentration (both langs)', () => {
   assert.match(renderAdvice(highPh, 'de'), /Schwefelsäure 14,9 %/);
-  assert.match(renderAdvice(highPh, 'de'), /20510 mL/);
+  assert.match(renderAdvice(highPh, 'de'), /15580 mL/);
   assert.match(renderAdvice(highPh, 'en'), /sulfuric acid 14\.9 %/);
   assert.match(renderAdvice(highPh, 'de'), /\+0,63/);   // positive LSI carries a sign
 });
@@ -80,8 +83,10 @@ test('renderAdvice: notes rendered — needs_volume, violet_doses_ph, aeration_f
 });
 
 test('renderAdvice: dilution measure renders the exchange percentage', () => {
+  // pH 7.8 keeps this state scale-forming — inside the balanced band the
+  // advisor strips every measure by design (§5), which is a different test.
   const r = adviseBalance({
-    ...BASE, pH: 7.4, tempC: 26, chPpm: 600, taPpm: 100, cya: 0,
+    ...BASE, pH: 7.8, tempC: 26, chPpm: 600, taPpm: 100, cya: 0,
     fill: { chPpm: 150, taPpm: 100 },
   });
   const ch = r.drivers.find((d) => d.param === 'ch');
@@ -99,6 +104,24 @@ test('renderAdvice: fill_water_is_source honesty note', () => {
   assert.ok(r.drivers.some((d) => d.notes.includes('fill_water_is_source')), 'fixture must carry the note');
   assert.match(renderAdvice(r, 'de'), /Füllwasser/);
   assert.match(renderAdvice(r, 'en'), /fill water/i);
+});
+
+test('renderAdvice balanced: all-clear first, levers as fine-tuning, no dose anywhere (spec §5)', () => {
+  // Review Finding 2: "(balanced)" used to be followed by an 18 L acid instruction.
+  assert.equal(balancedFine.band, 'balanced');
+  assert.ok(balancedFine.drivers.length > 0);
+  for (const d of balancedFine.drivers) assert.equal(d.measure, null, 'fixture must carry no measures');
+  for (const [lang, ok, fine] of /** @type {Array<[string, RegExp, RegExp]>} */ ([
+    ['de', /Die Wasserbalance ist in Ordnung/, /optionale Feinabstimmung/],
+    ['en', /water balance is fine/, /optional fine-tuning/],
+  ])) {
+    const s = renderAdvice(balancedFine, lang);
+    assert.match(s, ok);
+    assert.match(s, fine);
+    assert.ok(s.search(ok) < s.search(fine), 'all-clear leads the text');
+    assert.ok(!/\d+ ?(g|mL)\b/.test(s), `balanced advice must quote no amount: ${s}`);
+    assert.ok(!/%/.test(s), `balanced advice must quote no water-exchange amount: ${s}`);
+  }
 });
 
 test('renderAdvice incomplete: lists the missing values localized, no amounts, no LSI claim', () => {
@@ -137,7 +160,7 @@ test('renderExcerpt: ≤ 200 chars, contains band and the top measure (both lang
     const s = renderExcerpt(lowTa, lang);
     assert.ok(s.length <= 200, `excerpt too long (${s.length}): ${s}`);
     assert.match(s, lang === 'de' ? /korrosiv/ : /corrosive/);
-    assert.match(s, /5880 g/);
+    assert.match(s, /6720 g/);
     assert.match(s, lang === 'de' ? /Natron/ : /baking soda/);
   }
   assert.ok(renderExcerpt(highPh, 'de').length <= 200);
