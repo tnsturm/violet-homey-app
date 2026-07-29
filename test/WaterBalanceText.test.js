@@ -146,14 +146,19 @@ test('renderExcerpt: ≤ 200 chars, contains band and the top measure (both lang
   assert.ok(renderExcerpt({}, 'de').length <= 200);
 });
 
-test('renderExcerpt: over-long content is truncated, never cut mid-escape', () => {
-  const huge = {
-    ...lowTa,
-    band: 'corrosive',
-    drivers: [{ ...lowTa.drivers[0], measure: { chemical: 'x'.repeat(400), amount: { value: 1, unit: 'g' } } }],
-  };
-  const s = renderExcerpt(huge, 'de');
-  assert.ok(s.length <= 200, `truncation failed (${s.length})`);
+test('renderExcerpt: genuinely over-long content is truncated with an ellipsis', () => {
+  // All reason sentences plus the full missing-value list overflow the 200-char cap
+  // (de: 253 chars untruncated, en: 252) — this fixture actually exercises clip().
+  const overflow = { ...incomplete, missing: ['stale', 'lsi_disabled', 'pH', 'tempC', 'chPpm', 'taPpm'] };
+  for (const lang of ['de', 'en']) {
+    // renderAdvice renders the same sentences uncapped — proof the fixture really overflows.
+    const raw = renderAdvice(overflow, lang);
+    assert.ok(raw.length > 200, `fixture must exceed the cap, got ${raw.length}`);
+    const s = renderExcerpt(overflow, lang);
+    assert.ok(s.length <= 200, `truncation failed (${s.length}): ${s}`);
+    assert.ok(s.endsWith('…'), `truncation marker missing: ${s}`);
+    assert.ok(raw.startsWith(s.slice(0, -1).trimEnd()), 'truncated excerpt must be a prefix of the full text');
+  }
 });
 
 test('renderFillPlan: ordered steps TA → CH → outgassing → pH with equilibrium pH value', () => {
