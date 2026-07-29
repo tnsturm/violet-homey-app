@@ -4,17 +4,21 @@ Nächtliche Befund-Sammlung der `violet-nightly-triage`-Routine (M4.8, Spec §4)
 **jede neue Milestone-Session und der release-readiness-Subagent lesen diese Datei zuerst**
 (CLAUDE.md §7). Die Routine pflegt die Abschnitte (Einträge wandern), sie hängt nicht endlos an.
 
-**Stand:** 2026-07-28 (nightly-triage-Lauf)
+**Stand:** 2026-07-29 (nightly-triage-Lauf)
 
 ## Offen
 
-- 2026-07-09 · Follow-up · App-Crash-Trace (M3) nicht reproduzierbar — braucht User-Trace oder Store-Test-Crash-Reports; beobachten. Stand 2026-07-28: unverändert, keine neuen Traces.
-- 2026-07-14 · Routine/Design (offen) · Soll die Nightly-Routine ihren Start-Branch fest auf `main` pinnen? Historisch lief sie auf dem jeweils ausgecheckten Feature-Branch (Regel „nicht wechseln"), was die gemeldeten Test-Zahlen verfälschte. Stand 2026-07-28: Lauf fand erneut auf `main` statt (311 Tests, Baseline korrekt) — Symptom trat nicht auf, die Design-Frage bleibt offen, solange die Routine keinen Branch fixiert.
-- 2026-07-28 · Routine/Lücke · Zwischen dem 2026-07-22-Lauf und heute liegt **kein** `chore(triage)`-Commit (`git log --grep="chore(triage)"` zeigt als letzten vor heute `0cdf149`, 2026-07-22) — sechs Nächte ohne Inbox-Eintrag. Offen ist, ob die Routine in dieser Zeit gar nicht lief (Scheduler/Rechner aus) oder lief und der Commit-Schritt scheiterte. Prüfen: Scheduler-Historie zu `violet-nightly-triage`.
+- 2026-07-09 · Follow-up · App-Crash-Trace (M3) nicht reproduzierbar — braucht User-Trace oder Store-Test-Crash-Reports; beobachten. Stand 2026-07-29: unverändert, keine neuen Traces.
+- 2026-07-14 · Routine/Design (offen) · Soll die Nightly-Routine ihren Start-Branch fest auf `main` pinnen? Historisch lief sie auf dem jeweils ausgecheckten Feature-Branch (Regel „nicht wechseln"), was die gemeldeten Test-Zahlen verfälschte. Stand 2026-07-29: dritter Lauf in Folge auf `main` (311 Tests, Baseline korrekt) — Symptom trat nicht auf, die Design-Frage bleibt offen, solange die Routine keinen Branch fixiert.
+- 2026-07-28 · Routine/Lücke · Zwischen dem 2026-07-22- und dem 2026-07-28-Lauf liegt **kein** `chore(triage)`-Commit — sechs Nächte ohne Inbox-Eintrag. Stand 2026-07-29: Scheduler-Eintrag `violet-nightly-triage` geprüft — `enabled: true`, Cron `0 8 * * *`, `lastRunAt` 2026-07-29T06:04Z, `nextRunAt` 2026-07-30T06:04Z; eine Lauf-**Historie** liefert die Scheduler-API nicht, die Ursache der Lücke bleibt daher rückwirkend nicht belegbar. Zwei aufeinanderfolgende erfolgreiche Nächte (07-28, 07-29) sprechen gegen einen defekten Commit-Schritt und für Scheduler-/Rechner-Ausfall in dem Zeitraum. Beobachten: bricht die Kette erneut, ist es systematisch.
 
-## Neu (2026-07-28)
+## Neu (2026-07-29)
 
-- 2026-07-28 · Lauf · **ALLES GRÜN** (auf `main`): npm test 311 Tests / pass 311 / fail 0 / todo 0 (6,4 s) · `homey app validate --level publish` exit 0 · Versions-Sync app.json == .homeycompose/app.json (0.7.3) · CI-Lauf 30331585699 (main, schedule) completed/success (31 s) · Worktree nach `validate` sauber (dritte Bestätigung des `.gitattributes`-Fixes aus `57e0b4e`).
+- 2026-07-29 · Lauf · **ALLES GRÜN** (auf `main`): npm test 311 Tests / pass 311 / fail 0 / todo 0 (7,7 s) · `homey app validate --level publish` exit 0 · Versions-Sync app.json == .homeycompose/app.json (0.7.3) · CI-Lauf 30425327692 (main, schedule) completed/success (23 s) · Worktree nach `validate` sauber (vierte Bestätigung des `.gitattributes`-Fixes aus `57e0b4e`).
+
+## Erledigt (2026-07-29)
+
+- Nightly-Lauf 2026-07-28 (ALLES GRÜN, ohne Handlungsbedarf) → aus „Neu" entfernt, kein Follow-up.
 
 ## Erledigt (2026-07-28)
 
