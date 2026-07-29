@@ -44,6 +44,60 @@ heater), and scaling water deposits limescale on tiles and plumbing. You get a
 Homey alarm and a Flow trigger the moment the balance drifts out of range, so you
 can act before either type of damage sets in.
 
+## Optional: getting advice on your water balance
+
+Once the safety net above tells you *that* something is off, this feature tells
+you *what to do about it*. It turns the LSI into concrete, quantified
+suggestions — dosing amounts and a fill-water startup plan — without ever
+touching the controller itself: the advisor only advises, it never doses
+anything on its own.
+
+**What you need:** **Compute LSI** enabled with your chemistry values entered
+(see above), plus your **pool volume** in the device settings if you want
+amounts in grams or millilitres. Without a pool volume you still get the
+direction of the recommendation, just not a quantity.
+
+**Reading your fill water:** for a startup plan for freshly filled water,
+enter the values from your water utility's annual water analysis
+(*Trinkwasseranalyse* — every German utility publishes one, usually on their
+website): the **total hardness** in °dH (*Gesamthärte*), the **acid capacity**
+K_S4,3 in mmol/L (*Säurekapazität*), and the **pH**. The app converts these
+into pool-chemistry units itself, assuming 75% of the hardness is calcium (the
+rest magnesium) — a typical split for German tap water that you can adjust in
+the settings if your utility publishes the exact figure.
+
+**Two new Flow actions:**
+
+- **"Get water-balance advice"** looks at your current chemistry and tells you
+  which lever — pH, alkalinity or calcium hardness — moves the LSI the most,
+  with a dose amount if the pool volume is set. Tokens: the advice text, the
+  top lever, the current LSI, and the LSI you'd reach after following the top
+  recommendation.
+- **"Analyze fill water"** looks at the tap-water values you entered and
+  works out the LSI of that water plus a step-by-step startup plan. Tokens:
+  the fill water's LSI, the equilibrium pH it will settle at, and the plan
+  text.
+
+**Timeline notification:** when the LSI drifts into a corrosive or scaling
+band, you automatically get a Homey timeline entry with the top driver and a
+dose amount — no Flow needed. Turn this off with **Timeline notification on
+band change** if you'd rather only check on demand.
+
+**Why fresh fill water needs a moment:** tap water straight from the pipe
+carries more dissolved CO₂ than it will once it settles. As that CO₂ escapes
+into the air, the pH climbs on its own — no chemical needed. If your fill
+water's alkalinity is low (under roughly 80 ppm), that swing is much bigger,
+because there's too little buffering to hold the pH steady. That's why the
+startup plan always fixes alkalinity first, then lets the water circulate for
+a day or two to finish outgassing, and only then sets the pH — doing it in the
+other order means chasing a moving target.
+
+**Keep in mind:** all dose amounts are estimates ("≈"), based on the
+calcium-share assumption above and the product concentrations named in the
+dropdowns (e.g. sulfuric acid at 14.9%) — your actual product may differ
+slightly. And if your Violet already doses pH itself, the advice leaves pH to
+the controller and focuses on alkalinity and calcium hardness instead.
+
 ## Optional: controlling the pool from Homey
 
 Enable **Control (write)** in the device settings to command the pump, lights, DMX
