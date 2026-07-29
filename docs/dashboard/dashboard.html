@@ -841,15 +841,16 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
-        { label: "Plan", done: false },
-        { label: "Implementierung (SDD)", done: false },
+        { label: "Plan", done: true },
+        { label: "Implementierung (SDD)", done: true },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: "Spec freigegeben — Implementierungsplan (writing-plans) läuft.",
+      currentActivity: "Implementierung fertig (Review READY TO MERGE, Security-Review 0 Findings) — wartet auf User-Entscheid Push/PR, danach Release 0.8.0.",
       runtime: null,
       log: [
         { at: "2026-07-27", note: "Session gestartet (Fable 5, --permission-mode auto). Triage-Inbox gesichtet: alles grün (Nightly 2026-07-22: 311 Tests fail 0, validate publish PASS), keine Blocker. M5.5 im selben Zug geschlossen (User-Bestätigung). Brainstorming/Design started." },
-        { at: "2026-07-29", note: "Brainstorming abgeschlossen (User-Entscheide: Flow-Actions + Timeline; Füllwasser als Wasserwerks-Rohwerte °dH/K_S4,3/pH mit Ca-Anteil-Annahme 75%; Kadenz = Bandwechsel-Edge + auf Abruf; M3-Kopplung nur lesend; Rechenkern Ansatz A = Dosierfaktoren + computeLSI-Verifikation; Dosiermittel-Palette als Settings-Dropdowns auf User-Wunsch). Spec geschrieben + committet (a0f6287, Worktree-Branch worktree-m8.1-water-balance-advisor) und vom User freigegeben. §5-Check: keine neue Angriffsfläche, Threat-Model mit Begründung übersprungen (Spec §10). Worktree mit npm ci + Baseline 311/311 grün." }
+        { at: "2026-07-29", note: "Brainstorming abgeschlossen (User-Entscheide: Flow-Actions + Timeline; Füllwasser als Wasserwerks-Rohwerte °dH/K_S4,3/pH mit Ca-Anteil-Annahme 75%; Kadenz = Bandwechsel-Edge + auf Abruf; M3-Kopplung nur lesend; Rechenkern Ansatz A = Dosierfaktoren + computeLSI-Verifikation; Dosiermittel-Palette als Settings-Dropdowns auf User-Wunsch). Spec geschrieben + committet (a0f6287, Worktree-Branch worktree-m8.1-water-balance-advisor) und vom User freigegeben. §5-Check: keine neue Angriffsfläche, Threat-Model mit Begründung übersprungen (Spec §10). Worktree mit npm ci + Baseline 311/311 grün." },
+        { at: "2026-07-29", note: "Plan (8 Tasks, c4dab47) + SDD komplett: Tasks 1-7 je Implementer-Subagent (Sonnet mechanisch / Opus Integration+Text) + Task-Review (inherit=Fable), alle Approved; 1 Important-Fix in Task 4 (vakuoser Truncation-Test, mit Mutation-Check verifiziert). Final-Review (Fable): CRITICAL gefunden — pH-Säure-Empfehlung beschrieb 3 inkonsistente Zustände, prognostizierte eigene Empfehlung ins severe_corrosive; Fix 693e184 (gekoppelter Bisektions-Solve über TA-Drop, Balanced-Band strippt Mengen, handledByViolet unterdrückt pH-Dosis) + Spec-Addendum (9b5ec00/9fecf0e, Modell-Grenzen + Store-Publish-Follow-ups: TA<80-Warnung, measure_after_outgassing). Re-Review: READY TO MERGE (Gates unabhängig verifiziert). GATES: npm test 366/366 fail 0, typecheck exit 0, validate --level publish PASS. /security-review: 0 Findings. Wartet auf §9-Entscheid Push/PR." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
