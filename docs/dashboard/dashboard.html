@@ -839,16 +839,17 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       commit: null,
       summary: "Beratungsmodul: Wie bringt man das Ausgangs-Leitungswasser (aus den veröffentlichten Werten der Wasserwerke) in ein günstiges LSI-Band? Welche aktuellen Werte sind die echten Treiber für einen schnellen, günstigen LSI? Inkl. CO₂-Ausgasung bei Frischwasser (pH steigt; niedrige Alkalität → starke pH-Schwankungen). Nachgelagert zu M1/M4.",
       steps: [
-        { label: "Brainstorming", done: false },
-        { label: "Spec", done: false },
+        { label: "Brainstorming", done: true },
+        { label: "Spec", done: true },
         { label: "Plan", done: false },
         { label: "Implementierung (SDD)", done: false },
         { label: "Validate + Push", done: false }
       ],
-      currentActivity: "Brainstorming/Design läuft (Session gestartet 2026-07-27).",
+      currentActivity: "Spec freigegeben — Implementierungsplan (writing-plans) läuft.",
       runtime: null,
       log: [
-        { at: "2026-07-27", note: "Session gestartet (Fable 5, --permission-mode auto). Triage-Inbox gesichtet: alles grün (Nightly 2026-07-22: 311 Tests fail 0, validate publish PASS), keine Blocker. M5.5 im selben Zug geschlossen (User-Bestätigung). Brainstorming/Design started." }
+        { at: "2026-07-27", note: "Session gestartet (Fable 5, --permission-mode auto). Triage-Inbox gesichtet: alles grün (Nightly 2026-07-22: 311 Tests fail 0, validate publish PASS), keine Blocker. M5.5 im selben Zug geschlossen (User-Bestätigung). Brainstorming/Design started." },
+        { at: "2026-07-29", note: "Brainstorming abgeschlossen (User-Entscheide: Flow-Actions + Timeline; Füllwasser als Wasserwerks-Rohwerte °dH/K_S4,3/pH mit Ca-Anteil-Annahme 75%; Kadenz = Bandwechsel-Edge + auf Abruf; M3-Kopplung nur lesend; Rechenkern Ansatz A = Dosierfaktoren + computeLSI-Verifikation; Dosiermittel-Palette als Settings-Dropdowns auf User-Wunsch). Spec geschrieben + committet (a0f6287, Worktree-Branch worktree-m8.1-water-balance-advisor) und vom User freigegeben. §5-Check: keine neue Angriffsfläche, Threat-Model mit Begründung übersprungen (Spec §10). Worktree mit npm ci + Baseline 311/311 grün." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
