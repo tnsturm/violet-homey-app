@@ -4,7 +4,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const {
-  convertFillWater, equilibriumPh, PH_MINUS_PRODUCTS, DOSE, CHLORINE_EFFECTS, adviseBalance,
+  convertFillWater, equilibriumPh, PH_MINUS_PRODUCTS, DOSE, CHLORINE_EFFECTS, adviseBalance, adviseFillWater,
 } = require('../lib/WaterBalanceAdvisor');
 const { computeLSI } = require('../lib/Lsi');
 
@@ -150,4 +150,55 @@ test('adviseBalance: missing inputs → status incomplete with missing[] list, n
   assert.deepEqual(r.missing.sort(), ['chPpm', 'pH']);
   assert.equal(r.lsiNow, null);
   assert.deepEqual(r.drivers, []);
+});
+
+const FILLBASE = { caFractionPct: 75, tempC: 26, volumeM3: 50, products: { phMinus: 'h2so4_15', chlorine: 'naocl' } };
+
+test('adviseFillWater: real-world sheet 14°dH / 2.5 mmol/L / pH 7.5 → converted values + LSI + plan (spec §4.7)', () => {
+  const r = adviseFillWater({ ...FILLBASE, dhTotal: 14, ks43: 2.5, phTap: 7.5 });
+  assert.equal(r.status, 'ok');
+  assert.ok(r.chPpm !== null && r.taPpm !== null && Math.abs(r.chPpm - 187.4) < 0.1 && Math.abs(r.taPpm - 125.1) < 0.1);
+  const check = computeLSI({ pH: 7.5, tempC: 26, calciumHardnessPpm: r.chPpm, totalAlkalinityPpm: r.taPpm, cya: 0 });
+  assert.equal(r.lsiFill, check);
+  // TA 125 slightly above 120 and CH 187 below 200 → plan contains ta(lower), ch(raise), outgas, ph.
+  assert.deepEqual(r.plan.map((s) => s.step), ['ta', 'ch', 'outgas', 'ph']);
+});
+
+test('adviseFillWater: soft low-alkalinity water → poorBuffering + ta raise first with NaHCO3 amount (spec §4.6/4.7)', () => {
+  const r = adviseFillWater({ ...FILLBASE, dhTotal: 6, ks43: 1.0, phTap: 7.8 });
+  assert.equal(r.poorBuffering, true); // TA 50 < 80
+  assert.equal(r.plan[0].step, 'ta');
+  assert.equal(r.plan[0].direction, 'raise');
+  assert.ok(r.plan[0].measure !== null);
+  assert.equal(r.plan[0].measure.chemical, 'nahco3');
+  const expected = 16.8 * 50 * (r.plan[0].target - 50.04) / 10;
+  assert.ok(r.plan[0].measure.amount !== null && Math.abs(r.plan[0].measure.amount.value - expected) <= 10);
+});
+
+test('adviseFillWater: outgas step always precedes ph step; ph target solved on ADJUSTED water (spec §4.7.3)', () => {
+  const r = adviseFillWater({ ...FILLBASE, dhTotal: 14, ks43: 2.5, phTap: 7.5 });
+  const steps = r.plan.map((s) => s.step);
+  assert.ok(steps.indexOf('outgas') < steps.indexOf('ph'));
+  const ph = r.plan[steps.indexOf('ph')];
+  assert.ok(ph.target !== null && ph.target >= 7.0 && ph.target <= 7.6);
+});
+
+test('adviseFillWater: in-range water → plan only outgas + ph (no ta/ch steps)', () => {
+  // 10 °dH ×17.848×0.75 = 133.9 CH → below 200 → ch present; use caFraction 100 & 15°dH: 267.7 CH in range, KS 2.0 → TA 100 in range.
+  const r = adviseFillWater({ ...FILLBASE, caFractionPct: 100, dhTotal: 15, ks43: 2.0, phTap: 7.6 });
+  assert.deepEqual(r.plan.map((s) => s.step), ['outgas', 'ph']);
+});
+
+test('adviseFillWater: tempC missing → documented default 25 °C used (spec §4.7.1)', () => {
+  const r = adviseFillWater({ ...FILLBASE, tempC: null, dhTotal: 14, ks43: 2.5, phTap: 7.5 });
+  assert.ok(r.chPpm !== null && r.taPpm !== null);
+  const check = computeLSI({ pH: 7.5, tempC: 25, calciumHardnessPpm: r.chPpm, totalAlkalinityPpm: r.taPpm, cya: 0 });
+  assert.equal(r.lsiFill, check);
+});
+
+test('adviseFillWater: missing sheet values → incomplete with missing[], no throw (spec §4.8)', () => {
+  const r = adviseFillWater({ ...FILLBASE, dhTotal: null, ks43: null, phTap: 7.5 });
+  assert.equal(r.status, 'incomplete');
+  assert.deepEqual(r.missing.sort(), ['dhTotal', 'ks43']);
+  assert.deepEqual(r.plan, []);
 });
