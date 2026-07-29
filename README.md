@@ -144,6 +144,15 @@ values. When disabled, the `measure_lsi` tile and water‑balance warnings are a
 - **Orenda Technologies**, *Understanding the LSI* — <https://blog.orendatech.com/langelier-saturation-index>
 - **Lovibond**, *Balanced Water (Langelier Index)*
 
+### Water‑balance advice (opt‑in)
+
+Turns the LSI into concrete, quantified guidance: which lever (pH, alkalinity, calcium
+hardness) moves it most and by how much (grams/mL, once a pool volume is set), plus a
+fill‑water startup plan derived from your water utility's published values (total
+hardness, acid capacity, pH) that accounts for fresh‑water CO₂ outgassing. Delivered via
+two Flow actions and an automatic timeline notification on band changes. Purely
+advisory — it never doses anything itself. Needs *Compute LSI* enabled.
+
 * * *
 
 ## Flow cards
@@ -248,7 +257,6 @@ This release covers monitoring, the LSI safety net and basic control. Planned fo
 versions:
 
 - **PoolLab / LabCOM import** — auto‑import chemistry values (calcium hardness, alkalinity, CYA) to feed the LSI instead of entering them by hand.
-- **Water‑balance recommendations** — advisory guidance on reaching a good LSI band, including fresh‑water CO₂ out‑gassing effects.
 - **Dosing & setpoints** — adjust target pH/ORP and dosing from Homey.
 - **More sensors** — filter pressure and flow readings, plus an auto‑detection review.
 

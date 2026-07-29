@@ -1,0 +1,14 @@
+{
+  "id": "get_balance_advice",
+  "title": { "en": "Get water-balance advice", "de": "Wasserbalance-Empfehlung berechnen" },
+  "hint": { "en": "Computes a recommendation from the current water-chemistry values: which lever (pH, alkalinity, calcium hardness) affects the LSI most, and a quantified dose if the pool volume is set.", "de": "Berechnet aus den aktuellen Wasserchemie-Werten eine Empfehlung: welcher Hebel (pH, Alkalität, Calciumhärte) den LSI am stärksten beeinflusst, und eine bezifferte Dosis, falls das Beckenvolumen gesetzt ist." },
+  "args": [
+    { "type": "device", "name": "device", "filter": "driver_id=pool" }
+  ],
+  "tokens": [
+    { "name": "advice_text", "type": "string", "title": { "en": "Advice", "de": "Empfehlung" }, "example": "Biggest lever: alkalinity - raise by 20 ppm with about 340 g soda (50 m3)." },
+    { "name": "top_driver", "type": "string", "title": { "en": "Top driver", "de": "Größter Hebel" }, "example": "alkalinity" },
+    { "name": "lsi_now", "type": "number", "title": { "en": "LSI now", "de": "LSI jetzt" }, "example": -0.42 },
+    { "name": "lsi_predicted", "type": "number", "title": { "en": "LSI after top recommendation", "de": "LSI nach Top-Empfehlung" }, "example": 0.02 }
+  ]
+}

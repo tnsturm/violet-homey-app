@@ -6,6 +6,8 @@
 // (parse / detect / freshness / capability planning) and applies the result to
 // Homey. All non-trivial logic lives in /lib; this file just wires it.
 // Runtime-error i18n (boundary wrapping): spec 2026-07-13-device-identity-design.md.
+// Water-balance advisor wiring (advice tokens, band-edge timeline notification):
+// spec 2026-07-28-m8.1-water-balance-advisor-design.md §7–§9.
 
 const Homey = require('homey');
 const NotifyServer = require('../../lib/NotifyServer');
@@ -20,6 +22,12 @@ const {
   buildCapabilityUpdates,
 } = require('../../lib/Capabilities');
 const { computeLSI, classifyLSI, toPpmCaCO3 } = require('../../lib/Lsi');
+// M8.1 water-balance advisor (spec §7-§9): pure + total, so every advisor call
+// below can stay unguarded — missing input yields `incomplete`, never a throw.
+const { adviseBalance, adviseFillWater, convertFillWater } = require('../../lib/WaterBalanceAdvisor');
+const {
+  renderAdvice, renderExcerpt, renderFillPlan, leverName,
+} = require('../../lib/WaterBalanceText');
 const {
   desiredM2Capabilities,
   buildM2Updates,
@@ -57,6 +65,11 @@ const DOSING_NOUN = {
   alarm_dosing_low: { en: 'low', de: 'niedrig' },
 };
 
+// Flow tokens cannot be null (spec §7.1): map every non-finite advisor number
+// (missing input, incomplete result) to 0 — the text token carries the reason.
+/** @param {*} v @returns {number} */
+function flowNumber(v) { return typeof v === 'number' && Number.isFinite(v) ? v : 0; }
+
 class PoolDevice extends Homey.Device {
   // Instance-state field declarations (checkJs strict, M5 gate c): typed here so
   // reads in _tick/_reconcile aren't seen as possibly-undefined. onInit assigns
@@ -90,6 +103,14 @@ class PoolDevice extends Homey.Device {
   // so it can be chained on forever.
   /** @type {Promise<void>} serializes listener rebind/close transitions (SR-M6-07) */
   _notifyOp = Promise.resolve();
+  // M8.1 (spec §7): the last poll's state, so the advisor actions answer from it
+  // instead of re-fetching — a Flow card must add no controller load or latency.
+  /** @type {?import('../../lib/VioletClient').ParsedReadings} */
+  _lastParsed = null;
+  /** @type {boolean} freshness of _lastParsed (spec §9 fresh-gating) */
+  _lastFresh = false;
+  /** @type {?import('../../lib/FeatureDetector').Features} */
+  _lastFeatures = null;
 
   async onInit() {
     this._failures = 0;
@@ -394,6 +415,12 @@ class PoolDevice extends Homey.Device {
       warmupSeconds: this.getSetting('pumpWarmupSeconds') ?? 120,
     });
 
+    // M8.1 (spec §7): stash this poll's state for the advisor actions — they read
+    // the last poll instead of re-fetching (no extra load on the controller).
+    this._lastParsed = parsed;
+    this._lastFresh = fresh;
+    this._lastFeatures = features;
+
     await this._reconcileCapabilities(parsed, features);
 
     // Smart-auto (M5.7 0.5.1): pass the config onewire names so "auto" can pick
@@ -445,6 +472,18 @@ class PoolDevice extends Homey.Device {
       this._lsiWarning
         .trigger(this, { lsi, classification: cls.band, direction: cls.direction, severity: cls.severity }, { direction: cls.direction, severity: cls.severity })
         .catch(this.error);
+      // M8.1 timeline notification on the SAME edge (spec §7.3): opt-out setting
+      // (default on), and only with a complete advice — no notification on
+      // recovery to balanced, on stale or while inputs are missing. Fire-and-
+      // forget with .catch: a failing notification must never break the poll (§9).
+      if (this.getSetting('advisor_timeline') !== false && this.homey.notifications) {
+        const advice = this._adviseNow();
+        if (advice.status === 'ok') {
+          this.homey.notifications
+            .createNotification({ excerpt: renderExcerpt(advice, this._advisorLang()) })
+            .catch(this.error);
+        }
+      }
     }
     this._lastLsiBand = band;
 
@@ -492,6 +531,140 @@ class PoolDevice extends Homey.Device {
 
     // Diagnostics tile-title annotation (gated by show_advanced_diagnostics).
     await this._applyDiagTitles(raw).catch(this.error);
+  }
+
+  // ---- M8.1 water-balance advisor (spec §7-§9) --------------------------------
+
+  // Text language for the advisor (spec §5): Homey's UI language, en fallback.
+  _advisorLang() {
+    const i18n = this.homey.i18n;
+    return i18n && typeof i18n.getLanguage === 'function' ? i18n.getLanguage() : 'en';
+  }
+
+  // Water temperature for the advisor — mirrors the LSI input block of _tick
+  // (selected/auto onewire channel first, fixed setting second) so advice and
+  // the measure_lsi tile can never disagree about the temperature.
+  /** @returns {?number} */
+  _advisorTempC() {
+    const parsed = this._lastParsed;
+    const primary = parsed
+      ? choosePrimaryTemperature(
+        parsed.tempChannels,
+        this.getSetting('waterTempChannel'),
+        this._configFacts ? this._configFacts.onewireNames : null,
+      )
+      : null;
+    return primary != null ? primary : (this.getSetting('chem_fixed_temperature') ?? null);
+  }
+
+  // The waterworks sheet as the user entered it (spec §4.1/§6). Ca fraction
+  // defaults to the documented 75 % when the setting is unset.
+  _fillSheet() {
+    return {
+      dhTotal: this.getSetting('fill_hardness_dh'),
+      ks43: this.getSetting('fill_ks43_mmol'),
+      caFractionPct: this.getSetting('fill_ca_fraction_pct') ?? 75,
+    };
+  }
+
+  // Configured dosing products (spec §4.2/§4.3); 'none' keeps the advice
+  // product-agnostic (no dose, side effects unknown) rather than guessing one.
+  _advisorProducts() {
+    return {
+      phMinus: this.getSetting('chem_ph_minus_type') || 'none',
+      chlorine: this.getSetting('chem_chlorine_type') || 'none',
+    };
+  }
+
+  /**
+   * Advisor inputs from the last poll + settings (spec §7.1). `reason` names the
+   * single cause when the live values must not be used — 'lsi_disabled' (LSI
+   * switched off) or 'stale' (pump has not circulated long enough, §9). The
+   * measured values are then passed as null, so adviseBalance reports
+   * `incomplete` and the rendered text explains it instead of erroring.
+   * @returns {*} args object for adviseBalance, plus the `reason` key.
+   */
+  _advisorInputs() {
+    const parsed = this._lastParsed;
+    const reason = this.getSetting('lsi_enabled') !== true ? 'lsi_disabled'
+      : (parsed && !this._lastFresh) ? 'stale' : null;
+    const state = reason === null ? parsed : null;
+    const channels = (this._lastFeatures && this._lastFeatures.dosingChannels) || [];
+    return {
+      reason,
+      pH: state ? (state.ph ?? null) : null,
+      tempC: state ? this._advisorTempC() : null,
+      // Same unit conversions as the LSI input block of _tick.
+      chPpm: state ? toPpmCaCO3(this.getSetting('chem_calcium_hardness'), this.getSetting('chem_calcium_unit') || 'ppm') : null,
+      taPpm: state ? toPpmCaCO3(this.getSetting('chem_total_alkalinity'), this.getSetting('chem_alkalinity_unit') || 'ppm') : null,
+      cya: this.getSetting('chem_cya') ?? 0,
+      volumeM3: this.getSetting('pool_volume_m3'),
+      products: this._advisorProducts(),
+      // M5.7 read-only coupling (spec §8): a detected pH dosing channel means the
+      // Violet regulates pH itself — the pH lever is annotated, not prescribed.
+      dosingCtx: { violetDosesPh: channels.includes('phm') || channels.includes('php') },
+      // Fill water doubles as the dilution reference (spec §4.7); null while the
+      // waterworks values are unset — the advisor then omits dilution amounts.
+      fill: convertFillWater(this._fillSheet()),
+    };
+  }
+
+  // Advice for the current poll, shared by the action card and the timeline.
+  // An incomplete result caused by a known reason reports ONLY that reason: the
+  // generic value list would otherwise claim settings the user did enter are
+  // missing (they were simply never read, spec §9).
+  _adviseNow() {
+    const inputs = this._advisorInputs();
+    const result = adviseBalance(inputs);
+    if (inputs.reason && result.status !== 'ok') result.missing = [inputs.reason];
+    return result;
+  }
+
+  // `top_driver` must never be empty (Flow token contract, spec §7.1): '-' when
+  // the water is balanced (no lever) or the result is incomplete.
+  /** @param {*} result @param {string} lang @returns {string} */
+  _topDriverName(result, lang) {
+    const top = Array.isArray(result.drivers) ? result.drivers[0] : null;
+    return (top && leverName(top.param, lang)) || '-';
+  }
+
+  /**
+   * Tokens for the `get_balance_advice` action (spec §7.1). Total by
+   * construction: numeric tokens fall back to 0 — Flow tokens cannot be null —
+   * while `advice_text` carries the explanation.
+   * @returns {Promise<{advice_text: string, top_driver: string, lsi_now: number, lsi_predicted: number}>}
+   */
+  async _balanceAdvice() {
+    const lang = this._advisorLang();
+    const result = this._adviseNow();
+    return {
+      advice_text: renderAdvice(result, lang),
+      top_driver: this._topDriverName(result, lang),
+      lsi_now: flowNumber(result.lsiNow),
+      lsi_predicted: flowNumber(result.predictedLsi),
+    };
+  }
+
+  /**
+   * Tokens for the `analyze_fill_water` action (spec §7.2) — settings-only, so
+   * it also answers before the first poll and while readings are stale.
+   * @returns {Promise<{fill_lsi: number, equilibrium_ph: number, fill_advice_text: string}>}
+   */
+  async _fillWaterAdvice() {
+    const result = adviseFillWater({
+      ...this._fillSheet(),
+      phTap: this.getSetting('fill_ph'),
+      // Pool temperature, because the plan targets the water once it is IN the
+      // pool; adviseFillWater falls back to its documented 25 °C default.
+      tempC: this._advisorTempC(),
+      volumeM3: this.getSetting('pool_volume_m3'),
+      products: this._advisorProducts(),
+    });
+    return {
+      fill_lsi: flowNumber(result.lsiFill),
+      equilibrium_ph: flowNumber(result.equilibriumPh),
+      fill_advice_text: renderFillPlan(result, this._advisorLang()),
+    };
   }
 
   /**

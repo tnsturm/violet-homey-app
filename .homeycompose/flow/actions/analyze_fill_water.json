@@ -1,0 +1,13 @@
+{
+  "id": "analyze_fill_water",
+  "title": { "en": "Analyze fill water", "de": "Füllwasser analysieren" },
+  "hint": { "en": "Analyzes the configured tap-water values (total hardness, acid capacity, pH) and returns the resulting LSI plus a startup plan to bring fresh fill water into balance.", "de": "Analysiert die konfigurierten Füllwasser-Werte (Gesamthärte, Säurekapazität, pH) und liefert den daraus resultierenden LSI sowie einen Startplan, um frisches Füllwasser ins Gleichgewicht zu bringen." },
+  "args": [
+    { "type": "device", "name": "device", "filter": "driver_id=pool" }
+  ],
+  "tokens": [
+    { "name": "fill_lsi", "type": "number", "title": { "en": "Fill-water LSI", "de": "Füllwasser-LSI" }, "example": -0.85 },
+    { "name": "equilibrium_ph", "type": "number", "title": { "en": "Equilibrium pH (after outgassing)", "de": "Gleichgewichts-pH (nach Ausgasen)" }, "example": 8.2 },
+    { "name": "fill_advice_text", "type": "string", "title": { "en": "Startup plan", "de": "Startplan" }, "example": "Raise alkalinity first, then calcium hardness, wait for CO2 outgassing, then set pH." }
+  ]
+}

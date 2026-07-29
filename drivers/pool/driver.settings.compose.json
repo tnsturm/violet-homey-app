@@ -146,6 +146,98 @@
   },
   {
     "type": "group",
+    "label": { "en": "Water-balance advice", "de": "Wasserbalance-Empfehlungen" },
+    "children": [
+      {
+        "id": "advisor_info",
+        "type": "label",
+        "label": { "en": "About the advisor", "de": "Über den Berater" },
+        "value": "Water-balance advisor",
+        "hint": {
+          "en": "The advisor turns the LSI into concrete dosing suggestions and a fill-water startup plan. It needs 'Compute LSI' above (lsi_enabled) turned on, and the pool volume below for gram/mL amounts (without it, advice comes without quantities). Assumptions: the fill-water calcium share defaults to 75% of total hardness (adjustable below); dosing amounts assume the fixed product concentrations named in the dropdowns (e.g. sulfuric acid 14.9%, hydrochloric acid 30%) — actual concentrations may vary by supplier.",
+          "de": "Der Berater übersetzt den LSI in konkrete Dosiervorschläge und einen Füllwasser-Startplan. Dafür muss oben 'LSI berechnen' (lsi_enabled) aktiviert sein, und für Gramm-/mL-Mengen wird das Beckenvolumen unten benötigt (ohne dieses kommen Empfehlungen ohne Mengenangabe). Annahmen: Der Calcium-Anteil der Füllwasser-Gesamthärte beträgt standardmäßig 75 % (unten anpassbar); Dosiermengen gehen von den in den Dropdowns genannten festen Produktkonzentrationen aus (z. B. Schwefelsäure 14,9 %, Salzsäure 30 %) — die tatsächliche Konzentration kann je nach Lieferant abweichen."
+        }
+      },
+      {
+        "id": "pool_volume_m3",
+        "type": "number",
+        "label": { "en": "Pool volume (m3)", "de": "Beckenvolumen (m3)" },
+        "min": 0.5,
+        "max": 200,
+        "hint": { "en": "Required to convert dosing recommendations into gram/mL amounts. Without it, advice is given without quantities.", "de": "Erforderlich, um Dosierempfehlungen in Gramm-/mL-Mengen umzurechnen. Ohne dieses Feld kommen Empfehlungen ohne Mengenangabe." }
+      },
+      {
+        "id": "chem_ph_minus_type",
+        "type": "dropdown",
+        "label": { "en": "pH-minus product", "de": "pH-Minus-Produkt" },
+        "value": "h2so4_15",
+        "hint": { "en": "The acid product you use to lower pH/alkalinity. Concentration is fixed per entry and used for the dose calculation.", "de": "Das Säureprodukt, mit dem du pH/Alkalität senkst. Die Konzentration ist je Eintrag fest und fließt in die Dosisberechnung ein." },
+        "values": [
+          { "id": "h2so4_15", "label": { "en": "Sulfuric acid 14.9% (liquid)", "de": "Schwefelsäure 14,9 % (flüssig)" } },
+          { "id": "hcl_30", "label": { "en": "Hydrochloric acid 30%", "de": "Salzsäure 30 %" } },
+          { "id": "nahso4", "label": { "en": "Dry acid granules (NaHSO₄)", "de": "pH-Minus-Granulat (NaHSO₄)" } },
+          { "id": "none", "label": { "en": "None", "de": "Keine" } }
+        ]
+      },
+      {
+        "id": "chem_chlorine_type",
+        "type": "dropdown",
+        "label": { "en": "Chlorine product", "de": "Chlorprodukt" },
+        "value": "naocl",
+        "hint": { "en": "The chlorine product in use. Only its side effects on the water balance (pH/alkalinity/CYA drift) are modeled — not disinfection dosing itself.", "de": "Das eingesetzte Chlorprodukt. Modelliert werden nur dessen Nebenwirkungen auf die Wasserbalance (pH-/Alkalität-/CYA-Drift) — nicht die Desinfektionsdosierung selbst." },
+        "values": [
+          { "id": "naocl", "label": { "en": "Liquid chlorine (NaOCl)", "de": "Flüssigchlor (NaOCl)" } },
+          { "id": "calhypo", "label": { "en": "Calcium hypochlorite", "de": "Calciumhypochlorit" } },
+          { "id": "dichlor", "label": { "en": "Dichlor", "de": "Dichlor" } },
+          { "id": "trichlor", "label": { "en": "Trichlor", "de": "Trichlor" } },
+          { "id": "electrolysis", "label": { "en": "Salt electrolysis", "de": "Salzelektrolyse" } },
+          { "id": "none", "label": { "en": "None", "de": "Keine" } }
+        ]
+      },
+      {
+        "id": "fill_hardness_dh",
+        "type": "number",
+        "label": { "en": "Fill water: total hardness (dH)", "de": "Füllwasser: Gesamthärte (dH)" },
+        "min": 0,
+        "max": 60,
+        "hint": { "en": "Gesamthärte in degrees dH from the annual water analysis published by your water utility (Trinkwasseranalyse deines Wasserwerks).", "de": "Gesamthärte in Grad dH aus der jährlich veröffentlichten Trinkwasseranalyse deines Wasserwerks." }
+      },
+      {
+        "id": "fill_ca_fraction_pct",
+        "type": "number",
+        "label": { "en": "Fill water: calcium share of total hardness (%)", "de": "Füllwasser: Calcium-Anteil der Gesamthärte (%)" },
+        "value": 75,
+        "min": 50,
+        "max": 100,
+        "hint": { "en": "Share of total hardness that is calcium (the rest is magnesium). Typical German drinking water is about 75% — adjust only if your waterworks publishes the Ca/Mg split.", "de": "Anteil der Gesamthärte, der auf Calcium entfällt (der Rest ist Magnesium). Typisches deutsches Trinkwasser liegt bei etwa 75 % — nur anpassen, wenn dein Wasserwerk die Ca/Mg-Aufteilung veröffentlicht." }
+      },
+      {
+        "id": "fill_ks43_mmol",
+        "type": "number",
+        "label": { "en": "Fill water: acid capacity K_S4.3 (mmol/L)", "de": "Füllwasser: Säurekapazität K_S4,3 (mmol/L)" },
+        "min": 0,
+        "max": 15,
+        "hint": { "en": "Säurekapazität K_S4,3 in mmol/L from the annual water analysis published by your water utility (Trinkwasseranalyse deines Wasserwerks).", "de": "Säurekapazität K_S4,3 in mmol/L aus der jährlich veröffentlichten Trinkwasseranalyse deines Wasserwerks." }
+      },
+      {
+        "id": "fill_ph",
+        "type": "number",
+        "label": { "en": "Fill water: pH", "de": "Füllwasser: pH" },
+        "min": 4,
+        "max": 10,
+        "hint": { "en": "pH value from the annual water analysis published by your water utility (Trinkwasseranalyse deines Wasserwerks).", "de": "pH-Wert aus der jährlich veröffentlichten Trinkwasseranalyse deines Wasserwerks." }
+      },
+      {
+        "id": "advisor_timeline",
+        "type": "checkbox",
+        "label": { "en": "Timeline notification on band change", "de": "Zeitachsen-Benachrichtigung bei Bandwechsel" },
+        "value": true,
+        "hint": { "en": "Notify (Homey timeline) when the LSI changes into a non-balanced band, with the top driver and a dose amount. Fires only when LSI is enabled and the advisor inputs are complete.", "de": "Benachrichtigt (Homey-Zeitachse), wenn der LSI in ein nicht ausgeglichenes Band wechselt, mit dem größten Hebel und einer Dosiermenge. Löst nur aus, wenn LSI aktiviert und die Berater-Eingaben vollständig sind." }
+      }
+    ]
+  },
+  {
+    "type": "group",
     "label": { "en": "Feature groups (show/hide)", "de": "Funktionsgruppen (ein-/ausblenden)" },
     "children": [
       { "id": "group_eco", "type": "radio", "label": { "en": "Eco mode", "de": "Eco-Modus" }, "value": "auto",

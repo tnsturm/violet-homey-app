@@ -40,11 +40,12 @@ class Device {
   constructor() {
     /** @type {{settings: Object<string, *>, store: Object<string, *>, capabilities: string[], runListeners: Object<string, *>}} */
     this.__test = { settings: {}, store: {}, capabilities: [], runListeners: {} };
-    /** @type {{setValue: Array<*>, addCap: string[], removeCap: string[], setOptions: Array<*>, available: string[], triggers: Object<string, Array<*>>, errors: string[]}} */
-    this._log = { setValue: [], addCap: [], removeCap: [], setOptions: [], available: [], triggers: {}, errors: [] };
+    /** @type {{setValue: Array<*>, addCap: string[], removeCap: string[], setOptions: Array<*>, available: string[], triggers: Object<string, Array<*>>, errors: string[], notifications: Array<*>}} */
+    this._log = { setValue: [], addCap: [], removeCap: [], setOptions: [], available: [], triggers: {}, errors: [], notifications: [] };
     this._available = true;
     const triggers = this._log.triggers;
     const runListeners = this.__test.runListeners;
+    const notifications = this._log.notifications;
     this.homey = {
       manifest: { capabilities: {} },
       setInterval: () => ({ __fakeInterval: true }), // no real scheduling (spec D3)
@@ -54,8 +55,21 @@ class Device {
       // key (with tokens appended when present) is enough to keep _control/
       // _tick's `this.homey.__(...)` calls callable under the mock.
       __: (/** @type {string} */ key, /** @type {Object<string, *>} */ tokens) => (tokens ? `${key} ${JSON.stringify(tokens)}` : key),
+      // M8.1: the advisor picks its text language here — fixed to 'en' so the
+      // wiring tests can assert on stable English fragments (spec §5).
+      i18n: { getLanguage: () => 'en' },
+      // M8.1: recording stub for the timeline notification (spec §7.3) — the
+      // Notifications API's first use in this app.
+      notifications: { createNotification: async (/** @type {*} */ notification) => { notifications.push(notification); } },
       flow: {
         getDeviceTriggerCard: (/** @type {string} */ name) => {
+          this.__cards[name] = this.__cards[name] || new FakeTriggerCard(name, triggers, runListeners);
+          return this.__cards[name];
+        },
+        // M8.1: action cards reuse the same recording fake — driver.js only ever
+        // calls registerRunListener on them, and tests invoke the recorded
+        // listener from __test.runListeners like Homey would.
+        getActionCard: (/** @type {string} */ name) => {
           this.__cards[name] = this.__cards[name] || new FakeTriggerCard(name, triggers, runListeners);
           return this.__cards[name];
         },
@@ -117,7 +131,11 @@ class Device {
 }
 
 class App {}
-class Driver {}
+// Drivers are constructed directly in the M8.1 action-card test (their `homey` is
+// then pointed at a device's stub); onInit only needs log() to exist.
+class Driver {
+  log() {}
+}
 
 // Route `require('homey')` to this file (spec D1). Idempotent.
 function installHomeyMock() {

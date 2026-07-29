@@ -46,6 +46,66 @@ Leitungen ab. Sobald die Balance aus dem Rahmen läuft, bekommst du einen
 Homey-Alarm und einen Flow-Trigger — rechtzeitig, um zu handeln, bevor einer der
 beiden Schäden entsteht.
 
+## Optional: Empfehlungen zur Wasserbalance
+
+Wenn dir das Sicherheitsnetz oben sagt, *dass* etwas nicht stimmt, sagt dir
+diese Funktion, *was* du dagegen tun kannst. Sie übersetzt den LSI in
+konkrete, bezifferte Vorschläge — Dosiermengen und einen
+Füllwasser-Startplan —, ohne den Regler jemals selbst anzufassen: Der Berater
+gibt ausschließlich Empfehlungen, er dosiert nie selbst.
+
+**Was du dafür brauchst:** **LSI berechnen** aktiviert mit eingetragenen
+Chemie-Werten (siehe oben), plus dein **Beckenvolumen** in den
+Geräte-Einstellungen, wenn du Mengen in Gramm oder Millilitern willst. Ohne
+Beckenvolumen bekommst du weiterhin die Richtung der Empfehlung, nur keine
+Mengenangabe.
+
+**Füllwasser auslesen:** Für einen Startplan bei frisch eingefülltem Wasser
+trägst du die Werte aus der jährlichen Trinkwasseranalyse deines Wasserwerks
+ein (jedes deutsche Wasserwerk veröffentlicht diese, meist auf der eigenen
+Website): die **Gesamthärte** in °dH, die **Säurekapazität K_S4,3** in mmol/L
+und den **pH-Wert**. Die App rechnet das intern selbst um und geht dabei von
+einem Calcium-Anteil von 75 % der Härte aus (der Rest ist Magnesium) — ein
+typischer Wert für deutsches Trinkwasser, den du in den Einstellungen
+anpassen kannst, falls dein Wasserwerk die genaue Aufteilung veröffentlicht.
+
+**Zwei neue Flow-Aktionen:**
+
+- **„Wasserbalance-Empfehlung berechnen"** schaut sich deine aktuelle
+  Wasserchemie an und sagt dir, welcher Hebel — pH, Alkalität oder
+  Calciumhärte — den LSI am stärksten bewegt, inklusive Dosiermenge, wenn das
+  Beckenvolumen gesetzt ist. Tokens: der Empfehlungstext, der größte Hebel,
+  der aktuelle LSI und der LSI, den du nach der Top-Empfehlung erreichen
+  würdest.
+- **„Füllwasser analysieren"** schaut sich die eingetragenen
+  Füllwasser-Werte an und ermittelt daraus den LSI dieses Wassers sowie einen
+  Schritt-für-Schritt-Startplan. Tokens: der Füllwasser-LSI, der
+  Gleichgewichts-pH, auf den sich das Wasser einpendelt, und der Plantext.
+
+**Zeitachsen-Benachrichtigung:** Driftet der LSI in ein korrosives oder
+kalkabscheidendes Band, bekommst du automatisch einen Eintrag auf der
+Homey-Zeitachse mit dem größten Hebel und einer Dosiermenge — ganz ohne
+eigenen Flow. Über **Zeitachsen-Benachrichtigung bei Bandwechsel** kannst du
+das abschalten, wenn du lieber nur bei Bedarf nachschaust.
+
+**Warum frisches Füllwasser einen Moment braucht:** Wasser direkt aus der
+Leitung enthält mehr gelöstes CO₂, als es später hat, wenn es sich beruhigt
+hat. Während dieses CO₂ in die Luft entweicht, steigt der pH-Wert von selbst —
+ohne dass etwas dosiert wird. Ist die Alkalität deines Füllwassers niedrig
+(unter etwa 80 ppm), fällt dieser Ausschlag deutlich stärker aus, weil zu
+wenig Puffer da ist, um den pH stabil zu halten. Deshalb korrigiert der
+Startplan immer zuerst die Alkalität, lässt das Wasser dann ein bis zwei Tage
+umwälzen, bis das Ausgasen abgeschlossen ist, und stellt erst danach den pH
+ein — in der falschen Reihenfolge würdest du einem sich bewegenden Ziel
+hinterherlaufen.
+
+**Zu beachten:** Alle Dosiermengen sind Schätzwerte („≈"), basierend auf der
+oben genannten Calcium-Anteil-Annahme und den in den Dropdowns genannten
+Produktkonzentrationen (z. B. Schwefelsäure mit 14,9 %) — dein tatsächliches
+Produkt kann leicht abweichen. Und falls deine Violet den pH bereits selbst
+dosiert, überlässt die Empfehlung den pH dem Regler und konzentriert sich
+stattdessen auf Alkalität und Calciumhärte.
+
 ## Optional: den Pool von Homey aus steuern
 
 **Steuerung aktivieren (Schreibzugriff)** in den Geräte-Einstellungen
