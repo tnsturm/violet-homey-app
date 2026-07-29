@@ -94,5 +94,9 @@
   "0.7.3": {
     "en": "New: receive the Violet's alarm notifications (NOTIFY) directly - the 'An alarm was received' Flow trigger delivers error code and description; configurable listener port (default 22222), no extra apps needed. Fixed: all alarm Flow triggers (LSI warning, dosing blocked/low, overflow, backwash valve) now correctly fire Flows - please re-select the Pool device once in existing Flows using these cards.",
     "de": "Neu: Alarm-Benachrichtigungen (NOTIFY) der Violet direkt empfangen - der Flow-Trigger 'Ein Alarm wurde empfangen' liefert Fehlercode und Beschreibung; konfigurierbarer Empfangsport (Standard 22222), keine Zusatz-Apps nötig. Behoben: alle Alarm-Flow-Trigger (LSI-Warnung, Dosierung blockiert/niedrig, Überlauf, Rückspülventil) lösen Flows jetzt korrekt aus - bitte in bestehenden Flows einmalig das Pool-Gerät neu auswählen."
+  },
+  "0.8.0": {
+    "en": "New: water-balance advisor. Get quantified dosing advice (which lever moves your LSI most, with gram/mL amounts for your pool volume), analyze your tap water from the published waterworks values, and receive a timeline notification with the top recommendation when the water balance drifts off. Purely advisory - the app never doses anything itself.",
+    "de": "Neu: Wasserbalance-Berater. Erhalte berechnete Dosier-Empfehlungen (welche Stellgröße deinen LSI am stärksten verbessert, mit Gramm-/ml-Mengen für dein Beckenvolumen), analysiere dein Leitungswasser anhand der veröffentlichten Wasserwerks-Werte und bekomme bei kippender Wasserbalance eine Timeline-Benachrichtigung mit der wichtigsten Empfehlung. Rein beratend - die App dosiert nie selbst."
   }
 }
