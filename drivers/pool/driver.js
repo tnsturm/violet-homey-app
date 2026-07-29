@@ -6,6 +6,8 @@
 // call, then hands a single "Pool" device to Homey. All readings/polling live
 // in device.js; this file only runs at pair time.
 // Device identity + pairing-error i18n: spec 2026-07-13-device-identity-design.md.
+// Advisor action cards (get_balance_advice / analyze_fill_water): spec
+// 2026-07-28-m8.1-water-balance-advisor-design.md §7.1–§7.2.
 
 const Homey = require('homey');
 const { deriveDeviceId } = require('../../lib/deviceIdentity');
@@ -27,6 +29,12 @@ class PoolDriver extends Homey.Driver {
       await args.device._tick().catch(args.device.error);
       return true;
     });
+
+    // M8.1 advisor Flow actions (spec §7.1/§7.2). Returning the token object is
+    // how SDK3 resolves an action card's tokens. Both device methods are total —
+    // missing/stale input yields explanatory text, never a rejected Flow (§9).
+    this.homey.flow.getActionCard('get_balance_advice').registerRunListener(async (args) => args.device._balanceAdvice());
+    this.homey.flow.getActionCard('analyze_fill_water').registerRunListener(async (args) => args.device._fillWaterAdvice());
 
     // M3 write-control Flow actions (spec §7). Each delegates to device._control,
     // which enforces the interlock + registry validation + sanitized errors.
