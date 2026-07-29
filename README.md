@@ -134,16 +134,6 @@ chloride, pH and temperature).
 LSI is **opt‑in**: enable *Compute LSI* in the device settings and enter your chemistry
 values. When disabled, the `measure_lsi` tile and water‑balance warnings are absent.
 
-### Water‑balance advice (opt‑in)
-
-- **Water‑balance advice** — turns the LSI into concrete, quantified guidance: which
-  lever (pH, alkalinity, calcium hardness) moves it most and by how much (grams/mL,
-  once a pool volume is set), plus a fill‑water startup plan derived from your water
-  utility's published values (total hardness, acid capacity, pH) that accounts for
-  fresh‑water CO₂ outgassing. Delivered via two Flow actions and an automatic timeline
-  notification on band changes. Purely advisory — it never doses anything itself.
-  Needs *Compute LSI* enabled.
-
 **Sources**
 
 - **ANSI/PHTA/ICC‑11** (formerly APSP‑11), *American National Standard for Water Quality
@@ -153,6 +143,15 @@ values. When disabled, the `measure_lsi` tile and water‑balance warnings are a
 - **W. F. Langelier (1936)** — the original index definition
 - **Orenda Technologies**, *Understanding the LSI* — <https://blog.orendatech.com/langelier-saturation-index>
 - **Lovibond**, *Balanced Water (Langelier Index)*
+
+### Water‑balance advice (opt‑in)
+
+Turns the LSI into concrete, quantified guidance: which lever (pH, alkalinity, calcium
+hardness) moves it most and by how much (grams/mL, once a pool volume is set), plus a
+fill‑water startup plan derived from your water utility's published values (total
+hardness, acid capacity, pH) that accounts for fresh‑water CO₂ outgassing. Delivered via
+two Flow actions and an automatic timeline notification on band changes. Purely
+advisory — it never doses anything itself. Needs *Compute LSI* enabled.
 
 * * *
 
