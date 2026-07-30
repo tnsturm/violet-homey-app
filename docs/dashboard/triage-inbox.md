@@ -4,17 +4,21 @@ Nächtliche Befund-Sammlung der `violet-nightly-triage`-Routine (M4.8, Spec §4)
 **jede neue Milestone-Session und der release-readiness-Subagent lesen diese Datei zuerst**
 (CLAUDE.md §7). Die Routine pflegt die Abschnitte (Einträge wandern), sie hängt nicht endlos an.
 
-**Stand:** 2026-07-29 (nightly-triage-Lauf)
+**Stand:** 2026-07-30 (nightly-triage-Lauf)
 
 ## Offen
 
-- 2026-07-09 · Follow-up · App-Crash-Trace (M3) nicht reproduzierbar — braucht User-Trace oder Store-Test-Crash-Reports; beobachten. Stand 2026-07-29: unverändert, keine neuen Traces.
-- 2026-07-14 · Routine/Design (offen) · Soll die Nightly-Routine ihren Start-Branch fest auf `main` pinnen? Historisch lief sie auf dem jeweils ausgecheckten Feature-Branch (Regel „nicht wechseln"), was die gemeldeten Test-Zahlen verfälschte. Stand 2026-07-29: dritter Lauf in Folge auf `main` (311 Tests, Baseline korrekt) — Symptom trat nicht auf, die Design-Frage bleibt offen, solange die Routine keinen Branch fixiert.
-- 2026-07-28 · Routine/Lücke · Zwischen dem 2026-07-22- und dem 2026-07-28-Lauf liegt **kein** `chore(triage)`-Commit — sechs Nächte ohne Inbox-Eintrag. Stand 2026-07-29: Scheduler-Eintrag `violet-nightly-triage` geprüft — `enabled: true`, Cron `0 8 * * *`, `lastRunAt` 2026-07-29T06:04Z, `nextRunAt` 2026-07-30T06:04Z; eine Lauf-**Historie** liefert die Scheduler-API nicht, die Ursache der Lücke bleibt daher rückwirkend nicht belegbar. Zwei aufeinanderfolgende erfolgreiche Nächte (07-28, 07-29) sprechen gegen einen defekten Commit-Schritt und für Scheduler-/Rechner-Ausfall in dem Zeitraum. Beobachten: bricht die Kette erneut, ist es systematisch.
+- 2026-07-09 · Follow-up · App-Crash-Trace (M3) nicht reproduzierbar — braucht User-Trace oder Store-Test-Crash-Reports; beobachten. Stand 2026-07-30: unverändert, keine neuen Traces.
+- 2026-07-14 · Routine/Design (offen) · Soll die Nightly-Routine ihren Start-Branch fest auf `main` pinnen? Historisch lief sie auf dem jeweils ausgecheckten Feature-Branch (Regel „nicht wechseln"), was die gemeldeten Test-Zahlen verfälschte. Stand 2026-07-30: vierter Lauf in Folge auf `main` (366 Tests, Baseline korrekt) — Symptom trat nicht auf, die Design-Frage bleibt offen, solange die Routine keinen Branch fixiert.
 
-## Neu (2026-07-29)
+## Neu (2026-07-30)
 
-- 2026-07-29 · Lauf · **ALLES GRÜN** (auf `main`): npm test 311 Tests / pass 311 / fail 0 / todo 0 (7,7 s) · `homey app validate --level publish` exit 0 · Versions-Sync app.json == .homeycompose/app.json (0.7.3) · CI-Lauf 30425327692 (main, schedule) completed/success (23 s) · Worktree nach `validate` sauber (vierte Bestätigung des `.gitattributes`-Fixes aus `57e0b4e`).
+- 2026-07-30 · Lauf · **ALLES GRÜN** (auf `main`): npm test 366 Tests / pass 366 / fail 0 / todo 0 (6,8 s — Sprung von 311 auf 366 erklärt durch M8.1/Release 0.8.0) · `homey app validate --level publish` exit 0 · Versions-Sync app.json == .homeycompose/app.json (0.8.0) · CI-Lauf 30516260816 (main, schedule) completed/success (30 s) · Worktree nach `validate` sauber (fünfte Bestätigung des `.gitattributes`-Fixes aus `57e0b4e`).
+
+## Erledigt (2026-07-30)
+
+- Routine/Lücke „sechs Nächte ohne `chore(triage)`-Commit" (offen seit 2026-07-28) → **GESCHLOSSEN (Beobachtungsauflage erfüllt, Ursache nicht rückwirkend belegbar)**: die Kette ist mit 07-28, 07-29 und 07-30 drei Nächte in Folge intakt (`git log --grep="chore(triage)"`), der Commit-Schritt der Routine funktioniert also. Eine Lauf-Historie liefert die Scheduler-API nicht, daher bleibt Scheduler-/Rechner-Ausfall die plausibelste, aber unbelegbare Ursache der Lücke 07-23…07-27. Bricht die Kette erneut, neu aufnehmen.
+- Nightly-Lauf 2026-07-29 (ALLES GRÜN, ohne Handlungsbedarf) → aus „Neu" entfernt, kein Follow-up.
 
 ## Erledigt (2026-07-29)
 
