@@ -4,16 +4,20 @@ Nächtliche Befund-Sammlung der `violet-nightly-triage`-Routine (M4.8, Spec §4)
 **jede neue Milestone-Session und der release-readiness-Subagent lesen diese Datei zuerst**
 (CLAUDE.md §7). Die Routine pflegt die Abschnitte (Einträge wandern), sie hängt nicht endlos an.
 
-**Stand:** 2026-08-01 (nightly-triage-Lauf)
+**Stand:** 2026-08-02 (nightly-triage-Lauf)
 
 ## Offen
 
-- 2026-07-09 · Follow-up · App-Crash-Trace (M3) nicht reproduzierbar — braucht User-Trace oder Store-Test-Crash-Reports; beobachten. Stand 2026-08-01: unverändert, keine neuen Traces.
-- 2026-07-14 · Routine/Design (offen) · Soll die Nightly-Routine ihren Start-Branch fest auf `main` pinnen? Historisch lief sie auf dem jeweils ausgecheckten Feature-Branch (Regel „nicht wechseln"), was die gemeldeten Test-Zahlen verfälschte. Stand 2026-08-01: sechster Lauf in Folge auf `main` (366 Tests, Baseline korrekt) — Symptom trat nicht auf, die Design-Frage bleibt offen, solange die Routine keinen Branch fixiert.
+- 2026-07-09 · Follow-up · App-Crash-Trace (M3) nicht reproduzierbar — braucht User-Trace oder Store-Test-Crash-Reports; beobachten. Stand 2026-08-02: unverändert, keine neuen Traces.
+- 2026-07-14 · Routine/Design (offen) · Soll die Nightly-Routine ihren Start-Branch fest auf `main` pinnen? Historisch lief sie auf dem jeweils ausgecheckten Feature-Branch (Regel „nicht wechseln"), was die gemeldeten Test-Zahlen verfälschte. Stand 2026-08-02: siebter Lauf in Folge auf `main` (366 Tests, Baseline korrekt) — Symptom trat nicht auf, die Design-Frage bleibt offen, solange die Routine keinen Branch fixiert.
 
-## Neu (2026-08-01)
+## Neu (2026-08-02)
 
-- 2026-08-01 · Lauf · **ALLES GRÜN** (auf `main`): npm test 366 Tests / pass 366 / fail 0 / todo 0 (7,0 s) · `homey app validate --level publish` exit 0 · Versions-Sync app.json == .homeycompose/app.json (0.8.0) · CI-Lauf 30686142001 (main, schedule) completed/success (29 s) · Worktree nach `validate` sauber (siebte Bestätigung des `.gitattributes`-Fixes aus `57e0b4e`).
+- 2026-08-02 · Lauf · **ALLES GRÜN** (auf `main`): npm test 366 Tests / pass 366 / fail 0 / todo 0 (7,6 s) · `homey app validate --level publish` exit 0 · Versions-Sync app.json == .homeycompose/app.json (0.8.0) · CI-Lauf 30734436344 (main, schedule) completed/success (32 s) · Worktree nach `validate` sauber (achte Bestätigung des `.gitattributes`-Fixes aus `57e0b4e`).
+
+## Erledigt (2026-08-02)
+
+- Nightly-Lauf 2026-08-01 (ALLES GRÜN, ohne Handlungsbedarf) → aus „Neu" entfernt, kein Follow-up.
 
 ## Erledigt (2026-08-01)
 
