@@ -90,7 +90,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-07-29",
+  updatedAt: "2026-08-14",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -934,6 +934,58 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload UND /security-review + security-reviewer-Subagent auf dem Diff ohne offene Findings — Ergebnisse im Chat gezeigt.
 
 /remote-control M9.1 — Dosierung & Sollwerte (setConfig)`
+    },
+    {
+      id: "M10.1",
+      title: "CRA-Readiness (freiwillig, ohne CE/DoC)",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "high", why: "Kein Code und keine neue Angriffsfläche — aber die Kernarbeit ist ein Syntheseurteil: vier Milestone-Threat-Models zu einer Produkt-Risikobewertung verdichten und die Restrisiko-Akzeptanz für die unverschlüsselte Violet-API begründen. Offenes Urteil auf bereits reviewtem Material, daher Workhorse mit hohem Effort statt Flaggschiff." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Freiwillige Umsetzung der CRA-Teilmenge mit echtem Nutzwert, obwohl die App als nicht-kommerzielle Open-Source-Software außerhalb des Anwendungsbereichs liegt: SBOM, konsolidierte Produkt-Risikobewertung, zugesagter Support-Zeitraum, schriftliche Security-Update-Policy, dokumentierte Begründung für die unverschlüsselte Controller-Verbindung. Ausdrücklich OHNE CE-Kennzeichnung, EU-Konformitätserklärung, Anhang-VII-Doku und Postanschrift-Veröffentlichung.",
+      steps: [
+        { label: "Brainstorming", done: false },
+        { label: "Spec", done: false },
+        { label: "Plan", done: false },
+        { label: "Implementierung (SDD)", done: false },
+        { label: "Validate + Push", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
+Violet Homey Pro App — Milestone M10.1 (freiwillige CRA-Readiness: die nutzwertigen Artefakte, ohne formale Konformitätserklärung).
+
+Aktualisiere beim Start den M10.1-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Reiner Dokumentations-Milestone: kein deploybarer Build, also kein Versions-Bump und kein versions.md-Eintrag (CLAUDE.md §8).
+
+AUSGANGSLAGE: Die App ist nach heutiger Einschätzung vom EU Cyber Resilience Act (VO (EU) 2024/2847) AUSGENOMMEN — freie, MIT-lizenzierte, nicht-kommerzielle Software ohne Monetarisierung und ohne Datenerhebung; festgehalten in README.md, Abschnitt "Project status & regulatory". Eine CVD-Policy existiert bereits (SECURITY.md). Dieser Milestone setzt FREIWILLIG die Teilmenge der CRA-Pflichten um, die auch außerhalb des Anwendungsbereichs echten Nutzwert hat.
+
+AUFGABE — fünf Artefakte:
+1. SBOM, maschinenlesbar (CycloneDX oder SPDX), als committetes Artefakt plus reproduzierbarer npm-Skript-Eintrag. Runtime-Dependencies sind aktuell leer; die SBOM muss das korrekt abbilden statt selbst leer zu sein. (Anh. I Teil II Nr. 1)
+2. Konsolidierte Cybersicherheits-Risikobewertung auf PRODUKT-Ebene unter docs/superpowers/security/ — synthetisiert die vier bestehenden Milestone-Threat-Models (M3 Write-Control, M5.7 Config-Read, M5.9 package-guard, M6.1 NOTIFY-Listener) zu einer Gesamtsicht mit Assets, Trust-Boundaries, Restrisiken und deren Behandlung. Kein Copy-Paste-Anhang, sondern eine Bewertung, die auch Wechselwirkungen zwischen den Pfaden benennt. (Art. 13(2))
+3. Support-Zeitraum: Enddatum festlegen (Orientierung: CRA-Minimum 5 Jahre ab Erst-Veröffentlichung im Store) und in README.md + SECURITY.md veröffentlichen. Das Datum ist eine Nutzer-Entscheidung — vorschlagen und bestätigen lassen, nicht selbst setzen. (Art. 13(8))
+4. Security-Update-Policy schriftlich: Sicherheitsfixes als eigene Patch-Releases getrennt von Feature-Releases, kostenlos, Verteilung über die automatische Homey-App-Aktualisierung. In SECURITY.md ergänzen. (Anh. I Teil II Nr. 2 und 8)
+5. Begründung für die unverschlüsselte Übertragung dokumentieren: die Violet bietet weder TLS noch ein modernes Auth-Verfahren; warum die getroffenen Gegenmaßnahmen (Write standardmäßig aus, Reads credential-frei, Credentials nur im Device-Store, LAN-only NOTIFY) angemessen sind und welches Restrisiko der Nutzer trägt. Gehört in die Risikobewertung aus Punkt 2. (Anh. I Teil I Nr. 2(b))
+
+AUSDRÜCKLICH NICHT TEIL DIESES MILESTONES — nicht ohne Rücksprache anfangen:
+- CE-Kennzeichnung und EU-Konformitätserklärung. Außerhalb des Anwendungsbereichs ist das Führen der CE-Marke unzulässig (VO 765/2008 Art. 30), nicht bloß überflüssig.
+- Technische Dokumentation nach Anhang VII und Nutzerinformationen nach Anhang II — beide verlangen eine veröffentlichte Postanschrift des Herstellers.
+- Registrierung für die Meldepflicht nach Art. 14.
+
+Vorgehen: superpowers:brainstorming -> writing-plans. Die Umsetzung ist Doku plus ein SBOM-Skript, also kein TDD-Zwang — die bestehenden Gates müssen aber grün bleiben.
+
+DONE-BEDINGUNGEN (transcript-verifizierbar):
+1. npm test zeigt fail 0 — Output im Chat gezeigt.
+2. Die SBOM-Datei existiert, ist gültiges CycloneDX- oder SPDX-JSON und parst fehlerfrei — Parse-Ergebnis im Chat gezeigt.
+3. Die konsolidierte Risikobewertung existiert unter docs/superpowers/security/ und referenziert alle vier bestehenden Threat-Models namentlich — grep-Nachweis im Chat gezeigt.
+4. README.md und SECURITY.md nennen den bestätigten Support-Zeitraum mit konkretem Enddatum — grep-Nachweis im Chat gezeigt.
+5. /security-review auf dem Diff ohne offene Findings — Ergebnis im Chat gezeigt.
+
+/remote-control M10.1 — CRA-Readiness (freiwillig)`
     }
   ]
 };

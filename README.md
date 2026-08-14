@@ -319,6 +319,38 @@ Motivation, if you want the bigger picture:
   agent‑built, well‑documented Homey apps.
 - The Homey community skill authors (homey‑cli, homey‑app) and the Superpowers project.
 
+## Security
+
+Found a security problem? Please report it privately — see [SECURITY.md](SECURITY.md)
+for the reporting channel, scope, and the known design limitations of the controller's
+plain-HTTP API.
+
+## Project status & regulatory
+
+This app is a **non-commercial open-source project**, maintained by a private individual
+in their spare time:
+
+- **Free of charge.** No purchase, no paid tier, no in-app purchase, no licence key, and
+  no paid feature gating — now or as a distribution model.
+- **Open source** under the [MIT License](LICENSE); the full source is public in this
+  repository.
+- **No monetisation.** No advertising, no sponsorship-gated access, and no paid support
+  or consulting attached to the app.
+- **No data collection.** The app runs entirely on your Homey against your controller on
+  your LAN. It has no cloud backend, requests no Homey permissions
+  (`"permissions": []`), and collects no telemetry, analytics or personal data of any
+  kind — neither for the developer nor for third parties.
+
+Consequently the app is **outside the scope of the EU Cyber Resilience Act**
+(Regulation (EU) 2024/2847), which applies to products with digital elements placed on
+the market *in the course of a commercial activity*; free and open-source software
+supplied outside such activity is excluded. It carries no CE marking and no EU
+declaration of conformity, because neither applies. Should the distribution model ever
+change, this section changes with it.
+
+None of this reduces the security effort — see [SECURITY.md](SECURITY.md) for the
+coordinated-disclosure process and the practices actually followed here.
+
 ## License
 
 Released under the [MIT License](LICENSE) © 2026 Torsten Sturm.
