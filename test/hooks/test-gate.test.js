@@ -92,3 +92,17 @@ test('test-gate: malformed stdin → PASS (fail-open)', () => {
   const { code } = runHook(null, undefined, 'not json{');
   assert.strictEqual(code, 0);
 });
+
+test('test-gate: declared deps but no node_modules → SKIP, not block (/insights 2026-08-21)', () => {
+  // A worktree that was never `npm ci`-ed makes the suite exit non-zero for an environment
+  // reason. Blocking there gives zero protection (nothing was checked) and cost a whole
+  // session of manual git operations. Must pass, and must say why.
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-gate-'));
+  fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({
+    name: 'fixture', version: '0.0.0', scripts: { test: 'node --test' },
+    devDependencies: { typescript: '5' },
+  }));
+  const { code, err } = runHook('git commit -m "x"', dir);
+  assert.strictEqual(code, 0, err);
+  assert.match(err, /npm ci/);
+});

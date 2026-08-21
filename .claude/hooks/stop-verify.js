@@ -17,6 +17,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 const { logHook } = require('./lib/log');
 const { spawnEnv } = require('./lib/spawn-env');
+const { toolchainMissing } = require('./lib/env-ready');
 
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
@@ -54,12 +55,19 @@ process.stdin.on('end', () => {
   } catch {
     // no package.json/scripts -> skip the suite step
   }
-  if (testScript) {
+  // An uninstalled toolchain is "nothing was verified", not "verification is red"
+  // (/insights 2026-08-21, same rule as test-gate.js). It still belongs in `problems` —
+  // ending a turn with modified source and NO verification is exactly what this hook
+  // prevents — but the model gets the real reason instead of a misleading red test dump.
+  const notReady = toolchainMissing(cwd);
+  if (testScript && !notReady) {
     // spawnEnv strips the node:test child markers (lib/spawn-env.js — M4.6/M4.7 lesson).
     const r = spawnSync(testScript, { cwd, shell: true, encoding: 'utf8', env: spawnEnv() });
     if (r.status !== 0 && r.status !== null) {
       problems.push(`test suite ("${testScript}") failed:\n${[r.stdout, r.stderr].filter(Boolean).join('\n').trim()}`);
     }
+  } else if (notReady) {
+    problems.push(`test suite not run — ${notReady}`);
   }
 
   // Validate only in Homey compose repos; spawn errors fail open (status null).

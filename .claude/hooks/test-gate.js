@@ -17,6 +17,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 const { logHook } = require('./lib/log');
 const { spawnEnv } = require('./lib/spawn-env');
+const { toolchainMissing } = require('./lib/env-ready');
 
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
@@ -42,6 +43,18 @@ process.stdin.on('end', () => {
   }
   if (!testScript) {
     process.exit(0); // no test script -> nothing to gate
+  }
+
+  // "could not check" != "check failed" (/insights 2026-08-21): a repo whose declared
+  // dependencies were never installed makes the suite exit non-zero for an environment
+  // reason. Blocking there protects nothing and blocks everything — one whole session was
+  // spent running git by hand because of exactly this. Same category as the status === null
+  // spawn failure below, just detectable before the spawn.
+  const notReady = toolchainMissing(cwd);
+  if (notReady) {
+    logHook('test-gate', 'skip', cwd);
+    console.error(`test-gate: skipped — ${notReady}. Nothing was verified; the suite did not run.`);
+    process.exit(0);
   }
 
   // shell:true because scripts.test is a shell command line (like npm run);
