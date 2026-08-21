@@ -8,7 +8,8 @@
           { "type": "command", "command": "node .claude/hooks/typecheck-gate.js" },
           { "type": "command", "command": "node .claude/hooks/test-gate.js" },
           { "type": "command", "command": "node .claude/hooks/release-gate.js" },
-          { "type": "command", "command": "node .claude/hooks/package-guard.js" }
+          { "type": "command", "command": "node .claude/hooks/package-guard.js" },
+          { "type": "command", "command": "node .claude/hooks/commit-msg-guard.js" }
         ]
       },
       {
