@@ -5,6 +5,9 @@ yarn-error.log*
 
 # Hook telemetry (local only — M4.8)
 .claude/hooks/hook-log.jsonl
+# Archivierter Ledger-Stand vor der Pollution-Bereinigung (2026-08-21) + Hook-State
+.claude/hooks/hook-log.pre-*.jsonl.bak
+.claude/hooks/.handoff-notice-state.json
 
 # Homey
 .homeybuild/

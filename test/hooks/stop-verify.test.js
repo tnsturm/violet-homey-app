@@ -109,3 +109,18 @@ test('stop-verify: malformed stdin → PASS (fail-open)', () => {
   const { code } = runHook(undefined, undefined, 'not json{');
   assert.strictEqual(code, 0);
 });
+
+test('stop-verify: deps declared, no node_modules, NO test script → PASS (nothing to run)', () => {
+  // Regression (/code-review of the 2026-08-21 env-ready change): the "toolchain missing"
+  // branch fired even when the repo has no scripts.test at all, reporting "test suite not run"
+  // about a suite that does not exist. Only a repo that HAS a suite can fail to run it.
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'stop-verify-'));
+  fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({
+    name: 'fixture', version: '0.0.0', devDependencies: { typescript: '5' },
+  }));
+  fs.mkdirSync(path.join(dir, 'lib'));
+  fs.writeFileSync(path.join(dir, 'lib', 'a.js'), 'module.exports = 1;\n');
+  spawnSync('git', ['init', '-q'], { cwd: dir, encoding: 'utf8' });
+  const { code, err } = runHook(dir);
+  assert.strictEqual(code, 0, err);
+});

@@ -18,8 +18,18 @@ const { logHook } = require('../../.claude/hooks/lib/log');
 test('logHook: appends a parseable JSONL line when .claude/hooks exists', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hook-log-'));
   fs.mkdirSync(path.join(dir, '.claude', 'hooks'), { recursive: true });
-  logHook('test-gate', 'block', dir);
-  logHook('test-gate', 'pass', dir);
+  // In-process-Aufruf: der Runner selbst trägt NODE_TEST_CONTEXT, den der Guard sperrt.
+  // Für den Positivpfad kurz entfernen — gespawnte Hooks bleiben davon unberührt.
+  const prev = { ctx: process.env.NODE_TEST_CONTEXT, wid: process.env.NODE_TEST_WORKER_ID };
+  delete process.env.NODE_TEST_CONTEXT;
+  delete process.env.NODE_TEST_WORKER_ID;
+  try {
+    logHook('test-gate', 'block', dir);
+    logHook('test-gate', 'pass', dir);
+  } finally {
+    if (prev.ctx !== undefined) process.env.NODE_TEST_CONTEXT = prev.ctx;
+    if (prev.wid !== undefined) process.env.NODE_TEST_WORKER_ID = prev.wid;
+  }
   const lines = fs.readFileSync(path.join(dir, '.claude', 'hooks', 'hook-log.jsonl'), 'utf8')
     .trim().split('\n').map((l) => JSON.parse(l));
   assert.strictEqual(lines.length, 2);
@@ -55,6 +65,23 @@ test('logHook: HOOK_LOG_DISABLE suppresses writes even with a real, existing cwd
     logHook('package-guard', 'block', dir);
   } finally {
     delete process.env.HOOK_LOG_DISABLE;
+  }
+  assert.strictEqual(fs.existsSync(path.join(dir, '.claude', 'hooks', 'hook-log.jsonl')), false);
+});
+
+test('logHook: no-op under node:test markers — a test-spawned hook can never pollute (2026-08-21)', () => {
+  // HOOK_LOG_DISABLE (M6.0) deckt nur Tests ab, die daran denken, es zu setzen — 4 von 14
+  // test/hooks/*.test.js tun das. NODE_TEST_CONTEXT ist dagegen in JEDEM aus der Suite
+  // gespawnten Hook-Prozess gesetzt. Damit ist die Pollution-Klasse strukturell zu, statt
+  // per Konvention. /insights-Report 2026-08-21: 434 von 449 Blocks waren solche Fake-Records.
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hook-log-'));
+  fs.mkdirSync(path.join(dir, '.claude', 'hooks'), { recursive: true });
+  const prev = process.env.NODE_TEST_CONTEXT;
+  process.env.NODE_TEST_CONTEXT = 'child-v8';
+  try {
+    logHook('package-guard', 'block', dir);
+  } finally {
+    if (prev === undefined) delete process.env.NODE_TEST_CONTEXT; else process.env.NODE_TEST_CONTEXT = prev;
   }
   assert.strictEqual(fs.existsSync(path.join(dir, '.claude', 'hooks', 'hook-log.jsonl')), false);
 });

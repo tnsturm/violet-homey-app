@@ -35,6 +35,20 @@ State verifiable success criteria before multi-step work ("write a test that rep
 Known defects are frozen immediately as `{ todo: true }` tests encoding the CORRECT
 expectation — every run lists them without going red; the fixing session removes the flag.
 
+Beim Rot-nach-Grün-Iterieren gilt ein **Budget**: bleibt die Suite nach ~10 Runden rot, hör auf
+zu probieren — `git bisect` auf den einführenden Commit und Bericht statt weiterer Versuche. Und
+lege am Ende **explizit offen, was durch Unterdrückung statt durch Verstehen behoben wurde**
+(Timeout hochgesetzt, Test übersprungen, Warnung stummgeschaltet). Ein solcher Fix ist ein
+gültiges Zwischenergebnis — aber nur, wenn er als solcher benannt ist.
+
+Zähl- und Grep-Checks auf Repo-Dateien müssen **CRLF-sicher** sein (Windows-Checkout): ein
+`sed`/`grep`-Muster mit `$`-Anker zählt auf CRLF-Dateien still Null — und eine stille Null liest
+sich wie „sauber". Beobachtet 2026-07 bei der CI-Hang-Untersuchung.
+
+Generierte Visualisierungen sind per Default **statisch/vorberechnet**. Eine
+`requestAnimationFrame`-/`setInterval`-Schleife ohne explizite Abbruchbedingung oder Frame-Cap
+geht nicht raus — eine solche Schleife hat 2026-07 die CPU des Nutzers auf 100 % genagelt.
+
 ## 5. Security by Design
 
 **Derive security requirements before writing the plan — not after the bug.**
@@ -95,6 +109,11 @@ Use a single-file `dashboard.html` (or equivalent): opens directly in a browser,
 - Every new milestone (or checkpoint) entered into the dashboard gets a `recommendedModel` at creation time, not as an afterthought — assign it per §11 before the entry is committed.
 - Every resume prompt (milestone or checkpoint) ends with `/remote-control <id> — <title>` so the spawned session is reachable from the Claude mobile app.
 - Resume prompts state the **goal and the machine-checkable done condition**, never a step-by-step procedure. For flagship sessions (§11 palette) this is load-bearing, not stylistic: over-prescriptive prompts measurably reduce flagship output quality. Give the full task spec up front and let the session plan its own path.
+- Jeder Abschlussbericht und jeder Handover endet mit zwei Zeilen: **was tatsächlich ausgeführt
+  und verifiziert wurde** (mit Kommando/Ergebnis) und **was angenommen wurde**, ohne es zu prüfen.
+  Ein Schritt, den ein unbeaufsichtigter Lauf übersprungen hat, gehört in die zweite Zeile, nicht
+  stillschweigend in die erste. Unverifizierte Fertigmeldungen sind die einzige Reibungsklasse, die
+  im `/insights`-Report 2026-08-21 als „dissatisfied" auftaucht — nicht Bugs.
 - Log friction the moment it occurs: append a `log[]` entry prefixed `FRICTION:` to the active milestone (repeated errors, blocked tools, wrong assumptions, rework). The workflow retro in `milestone-checkpoint` reads these entries as its primary signal source — unlogged friction is invisible to it.
 - New milestone sessions and the release-readiness subagent read `docs/dashboard/triage-inbox.md`
   FIRST (when present) — surface open findings before starting new work.
@@ -143,6 +162,13 @@ Corollary for automations: a routine that writes **only its own ledger file** (e
 Once a branch/worktree's change is complete and a git action (commit/push/merge) is next:
 
 1. Proactively start `/code-review` on the diff against the base branch — don't wait to be asked.
+   Berührt der Diff Laufzeit-Ressourcen (Timer, Listener, Handles), einen HTTP-/API-Aufruf oder
+   plattformabhängige Pfade/Shell-Aufrufe, dazu **parallel** die passenden Linsen-Agents aus
+   `.claude/agents/` laufen lassen — `runtime-resource-reviewer`, `api-contract-reviewer`,
+   `cross-platform-reviewer`, Fan-out über `superpowers:dispatching-parallel-agents`. Nicht
+   betroffene Linsen weglassen. Grund: 16 der Reibungsereignisse im `/insights`-Report 2026-08-21
+   waren Bugs, die erst beim manuellen Testen des Nutzers auffielen — und alle drei gehörten in
+   genau diese Klassen.
 2. Based on the result, ask (don't decide silently):
    - **Trivial change (no Critical Issues):** ask whether to push directly to `origin/main` and pull the local `main` checkout up to date — skipping a PR.
    - **Otherwise:** ask whether to push the branch and open a Pull Request.

@@ -54,5 +54,8 @@ interne Milestones (Refactoring, Tests, Housekeeping) sind ausgenommen.
 2. Bumpen: `npx homey app version patch` (neuer Build im selben Milestone) bzw. `npx homey app version minor` zum Milestone-Start.
 3. `.homeychangelog.json` für die neue Version füllen (en + de).
 4. Generiertes `app.json` prüfen (Version == `.homeycompose/app.json`); Bump + Changelog zusammen committen.
-5. Hochladen (`npx homey app install` bzw. Store-Publish).
-6. Zeile im Projekt-Versions-Log ergänzen (Version, Datum, Commit, Ziel, Notiz) — siehe z. B. `docs/dashboard/versions.md`.
+5. Generierte/geänderte Bild-Assets (App-Icon, Store-Images) **in Zielgröße rendern und ansehen**,
+   bevor sie committet werden — Icon und Store-Image mussten 2026-07 je einmal nach dem Commit
+   nachgebessert werden, weil der Defekt erst in der Store-Vorschau sichtbar wurde.
+6. Hochladen (`npx homey app install` bzw. Store-Publish).
+7. Zeile im Projekt-Versions-Log ergänzen (Version, Datum, Commit, Ziel, Notiz) — siehe z. B. `docs/dashboard/versions.md`.

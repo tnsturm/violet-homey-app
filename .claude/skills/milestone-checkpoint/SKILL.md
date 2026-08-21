@@ -199,6 +199,19 @@ auftreten. Vollständiges Design: `docs/superpowers/specs/2026-07-05-workflow-re
    Commits, Commit der einen direkt vorigen korrigiert, ≥2 gleichartige Fix-Commits an derselben Datei).
    Zusätzlich `.claude/hooks/hook-log.jsonl` auslesen (Block-Zählungen je Hook seit dem letzten
    Checkpoint statt Erinnerung — M4.8; viele Blocks desselben Hooks = wiederkehrende Reibungsklasse).
+   Deterministisch zählen statt überfliegen — `SINCE` auf das Datum des letzten Checkpoints setzen:
+
+   ```bash
+   node -e "const fs=require('fs');const SINCE='2026-07-21';const a={};for(const l of fs.readFileSync('.claude/hooks/hook-log.jsonl','utf8').trim().split(/\r?\n/)){try{const o=JSON.parse(l);if(o.decision==='block'&&o.ts>=SINCE)a[o.hook]=(a[o.hook]||0)+1}catch{}}console.log(a)"
+   ```
+
+   **Der Ledger beginnt am 2026-07-15T13:28:29Z** (Commit `bf60614`): davor liegende Einträge waren
+   zu 434/449 Fake-Records aus `package-guard.test.js` und wurden am 2026-08-21 (ausgelöst durch den
+   `/insights`-Report) nach `hook-log.pre-2026-07-15.jsonl.bak` archiviert. Steht dort erneut eine
+   auffällige Blockspitze eines einzelnen Hooks, **zuerst prüfen, ob sie aus einem Testlauf stammt**
+   (Zeitstempel-Cluster innerhalb weniger Minuten, Hook = der gerade getestete), bevor daraus eine
+   Reibungsklasse abgeleitet wird. Seit 2026-08-21 sperrt `lib/log.js` das strukturell über die
+   node:test-Marker — ein solcher Cluster wäre also selbst schon der Befund.
 2. **Clustern** zu eigenständigen Problemen; Häufigkeit zählen. **In Scope nur: ≥2× gesehen ODER vom
    Nutzer markiert** („nochmal", „zum dritten Mal"). Einzelfälle überspringen (YAGNI).
 3. **Root-Cause** je Problem (dreimal „warum": passiert · wiederholt · vor dem Commit nicht gefangen).
@@ -241,6 +254,14 @@ im Projekt sichten: Ist eine der Änderungen GENERISCH (in jedem Projekt sinnvol
 `C:/Users/TorstenSturm/source/repos/skill-agentic-loop-framework` die entsprechende Vorlage
 (`templates/` bzw. `homey/`) nachziehen + CHANGELOG-Eintrag; Commit dort nach §9-Freigabe.
 Kein Drift → kurz vermerken.
+
+**Vor dem Editieren eine Tabelle zeigen, nicht aus dem Gedächtnis spiegeln.** Zweimal ging genau
+hier ein Teil verloren (ein M9-Checkpoint, ein veralteter M2.1-Prompt). Also: erst jede betroffene
+Datei über alle beteiligten Repos hinweg als Tabelle auflisten —
+`Repo | Pfad | Ist-Zustand | Soll-Zustand` —, dann editieren, dann die Tabelle erneut aufstellen und
+zeigen, dass jede Zeile jetzt konsistent ist. Dateien, die im Framework noch gar nicht existieren,
+gehören als eigene Zeile („fehlt dort") hinein statt stillschweigend übergangen zu werden. Die
+zweite Tabelle ist der Nachweis; ohne sie ist die Spiegelung eine Behauptung.
 
 ### 7b: Native-Feature-Review (Framework → Plattform)
 
@@ -300,3 +321,8 @@ zurückgestellt wurden, das Ergebnis der Workflow-Retrospektive (welche wiederke
 Probleme in welche Ebene codifiziert wurden, oder „keine neue Reibung") und das Ergebnis des
 Native-Feature-Reviews (welche Artefakte zugunsten einer nativen Funktion abgeschafft wurden,
 oder „keine Plattform-Überlappung diesmal").
+
+Der Bericht endet mit zwei Zeilen (CLAUDE.md §7): **verifiziert** — was in dieser Session
+tatsächlich ausgeführt wurde, mit Kommando/Ergebnis — und **angenommen** — was ungeprüft
+übernommen wurde. Ein Schritt, den ein unbeaufsichtigter Lauf übersprungen hat (z. B. `/doctor`),
+gehört in die zweite Zeile, nicht stillschweigend in die erste.
