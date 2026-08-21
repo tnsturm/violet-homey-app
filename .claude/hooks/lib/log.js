@@ -29,11 +29,19 @@ const path = require('path');
  * hook test harnesses set it so any cwd a hook computes internally still can't
  * produce telemetry.
  * @param {string} hook Hook name, e.g. `test-gate`.
- * @param {'block'|'pass'} decision Outcome at a real decision point (D3).
+ * @param {'block'|'pass'|'skip'} decision Outcome at a real decision point (D3); `skip` = the
+ *   check could not run at all (e.g. toolchain not installed) and nothing was verified.
  * @param {string|undefined} cwd Guarded repo root (the hook-input cwd), or undefined to skip.
  */
 function logHook(hook, decision, cwd) {
-  if (!cwd || process.env.HOOK_LOG_DISABLE) return; // fixture safety, D2 + M6.0 retro
+  // fixture safety (D2) + M6.0 retro (HOOK_LOG_DISABLE) + 2026-08-21: NODE_TEST_CONTEXT/
+  // NODE_TEST_WORKER_ID sind in jedem aus `node --test` gespawnten Hook-Prozess gesetzt
+  // (lib/spawn-env.js strippt sie nur für absichtlich verschachtelte Suiten). Damit kann ein
+  // Test-Spawn strukturell nicht mehr in den echten Ledger schreiben, statt nur dann, wenn der
+  // Test daran denkt HOOK_LOG_DISABLE zu setzen (4 von 14 tun das) — /insights-Report
+  // 2026-08-21: 434 von 449 Blocks im Ledger waren solche Fake-Records.
+  if (!cwd || process.env.HOOK_LOG_DISABLE) return;
+  if (process.env.NODE_TEST_CONTEXT || process.env.NODE_TEST_WORKER_ID) return;
   try {
     fs.appendFileSync(
       path.join(cwd, '.claude', 'hooks', 'hook-log.jsonl'),

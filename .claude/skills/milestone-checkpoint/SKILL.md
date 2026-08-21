@@ -199,6 +199,19 @@ auftreten. Vollständiges Design: `docs/superpowers/specs/2026-07-05-workflow-re
    Commits, Commit der einen direkt vorigen korrigiert, ≥2 gleichartige Fix-Commits an derselben Datei).
    Zusätzlich `.claude/hooks/hook-log.jsonl` auslesen (Block-Zählungen je Hook seit dem letzten
    Checkpoint statt Erinnerung — M4.8; viele Blocks desselben Hooks = wiederkehrende Reibungsklasse).
+   Deterministisch zählen statt überfliegen — `SINCE` auf das Datum des letzten Checkpoints setzen:
+
+   ```bash
+   node -e "const fs=require('fs');const SINCE='2026-07-21';const a={};for(const l of fs.readFileSync('.claude/hooks/hook-log.jsonl','utf8').trim().split(/\r?\n/)){try{const o=JSON.parse(l);if(o.decision==='block'&&o.ts>=SINCE)a[o.hook]=(a[o.hook]||0)+1}catch{}}console.log(a)"
+   ```
+
+   **Der Ledger beginnt am 2026-07-15T13:28:29Z** (Commit `bf60614`): davor liegende Einträge waren
+   zu 434/449 Fake-Records aus `package-guard.test.js` und wurden am 2026-08-21 (ausgelöst durch den
+   `/insights`-Report) nach `hook-log.pre-2026-07-15.jsonl.bak` archiviert. Steht dort erneut eine
+   auffällige Blockspitze eines einzelnen Hooks, **zuerst prüfen, ob sie aus einem Testlauf stammt**
+   (Zeitstempel-Cluster innerhalb weniger Minuten, Hook = der gerade getestete), bevor daraus eine
+   Reibungsklasse abgeleitet wird. Seit 2026-08-21 sperrt `lib/log.js` das strukturell über die
+   node:test-Marker — ein solcher Cluster wäre also selbst schon der Befund.
 2. **Clustern** zu eigenständigen Problemen; Häufigkeit zählen. **In Scope nur: ≥2× gesehen ODER vom
    Nutzer markiert** („nochmal", „zum dritten Mal"). Einzelfälle überspringen (YAGNI).
 3. **Root-Cause** je Problem (dreimal „warum": passiert · wiederholt · vor dem Commit nicht gefangen).
