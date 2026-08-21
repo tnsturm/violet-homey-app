@@ -255,6 +255,14 @@ im Projekt sichten: Ist eine der Änderungen GENERISCH (in jedem Projekt sinnvol
 (`templates/` bzw. `homey/`) nachziehen + CHANGELOG-Eintrag; Commit dort nach §9-Freigabe.
 Kein Drift → kurz vermerken.
 
+**Vor dem Editieren eine Tabelle zeigen, nicht aus dem Gedächtnis spiegeln.** Zweimal ging genau
+hier ein Teil verloren (ein M9-Checkpoint, ein veralteter M2.1-Prompt). Also: erst jede betroffene
+Datei über alle beteiligten Repos hinweg als Tabelle auflisten —
+`Repo | Pfad | Ist-Zustand | Soll-Zustand` —, dann editieren, dann die Tabelle erneut aufstellen und
+zeigen, dass jede Zeile jetzt konsistent ist. Dateien, die im Framework noch gar nicht existieren,
+gehören als eigene Zeile („fehlt dort") hinein statt stillschweigend übergangen zu werden. Die
+zweite Tabelle ist der Nachweis; ohne sie ist die Spiegelung eine Behauptung.
+
 ### 7b: Native-Feature-Review (Framework → Plattform)
 
 Das Framework wächst nur, wenn nie jemand fragt, was es abwerfen kann. Claude Code entwickelt
@@ -313,3 +321,8 @@ zurückgestellt wurden, das Ergebnis der Workflow-Retrospektive (welche wiederke
 Probleme in welche Ebene codifiziert wurden, oder „keine neue Reibung") und das Ergebnis des
 Native-Feature-Reviews (welche Artefakte zugunsten einer nativen Funktion abgeschafft wurden,
 oder „keine Plattform-Überlappung diesmal").
+
+Der Bericht endet mit zwei Zeilen (CLAUDE.md §7): **verifiziert** — was in dieser Session
+tatsächlich ausgeführt wurde, mit Kommando/Ergebnis — und **angenommen** — was ungeprüft
+übernommen wurde. Ein Schritt, den ein unbeaufsichtigter Lauf übersprungen hat (z. B. `/doctor`),
+gehört in die zweite Zeile, nicht stillschweigend in die erste.
