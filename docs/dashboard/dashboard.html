@@ -90,7 +90,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-08-14",
+  updatedAt: "2026-08-21",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -707,7 +707,7 @@ Aufgabe: Eine App-Settings-Seite (settings/index.html — Homey Apps SDK v3, sel
 
 Optional (im Brainstorming entscheiden): zusätzlich eine Pairing-Intro-View ("Bevor du startest …") am Anfang des Hinzufügen-Assistenten.
 
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Store-Changelog-Freigabe: bei Publish Version-Notes (en+de) vom Nutzer freigeben lassen. Dev-Gate: npx homey app validate --level=debug muss PASSEN. Live-Sicht der Seite über homey app run/install gegen "Torstens Homey Pro".
+Store-Changelog-Freigabe: bei Publish Version-Notes (en+de) vom Nutzer freigeben lassen. Dev-Gate: npx homey app validate --level=debug muss PASSEN. Live-Sicht der Seite über homey app run/install gegen "Torstens Homey Pro".
 
 DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
 1. npm test zeigt fail 0 — Output im Chat gezeigt.
@@ -720,7 +720,6 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
       id: "M7.0",
       title: "Housekeeping Agentic Loop",
       status: "done",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
       startedAt: "2026-07-21",
       finishedAt: "2026-07-21",
       commit: "6687f4f",
@@ -781,7 +780,7 @@ Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-
 
 Aufgabe: Die in M1 manuell gepflegten Chem-Werte automatisch aus der PoolLab/LabCOM-Cloud beziehen (Auth, Polling/Refresh, Feld-Mapping auf die bestehenden Settings), als zusätzliche, optionale Quelle — manuelle Eingabe + Flow-Action aus M1 bleiben als Fallback. Reine, testbare Mapping-/Client-Logik nach /lib; device.js bleibt dünn.
 
-Vorgehen wie M0: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).
+Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).
 
 DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
 1. npm test zeigt fail 0 — Output im Chat gezeigt.
@@ -926,7 +925,7 @@ WICHTIG (aus M3-Erkenntnis): SCHREIBEN von Dosierung (DOS_*) und Sollwerten ist 
 
 SICHERHEIT: neue Angriffsfläche (schreibt direkt Wasserchemie-Parameter) → ZUERST security-requirement-extraction (eigenes Threat-Model in docs/superpowers/security/), dann Spec/Plan. Clamping auf sichere chemische Bereiche ist hier KRITISCH (Über-/Unterdosierung = reale Gefahr). Write-Credentials weiterhin nur im Device-Store. Wo möglich gegen Demo demo.myViolet.de bzw. echte Violet (Host \`violet\`) testen; /setConfig ist undokumentiert und kann sich mit Firmware ändern — defensive Fehlerbehandlung + klare "experimentell"-Kennzeichnung.
 
-Vorgehen wie M0–M3: superpowers:brainstorming -> writing-plans -> subagent-driven-development. Dev-Gate: npx homey app validate --level=debug muss PASSEN. Vor Merge: /security-review + security-reviewer-Subagent auf den Diff.
+Dev-Gate: npx homey app validate --level=debug muss PASSEN. Vor Merge: /security-review + security-reviewer-Subagent auf den Diff.
 
 DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
 1. npm test zeigt fail 0 — Output im Chat gezeigt.
@@ -976,7 +975,7 @@ AUSDRÜCKLICH NICHT TEIL DIESES MILESTONES — nicht ohne Rücksprache anfangen:
 - Technische Dokumentation nach Anhang VII und Nutzerinformationen nach Anhang II — beide verlangen eine veröffentlichte Postanschrift des Herstellers.
 - Registrierung für die Meldepflicht nach Art. 14.
 
-Vorgehen: superpowers:brainstorming -> writing-plans. Die Umsetzung ist Doku plus ein SBOM-Skript, also kein TDD-Zwang — die bestehenden Gates müssen aber grün bleiben.
+Reiner Doku-Milestone plus ein SBOM-Skript: kein TDD-Zwang (bewusste Abweichung von CLAUDE.md §0) — die bestehenden Gates müssen aber grün bleiben.
 
 DONE-BEDINGUNGEN (transcript-verifizierbar):
 1. npm test zeigt fail 0 — Output im Chat gezeigt.
