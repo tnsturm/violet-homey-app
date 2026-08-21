@@ -45,6 +45,17 @@
   .card.active{border-color:var(--active);border-width:2px;padding:14px 16px}
   .chead{display:flex;justify-content:space-between;align-items:center;gap:10px}
   .ctitle{font-weight:600;font-size:15px}
+  /* Aufklappbare Milestone-Karte: eingeklappt zeigt <summary> nur Titel + Status-Badge. */
+  .mcard{margin-top:0}
+  .mcard>summary{display:flex;justify-content:space-between;align-items:center;gap:10px;
+        cursor:pointer;list-style:none;user-select:none;font-size:15px;color:var(--text)}
+  .mcard>summary::-webkit-details-marker{display:none}
+  .mcard>summary .ctitle::before{content:"▸";color:var(--faint);font-size:11px;margin-right:7px;
+        display:inline-block;transition:transform .15s}
+  .mcard[open]>summary .ctitle::before{transform:rotate(90deg)}
+  .toggle-all{font-size:12px;font-family:var(--sans);color:var(--text);background:var(--surface);
+        border:1px solid var(--border);border-radius:7px;padding:5px 11px;margin-bottom:18px;cursor:pointer}
+  .toggle-all:hover{background:var(--todoBg)}
   .badge{font-size:12px;font-weight:500;padding:3px 11px;border-radius:8px;white-space:nowrap}
   .summary{font-size:13.5px;color:var(--muted);margin-top:7px}
   .steps{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
@@ -673,57 +684,13 @@ window.DASHBOARD_STATUS = {
       prompt: null
     },
     {
-      id: "M6.5",
-      title: "In-App Quick-Start-Guide (App-Settings-Seite)",
-      status: "todo",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Offenes Design/Content-Urteil (Struktur + zweisprachige Texte einer Onboarding-Seite), aber kein Sicherheits-/Chemie-Risiko und keine kritische Codepfad-Berührung — mittleres Urteil, keine Flaggschiff-Tiefe nötig." },
-      startedAt: null,
-      finishedAt: null,
-      commit: null,
-      summary: "Eingebauter Quick-Start-Guide über eine App-Settings-HTML-Seite (/settings/index.html, self-contained, kein Server), erreichbar über das ⚙ am App-Kachel. Zweisprachig (en+de), erklärt die nicht-selbsterklärenden Konfigurationen (Pairing/Credentials-Optionalität, Wassertemperatur-Auswahl, Feature-Gruppen Auto/Force/Hide, LSI-Werte, Steuerung/Schreibzugriff, Diagnose) und verweist auf den Community-Post als ausführliche Referenz. Per-Setting-Hints wurden bereits in 0.5.1 nachgerüstet — diese Seite ist die zusammenhängende Kurzanleitung. Optional zusätzlich: Pairing-Intro-View. Auslöser: Nutzer-Feedback 2026-07-14 (viele Konfigurationen, deren Sinn sich nicht auf Anhieb erschließt).",
-      steps: [
-        { label: "Brainstorming", done: false },
-        { label: "Spec", done: false },
-        { label: "Plan", done: false },
-        { label: "Implementierung (SDD)", done: false },
-        { label: "Validate + Release", done: false }
-      ],
-      currentActivity: null,
-      runtime: null,
-      log: [
-        { at: "2026-07-14", note: "Milestone angelegt (Nutzer-Feedback: In-App-Quickstart-Guide gewünscht; Per-Setting-Hints bereits in 0.5.1 erledigt, diese Seite ist die zusammenhängende Kurzanleitung)" }
-      ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Violet Homey Pro App — Milestone M6.5 (In-App Quick-Start-Guide über eine App-Settings-Seite).
-
-Aktualisiere beim Start den M6.5-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload Version bumpen (HOMEY.md) + versions.md pflegen. (Protokoll: CLAUDE.md §7-8 + HOMEY.md, automatisch geladen.)
-
-Kontext: Nutzer-Feedback vom 2026-07-14 — die App hat viele Konfigurationen, deren Sinn sich nicht auf Anhieb erschließt. Per-Setting-Hints wurden in 0.5.1 bereits nachgerüstet (drivers/pool/driver.settings.compose.json). Dieser Milestone ergänzt eine ZUSAMMENHÄNGENDE Kurzanleitung als App-Settings-HTML-Seite.
-
-Aufgabe: Eine App-Settings-Seite (settings/index.html — Homey Apps SDK v3, self-contained HTML/CSS/JS, kein Server, kein externer Fetch; über Homey.get/set nur falls nötig) bauen, erreichbar über das ⚙ am App-Kachel in Homey. Inhalt zweisprachig (en+de, Sprachumschaltung oder beide untereinander): Kurz-Onboarding (Pairing/Host, Credentials sind optional — Lesen braucht keine, nur Schreibsteuerung + Config-Fallback), Wassertemperatur-Auswahl (Smart-Auto + manuelle Wahl, benannte Sub-Kacheln als Zuordnungshilfe), Feature-Gruppen (Auto/Immer/Ausblenden), LSI-Wasserchemie (welche Werte, woher), Steuerung/Schreibzugriff (Default aus, Klartext-HTTP-Hinweis), erweiterte Diagnose. Verweis (Link/Text) auf den Community-Post als ausführliche Referenz (homeyCommunityTopicId 157109). Homey-SDK-Spezifika der App-Settings-Seite über die Skill homey-app bzw. context7 verifizieren, NICHT raten.
-
-Optional (im Brainstorming entscheiden): zusätzlich eine Pairing-Intro-View ("Bevor du startest …") am Anfang des Hinzufügen-Assistenten.
-
-Store-Changelog-Freigabe: bei Publish Version-Notes (en+de) vom Nutzer freigeben lassen. Dev-Gate: npx homey app validate --level=debug muss PASSEN. Live-Sicht der Seite über homey app run/install gegen "Torstens Homey Pro".
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. npm test zeigt fail 0 — Output im Chat gezeigt.
-2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
-3. Die App-Settings-Seite ist im Manifest registriert und wird in Homey angezeigt — Beleg (Screenshot/read_page oder App-Settings-Route) im Chat gezeigt.
-
-/remote-control M6.5 — In-App Quick-Start-Guide`
-    },
-    {
       id: "M7.0",
       title: "Housekeeping Agentic Loop",
       status: "done",
       startedAt: "2026-07-21",
       finishedAt: "2026-07-21",
       commit: "6687f4f",
-      summary: "Housekeeping zwischen M6.1 und M7.1: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      summary: "Housekeeping zwischen M6.1 und M9.1: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
       steps: [
         { label: "Branch-/Worktree-Cleanup", done: true },
         { label: "/fewer-permission-prompts", done: true },
@@ -748,85 +715,6 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
         { at: "2026-07-21", note: "Schritt 8+9: Dashboard-Eintrag auf done gesetzt. M7.1 hat bereits ein recommendedModel, kein Nachtrag noetig — Handover-Push vorbereitet." }
       ],
       prompt: null
-    },
-    {
-      id: "M7.1",
-      title: "LabCOM-Cloud-Import (PoolLab)",
-      status: "todo",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Neue externe Cloud-API (PoolLab/LabCOM) mit unbekannter Auth/Feld-Struktur — Recherche nötig, aber additiver Read-Pfad ohne Sicherheitsrisiko." },
-      startedAt: null,
-      finishedAt: null,
-      commit: null,
-      summary: "Automatischer Import der langsam veränderlichen Chemie-Werte (Calciumhärte, Gesamtalkalität, CYA, TDS/Salz) aus der PoolLab/LabCOM-Cloud statt manueller Eingabe. Speist die LSI-Berechnung aus M1; manuelle Eingabe + Flow-Action bleiben Fallback. Nachgelagert zu M1/M4.",
-      steps: [
-        { label: "Brainstorming", done: false },
-        { label: "Spec", done: false },
-        { label: "Plan", done: false },
-        { label: "Implementierung (SDD)", done: false },
-        { label: "Validate + Push", done: false }
-      ],
-      currentActivity: null,
-      runtime: null,
-      log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Violet Homey Pro App — Milestone M7.1 (LabCOM-Cloud-Import der Wasserchemie für den LSI).
-
-Aktualisiere beim Start den M7.1-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
-
-Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-06-29-violet-homey-app-m1-lsi-design.md) — dort ist definiert, wie die Chem-Werte (Calciumhärte, Gesamtalkalität, CYA, TDS/Salz) gespeichert und vom LSI gelesen werden (Device-Settings + Flow-Action „Wasserchemie setzen“). M0–M6 sollten fertig sein.
-
-Aufgabe: Die in M1 manuell gepflegten Chem-Werte automatisch aus der PoolLab/LabCOM-Cloud beziehen (Auth, Polling/Refresh, Feld-Mapping auf die bestehenden Settings), als zusätzliche, optionale Quelle — manuelle Eingabe + Flow-Action aus M1 bleiben als Fallback. Reine, testbare Mapping-/Client-Logik nach /lib; device.js bleibt dünn.
-
-Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. npm test zeigt fail 0 — Output im Chat gezeigt.
-2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
-3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
-
-/remote-control M7.1 — LabCOM-Cloud-Import (PoolLab)`
-    },
-    {
-      id: "M8.0",
-      title: "Housekeeping Agentic Loop",
-      status: "todo",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
-      startedAt: null,
-      finishedAt: null,
-      commit: null,
-      summary: "Housekeeping zwischen M7.1 und M8.1: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
-      steps: [
-        { label: "Branch-/Worktree-Cleanup", done: false },
-        { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false },
-        { label: "Skill-Quellen geprüft", done: false },
-        { label: "Workflow-Retrospektive", done: false },
-        { label: "Memory-Konsolidierung", done: false },
-        { label: "Framework-Abgleich (Drift + Native-Features)", done: false },
-        { label: "Handover", done: false }
-      ],
-      currentActivity: null,
-      runtime: null,
-      log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Housekeeping Agentic Loop vor M8.1 (CLAUDE.md §7 Punkt 4). M7.1 ist abgeschlossen, M8.1 startet als Naechstes.
-
-Fuehre aus: /milestone-checkpoint — der Branch-/Worktree-Cleanup ist Schritt 1 des Skills.
-
-Das aktualisiert automatisch den M8.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
-2. Alle Checkpoint-Schritte 1-9 durchlaufen (inkl. Branch-/Worktree-Cleanup als Schritt 1, Memory-Konsolidierung als Diff, Framework-Abgleich 7a Drift + 7b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
-3. Der M8.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
-
-/remote-control M8.0 — Housekeeping Agentic Loop`
     },
     {
       id: "M8.1",
@@ -894,6 +782,90 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
     },
     {
       id: "M9.1",
+      title: "LabCOM-Cloud-Import (PoolLab)",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Neue externe Cloud-API (PoolLab/LabCOM) mit unbekannter Auth/Feld-Struktur — Recherche nötig, aber additiver Read-Pfad ohne Sicherheitsrisiko." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Automatischer Import der langsam veränderlichen Chemie-Werte (Calciumhärte, Gesamtalkalität, CYA, TDS/Salz) aus der PoolLab/LabCOM-Cloud statt manueller Eingabe. Speist die LSI-Berechnung aus M1; manuelle Eingabe + Flow-Action bleiben Fallback. Nachgelagert zu M1/M4.",
+      steps: [
+        { label: "Brainstorming", done: false },
+        { label: "Spec", done: false },
+        { label: "Plan", done: false },
+        { label: "Implementierung (SDD)", done: false },
+        { label: "Validate + Push", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
+Violet Homey Pro App — Milestone M9.1 (LabCOM-Cloud-Import der Wasserchemie für den LSI).
+
+Aktualisiere beim Start den M9.1-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
+
+Kontext laden: Projekt-Status-Memory + die M1-Spec (docs/superpowers/specs/2026-06-29-violet-homey-app-m1-lsi-design.md) — dort ist definiert, wie die Chem-Werte (Calciumhärte, Gesamtalkalität, CYA, TDS/Salz) gespeichert und vom LSI gelesen werden (Device-Settings + Flow-Action „Wasserchemie setzen“). M0–M8 sollten fertig sein.
+
+Aufgabe: Die in M1 manuell gepflegten Chem-Werte automatisch aus der PoolLab/LabCOM-Cloud beziehen (Auth, Polling/Refresh, Feld-Mapping auf die bestehenden Settings), als zusätzliche, optionale Quelle — manuelle Eingabe + Flow-Action aus M1 bleiben als Fallback. Reine, testbare Mapping-/Client-Logik nach /lib; device.js bleibt dünn.
+
+Dev-Gate: npx homey app validate --level=debug muss PASSEN. SDK-Spezifika über die Skill homey-app, Live-Inspektion via homey-cli gegen "Torstens Homey Pro" / die echte Violet (Host: \`violet\`).
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. npm test zeigt fail 0 — Output im Chat gezeigt.
+2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
+3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload — Ergebnis im Chat gezeigt.
+
+/remote-control M9.1 — LabCOM-Cloud-Import (PoolLab)`
+    },
+    {
+      id: "M9.2",
+      title: "In-App Quick-Start-Guide (App-Settings-Seite)",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Offenes Design/Content-Urteil (Struktur + zweisprachige Texte einer Onboarding-Seite), aber kein Sicherheits-/Chemie-Risiko und keine kritische Codepfad-Berührung — mittleres Urteil, keine Flaggschiff-Tiefe nötig." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Eingebauter Quick-Start-Guide über eine App-Settings-HTML-Seite (/settings/index.html, self-contained, kein Server), erreichbar über das ⚙ am App-Kachel. Zweisprachig (en+de), erklärt die nicht-selbsterklärenden Konfigurationen (Pairing/Credentials-Optionalität, Wassertemperatur-Auswahl, Feature-Gruppen Auto/Force/Hide, LSI-Werte, Steuerung/Schreibzugriff, Diagnose) und verweist auf den Community-Post als ausführliche Referenz. Per-Setting-Hints wurden bereits in 0.5.1 nachgerüstet — diese Seite ist die zusammenhängende Kurzanleitung. Optional zusätzlich: Pairing-Intro-View. Auslöser: Nutzer-Feedback 2026-07-14 (viele Konfigurationen, deren Sinn sich nicht auf Anhieb erschließt).",
+      steps: [
+        { label: "Brainstorming", done: false },
+        { label: "Spec", done: false },
+        { label: "Plan", done: false },
+        { label: "Implementierung (SDD)", done: false },
+        { label: "Validate + Release", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-07-14", note: "Milestone angelegt (Nutzer-Feedback: In-App-Quickstart-Guide gewünscht; Per-Setting-Hints bereits in 0.5.1 erledigt, diese Seite ist die zusammenhängende Kurzanleitung)" }
+      ],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
+Violet Homey Pro App — Milestone M9.2 (In-App Quick-Start-Guide über eine App-Settings-Seite).
+
+Aktualisiere beim Start den M9.2-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload Version bumpen (HOMEY.md) + versions.md pflegen. (Protokoll: CLAUDE.md §7-8 + HOMEY.md, automatisch geladen.)
+
+Kontext: Nutzer-Feedback vom 2026-07-14 — die App hat viele Konfigurationen, deren Sinn sich nicht auf Anhieb erschließt. Per-Setting-Hints wurden in 0.5.1 bereits nachgerüstet (drivers/pool/driver.settings.compose.json). Dieser Milestone ergänzt eine ZUSAMMENHÄNGENDE Kurzanleitung als App-Settings-HTML-Seite.
+
+Aufgabe: Eine App-Settings-Seite (settings/index.html — Homey Apps SDK v3, self-contained HTML/CSS/JS, kein Server, kein externer Fetch; über Homey.get/set nur falls nötig) bauen, erreichbar über das ⚙ am App-Kachel in Homey. Inhalt zweisprachig (en+de, Sprachumschaltung oder beide untereinander): Kurz-Onboarding (Pairing/Host, Credentials sind optional — Lesen braucht keine, nur Schreibsteuerung + Config-Fallback), Wassertemperatur-Auswahl (Smart-Auto + manuelle Wahl, benannte Sub-Kacheln als Zuordnungshilfe), Feature-Gruppen (Auto/Immer/Ausblenden), LSI-Wasserchemie (welche Werte, woher), Steuerung/Schreibzugriff (Default aus, Klartext-HTTP-Hinweis), erweiterte Diagnose. Verweis (Link/Text) auf den Community-Post als ausführliche Referenz (homeyCommunityTopicId 157109). Homey-SDK-Spezifika der App-Settings-Seite über die Skill homey-app bzw. context7 verifizieren, NICHT raten.
+
+Optional (im Brainstorming entscheiden): zusätzlich eine Pairing-Intro-View ("Bevor du startest …") am Anfang des Hinzufügen-Assistenten.
+
+Store-Changelog-Freigabe: bei Publish Version-Notes (en+de) vom Nutzer freigeben lassen. Dev-Gate: npx homey app validate --level=debug muss PASSEN. Live-Sicht der Seite über homey app run/install gegen "Torstens Homey Pro".
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. npm test zeigt fail 0 — Output im Chat gezeigt.
+2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
+3. Die App-Settings-Seite ist im Manifest registriert und wird in Homey angezeigt — Beleg (Screenshot/read_page oder App-Settings-Route) im Chat gezeigt.
+
+/remote-control M9.2 — In-App Quick-Start-Guide`
+    },
+    {
+      id: "M9.3",
       title: "Dosierung & Sollwerte (setConfig)",
       status: "todo",
       recommendedModel: { model: "Claude Fable 5", effort: "xhigh", why: "Flagship (§11-Palette), höchstes Risiko im Projekt: reverse-engineerter undokumentierter Schreib-Endpoint direkt in die Wasserchemie-Dosierung + eigenes Threat-Model/Security-Review — stärkste Urteilsfähigkeit für Clamping/Sicherheit; Refusal-Friction ggf. als FRICTION loggen (§11), Milestone bleibt auf dem Flagship." },
@@ -915,9 +887,9 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
-Violet Homey Pro App — Milestone M9.1 (Dosierung & Sollwerte via setConfig).
+Violet Homey Pro App — Milestone M9.3 (Dosierung & Sollwerte via setConfig).
 
-Aktualisiere beim Start den M9.1-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
+Aktualisiere beim Start den M9.3-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload die App-Version bumpen (Befehle: HOMEY.md) + in docs/dashboard/versions.md protokollieren. (Dashboard-/Versionierungs-Protokoll: CLAUDE.md §7–8 + HOMEY.md, bereits automatisch geladen.)
 
 Kontext laden: Projekt-Status-Memory + die M3-Spec (docs/superpowers/specs/2026-07-02-violet-homey-app-m3-write-control-design.md, §2/§13) und das M3-Threat-Model (docs/superpowers/security/2026-06-30-m3-write-control-threat-model.md). ZUSAETZLICH PFLICHT: die Analyse-Notiz docs/superpowers/notes/2026-07-13-violet-api-analysis-getconfig-dosing.md — §2 dokumentiert den kompletten getOverallDosing-Endpoint (je Kanal: aktueller Zyklus, Kanisterstand inkl. fertiger CAN_LOW/EMPTY_WARNING-Bits, NEXT_DOSING_CYCLE, STATE-Blockiervokabular, Lebensdauer-Zaehler) und §3 die DOSAGE_*-Sollwert-Keys in getConfig (inkl. gezieltem Read getConfig?DOSAGE_phminus_setpoint). Das Brainstorming MUSS beide Quellen einbeziehen: Read-/Feedback-Seite der manuellen Dosierung ueber getOverallDosing statt eigener Ableitungen aus getReadings; Sollwert-Reads ueber getConfig. M3 (setFunctionManually-Schreibpfad, lib/WriteClient.js, WRITE_TARGETS-Registry) muss fertig sein — hier wird darauf aufgebaut.
 
@@ -932,7 +904,46 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
 3. release-readiness-Subagent meldet PASS vor jedem Homey-Install/Store-Upload UND /security-review + security-reviewer-Subagent auf dem Diff ohne offene Findings — Ergebnisse im Chat gezeigt.
 
-/remote-control M9.1 — Dosierung & Sollwerte (setConfig)`
+/remote-control M9.3 — Dosierung & Sollwerte (setConfig)`
+    },
+    {
+      id: "M10.0",
+      title: "Housekeeping Agentic Loop",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Housekeeping zwischen M9.3 und M10.1: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      steps: [
+        { label: "Branch-/Worktree-Cleanup", done: false },
+        { label: "/fewer-permission-prompts", done: false },
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false },
+        { label: "Workflow-Retrospektive", done: false },
+        { label: "Memory-Konsolidierung", done: false },
+        { label: "Framework-Abgleich (Drift + Native-Features)", done: false },
+        { label: "Handover", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
+Housekeeping Agentic Loop vor M10.1 (CLAUDE.md §7 Punkt 4). M9.3 ist abgeschlossen, M10.1 startet als Naechstes.
+
+Fuehre aus: /milestone-checkpoint — der Branch-/Worktree-Cleanup ist Schritt 1 des Skills.
+
+Das aktualisiert automatisch den M10.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
+2. Alle Checkpoint-Schritte 1-9 durchlaufen (inkl. Branch-/Worktree-Cleanup als Schritt 1, Memory-Konsolidierung als Diff, Framework-Abgleich 7a Drift + 7b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
+3. Der M10.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
+
+/remote-control M10.0 — Housekeeping Agentic Loop`
     },
     {
       id: "M10.1",
@@ -1020,6 +1031,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar):
         + '<span><span class="dotk" style="background:var(--done)"></span>abgeschlossen</span>'
         + '<span><span class="dotk" style="background:var(--active)"></span>in Arbeit</span>'
         + '<span><span class="dotk" style="background:var(--faint)"></span>nicht begonnen</span></div>';
+  html += '<button class="toggle-all" id="toggle-all">Alle ausklappen</button>';
 
   ms.forEach(function (m, i) {
     var b = BADGE[m.status] || BADGE.todo;
@@ -1032,8 +1044,11 @@ DONE-BEDINGUNGEN (transcript-verifizierbar):
     html += '</div>';
 
     html += '<div class="card' + (m.status === "active" ? " active" : "") + '">';
-    html += '<div class="chead"><span class="ctitle">' + esc(m.id) + ' · ' + esc(m.title) + '</span>';
-    html += '<span class="badge" style="background:' + b.bg + ';color:' + b.fg + '">' + esc(b.txt) + '</span></div>';
+    // Eingeklappt bleibt nur die <summary>-Zeile sichtbar (Titel + Status-Badge);
+    // aktive Milestones starten aufgeklappt, alles andere zugeklappt.
+    html += '<details class="mcard"' + (m.status === "active" ? " open" : "") + '>';
+    html += '<summary class="chead"><span class="ctitle">' + esc(m.id) + ' · ' + esc(m.title) + '</span>';
+    html += '<span class="badge" style="background:' + b.bg + ';color:' + b.fg + '">' + esc(b.txt) + '</span></summary>';
     html += '<div class="summary">' + esc(m.summary) + '</div>';
 
     html += '<div class="steps">';
@@ -1073,10 +1088,18 @@ DONE-BEDINGUNGEN (transcript-verifizierbar):
       html += '<div class="chip">↗ Als neue Sitzung starten: Chip „Start ' + esc(m.id) + ' …“ im Claude-Chat</div>';
     }
 
-    html += '</div></div>';
+    html += '</details></div></div>';
   });
 
   document.getElementById("app").innerHTML = html;
+
+  var tgl = document.getElementById("toggle-all");
+  if (tgl) tgl.addEventListener("click", function () {
+    var expand = tgl.dataset.state !== "open";
+    document.querySelectorAll("details.mcard").forEach(function (d) { d.open = expand; });
+    tgl.dataset.state = expand ? "open" : "closed";
+    tgl.textContent = expand ? "Alle einklappen" : "Alle ausklappen";
+  });
 
   document.querySelectorAll(".copy").forEach(function (btn) {
     btn.addEventListener("click", function () {
