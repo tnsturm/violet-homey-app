@@ -66,7 +66,9 @@ process.stdin.on('end', () => {
     if (r.status !== 0 && r.status !== null) {
       problems.push(`test suite ("${testScript}") failed:\n${[r.stdout, r.stderr].filter(Boolean).join('\n').trim()}`);
     }
-  } else if (notReady) {
+  } else if (testScript && notReady) {
+    // Only a repo that HAS a suite can fail to run one — without scripts.test there is
+    // nothing to report (found by /code-review of this very change).
     problems.push(`test suite not run — ${notReady}`);
   }
 
