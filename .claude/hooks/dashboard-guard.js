@@ -16,6 +16,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 const { logHook } = require('./lib/log');
+const { isInsideGuardedRepo } = require('./lib/in-repo');
 
 function isGuardedDashboard(filePath) {
   const p = String(filePath || '').replace(/\\/g, '/');
@@ -31,9 +32,12 @@ process.stdin.on('end', () => {
   const filePath = (input.tool_input && input.tool_input.file_path) || '';
   if (!isGuardedDashboard(filePath)) process.exit(0);
 
-  const abs = path.isAbsolute(filePath)
-    ? filePath
-    : path.join(input.cwd || process.cwd(), filePath);
+  // The framework repo ships a dashboard.html TEMPLATE at this very path; its data block
+  // is not ours to gate (docs/superpowers/notes/2026-08-22-hook-cwd-containment.md).
+  const root = input.cwd || process.cwd();
+  if (!isInsideGuardedRepo(root, filePath)) process.exit(0);
+
+  const abs = path.resolve(root, filePath);
   let html;
   try { html = fs.readFileSync(abs, 'utf8'); } catch { process.exit(0); }
 

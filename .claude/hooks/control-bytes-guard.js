@@ -11,14 +11,18 @@
 const fs = require('fs');
 const path = require('path');
 const { logHook } = require('./lib/log');
+const { isInsideGuardedRepo } = require('./lib/in-repo');
 
+// Anchored, so `.jsonl` is NOT covered — which is what keeps the telemetry ledger
+// (.claude/hooks/hook-log.jsonl) out of scope. An explicit hook-log exclusion used to
+// sit below and was unreachable for exactly that reason; the extension list is the
+// real mechanism, and test/hooks/control-bytes-guard.test.js pins it.
 const GUARDED_EXT = /\.(js|json|md|html|txt)$/;
 
 function isGuardedText(filePath) {
   const p = String(filePath || '').replace(/\\/g, '/');
   if (!GUARDED_EXT.test(p)) return false;
   if (/(?:^|\/)(node_modules|\.git|scratchpad)\//.test(p)) return false;
-  if (/(?:^|\/)hook-log\.jsonl$/.test(p)) return false;
   return true;
 }
 
@@ -36,9 +40,12 @@ process.stdin.on('end', () => {
   const filePath = (input.tool_input && input.tool_input.file_path) || '';
   if (!isGuardedText(filePath)) process.exit(0);
 
-  const abs = path.isAbsolute(filePath)
-    ? filePath
-    : path.join(input.cwd || process.cwd(), filePath);
+  // Another repository's text files are not ours to gate, however broken they look
+  // (docs/superpowers/notes/2026-08-22-hook-cwd-containment.md).
+  const root = input.cwd || process.cwd();
+  if (!isInsideGuardedRepo(root, filePath)) process.exit(0);
+
+  const abs = path.resolve(root, filePath);
   let text;
   try { text = fs.readFileSync(abs, 'utf8'); } catch { process.exit(0); }
 

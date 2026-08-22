@@ -13,11 +13,18 @@
 const fs = require('fs');
 const path = require('path');
 const { logHook } = require('./lib/log');
+const { isInsideGuardedRepo } = require('./lib/in-repo');
 
+// Path SHAPE only — which files inside the repo count as project source. Whether the
+// file belongs to this repo at all is isInsideGuardedRepo()'s job below. Worktrees are not
+// exempt: they sit at <repo>/.claude/worktrees/<name>, hold the bulk of the work
+// (CLAUDE.md §9) and carry the same conventions — the old path-string exemption
+// silently disabled this guard exactly where it was needed
+// (docs/superpowers/notes/2026-08-22-hook-cwd-containment.md).
 function isGuardedSource(filePath) {
   const p = String(filePath || '').replace(/\\/g, '/');
   if (!/\.js$/.test(p)) return false;
-  if (/(?:^|\/)(node_modules|\.git|scratchpad|\.claude\/worktrees)\//.test(p)) return false;
+  if (/(?:^|\/)(node_modules|\.git|scratchpad)\//.test(p)) return false;
   return /(?:^|\/)(lib|drivers)\//.test(p);
 }
 
@@ -34,9 +41,12 @@ process.stdin.on('end', () => {
   const filePath = (input.tool_input && input.tool_input.file_path) || '';
   if (!isGuardedSource(filePath)) process.exit(0);
 
-  const abs = path.isAbsolute(filePath)
-    ? filePath
-    : path.join(input.cwd || process.cwd(), filePath);
+  // Another repository's lib/ is not ours to gate — it has its own documentation
+  // conventions (2026-08-21: blocked an edit in skill-agentic-loop-framework).
+  const root = input.cwd || process.cwd();
+  if (!isInsideGuardedRepo(root, filePath)) process.exit(0);
+
+  const abs = path.resolve(root, filePath);
   let text;
   try { text = fs.readFileSync(abs, 'utf8'); } catch { process.exit(0); }
 

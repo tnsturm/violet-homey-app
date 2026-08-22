@@ -20,23 +20,34 @@ const HOOK = path.join(__dirname, '..', '..', '.claude', 'hooks', 'dashboard-gua
 const LQ = String.fromCharCode(0x201C); // “
 const RQ = String.fromCharCode(0x201D); // ”
 
-/** @param {string} filePath */
-function runHook(filePath) {
+/** @param {string} filePath @param {string} [cwd] session cwd = the guarded repo root */
+function runHook(filePath, cwd) {
   const r = spawnSync(process.execPath, [HOOK], {
-    input: JSON.stringify({ tool_name: 'Write', tool_input: { file_path: filePath } }),
+    input: JSON.stringify({ tool_name: 'Write', cwd, tool_input: { file_path: filePath } }),
     encoding: 'utf8',
   });
   return { code: r.status, err: (r.stderr || '').trim() };
 }
 
-/** @param {string} name @param {string} content */
+/**
+ * Fixture repo holding <root>/docs/dashboard/<name>. Returns both halves: the guard only
+ * looks at files inside the session cwd, so every call site has to pass `root` as that cwd.
+ * @param {string} name @param {string} content
+ * @returns {{ root: string, file: string }}
+ */
 function tmpFile(name, content) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dashguard-'));
   const p = path.join(dir, 'docs', 'dashboard');
   fs.mkdirSync(p, { recursive: true });
   const full = path.join(p, name);
   fs.writeFileSync(full, content);
-  return full;
+  return { root: dir, file: full };
+}
+
+/** Runs the hook on a tmpFile() fixture, using its root as the session cwd.
+ * @param {{ root: string, file: string }} fixture */
+function runFixture(fixture) {
+  return runHook(fixture.file, fixture.root);
 }
 
 /** @param {string} dataBlockBody */
@@ -46,26 +57,38 @@ function htmlWith(dataBlockBody) {
 
 test('dashboard-guard: valid data block → exit 0', () => {
   const html = htmlWith('window.DASHBOARD_STATUS = { project: "X", milestones: [] };');
-  assert.strictEqual(runHook(tmpFile('dashboard.html', html)).code, 0);
+  assert.strictEqual(runFixture(tmpFile('dashboard.html', html)).code, 0);
 });
 
 test('dashboard-guard: curly smart-quote delimiter breaks the block → exit 2', () => {
   const broken = `window.DASHBOARD_STATUS = { project: ${LQ}X${RQ}, note: "a "stray" quote" };`;
-  const { code, err } = runHook(tmpFile('dashboard.html', htmlWith(broken)));
+  const { code, err } = runFixture(tmpFile('dashboard.html', htmlWith(broken)));
   assert.strictEqual(code, 2);
   assert.match(err, /no longer parses/);
 });
 
 test('dashboard-guard: generic syntax error in data block → exit 2', () => {
   const broken = 'window.DASHBOARD_STATUS = { project: "X", milestones: [ };';
-  assert.strictEqual(runHook(tmpFile('dashboard.html', htmlWith(broken))).code, 2);
+  assert.strictEqual(runFixture(tmpFile('dashboard.html', htmlWith(broken))).code, 2);
 });
 
 test('dashboard-guard: non-dashboard HTML file → exit 0', () => {
   const broken = 'window.DASHBOARD_STATUS = { project: "X", milestones: [ };';
-  assert.strictEqual(runHook(tmpFile('other.html', htmlWith(broken))).code, 0);
+  assert.strictEqual(runFixture(tmpFile('other.html', htmlWith(broken))).code, 0);
 });
 
 test('dashboard-guard: dashboard.html without the status-data marker → exit 0 (fail open)', () => {
-  assert.strictEqual(runHook(tmpFile('dashboard.html', '<html></html>')).code, 0);
+  assert.strictEqual(runFixture(tmpFile('dashboard.html', '<html></html>')).code, 0);
+});
+
+test('dashboard-guard: absolute path outside cwd (another repository) → exit 0', () => {
+  // skill-agentic-loop-framework ships a dashboard.html TEMPLATE at this exact path
+  // (docs/superpowers/notes/2026-08-22-hook-cwd-containment.md).
+  const foreign = fs.mkdtempSync(path.join(os.tmpdir(), 'dashguard-foreign-'));
+  const dir = path.join(foreign, 'docs', 'dashboard');
+  fs.mkdirSync(dir, { recursive: true });
+  const p = path.join(dir, 'dashboard.html');
+  fs.writeFileSync(p, htmlWith('window.DASHBOARD_STATUS = { project: "X", milestones: [ };'));
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'dashguard-cwd-'));
+  assert.strictEqual(runHook(p, cwd).code, 0);
 });
