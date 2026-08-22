@@ -70,3 +70,11 @@ test('changelog-lang-guard: malformed stdin → exit 0 (fail-open)', () => {
   const r = spawnSync(process.execPath, [HOOK], { input: 'not json{', encoding: 'utf8' });
   assert.strictEqual(r.status, 0);
 });
+
+test('changelog-lang-guard: changelog in another repository → exit 0', () => {
+  // Without containment this judges a FOREIGN changelog against OUR compose version —
+  // two unrelated version lines (docs/superpowers/notes/2026-08-22-hook-cwd-containment.md).
+  const ours = makeRepo({ [VERSION]: { en: 'Complete.', de: 'Vollstaendig.' } });
+  const foreign = makeRepo({ [VERSION]: { en: 'Only English.' } });
+  assert.strictEqual(runHook(foreign.changelogPath, ours.dir).code, 0);
+});

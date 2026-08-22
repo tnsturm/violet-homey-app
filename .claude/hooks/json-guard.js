@@ -13,6 +13,7 @@
 const fs = require('fs');
 const path = require('path');
 const { logHook } = require('./lib/log');
+const { isInsideGuardedRepo } = require('./lib/in-repo');
 
 // The Homey manifest/changelog JSON set — pure JSON (no JSONC comments). Tooling
 // JSON under .claude/ (e.g. launch.json) is deliberately NOT guarded (may be JSONC).
@@ -35,9 +36,12 @@ process.stdin.on('end', () => {
   const filePath = (input.tool_input && input.tool_input.file_path) || '';
   if (!isGuardedJson(filePath)) process.exit(0);
 
-  const abs = path.isAbsolute(filePath)
-    ? filePath
-    : path.join(input.cwd || process.cwd(), filePath);
+  // Every repo on disk has a package.json (and may have a drivers/ or locales/) — only
+  // ours is ours to gate (docs/superpowers/notes/2026-08-22-hook-cwd-containment.md).
+  const root = input.cwd || process.cwd();
+  if (!isInsideGuardedRepo(root, filePath)) process.exit(0);
+
+  const abs = path.resolve(root, filePath);
   let text;
   try { text = fs.readFileSync(abs, 'utf8'); } catch { process.exit(0); }
 

@@ -14,6 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const { logHook } = require('./lib/log');
 const { isChangelogEntryComplete } = require('./lib/changelog');
+const { isInsideGuardedRepo } = require('./lib/in-repo');
 
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
@@ -27,13 +28,18 @@ process.stdin.on('end', () => {
 
   const cwd = input.cwd || process.cwd();
 
+  // A changelog in ANOTHER repo carries its own version line — judging it against our
+  // .homeycompose/app.json version compares two unrelated things
+  // (docs/superpowers/notes/2026-08-22-hook-cwd-containment.md).
+  if (!isInsideGuardedRepo(cwd, filePath)) process.exit(0);
+
   let version;
   try {
     version = JSON.parse(fs.readFileSync(path.join(cwd, '.homeycompose', 'app.json'), 'utf8')).version;
   } catch { process.exit(0); } // no compose manifest -> not a Homey compose repo, not ours to gate
   if (!version) process.exit(0);
 
-  const abs = path.isAbsolute(filePath) ? filePath : path.join(cwd, filePath);
+  const abs = path.resolve(cwd, filePath);
   let changelog;
   try { changelog = JSON.parse(fs.readFileSync(abs, 'utf8')); } catch { process.exit(0); } // json-guard's job, not ours
 
