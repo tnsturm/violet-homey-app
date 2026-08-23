@@ -916,6 +916,51 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 /remote-control M9.3 — Dosierung & Sollwerte (setConfig)`
     },
     {
+      id: "M9.4",
+      title: "Framework-Hooks als Plugin (B1)",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "high", why: "Architektur-/Migrationsarbeit mit moderater Ambiguitaet (Plugin-Packaging, Hook-Aufloesung ueber CLAUDE_PLUGIN_ROOT, Zwei-Repo-Sync), aber ohne neue Angriffsflaeche und ohne GO/NO-GO-Urteil — Workhorse mit hohem Effort statt Flagship (§11). Der Setup-Tuning-Plan nannte den Implementer-Tier; §11 kennt fuer Milestone-Sessions nur Workhorse/Flagship, daher Workhorse high." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Vorschlag B1 aus dem Setup-Tuning-Plan 2026-08-23: die generischen Gate-Hooks (test-gate, commit-msg-guard, control-bytes-guard, dashboard-guard, handoff-notice, package-guard + libs; Kandidaten: typecheck-gate, run-matching-test) werden vom agentic-loop-framework-Plugin geladen (hooks/hooks.json mit CLAUDE_PLUGIN_ROOT, Muster: general-settings-Plugin) statt in jedes Repo kopiert. In VioletApp verbleiben nur Homey- und projektspezifische Hooks (stop-verify, docs-header-guard, lib/in-repo, secrets-guard & Co.). Drift bei den generischen Hooks ist danach per Definition null; der manuelle Abgleich in Checkpoint-Schritt 7a entfaellt fuer diese Dateien. Kein Homey-Release; Release-Artefakt ist das Framework-Plugin (Version + CHANGELOG).",
+      steps: [
+        { label: "Brainstorming", done: false },
+        { label: "Spec", done: false },
+        { label: "Plan", done: false },
+        { label: "Implementierung (TDD/SDD)", done: false },
+        { label: "Validate + Plugin-Release", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-08-23", note: "Als eigenes Milestone angelegt (aus Vorschlag B1 des Setup-Tuning-Artifacts, dort als M9.4 benannt). Empfohlene Reihenfolge: nach M9.0 (Block b stellt die Hook-Registrierung ohnehin um)." }
+      ],
+      prompt: `UMGEBUNG: Zwei Repos lokal — C:/Users/TorstenSturm/source/repos/VioletApp (Konsument) und C:/Users/TorstenSturm/source/repos/skill-agentic-loop-framework (Plugin-Quelle). Claude Code in VioletApp starten; fuer Framework-Aenderungen eigenen Worktree/Checkout nutzen (CLAUDE.md §9).
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto. Lies zuerst docs/dashboard/triage-inbox.md (§7) und den Vorschlagsplan "Setup-Tuning August 2026" (Artifact: https://claude.ai/code/artifact/c097194a-57b4-41d2-89c4-bef43ebbcef1), Abschnitt B1 — Begruendung, Kandidatenliste und Zwischenschritt-Alternative stehen dort.
+
+Violet/Framework — Milestone M9.4 (Framework-Hooks als Plugin, Vorschlag B1).
+
+ZIEL: Generische Gate-Hooks einmalig im agentic-loop-framework-Plugin ausliefern (hooks/hooks.json, Pfade ueber CLAUDE_PLUGIN_ROOT — Muster: general-settings-Plugin) und VioletApp auf das Plugin umstellen. Homey-spezifische und projektspezifische Hooks bleiben in VioletApp. Voraussetzung pruefen: M9.0 Block b (if-Filter in der Hook-Registrierung) sollte abgeschlossen sein — die Plugin-hooks.json uebernimmt dieselben if-Filter.
+
+Aktualisiere beim Start den M9.4-Eintrag in docs/dashboard/dashboard.html (status "active", startedAt, log); Steps abhaken; am Ende status "done" + commit (Dashboard-Protokoll CLAUDE.md §7).
+
+/goal Alle Done-Bedingungen unten sind erfuellt und je mit Kommando+Ausgabe im Transcript belegt; der M9.4-Eintrag steht auf done.
+
+DONE-BEDINGUNGEN (maschinell pruefbar):
+1. Framework-Repo: Plugin liefert die generischen Hooks + zugehoerige lib-Module und Tests; plugin.json-Version gebumpt, CHANGELOG-Eintrag vorhanden; Tests des Framework-Repos gruen.
+2. VioletApp: .claude/hooks/ enthaelt nur noch Homey- und projektspezifische Hooks (Verzeichnis-Listing gezeigt); die Plugin-Hooks feuern nachweislich (claude --debug: Gate-Hook laeuft bei git commit aus dem Plugin-Pfad); npm test gruen (Hook-Tests der verbliebenen Hooks angepasst).
+3. Drift: fuer die migrierten Hooks existiert keine Kopie mehr in VioletApp; der Framework-Abgleich (Checkpoint 7a) ist im milestone-checkpoint-Skill fuer diese Dateien gestrichen/angepasst.
+4. Installierbarkeit: claude plugin install agentic-loop-framework aus dem Marketplace tnsturm/skill-agentic-loop-framework erfolgreich durchlaufen und in ~/.claude/settings.json + settings-reference.json registriert (Spiegel-Regel CLAUDE.md).
+5. §9-Abschluss: /code-review auf beide Diffs, danach Push-/PR-Frage stellen — nicht selbst pushen.
+
+SCOPE-NEGATIV: Pruef-LOGIK der Hooks unveraendert (reine Verpackung/Registrierung); secrets-guard, compose-guard, release-gate, check-version-sync, changelog-lang-guard, json-guard bleiben im Homey-Modul bzw. Projekt; stop-verify, docs-header-guard, lib/in-repo bleiben projektlokal; kein Violet-App-Versionsbump.
+NO-ACTION: Laesst sich ein Plugin-Hook nicht pro Projekt scopen (feuert also in fremden Repos, wo er nicht gelten darf) und ist das nicht per if-Filter/Guard loesbar, Befund dokumentieren, Migration NICHT halb durchfuehren und stattdessen die Zwischenschritt-Alternative aus B1 umsetzen (Sync-Richtung + EOL-normalisiertes Drift-Skript).
+
+/remote-control M9.4 — Framework-Hooks als Plugin (B1)`
+    },
+    {
       id: "M10.0",
       title: "Housekeeping Agentic Loop",
       status: "todo",
