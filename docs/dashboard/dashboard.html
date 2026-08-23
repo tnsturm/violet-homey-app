@@ -101,7 +101,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-08-21",
+  updatedAt: "2026-08-23",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -745,14 +745,16 @@ window.DASHBOARD_STATUS = {
       id: "M9.0",
       title: "Housekeeping Agentic Loop",
       status: "todo",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Branch-/Worktree-Cleanup, Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
+      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Checkliste plus Setup-Tuning-Bloecke a/b/c aus dem Vorschlagsplan 2026-08-23: Settings-/Regel-Abgleich und Hook-if-Filter sind mechanisch, aber mit Urteil an den Stellen, wo Regeln (CLAUDE.md §10, §9-Level) neu formuliert werden — medium statt low." },
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Housekeeping zwischen M8.1 und M9.1: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      summary: "Housekeeping zwischen M8.1 und M9.1, erweitert um die Setup-Tuning-Bloecke a/b/c (Vorschlagsplan-Artifact 2026-08-23): Settings & Regeln, Hook-Netz & CLAUDE.md-Kuerzung, Cloud-Routine & Kleinkram — dazu die regulaeren Checkpoint-Schritte (CLAUDE.md §7 Punkt 4).",
       steps: [
         { label: "Branch-/Worktree-Cleanup", done: false },
-        { label: "/fewer-permission-prompts", done: false },
+        { label: "Block a: Settings & Regeln — B3 Entruempeln, A1 §10+settings-reference+local.json, A4 /code-review-Level in §9, B2 Plugin-Update (inkl. /fewer-permission-prompts)", done: false },
+        { label: "Block b: Hook-Netz & CLAUDE.md — A2 if-Filter+durationMs, /doctor-Lauf (Nutzer tippt), A3 CLAUDE.md ≤120 Zeilen, B5 Checkpoint-Skill kuerzen", done: false },
+        { label: "Block c: Loops & Kleinkram — A5 Cloud-Routine anlegen, B4 Prompt-Felder, C1 native Worktrees in §9, C3 fallbackModel, Dashboard-Artifact", done: false },
         { label: "/claude-automation-recommender", done: false },
         { label: "Skill-Quellen geprüft", done: false },
         { label: "Workflow-Retrospektive", done: false },
@@ -762,21 +764,28 @@ window.DASHBOARD_STATUS = {
       ],
       currentActivity: null,
       runtime: null,
-      log: [],
+      log: [
+        { at: "2026-08-23", note: "Umfang erweitert: Setup-Tuning-Bloecke a/b/c aus dem Vorschlagsplan aufgenommen (Artifact 'Setup-Tuning August 2026', https://claude.ai/code/artifact/c097194a-57b4-41d2-89c4-bef43ebbcef1); recommendedModel effort low -> medium. B1 (Framework-Hooks als Plugin) bleibt eigener Milestone-Vorschlag M9.4, nicht Teil des Checkpoints." }
+      ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto. Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten. Lies ausserdem den Vorschlagsplan "Setup-Tuning August 2026" (Artifact: https://claude.ai/code/artifact/c097194a-57b4-41d2-89c4-bef43ebbcef1) — er enthaelt Begruendung und Detailschritte fuer die Bloecke a/b/c unten.
 
-Housekeeping Agentic Loop vor M9.1 (CLAUDE.md §7 Punkt 4). M8.1 ist abgeschlossen, M9.1 startet als Naechstes.
+Housekeeping Agentic Loop vor M9.1 (CLAUDE.md §7 Punkt 4), erweitert um das Setup-Tuning vom 2026-08-23. M8.1 ist abgeschlossen, M9.1 startet als Naechstes.
 
-Fuehre aus: /milestone-checkpoint — der Branch-/Worktree-Cleanup ist Schritt 1 des Skills.
+ZIEL: (1) die regulaeren Checkpoint-Schritte via /milestone-checkpoint (Branch-/Worktree-Cleanup ist Schritt 1 des Skills) und (2) die drei Setup-Tuning-Bloecke. Reihenfolge a -> b -> c, weil b und c auf den in a bereinigten Regeln aufbauen. Block a absorbiert /fewer-permission-prompts, Block b den /doctor-Lauf (vom Nutzer getippt) — nicht doppelt ausfuehren.
 
-Das aktualisiert automatisch den M9.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+/goal Alle Done-Bedingungen unten sind erfuellt und je mit Kommando+Ausgabe im Transcript belegt; der M9.0-Eintrag im Dashboard steht auf done (alle 10 Steps abgehakt).
 
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
-2. Alle Checkpoint-Schritte 1-9 durchlaufen (inkl. Branch-/Worktree-Cleanup als Schritt 1, Memory-Konsolidierung als Diff, Framework-Abgleich 7a Drift + 7b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
-3. Der M9.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
+DONE-BEDINGUNGEN (maschinell pruefbar):
+1. Branch-/Worktree-Cleanup: Kandidaten gelistet, Auswahl abgefragt, Angewaehltes geloescht — Ergebnis gezeigt.
+2. Block a: .claude/settings.local.json hat <= 15 Allow-Eintraege; diff settings-reference.json vs. ~/.claude/settings.json zeigt nur _comment-Keys; CLAUDE.md §10 hat <= 15 Zeilen (2 Schichten: Hooks + Auto Mode mit autoMode.hard_deny); §9 nennt explizite /code-review-Level (medium Task / xhigh Branch / ultra Threat-Model-Milestones); superpowers- und code-review-Plugin aktualisiert (claude plugin update, Versionen gezeigt).
+3. Block b: Hook-Gruppen in .claude/settings.json tragen if-Filter (vorher pruefen, ob if auch PowerShell(...) akzeptiert — wenn nein, PowerShell-Gruppe ungefiltert lassen und als FRICTION loggen); npm test gruen; ein Bash-Aufruf ohne git commit startet 0 Gate-Hooks (mit claude --debug belegt); lib/log.js schreibt durationMs; /doctor gelaufen (Nutzer tippt — blockiert die Session, ggf. als offener Punkt ins Handover); CLAUDE.md <= 120 Zeilen; milestone-checkpoint-Skill <= 160 Zeilen; Framework-Templates + CHANGELOG nachgezogen (Framework-Artefakt-Regel).
+4. Block c: Cloud-Routine (Workhorse, effort low) fuer den Cloud-Teil der Nightly-Triage angelegt und ein erster Lauf erfolgreich (Inbox-Commit auf main); Parallelbetrieb-Beobachtung (7 Laeufe, dann lokalen Task abschalten) als offener Punkt in triage-inbox.md eingetragen; Resume-Prompt-Template in dashboard-sync um Scope-Negativ + No-Action-Bedingung ergaenzt; §9 nennt native Worktrees (claude --worktree / EnterWorktree) vor dem Skill-Fallback; fallbackModel in settings-reference + live gesetzt; dashboard.html als Artifact veroeffentlicht und dessen URL als artifactUrl im Datenblock.
+5. Regulaere Checkpoint-Schritte (Automation-Recommender, Skill-Quellen, Retro, Memory-Konsolidierung, Framework-Abgleich, Handover) durchlaufen — Ergebnisse zusammengefasst; Abschlussbericht endet mit den zwei Zeilen verifiziert/angenommen (CLAUDE.md §7).
+
+SCOPE-NEGATIV: Hook-PruefLOGIK nicht veraendern (nur Start-Bedingungen + Telemetrie); Renderer in dashboard.html unberuehrt; kein Store-Release, kein Version-Bump; B1 (Framework-Hooks als Plugin) NICHT hier — eigener Milestone M9.4.
+NO-ACTION: Ist ein Block durch veraenderte Produktlage obsolet (z. B. if-Filter existiert nicht wie dokumentiert), Block als FRICTION loggen und uebrige Bloecke fertigstellen statt zu improvisieren.
 
 /remote-control M9.0 — Housekeeping Agentic Loop`
     },
