@@ -16,8 +16,12 @@
         "matcher": "Edit|Write",
         "hooks": [
           { "type": "command", "command": "node .claude/hooks/secrets-guard.js" },
+          { "type": "command", "if": "Edit(app.json)", "command": "node .claude/hooks/compose-guard.js" },
+          { "type": "command", "if": "Write(app.json)", "command": "node .claude/hooks/compose-guard.js" },
           { "type": "command", "if": "Edit(**/app.json)", "command": "node .claude/hooks/compose-guard.js" },
           { "type": "command", "if": "Write(**/app.json)", "command": "node .claude/hooks/compose-guard.js" },
+          { "type": "command", "if": "Edit(package.json)", "command": "node .claude/hooks/package-guard.js" },
+          { "type": "command", "if": "Write(package.json)", "command": "node .claude/hooks/package-guard.js" },
           { "type": "command", "if": "Edit(**/package.json)", "command": "node .claude/hooks/package-guard.js" },
           { "type": "command", "if": "Write(**/package.json)", "command": "node .claude/hooks/package-guard.js" }
         ]
@@ -31,6 +35,8 @@
           { "type": "command", "if": "Write(lib/**)", "command": "node .claude/hooks/run-matching-test.js" },
           { "type": "command", "if": "Edit(drivers/**)", "command": "node .claude/hooks/run-matching-test.js" },
           { "type": "command", "if": "Write(drivers/**)", "command": "node .claude/hooks/run-matching-test.js" },
+          { "type": "command", "if": "Edit(*.json)", "command": "node .claude/hooks/json-guard.js" },
+          { "type": "command", "if": "Write(*.json)", "command": "node .claude/hooks/json-guard.js" },
           { "type": "command", "if": "Edit(**/*.json)", "command": "node .claude/hooks/json-guard.js" },
           { "type": "command", "if": "Write(**/*.json)", "command": "node .claude/hooks/json-guard.js" },
           { "type": "command", "if": "Edit(docs/dashboard/dashboard.html)", "command": "node .claude/hooks/dashboard-guard.js" },
