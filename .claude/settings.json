@@ -44,6 +44,10 @@
     ]
   },
   "permissions": {
+    "ask": [
+      "Bash(homey app publish*)",
+      "Bash(npx homey app publish*)"
+    ],
     "allow": [
       "Bash(git merge-base *)",
       "Bash(homey whoami)",

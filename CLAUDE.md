@@ -149,7 +149,7 @@ An ephemeral dev-run command (one that tears itself down on stop) is not a relea
 
 **A milestone or feature session works in its own git worktree — never in a checkout another session may be using.**
 
-Use `superpowers:using-git-worktrees` at session start. Exempt: short read-only or single-file sessions (nightly triage, dashboard edits, a quick doc fix) — they stay in the primary checkout.
+Use the native path first — `claude --worktree <name>` at launch, or the `EnterWorktree` tool mid-session (`/fork` gets its own worktree too); it also isolates Bash/git from the main checkout, which the skill cannot. `superpowers:using-git-worktrees` stays the fallback. Exempt: short read-only or single-file sessions (nightly triage, dashboard edits, a quick doc fix) and checkpoint sessions that must delete worktrees — they stay in the primary checkout.
 
 Why: two agent sessions sharing one working directory collide in ways git cannot arbitrate. Observed 2026-07-21 — a parallel milestone session edited `HOMEY.md`/`README.txt` mid-session, so `git status` showed foreign changes that had to be reasoned about before every commit, and that session's `git push` swept along a finished-but-unpushed commit from the other session that nobody had decided to ship. Isolation is cheap; untangling a shared tree is not. The `milestone-checkpoint` skill already cleans worktrees up afterwards (§7, its step 1).
 
@@ -162,6 +162,12 @@ Corollary for automations: a routine that writes **only its own ledger file** (e
 Once a branch/worktree's change is complete and a git action (commit/push/merge) is next:
 
 1. Proactively start `/code-review` on the diff against the base branch — don't wait to be asked.
+   **Always name the level**, never call it bare: without one the command reuses the last level you
+   typed, across sessions. `medium` for a task review inside `subagent-driven-development` (few,
+   high-confidence findings), `xhigh` for the whole-branch review here in step 1, `ultra` (Cloud
+   multi-agent, costs credits — a per-case decision) plus `/security-review high` for a milestone
+   with its own threat model (§5). `--fix` only at `medium`; its edits sit outside `/rewind`
+   checkpoints, so undo them with git.
    Berührt der Diff Laufzeit-Ressourcen (Timer, Listener, Handles), einen HTTP-/API-Aufruf oder
    plattformabhängige Pfade/Shell-Aufrufe, dazu **parallel** die passenden Linsen-Agents aus
    `.claude/agents/` laufen lassen — `runtime-resource-reviewer`, `api-contract-reviewer`,
@@ -175,15 +181,18 @@ Once a branch/worktree's change is complete and a git action (commit/push/merge)
 
 Always wait for an explicit yes before pushing or merging — this section only saves re-explaining the two options each time, not the confirmation itself.
 
-## 10. Permission Strategy (3 Layers)
+## 10. Permission Strategy (2 Layers)
 
-**Hooks always win; the allowlist covers the everyday; Auto Mode is for autonomous loops.**
+**Hooks define what must never happen; the Auto Mode classifier judges everything else.**
 
 1. **Hooks = "must NEVER happen"** — deterministic exit-2 guards (PreToolUse). They apply in every permission mode; neither Auto Mode nor `bypassPermissions` can override them.
-2. **Project allowlist (`permissions.allow` in `.claude/settings.json`) = "is ALWAYS ok"** — deterministic, documents intent, git-portable (team, worktrees, routines). Curated at every milestone checkpoint via `/fewer-permission-prompts`. Global vs. project split: see "Claude-Code-Settings: Skill = Source of Truth" below.
-3. **Auto Mode (`claude --permission-mode auto`) = situational autonomy** for long autonomous runs (`/goal` milestone sessions, nightly routines) — the classifier approves novel actions; hooks and allowlist remain in force underneath. Never use `bypassPermissions` locally.
+2. **Auto Mode = the normal case**, not situational autonomy: `permissions.defaultMode: "auto"` is set globally, and it is the Pro/Max product default from v2.1.228 (v2.1.233 on native Windows). Hooks stay in force underneath. Never use `bypassPermissions` locally.
 
-Everyday sessions run in the default mode with the allowlist; autonomous loop sessions start with `--permission-mode auto`.
+Two boundaries the classifier must not clear on its own — both evaluated **before** it:
+- **`permissions.ask`** = human checkpoint, always prompts: `Bash(git push --force*)` globally, `Bash(homey app publish*)` here (the conditional `release-gate` hook stays the content check).
+- **`autoMode.hard_deny`** = prose rules no user intent or `allow` entry can clear. Keep `"$defaults"` in the array or the built-in exfiltration rule is silently replaced. Read **only** from `~/.claude/settings.json`, never from a repo's `.claude/settings.json` — so tool-pattern boundaries for this repo belong in `permissions.ask`/`deny` instead.
+
+`permissions.allow` is no longer curated per checkpoint; it documents read-only everyday commands and keeps non-auto sessions usable. Global vs. project split: see "Claude-Code-Settings: Skill = Source of Truth" below.
 
 ## 11. Model Tiering (Subagents & Milestones)
 
