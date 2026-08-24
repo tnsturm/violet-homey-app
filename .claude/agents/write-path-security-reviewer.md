@@ -1,6 +1,8 @@
 ---
 name: write-path-security-reviewer
 description: Security review for code touching the Violet write path (write password / pairing) or the inbound HTTP alarm listener (M4). Use proactively when changes touch drivers/pool/driver.js, credential storage, or any new HTTP endpoint.
+model: inherit
+effort: high
 tools: Read, Grep, Glob
 ---
 

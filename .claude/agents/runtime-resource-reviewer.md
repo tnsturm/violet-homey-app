@@ -1,6 +1,8 @@
 ---
 name: runtime-resource-reviewer
 description: Review a diff for runtime-resource defects — unbounded loops, unthrottled timers/rAF, unclosed listeners, handles and servers, unbounded memory growth. Use in parallel with /code-review (CLAUDE.md §9) whenever a diff touches timers, listeners, sockets or long-lived state.
+model: inherit
+effort: high
 tools: Read, Bash, Grep
 ---
 

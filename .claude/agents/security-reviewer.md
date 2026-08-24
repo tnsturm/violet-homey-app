@@ -1,6 +1,8 @@
 ---
 name: security-reviewer
 description: Focused security review of the M3 write-control diff for the Violet Homey app — credential storage (device store only), setFunctionManually call-sites (allowlist + range clamping), and log/error paths (no credential leak). Complements /security-review; run it in parallel during M3 implementation.
+model: inherit
+effort: high
 tools: Read, Bash, Grep
 ---
 

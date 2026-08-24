@@ -1,6 +1,8 @@
 ---
 name: cross-platform-reviewer
 description: Review a diff for cross-platform defects on a Windows host — CRLF assumptions, path separators, /tmp vs. OS temp, file locks, shell quoting and heredoc/here-string hazards. Use in parallel with /code-review (CLAUDE.md §9) whenever a diff touches paths, shell invocations, file I/O or text parsing.
+model: inherit
+effort: high
 tools: Read, Bash, Grep
 ---
 

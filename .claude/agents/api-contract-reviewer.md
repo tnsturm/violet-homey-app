@@ -1,6 +1,8 @@
 ---
 name: api-contract-reviewer
 description: Review a diff for HTTP/API contract defects — missing or wrong headers, Content-Type, auth placement, status-code assumptions, error handling, encoding and timeout gaps. Use in parallel with /code-review (CLAUDE.md §9) whenever a diff touches fetch/http calls or a request handler.
+model: inherit
+effort: high
 tools: Read, Bash, Grep
 ---
 
