@@ -22,18 +22,30 @@ Zwischen-Milestone-Checkpoints (`id: "Mx.0"`, `title: "Housekeeping Agentic Loop
 milestone-förmige Objekte in derselben `milestones[]`-Liste (CLAUDE.md §7 Punkt 4) — gleiche
 Felder, gleiche Status-Lifecycle, gleiche Edit-Regeln wie ein echter Milestone. Der
 Implementierungs-Milestone, den ein Checkpoint gatet, trägt die Nummer `Mx.1`. Neun Steps:
-`Branch-/Worktree-Cleanup` (AKTION 1 im Checkpoint-Prompt, vor dem Skill), dann die acht
-über den `milestone-checkpoint`-Skill abgedeckten: `/fewer-permission-prompts`,
-`/doctor-Lauf`, `/claude-automation-recommender`, `Skill-Quellen geprüft`,
-`Workflow-Retrospektive`, `Memory-Konsolidierung`,
-`Framework-Abgleich (Drift + Native-Features)` (M4.9), `Handover` (M4.8).
+`Branch-/Worktree-Cleanup` (Schritt 1 des Skills), dann die acht weiteren des
+`milestone-checkpoint`-Skills: `/doctor-Lauf`, `/claude-automation-recommender`,
+`Skill-Quellen geprüft`, `Workflow-Retrospektive`, `Memory-Konsolidierung`,
+`Framework-Abgleich (Drift + Native-Features)` (M4.9), `Dashboard aktualisieren`,
+`Handover` (M4.8).
+
+## Resume-Prompt: Pflichtfelder
+
+Ein Resume-Prompt beschreibt **Ziel und Grenzen, nie eine Prozedur** (CLAUDE.md §7). Vier Felder
+sind Pflicht — die letzten beiden seit M9.0, weil ein Prompt ohne sie beeindruckende Lösungen für
+das falsche Problem einlädt:
+
+1. **`/goal`-Zeile** mit transcript-verifizierbarer Done-Bedingung.
+2. **`/remote-control <id> — <title>`** als letzte Zeile (Start vom Handy).
+3. **`SCOPE-NEGATIV:`** — was sich ausdrücklich **nicht** ändern darf (Dateien, Ebenen, Nachbar-
+   Milestones). Beispiel aus M9.0: „Hook-PrüfLOGIK nicht verändern (nur Start-Bedingungen +
+   Telemetrie); Renderer in dashboard.html unberührt; kein Version-Bump."
+4. **`NO-ACTION:`** — wann das System **unverändert** bleibt statt zu improvisieren. Beispiel:
+   „Ist ein Block durch veränderte Produktlage obsolet, Block als FRICTION loggen und die übrigen
+   fertigstellen." Ohne dieses Feld ist die einzige Lesart „irgendetwas tun".
 
 ## Regeln
 
 - Nur das eine betroffene Objekt (`Mx` oder `Mx.0`) anfassen, nicht andere Einträge.
-- Jeder neue Resume-Prompt (Milestone oder Checkpoint) endet mit `/remote-control <id> — <title>`.
-- Jeder neue Resume-Prompt enthält eine `/goal`-Zeile mit transcript-verifizierbarer
-  Done-Bedingung.
 - **Am Start**: `status: "active"`, `startedAt` setzen, einen `log[]`-Eintrag anhängen,
   Top-Level `updatedAt` bumpen.
 - **Während der Arbeit**: `steps[].done` abhaken (feste Reihenfolge: Brainstorming → Spec →
