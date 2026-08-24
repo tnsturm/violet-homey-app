@@ -101,7 +101,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-08-23",
+  updatedAt: "2026-08-24",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -961,6 +961,51 @@ NO-ACTION: Laesst sich ein Plugin-Hook nicht pro Projekt scopen (feuert also in 
 /remote-control M9.4 — Framework-Hooks als Plugin (B1)`
     },
     {
+      id: "M9.5",
+      title: "Framework-Templates: PR-Babysitter, Fehlersichtbarkeit, Hill-Climbing (D2–D4)",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Drei kleine, klar umrissene Template-/Doku-Artefakte im Framework-Repo (Loop-Prompt, Test-Konvention, Prompt-Baustein) — Schreibarbeit mit wenig Ambiguitaet, kein neuer Code-Pfad, keine Angriffsflaeche. Workhorse medium." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Vorschlaege D2–D4 aus dem Setup-Tuning-Nachtrag (Video Cherny×Sumner, 06.05.2026): (D2) PR-Babysitter-Loop-Prompt als templates/.claude/loop.md — Rebase wenn behind, CI-Log lesen, kleinster Fix, konkrete Review-Kommentare adressieren, nie mergen/Tests schwaechen, Verweis auf natives /autofix-pr. (D3) Fehlersichtbarkeits-Konvention (informative Fehlermeldung VOR der Assertion ausgeben) als Kurzabschnitt in templates/CLAUDE.md + documenting-code-Testregeln. (D4) Hill-Climbing-Prompt-Baustein (Metrik + Messkommando + Zielwert + Versuchsbudget, /goal als Gefaess, §4-Budget als Abbruchkante) neben Scope-Negativ/No-Action ins Resume-Prompt-Template. Reines Framework-/Template-Milestone, kein Violet-Release; unabhaengig von M9.4, aber sinnvoll in derselben Framework-Arbeitsphase.",
+      steps: [
+        { label: "D2: PR-Babysitter loop.md", done: false },
+        { label: "D3: Fehlersichtbarkeits-Konvention", done: false },
+        { label: "D4: Hill-Climbing-Baustein", done: false },
+        { label: "CHANGELOG + Version-Bump Framework", done: false },
+        { label: "Violet-Seite nachgezogen (CLAUDE.md/Skills)", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-08-24", note: "Angelegt aus D2–D4 des Setup-Tuning-Nachtrags (Abschnitt 7 des Artifacts)." }
+      ],
+      prompt: `UMGEBUNG: Zwei Repos lokal — C:/Users/TorstenSturm/source/repos/skill-agentic-loop-framework (Hauptarbeitsort) und C:/Users/TorstenSturm/source/repos/VioletApp (Konsument, Dashboard). Claude Code in VioletApp starten; Framework-Aenderungen in eigenem Worktree/Checkout (CLAUDE.md §9).
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto. Lies zuerst docs/dashboard/triage-inbox.md (§7) und Abschnitt 7 (Karten D2–D4) des Plan-Artifacts: https://claude.ai/code/artifact/c097194a-57b4-41d2-89c4-bef43ebbcef1
+
+Framework — Milestone M9.5 (Templates aus dem Cherny×Sumner-Video: D2 PR-Babysitter, D3 Fehlersichtbarkeit, D4 Hill-Climbing).
+
+ZIEL: Die drei Artefakte im Framework-Repo anlegen und die Violet-Seite nachziehen, wo die Konvention auch hier gilt (D3 in Projekt-CLAUDE.md-Testregeln bzw. documenting-code-Skill).
+
+Aktualisiere beim Start den M9.5-Eintrag in docs/dashboard/dashboard.html (status "active", startedAt, log); Steps abhaken; am Ende status "done" + commit (§7).
+
+/goal Alle Done-Bedingungen unten erfuellt und je mit Kommando+Ausgabe im Transcript belegt; M9.5-Eintrag steht auf done.
+
+DONE-BEDINGUNGEN (maschinell pruefbar):
+1. templates/.claude/loop.md existiert im Framework-Repo, enthaelt die Verbote (nie mergen, nie Branches loeschen, nie Tests schwaechen) und den /autofix-pr-Verweis — Datei gezeigt.
+2. templates/CLAUDE.md enthaelt die Fehlersichtbarkeits-Konvention (max. 5 Zeilen) und der documenting-code-Skill (Violet) referenziert sie — grep-Nachweis beider Stellen.
+3. Das Resume-Prompt-Template (dashboard-sync-Skill bzw. Framework-Template) enthaelt den optionalen Hill-Climbing-Block (Metrik/Messkommando/Zielwert/Budget) — grep-Nachweis.
+4. Framework: plugin.json-Version gebumpt + CHANGELOG-Eintrag; Repo-Tests gruen, falls vorhanden.
+5. §9-Abschluss: /code-review auf beide Diffs, danach Push-/PR-Frage stellen — nicht selbst pushen.
+
+SCOPE-NEGATIV: Keine Hook-Aenderungen (das ist M9.4); kein Violet-App-Code, kein Versionsbump der App; dashboard.html nur im Datenblock.
+NO-ACTION: Existiert ein natives Claude-Code-Feature inzwischen fuer einen der drei Bausteine (z. B. gepflegtes loop.md-Aequivalent), Feature verlinken statt Template duplizieren und das im CHANGELOG begruenden.
+
+/remote-control M9.5 — Framework-Templates D2–D4`
+    },
+    {
       id: "M10.0",
       title: "Housekeeping Agentic Loop",
       status: "todo",
@@ -1050,6 +1095,55 @@ DONE-BEDINGUNGEN (transcript-verifizierbar):
 5. /security-review auf dem Diff ohne offene Findings — Ergebnis im Chat gezeigt.
 
 /remote-control M10.1 — CRA-Readiness (freiwillig)`
+    },
+    {
+      id: "M10.2",
+      title: "Repro-Bot: Triage-Loop von melden auf handeln (D1)",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "high", why: "Design einer autonom handelnden Loop (Repro → todo-Test → Branch → Draft-PR): moderate Ambiguitaet plus Leitplanken-Urteil, aber kein GO/NO-GO gegen Messkriterien und kein Produktions-Schreibpfad in die Poolsteuerung — Workhorse high statt Flagship (§11). Die Loop selbst laeuft spaeter als Workhorse low (autonome Routine)." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Vorschlag D1 aus dem Setup-Tuning-Nachtrag (RoboBun-Muster, Video Cherny×Sumner): die Nightly-Triage meldet heute nur in die Inbox — eine zweite Routine hebt geeignete Findings/GitHub-Issues auf die Kette Repro → fehlschlagender { todo: true }-Test (§4-Freeze) → optional kleinster Fix auf Branch → Draft-PR, nie ohne fail-before/pass-after-Beweis, nie Merge (Mensch entscheidet, §9). Leitplanken existieren: §9-Corollary (Automation + Code = Branch + PR), release-readiness, /code-review als Review-Bot. Erster Anwendungsfall: Triage-Finding #1 (M3-Crash-Trace nicht reproduzierbar). VORAUSSETZUNG: M9.0 Block c (Cloud-Routine A5) ist umgesetzt und stabil — sonst erbt die neue Loop die Zuverlaessigkeitsluecke der alten. Neue Automations-Angriffsflaeche (Schreibrechte auf Branches) → security-requirement-extraction Pflicht (§5).",
+      steps: [
+        { label: "Brainstorming", done: false },
+        { label: "Threat-Model + Spec", done: false },
+        { label: "Plan", done: false },
+        { label: "Implementierung (TDD/SDD)", done: false },
+        { label: "Pilotlauf + Validate", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-08-24", note: "Angelegt aus D1 des Setup-Tuning-Nachtrags (Abschnitt 7 des Artifacts). Gate: erst nach stabilem A5 (M9.0 Block c) starten." }
+      ],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; Implementierung in eigenem Worktree (CLAUDE.md §9).
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto. Lies zuerst docs/dashboard/triage-inbox.md (§7) und Abschnitt 7 (Karte D1) des Plan-Artifacts: https://claude.ai/code/artifact/c097194a-57b4-41d2-89c4-bef43ebbcef1
+
+Violet — Milestone M10.2 (Repro-Bot nach RoboBun-Muster, Vorschlag D1).
+
+VORAUSSETZUNG PRUEFEN: Die Cloud-Triage-Routine aus M9.0 Block c laeuft stabil (Routine-Historie ohne Luecken seit mindestens 7 Laeufen). Wenn nein: abbrechen und das als Blocker in triage-inbox.md eintragen.
+
+ZIEL: Eine zweite Routine (oder Erweiterung der Triage-Routine), die pro geeignetem offenen Finding/GitHub-Issue: (1) die Repro als fehlschlagenden { todo: true }-Test einfriert (§4), (2) optional den kleinsten Fix auf einem Branch implementiert und als Draft-PR oeffnet — mit fail-before/pass-after-Beweis im PR-Text, /code-review auf dem Diff, NIE Merge. Erster Testfall: Triage-Finding #1 (M3-Crash-Trace).
+
+SICHERHEIT: neue Automations-Angriffsflaeche (unbeaufsichtigte Schreibrechte auf Branches, Verarbeitung fremder Issue-Texte = untrusted input) → ZUERST security-requirement-extraction, Threat-Model nach docs/superpowers/security/, Anforderungen als testbare Verifikationsschritte in den Plan (§5).
+
+Aktualisiere beim Start den M10.2-Eintrag in docs/dashboard/dashboard.html (status "active", startedAt, log); Steps abhaken; am Ende status "done" + commit (§7).
+
+/goal Alle Done-Bedingungen unten erfuellt und je mit Kommando+Ausgabe im Transcript belegt; M10.2-Eintrag steht auf done.
+
+DONE-BEDINGUNGEN (maschinell pruefbar):
+1. Threat-Model existiert unter docs/superpowers/security/ und jede abgeleitete Anforderung hat einen Verifikationsschritt im Plan — grep-Nachweis.
+2. Pilotlauf: die Routine hat fuer mindestens ein reales Finding einen fehlschlagenden { todo: true }-Test auf einem Branch committet — Branch + Testlauf-Output gezeigt.
+3. Fix-Pfad (falls im Pilot erreicht): Draft-PR enthaelt fail-before/pass-after-Nachweis und /code-review-Ergebnis; kein Merge durch die Routine — PR-URL gezeigt.
+4. Leitplanken-Tests: Routine kann nachweislich NICHT auf main committen und keinen PR mergen (Negativ-Test gezeigt).
+5. npm test gruen; Abschlussbericht endet mit den zwei Zeilen verifiziert/angenommen.
+
+SCOPE-NEGATIV: Kein Auto-Merge, keine Aenderung am bestehenden Triage-Ledger-Format, kein Schreibpfad Richtung Pool-Controller, keine Feature-Implementierung aus Issues (nur Bugs/Repros).
+NO-ACTION: Findet die Routine kein reproduzierbares Finding, ist ein leerer Lauf korrekt — Inbox-Eintrag "nichts reproduzierbar", kein erzwungener PR.
+
+/remote-control M10.2 — Repro-Bot (D1)`
     }
   ]
 };
