@@ -8,12 +8,11 @@ disable-model-invocation: true
 
 Zwischen-Milestone-Housekeeping (CLAUDE.md §7). Jeder Schritt protokolliert sein Ergebnis im
 `Mx.0`-`log[]` — ein nicht protokollierter Schritt sieht hinterher aus wie ein übersprungener.
-Angesammelte Detailfakten stehen in `reference.md` und werden nur beim jeweiligen Schritt gelesen.
+Detailfakten stehen in `reference.md`, gelesen beim jeweiligen Schritt — darunter der Umgang mit vom Classifier blockierter Aufräumarbeit ausserhalb des Repos (sammeln und als Kommandoliste übergeben, nicht dagegen anarbeiten).
 
 ## Schritt 0: GitHub-MCP prüfen
 
-`claude mcp get github` → „Connected"? Dazu ein echter Lese-Call (`list_branches`): „Connected" prüft
-nur den Handshake, nicht die Rechte. Kein Server → Bootstrap Phase 0, nicht hier.
+`claude mcp get github` → „Connected"? Dazu ein echter Lese-Call (`list_branches`) — „Connected" prüft nur den Handshake, nicht die Rechte. Kein Server → Bootstrap Phase 0, nicht hier.
 
 ## Schritt 1: Branch-/Worktree-Cleanup
 

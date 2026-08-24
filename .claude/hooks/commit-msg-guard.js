@@ -50,6 +50,11 @@ process.stdin.on('end', () => {
   if (HEREDOC_INTRO.test(command)) offenders.push('<<EOF');
 
   if (offenders.length === 0) {
+    // Log the PASS too, not just the block (M9.0 retro): this guard had zero ledger entries
+    // across its entire lifetime, which reads as "never had to fire" — while four heredoc
+    // commits went through unblocked in the checkpoint session itself. A gate that logs only
+    // blocks cannot be told apart from a gate that never runs, so its silence must mean something.
+    logHook('commit-msg-guard', 'pass', input.cwd);
     process.exit(0);
   }
 
