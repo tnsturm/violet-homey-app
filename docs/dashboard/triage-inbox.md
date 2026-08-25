@@ -10,7 +10,7 @@ Seit 2026-08-24 (Checkpoint M9.0, Vorschlag A5) gibt es **zwei** Routinen: den C
 Einträge tragen `[Cloud]`) und den lokalen Task `violet-nightly-triage` (Live-Smoke,
 `homey app validate`, alles was den Pool-Controller braucht).
 
-**Stand:** 2026-08-25 (Cloud-Triage-Lauf)
+**Stand:** 2026-08-25 (Cloud-Triage-Lauf + Verifikationslauf nach GitHub-Zugriffsfix)
 
 ## Offen
 
@@ -25,9 +25,11 @@ Einträge tragen `[Cloud]`) und den lokalen Task `violet-nightly-triage` (Live-S
 
 - 2026-08-25 · Lauf [Cloud] · npm ci sauber (5 packages) · npm test 408 Tests / pass 406 / fail 0 / skipped 2 / todo 0 (5,7 s) · Versions-Sync app.json == .homeycompose/app.json OK (0.8.0) · letzter CI-Lauf 32724656737 (main, Run #136) completed/success (2026-08-24T11:59:02Z).
 - 2026-08-25 · Befund [Cloud] · `npx homey app validate --level publish` durch `package-guard`-Hook blockiert (fail closed, npm-Registry aus der Cloud-VM nicht erreichbar) — Details siehe „Offen".
+- 2026-08-25 · Verifikationslauf [Cloud, auf Nutzeranfrage nach GitHub-Zugriffsfix] · npm ci sauber · npm test 408 Tests / pass 406 / fail 0 / skipped 2 / todo 0 (6,2 s) · Versions-Sync OK (0.8.0) · CI-Lauf 32841741411 (main, Run #138) completed/success (2026-08-25T11:19:46Z, vermutlich durch den nachgeholten Push von `d09965b` ausgelöst) · `homey app validate` weiterhin durch `package-guard` blockiert (unverändert, unabhängig vom GitHub-Fix) · **Push funktioniert wieder** — siehe Erledigt-Eintrag unten.
 
 ## Erledigt (2026-08-25)
 
+- **GitHub-Push-Zugriff (403 "Resource not accessible by integration") → BEHOBEN.** Der reguläre Cloud-Lauf von heute früh konnte den Inbox-Commit `d09965b` weder per `git push` noch per GitHub-MCP-API auf `main` schreiben — die Claude-GitHub-App hatte keinen Zugriff mehr auf `tnsturm/violet-homey-app`. Nutzer hat die App-Installation über https://github.com/apps/claude/installations/select_target erneuert. Verifiziert in zwei Schritten: (1) `git push origin HEAD:main` lief danach sauber durch (`774d440..d09965b`), (2) dieser Verifikationslauf bestätigt es zusätzlich end-to-end (frischer `npm ci`/`npm test`/CI-Check, neuer CI-Lauf #138 grün). Kein weiterer Handlungsbedarf — der ursprüngliche Not-Weg über die GitHub-MCP-API (`create_or_update_file`) war nur ein Fallback-Versuch und bleibt nicht nötig, solange die App-Berechtigung besteht.
 - Nightly-Lauf 2026-08-17 (ALLES GRÜN inkl. `homey app validate` exit 0, ohne Handlungsbedarf) → aus „Neu" entfernt, kein Follow-up.
 - Routine/Lücke „Zwölf Nächte ohne Lauf (08-05…08-16)" (aus „Neu" 2026-08-17) → Ursache seither identifiziert und in „Offen" (2026-08-17-Eintrag „WIEDERAUFGENOMMEN") weitergeführt; hier nur als Verweis entfernt, kein separater Abschluss.
 
