@@ -112,3 +112,15 @@ test('subject sanitization strips C1 controls and Unicode line/paragraph separat
   const parsed = parseAlarm('GET', '/x?ERRORCODE=1&SUBJECT=a%C2%9Bb%E2%80%A8c');
   assert.deepStrictEqual(parsed, { errorcode: '1', subject: 'a b c' });
 });
+
+// Review 2026-08-28 N8: the 200-unit cut must not leave a dangling high
+// surrogate - it re-encodes as U+FFFD in logs and Flow tokens (the sibling
+// clip() in WaterBalanceText guards exactly this).
+test('parseAlarm: 200-unit cut never leaves a lone high surrogate (N8)', () => {
+  const subject = 'x'.repeat(199) + '\u{1F600}';
+  const alarm = parseAlarm('GET', `/?ERRORCODE=E1&SUBJECT=${encodeURIComponent(subject)}`);
+  assert.ok(alarm, 'alarm parses');
+  const last = alarm.subject.charCodeAt(alarm.subject.length - 1);
+  assert.ok(!(last >= 0xd800 && last <= 0xdbff), 'must not end on a lone high surrogate');
+  assert.strictEqual(alarm.subject.length, 199);
+});

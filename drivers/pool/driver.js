@@ -11,7 +11,7 @@
 
 const Homey = require('homey');
 const { deriveDeviceId } = require('../../lib/deviceIdentity');
-const { fetchReadings } = require('../../lib/VioletClient');
+const { fetchReadings, normalizeHost } = require('../../lib/VioletClient');
 
 class PoolDriver extends Homey.Driver {
   async onInit() {
@@ -38,7 +38,9 @@ class PoolDriver extends Homey.Driver {
 
     // M3 write-control Flow actions (spec §7). Each delegates to device._control,
     // which enforces the interlock + registry validation + sanitized errors.
-    const speedArg = (/** @type {*} */ v) => (v === undefined || v === 'default' ? undefined : Number(v));
+    // null-Guard wie _pumpSpeedArg in device.js (review N3/Q5): ein ungesetztes
+    // Flow-Arg darf nie zu Number(null)=0 = "Stufe 0 erzwingen" werden.
+    const speedArg = (/** @type {*} */ v) => (v === undefined || v === null || v === 'default' ? undefined : Number(v));
 
     this.homey.flow.getActionCard('pump_set_mode').registerRunListener(async (args) => {
       await args.device._control({ target: 'PUMP', state: String(args.mode).toUpperCase(), args: { duration: Math.round((args.duration_min ?? 0) * 60), speed: speedArg(args.speed) } }, 'pump_set_mode');
@@ -65,6 +67,27 @@ class PoolDriver extends Homey.Driver {
     });
   }
 
+  // Shared connect core for pair AND repair (review R2-2): normalize the host,
+  // fetch a live payload with the N10 error mapping, derive the serial. Throws
+  // localized errors; callers add their own identity/persistence rules.
+  /** @param {*} host Raw user input. @param {string} logLabel 'pairing'|'repair'.
+   * @returns {Promise<{cleanHost: string, raw: *, id: ?string}>} */
+  async _connectAndVerify(host, logLabel) {
+    const cleanHost = normalizeHost(host);
+    let raw;
+    try {
+      raw = await fetchReadings(cleanHost, { timeoutMs: 10000 });
+    } catch (err) {
+      // Raw fetch/JSON/abort internals are useless in the dialog (review N10):
+      // log the detail, surface one actionable localized message.
+      this.error(logLabel, 'connect failed:', err instanceof Error ? err.message : String(err));
+      throw new Error(this.homey.__('pair.error.unreachable'));
+    }
+    const id = deriveDeviceId(raw);
+    if (!id) throw new Error(this.homey.__('pair.error.no_serial'));
+    return { cleanHost, raw, id };
+  }
+
   // async to match the SDK's declared onPair signature (checkJs TS2416, M4.5 eval doc
   // §3) — typing strictness, not a runtime bug: handler registration stays synchronous
   // and Homey awaits the returned promise either way.
@@ -74,19 +97,15 @@ class PoolDriver extends Homey.Driver {
     let pairData = null;
 
     session.setHandler('connect', async (/** @type {{host?: string, username?: string, password?: string}} */ { host, username, password }) => {
-      const cleanHost = String(host || '').trim();
-      if (!cleanHost) throw new Error(this.homey.__('pair.error.host_required'));
-      // Pairing completes only on a valid live response: this throws on any
-      // fetch/parse failure, surfacing a clear error to the pairing view (spec §6).
-      const raw = await fetchReadings(cleanHost, { timeoutMs: 10000 });
+      if (!normalizeHost(host)) throw new Error(this.homey.__('pair.error.host_required'));
+      // Pairing completes only on a valid live response (spec §6).
       // data.id = controller serial (HW_SERIAL_CARRIER): stable per unit, so Homey
       // itself blocks adding the same controller twice. Fail-closed when missing —
       // never fall back to a random/weak id (device-identity spec §Decision,
       // §Missing/invalid serial). Existing devices keep their frozen UUIDs.
-      const id = deriveDeviceId(raw);
-      if (!id) throw new Error(this.homey.__('pair.error.no_serial'));
+      const { cleanHost, id } = await this._connectAndVerify(host, 'pairing');
       pairData = {
-        id,
+        id: /** @type {string} */ (id),
         host: cleanHost,
         writeUsername: String(username || '').trim(),
         writePassword: String(password || ''),
@@ -116,6 +135,41 @@ class PoolDriver extends Homey.Driver {
           store: { writePassword: pairData.writePassword },
         },
       ];
+    });
+  }
+
+  // Repair flow (review 2026-08-28 N5): the ONLY way to set/rotate the write
+  // password after pairing — it lives in the device store (SR-01/02), which the
+  // settings UI must never expose. The host may be updated too (controller
+  // moved IP); the serial check prevents silently rebinding the device to a
+  // DIFFERENT controller (all Flows would act on the wrong pool).
+  /** @param {*} session Homey repair session. @param {*} device The device being repaired. */
+  async onRepair(session, device) {
+    session.setHandler('connect', async (/** @type {{host?: string, username?: string, password?: string}} */ { host, username, password }) => {
+      // Empty host = keep the stored one (repair.html hint text).
+      const { cleanHost, id } = await this._connectAndVerify(normalizeHost(host) || device.getSetting('host'), 'repair');
+      // Diff review 2026-08-29 F-A: devices paired ≤0.4.5 carry a frozen random
+      // UUID in data.id (identity spec §Migration) — serial and UUID never
+      // collide (§Decision), so the serial check can never pass for them and
+      // would lock exactly the population N5 exists for out of repair. UUID-form
+      // ids skip the comparison (logged); serial-form ids stay fail-closed.
+      const dataId = String(device.getData().id || '');
+      const legacyUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(dataId);
+      if (legacyUuid) {
+        this.log('repair: legacy UUID device identity — serial check skipped (controller serial:', id, ')');
+      } else if (id !== dataId) {
+        throw new Error(this.homey.__('pair.error.wrong_device'));
+      }
+      // Empty fields KEEP the stored values (diff review 2026-08-29): the view
+      // labels them "(optional)" and the common repair reason is an IP change —
+      // silently wiping the write password would break every control Flow.
+      const newPassword = String(password || '');
+      if (newPassword) await device.setStoreValue('writePassword', newPassword);
+      const newUsername = String(username || '').trim();
+      const patch = /** @type {Object<string, *>} */ ({ host: cleanHost });
+      if (newUsername) patch.writeUsername = newUsername;
+      await device.setSettings(patch);
+      return true;
     });
   }
 }

@@ -149,3 +149,51 @@ test('buildCapabilityUpdates places alarm_water_balance (LSI warning state)', ()
     false,
   );
 });
+
+// Review 2026-08-28 F5: the freshness flag certifies the probe values — it must
+// be the LAST key so the apply loop publishes it after the values it certifies.
+test('buildCapabilityUpdates orders measurements_fresh last (review F5)', () => {
+  const updates = buildCapabilityUpdates({
+    parsed: {
+      pumpOn: true, tempChannels: [{ id: 1, value: 25 }], ph: 7.3, orp: 650, chlorine: null,
+    },
+    fresh: true,
+    primaryChannel: 25,
+    lsi: null,
+    alarm: false,
+  });
+  assert.strictEqual(Object.keys(updates).at(-1), 'measurements_fresh');
+});
+
+// Review 2026-08-28 F2: a single deviant poll must not tear down capabilities.
+const { shouldRemoveAfterAbsence } = require('../lib/Capabilities');
+
+test('shouldRemoveAfterAbsence: removes only after the grace period of continuous absence (F2/F-C)', () => {
+  const since = /** @type {Object<string, number>} */ ({});
+  const GRACE = 120_000; // 2x 60s poll interval
+  let now = 1_000_000;
+  assert.strictEqual(shouldRemoveAfterAbsence(since, 'x', false, now, GRACE), false); // first absence: recorded
+  now += 500; // a settings-save tick burst half a second later
+  assert.strictEqual(shouldRemoveAfterAbsence(since, 'x', false, now, GRACE), false, 'sub-second re-observation is not new evidence');
+  now += 59_500; // next regular poll
+  assert.strictEqual(shouldRemoveAfterAbsence(since, 'x', false, now, GRACE), false);
+  now += 60_000; // 3rd regular poll - grace reached
+  assert.strictEqual(shouldRemoveAfterAbsence(since, 'x', false, now, GRACE), true);
+  // Presence resets the clock.
+  assert.strictEqual(shouldRemoveAfterAbsence(since, 'x', true, now, GRACE), false);
+  assert.strictEqual(shouldRemoveAfterAbsence(since, 'x', false, now + 1000, GRACE), false, 'fresh absence starts a new grace window');
+});
+
+// Diff-Review 2026-08-29 F-B: the F5 ordering must be DIRECTION-dependent -
+// on the stale edge the flag has to be revoked BEFORE the values are cleared,
+// or Flows gate on fresh=true while ph already reads null.
+test('buildCapabilityUpdates orders measurements_fresh FIRST when stale (F-B)', () => {
+  const updates = buildCapabilityUpdates({
+    parsed: { pumpOn: false, tempChannels: [], ph: 7.3, orp: 650, chlorine: null },
+    fresh: false,
+    primaryChannel: null,
+    lsi: null,
+    alarm: false,
+  });
+  assert.strictEqual(Object.keys(updates)[0], 'measurements_fresh');
+});

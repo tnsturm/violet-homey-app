@@ -16,10 +16,12 @@ const { sendWrite } = require('../../lib/WriteClient');
 const { detectFeatures } = require('../../lib/FeatureDetector');
 const { isFresh } = require('../../lib/Freshness');
 const {
+  FEATURE_CAPABILITY,
   channelSubCapId,
   choosePrimaryTemperature,
   desiredFeatureCapabilities,
   buildCapabilityUpdates,
+  shouldRemoveAfterAbsence,
 } = require('../../lib/Capabilities');
 const { computeLSI, classifyLSI, toPpmCaCO3 } = require('../../lib/Lsi');
 // M8.1 water-balance advisor (spec §7-§9): pure + total, so every advisor call
@@ -36,6 +38,7 @@ const {
   DIAGNOSTIC_CAPS,
   INPUT_SUBCAPS,
   dosingChannelPrefix,
+  splitCapId,
   stateReasons,
   diagAnnotatable,
   diagRawValue,
@@ -76,6 +79,12 @@ class PoolDevice extends Homey.Device {
   // the real values; these defaults exist only to pin the types.
   /** @type {number} */
   _failures = 0;
+  /** @type {boolean} first-failure-of-a-streak log throttle (review F3) */
+  _lastPollErrorLogged = false;
+  /** @type {Object<string, number>} capId → epoch ms of first absent observation (review F2/F-C time-based debounce) */
+  _absentSinceMs = {};
+  /** @type {boolean} alarm edge state seeded from persisted cap values this app run (review N1) */
+  _edgeStateSeeded = false;
   /** @type {Object<string, boolean>} capInstanceId → last boolean (edge detection) */
   _m2AlarmState = {};
   /** @type {Object<string, *>} capId → FlowCardTriggerDevice */
@@ -84,6 +93,8 @@ class PoolDevice extends Homey.Device {
   _configFacts = null;
   /** @type {number} consecutive failed config fetches (spec §4.3: stop after 3) */
   _configAttempts = 0;
+  /** @type {number} polls since the last config fetch attempt (review N6 backoff retry) */
+  _ticksSinceConfigAttempt = 0;
   /** @type {?number} CONFIGCHANGEMARKER seen on the previous poll */
   _lastSeenMarker = null;
   /** @type {ReturnType<typeof ConfigSource.createConfigLogThrottle>} */
@@ -111,11 +122,15 @@ class PoolDevice extends Homey.Device {
   _lastFresh = false;
   /** @type {?import('../../lib/FeatureDetector').Features} */
   _lastFeatures = null;
+  /** @type {?number} primary water temperature of the last poll (review Q4: advisor reads this, no re-derivation) */
+  _lastPrimary = null;
 
   async onInit() {
     this._failures = 0;
+    // Band persisted in the store (review N1): an app restart inside an
+    // unchanged warning band is not an edge — no repeat timeline notification.
     /** @type {?string} */
-    this._lastLsiBand = null;
+    this._lastLsiBand = /** @type {?string} */ (this.getStoreValue('lsiBand')) ?? null;
     /** @type {*} Homey FlowCardTriggerDevice (SDK type is loose here). */
     this._lsiWarning = this.homey.flow.getDeviceTriggerCard('lsi_warning');
     this._lsiWarning.registerRunListener((/** @type {*} */ args, /** @type {*} */ state) => {
@@ -191,10 +206,16 @@ class PoolDevice extends Homey.Device {
     const storedMarker = /** @type {?number} */ (this.getStoreValue('configMarker'));
     const markerMoved = marker !== null && storedMarker !== null && marker !== storedMarker;
     const markerMovedBetweenPolls = marker !== null && this._lastSeenMarker !== null && marker !== this._lastSeenMarker;
+    // Review N6: the 3-attempt budget must not become a permanent stop — a
+    // controller that boots slower than 3 polls would otherwise leave
+    // _configFacts null until app restart. Retry once per ~hour of ticks.
+    this._ticksSinceConfigAttempt += 1;
+    const retryDue = this._ticksSinceConfigAttempt >= 60;
     const needFirstFacts = this._configFacts === null
-      && (this._configAttempts < 3 || markerMovedBetweenPolls);
+      && (this._configAttempts < 3 || markerMovedBetweenPolls || retryDue);
     this._lastSeenMarker = marker;
     if (!needFirstFacts && !markerMoved) return;
+    this._ticksSinceConfigAttempt = 0; // an attempt is being made now
 
     // Write creds double as the restricted-fallback for the config read (SR-14);
     // absent creds keep the default credential-free path.
@@ -260,10 +281,17 @@ class PoolDevice extends Homey.Device {
     return res;
   }
 
-  // Tile pump speed from settings: 'default' ⇒ omit (keep configured), else 0-3.
+  // Wall clock as an overridable seam (diff review F-C): the removal debounce
+  // measures continuous absence TIME, and tests inject a fake clock here.
+  _nowMs() { return Date.now(); }
+
+  // Tile pump speed from settings: unset ⇒ omit (keep configured), else 0-3.
+  // getSetting returns null for a never-set key (pre-M3 paired devices never get
+  // the compose default backfilled) — without the null arm, Number(null)=0 would
+  // pass the PUMP enum and force stage 0 (review 2026-08-28 N3).
   _pumpSpeedArg() {
     const s = this.getSetting('control_pump_speed');
-    return s === undefined || s === 'default' ? undefined : Number(s);
+    return s === undefined || s === null || s === 'default' ? undefined : Number(s);
   }
 
   // Base (un-annotated) title a tile should show, reconstructed deterministically
@@ -271,10 +299,8 @@ class PoolDevice extends Homey.Device {
   // sub-caps use the channel label + noun; other caps use the manifest title.
   /** @param {string} capId @returns {{en: string, de: string}} */
   _diagBaseTitle(capId) {
-    const dot = capId.indexOf('.');
-    if (dot > 0) {
-      const base = capId.slice(0, dot);
-      const ch = capId.slice(dot + 1);
+    const { base, ch } = splitCapId(capId);
+    if (ch !== null) {
       const noun = DOSING_NOUN[base];
       const cht = CH_TITLE[ch];
       if (noun && cht) return { en: `${cht.en} ${noun.en}`, de: `${cht.de} ${noun.de}` };
@@ -296,6 +322,10 @@ class PoolDevice extends Homey.Device {
     const on = this.getSetting('show_advanced_diagnostics') === true;
     if (!this._diagState) this._diagState = /** @type {Object<string, ?string>} */ ({});
     const first = !this._diagInit;
+    // Independent per-cap option writes — concurrent (review Q13): the SDK call
+    // is the documented-heavy part, and each write carries its own .catch.
+    /** @type {Promise<void>[]} */
+    const writes = [];
     for (const cap of this.getCapabilities()) {
       if (!diagAnnotatable(cap)) continue;
       const suffix = on ? diagRawValue(cap, raw) : null;
@@ -304,9 +334,10 @@ class PoolDevice extends Homey.Device {
       const title = suffix !== null
         ? { en: `${base.en}: ${suffix}`, de: `${base.de}: ${suffix}` }
         : base;
-      await this.setCapabilityOptions(cap, { title }).catch(this.error);
+      writes.push(this.setCapabilityOptions(cap, { title }).catch(this.error));
       this._diagState[cap] = suffix;
     }
+    await Promise.all(writes);
     this._diagInit = true;
   }
 
@@ -371,6 +402,14 @@ class PoolDevice extends Homey.Device {
     if (changedKeys.includes('notifyPort')) this._startNotifyServer().catch(this.error);
   }
 
+  // User deleted the device while the app keeps running — a distinct SDK
+  // teardown event from onUninit (app destroyed); both must clean up, or the
+  // poll interval and the NOTIFY port outlive the device until app restart
+  // (review 2026-08-28 N2; @types/homey Device.d.ts onDeleted/onUninit).
+  async onDeleted() {
+    await this.onUninit();
+  }
+
   async onUninit() {
     if (this._poll) this.homey.clearInterval(this._poll);
     // SR-M6-07: append the close as another _notifyOp link (not a bare close)
@@ -388,11 +427,34 @@ class PoolDevice extends Homey.Device {
     try {
       raw = await fetchReadings(host, { timeoutMs: 10000 });
       this._failures = 0;
+      this._lastPollErrorLogged = false;
       if (!this.getAvailable()) await this.setAvailable().catch(this.error);
     } catch (err) {
       // 3 consecutive failures → unavailable; transient errors keep last values (spec §10).
       this._failures += 1;
-      if (this._failures >= 3) await this.setUnavailable(this.homey.__('error.unreachable')).catch(this.error);
+      // M0 §10 "Errors logged via this.error" (review F3): first failure of a
+      // streak via error() (surfaces in diagnostics), repeats via log() so a
+      // long outage at 1 poll/min does not flood the error channel.
+      const msg = err instanceof Error ? err.message : String(err);
+      if (!this._lastPollErrorLogged) { this.error('poll failed:', msg); this._lastPollErrorLogged = true; }
+      else this.log('poll failed:', msg);
+      if (this._failures >= 3) {
+        await this.setUnavailable(this.homey.__('error.unreachable')).catch(this.error);
+        // Review F1: values of unknown age must not stay declared fresh. At the
+        // threshold crossing publish the stale shape once (clear-stale §3) and
+        // degrade the advisor state — spec §10 only protects the first two,
+        // transient, failures.
+        if (this._failures === 3) {
+          this._lastFresh = false;
+          // measurements_fresh first (F-B direction rule): revoke before clearing.
+          const staleUpdates = /** @type {Object<string, *>} */ ({
+            measurements_fresh: false, measure_ph: null, measure_orp: null, measure_chlorine: null, measure_lsi: null, alarm_water_balance: false,
+          });
+          for (const [cap, value] of Object.entries(staleUpdates)) {
+            if (this.hasCapability(cap)) await this.setCapabilityValue(cap, value).catch(this.error);
+          }
+        }
+      }
       return;
     }
 
@@ -404,13 +466,19 @@ class PoolDevice extends Homey.Device {
     await this._maybeRefreshConfig(Number.isFinite(rawMarker) ? rawMarker : null);
     const features = detectFeatures(raw, this._configFacts);
     // Prefer the controller clock for warmup math; fall back to local time if absent.
+    // Defensive (review P1): a present-but-implausible controller clock (RTC
+    // reset → epoch ~0) invalidates PUMP_LAST_ON from that same clock — mixing
+    // the local-time fallback with a broken timestamp would fake a huge warmup
+    // and declare non-circulated water fresh.
+    const CLOCK_SANE_MIN = 1e9; // 2001-09 — any real controller clock is beyond this
+    const clockBroken = parsed.timeUnix !== null && parsed.timeUnix < CLOCK_SANE_MIN;
     const now = parsed.timeUnix || Math.floor(Date.now() / 1000);
 
     // Freshness from the payload's PUMP_LAST_ON (M1 §10; notes 2026-06-26 §1):
     // survives restarts, single coherent controller clock.
     const fresh = isFresh({
       pumpOn: parsed.pumpOn,
-      pumpLastOn: parsed.pumpLastOn,
+      pumpLastOn: clockBroken ? null : parsed.pumpLastOn,
       now,
       warmupSeconds: this.getSetting('pumpWarmupSeconds') ?? 120,
     });
@@ -430,6 +498,7 @@ class PoolDevice extends Homey.Device {
       this.getSetting('waterTempChannel'),
       this._configFacts ? this._configFacts.onewireNames : null,
     );
+    this._lastPrimary = primaryChannel;
 
     // LSI (M1 §6,§9): only when enabled AND fresh; temperature falls back to the
     // fixed setting when no water-temp sensor is available/selected.
@@ -486,15 +555,45 @@ class PoolDevice extends Homey.Device {
       }
     }
     this._lastLsiBand = band;
+    if (this.getStoreValue('lsiBand') !== band) await this.setStoreValue('lsiBand', band).catch(this.error);
+
+    // Seed the M2 edge state once per app start from the PERSISTED capability
+    // values (review N1): true before the restart / true after it is no edge —
+    // prevents duplicate triggers after every app/firmware update. Runs before
+    // this tick's values are applied (the apply loop follows below).
+    if (!this._edgeStateSeeded) {
+      for (const cap of this.getCapabilities()) {
+        if (cap.startsWith('alarm_') && !(cap in this._m2AlarmState)) {
+          this._m2AlarmState[cap] = this.getCapabilityValue(cap) === true;
+        }
+      }
+      this._edgeStateSeeded = true;
+    }
 
     // Edge-trigger M2 alarms on false→true only (spec §7). Channel-scoped alarms
     // key their state per instance; tokens carry the channel/reason.
-    /** @type {Object<string, string>} */
-    const CH_LABEL = { cl: 'Chlorine', elo: 'Electrolysis', elorev: 'Electrolysis (rev.)', phm: 'pH-minus', php: 'pH-plus', floc: 'Flocculant' };
+    // Channel label for Flow tokens: same table as the tile titles, in the
+    // user's UI language (review Q1 — the old CH_LABEL was an en-only copy).
+    const tokenLang = this._advisorLang();
+    const chLabel = (/** @type {string} */ ch) => {
+      const t = CH_TITLE[ch];
+      return t ? (tokenLang === 'de' ? t.de : t.en) : ch;
+    };
     const fireEdge = (/** @type {string} */ capInstance, /** @type {*} */ isOn, /** @type {*} */ card, /** @type {Object<string, *>} */ tokens) => {
       const prev = this._m2AlarmState[capInstance] === true;
       if (isOn && !prev) card.trigger(this, tokens, {}).catch(this.error);
       this._m2AlarmState[capInstance] = isOn === true;
+    };
+    // Alarm-base → trigger wiring table (review Q9): one dispatch loop instead
+    // of an if/else chain a future alarm base could silently fall out of —
+    // the M2_MANAGED_BASES incident class (see _reconcileCapabilities).
+    /** @type {Object<string, (ch: string) => {card: *, tokens: Object<string, *>}>} */
+    const ALARM_WIRING = {
+      alarm_dosing_blocked: (ch) => ({ card: this._m2Triggers.dosing_blocked, tokens: { channel: chLabel(ch), reason: stateReasons(raw[`${dosingChannelPrefix(ch)}_STATE`]).join(', ') } }),
+      alarm_dosing_low: (ch) => ({ card: this._m2Triggers.dosing_low, tokens: { channel: chLabel(ch), days_left: m2[`measure_dosing_days_left.${ch}`] ?? 0 } }),
+      alarm_overflow_dryrun: () => ({ card: this._m2Triggers.overflow_dryrun, tokens: {} }),
+      alarm_overflow_overfill: () => ({ card: this._m2Triggers.overflow_overfill, tokens: {} }),
+      alarm_omni_valve: () => ({ card: this._m2Triggers.backwash_valve_fault, tokens: { state: String(raw.BACKWASH_OMNI_STATE ?? '') } }),
     };
     for (const [cap, val] of Object.entries(m2)) {
       if (typeof val !== 'boolean' || !cap.startsWith('alarm_')) continue;
@@ -502,31 +601,34 @@ class PoolDevice extends Homey.Device {
       // actuator): _reconcileCapabilities already ran this tick, so hasCapability
       // reflects detection ∧ override for this exact instance (spec §7).
       if (!this.hasCapability(cap)) continue;
-      const dot = cap.indexOf('.');
-      const base = dot > 0 ? cap.slice(0, dot) : cap;
-      const ch = dot > 0 ? cap.slice(dot + 1) : ''; // dosing alarms are always dotted
-      if (base === 'alarm_dosing_blocked') {
-        const stateVal = raw[`${dosingChannelPrefix(ch)}_STATE`];
-        const reason = stateReasons(stateVal).join(', ');
-        fireEdge(cap, val, this._m2Triggers.dosing_blocked, { channel: CH_LABEL[ch] || ch, reason });
-      } else if (base === 'alarm_dosing_low') {
-        fireEdge(cap, val, this._m2Triggers.dosing_low, { channel: CH_LABEL[ch] || ch, days_left: m2[`measure_dosing_days_left.${ch}`] ?? 0 });
-      } else if (base === 'alarm_overflow_dryrun') {
-        fireEdge(cap, val, this._m2Triggers.overflow_dryrun, {});
-      } else if (base === 'alarm_overflow_overfill') {
-        fireEdge(cap, val, this._m2Triggers.overflow_overfill, {});
-      } else if (base === 'alarm_omni_valve') {
-        fireEdge(cap, val, this._m2Triggers.backwash_valve_fault, { state: String(raw.BACKWASH_OMNI_STATE ?? '') });
-      }
+      const { base, ch } = splitCapId(cap);
+      const wire = ALARM_WIRING[base];
+      if (!wire) continue;
+      const { card, tokens } = wire(ch ?? ''); // dosing alarms are always dotted
+      fireEdge(cap, val, card, tokens);
     }
 
     // Apply rule (clear-stale §3): undefined = leave as-is; null = clear to "–"
     // (Insights gap); else set. What is fresh-gated/cleared is decided in /lib (§7).
-    for (const [cap, value] of Object.entries(updates)) {
-      if (value === undefined) continue;
-      if (this.hasCapability(cap)) {
-        await this.setCapabilityValue(cap, value).catch(this.error);
-      }
+    // Direction rule for the flag (review F5 + diff review F-B): fresh=true is
+    // a certification and goes LAST (after every value of the merged batch);
+    // fresh=false is a revocation and goes FIRST (before the null-clears) —
+    // the flag must never certify more than currently holds, in either edge.
+    const freshValue = updates.measurements_fresh;
+    delete updates.measurements_fresh;
+    const canWriteFresh = this.hasCapability('measurements_fresh');
+    if (freshValue === false && canWriteFresh) {
+      await this.setCapabilityValue('measurements_fresh', false).catch(this.error);
+    }
+    // The ~20–50 value writes are independent (each with its own .catch) — run
+    // them concurrently (review Q12) instead of serializing one SDK round-trip
+    // per capability; the direction-guarded fresh writes stay outside the batch.
+    await Promise.all(Object.entries(updates).map(([cap, value]) => {
+      if (value === undefined || !this.hasCapability(cap)) return Promise.resolve();
+      return this.setCapabilityValue(cap, value).catch(this.error);
+    }));
+    if (freshValue === true && canWriteFresh) {
+      await this.setCapabilityValue('measurements_fresh', true).catch(this.error);
     }
 
     // Diagnostics tile-title annotation (gated by show_advanced_diagnostics).
@@ -541,19 +643,12 @@ class PoolDevice extends Homey.Device {
     return i18n && typeof i18n.getLanguage === 'function' ? i18n.getLanguage() : 'en';
   }
 
-  // Water temperature for the advisor — mirrors the LSI input block of _tick
-  // (selected/auto onewire channel first, fixed setting second) so advice and
-  // the measure_lsi tile can never disagree about the temperature.
+  // Water temperature for the advisor — the exact value the LSI input block of
+  // _tick computed this poll (review Q4: cached in _lastPrimary instead of
+  // re-derived, so advice and the measure_lsi tile can never disagree).
   /** @returns {?number} */
   _advisorTempC() {
-    const parsed = this._lastParsed;
-    const primary = parsed
-      ? choosePrimaryTemperature(
-        parsed.tempChannels,
-        this.getSetting('waterTempChannel'),
-        this._configFacts ? this._configFacts.onewireNames : null,
-      )
-      : null;
+    const primary = this._lastParsed ? this._lastPrimary : null;
     return primary != null ? primary : (this.getSetting('chem_fixed_temperature') ?? null);
   }
 
@@ -586,8 +681,11 @@ class PoolDevice extends Homey.Device {
    */
   _advisorInputs() {
     const parsed = this._lastParsed;
+    // "No successful poll yet" counts as stale too (review N4): with parsed
+    // null the old `parsed && !fresh` short-circuited to reason null, and the
+    // generic missing-list blamed settings the user did enter (spec §9).
     const reason = this.getSetting('lsi_enabled') !== true ? 'lsi_disabled'
-      : (parsed && !this._lastFresh) ? 'stale' : null;
+      : (!parsed || !this._lastFresh) ? 'stale' : null;
     const state = reason === null ? parsed : null;
     const channels = (this._lastFeatures && this._lastFeatures.dosingChannels) || [];
     return {
@@ -668,17 +766,47 @@ class PoolDevice extends Homey.Device {
   }
 
   /**
+   * One removal choreography for every reconcile site (review R2-4): presence
+   * resets the absence clock; absence removes immediately for explicit user
+   * choices (`immediate`), else after the F2/F-C time grace.
+   * @param {string} cap Capability id.
+   * @param {boolean} wanted Present in this poll's desired set.
+   * @param {boolean} immediate User-driven removal (Hide override, feature toggle off).
+   * @param {number} nowMs @param {number} graceMs
+   * @returns {Promise<boolean>} True when the cap was removed this call.
+   */
+  async _maybeRemove(cap, wanted, immediate, nowMs, graceMs) {
+    if (wanted) { delete this._absentSinceMs[cap]; return false; }
+    if (!this.hasCapability(cap)) return false;
+    if (!immediate && !shouldRemoveAfterAbsence(this._absentSinceMs, cap, false, nowMs, graceMs)) return false;
+    await this.removeCapability(cap).catch(this.error);
+    delete this._absentSinceMs[cap];
+    return true;
+  }
+
+  /**
    * @param {import('../../lib/VioletClient').ParsedReadings} parsed
    * @param {import('../../lib/FeatureDetector').Features} features
    */
   async _reconcileCapabilities(parsed, features) {
-    // 1) Feature-group capabilities via auto-detect + override (spec §9; M0: chlorine only).
-    const overrides = { chlorine: this.getSetting('group_chlorine') || 'auto' };
+    // Time-based removal debounce (F2/F-C): grace = 2× the poll interval, so
+    // the 3rd REGULAR poll is the first observation at/after the grace — while
+    // a settings-save tick burst (2–3 ticks in a second) adds no absence time.
+    const nowMs = this._nowMs();
+    const graceMs = (this.getSetting('pollIntervalSeconds') || 60) * 2000;
+    // 1) Feature-group capabilities via auto-detect + override (spec §9),
+    //    iterated over the FEATURE_CAPABILITY registry (review Q8) — a second
+    //    feature cap lands here without touching this loop.
+    const overrides = /** @type {Object<string, string>} */ ({});
+    for (const feature of Object.keys(FEATURE_CAPABILITY)) {
+      overrides[feature] = this.getSetting(`group_${feature}`) || 'auto';
+    }
     const desiredFeatureCaps = desiredFeatureCapabilities({ features, overrides });
-    for (const cap of ['measure_chlorine']) {
+    for (const [feature, cap] of Object.entries(FEATURE_CAPABILITY)) {
       const want = desiredFeatureCaps.includes(cap);
       if (want && !this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
-      if (!want && this.hasCapability(cap)) await this.removeCapability(cap).catch(this.error);
+      // Hide = explicit user choice → immediate; lost detection → F2 grace.
+      await this._maybeRemove(cap, want, overrides[feature] === 'hide', nowMs, graceMs);
     }
 
     // measure_lsi + alarm_water_balance present iff LSI is enabled (M1 §6,§7.3).
@@ -705,9 +833,11 @@ class PoolDevice extends Homey.Device {
       }
     }
     for (const cap of [...this.getCapabilities()]) {
-      if (cap.startsWith('measure_temperature.ow') && !wanted.has(cap)) {
-        await this.removeCapability(cap).catch(this.error);
-      }
+      if (!cap.startsWith('measure_temperature.ow')) continue;
+      // Payload-driven only (a channel leaves the OK set) → never immediate:
+      // 1-wire FAULT/freeze glitches are regular operation per the payload's
+      // own fault counters (review F2).
+      await this._maybeRemove(cap, wanted.has(cap), false, nowMs, graceMs);
     }
 
     // 3) M2 feature-group capabilities (spec M2 §4,§6). Overrides come from the
@@ -719,18 +849,15 @@ class PoolDevice extends Homey.Device {
     const diagnosticsEnabled = this.getSetting('show_advanced_diagnostics') === true;
     const desiredM2 = new Set(desiredM2Capabilities({ features, overrides: m2Overrides, diagnosticsEnabled }));
 
-    // Add desired-but-absent; give dosing sub-instances a channel title.
+    // Add desired-but-absent; dosing sub-instances get their channel title from
+    // the same builder the diagnostics annotation uses (review Q3 — the inline
+    // copy of the CH_TITLE+DOSING_NOUN combination is gone).
     for (const cap of desiredM2) {
       if (this.hasCapability(cap)) continue;
       await this.addCapability(cap).catch(this.error);
-      const dot = cap.indexOf('.');
-      if (dot > 0) {
-        const base = cap.slice(0, dot);
-        const ch = cap.slice(dot + 1);
-        const noun = DOSING_NOUN[base];
-        if (CH_TITLE[ch] && noun) {
-          await this.setCapabilityOptions(cap, { title: { en: `${CH_TITLE[ch].en} ${noun.en}`, de: `${CH_TITLE[ch].de} ${noun.de}` } }).catch(this.error);
-        }
+      const { base, ch } = splitCapId(cap);
+      if (ch !== null && DOSING_NOUN[base] && CH_TITLE[ch]) {
+        await this.setCapabilityOptions(cap, { title: this._diagBaseTitle(cap) }).catch(this.error);
       }
     }
     // M5.8 (Spec §3): Eingangs-Kacheln tragen Titel/Einheit/Dezimalstellen aus
@@ -764,28 +891,36 @@ class PoolDevice extends Homey.Device {
       ...DIAGNOSTIC_CAPS,
       ...INPUT_SUBCAPS,
     ]);
-    const baseOf = (/** @type {string} */ cap) => (cap.includes('.') ? cap.slice(0, cap.indexOf('.')) : cap);
+    // User-hidden vs. detection-lost (review F2): what all-auto detection would
+    // still keep. cap ∈ detectable ∧ ∉ desired ⇒ the user hid it ⇒ immediate;
+    // cap ∉ detectable ⇒ the payload lost it ⇒ debounced over 3 polls.
+    const detectableM2 = new Set(desiredM2Capabilities({ features, overrides: {}, diagnosticsEnabled: true }));
     for (const cap of [...this.getCapabilities()]) {
-      if (M2_MANAGED_BASES.has(baseOf(cap)) && !desiredM2.has(cap)) {
-        await this.removeCapability(cap).catch(this.error);
+      if (!M2_MANAGED_BASES.has(splitCapId(cap).base)) continue;
+      const removed = await this._maybeRemove(cap, desiredM2.has(cap), detectableM2.has(cap), nowMs, graceMs);
+      if (removed) {
         delete this._inputOptState[cap]; // M5.8: Re-Add muss Optionen neu setzen (Churn-Guard invalidieren)
+        // Review P6: state must not outlive the capability — a re-added alarm
+        // cap re-announces a still-active alarm instead of swallowing the edge.
+        delete this._m2AlarmState[cap];
       }
     }
 
     // 4) M3 control capabilities — present only while control is enabled (SR-07)
     //    AND the hardware is detected (mirrors which read tiles are shown). Default
     //    off ⇒ no control tiles at all (zero accidental-tap surface).
+    // Control capability ↔ detected feature in ONE table (review Q11); the
+    // listener bodies in onInit and the Flow cards in driver.js stay explicit
+    // (their argument shapes differ), but presence is table-driven.
+    const CONTROL_CAPS = /** @type {Object<string, string>} */ ({
+      pump_control: 'pump', light_control: 'light', pvsurplus_control: 'pvSurplus',
+    });
     const controlOn = this.getSetting('control_enabled') === true;
-    const desiredControl = new Set();
-    if (controlOn) {
-      if (features.pump) desiredControl.add('pump_control');
-      if (features.light) desiredControl.add('light_control');
-      if (features.pvSurplus) desiredControl.add('pvsurplus_control');
-    }
-    for (const cap of ['pump_control', 'light_control', 'pvsurplus_control']) {
-      const want = desiredControl.has(cap);
+    for (const [cap, feature] of Object.entries(CONTROL_CAPS)) {
+      const want = controlOn && !!features[feature];
       if (want && !this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
-      if (!want && this.hasCapability(cap)) await this.removeCapability(cap).catch(this.error);
+      // Control off = user choice → immediate; feature lost → F2 grace.
+      await this._maybeRemove(cap, want, !controlOn, nowMs, graceMs);
     }
   }
 }

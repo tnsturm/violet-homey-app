@@ -1,7 +1,7 @@
-<!-- Pairing connect view — spec §6
-     (docs/superpowers/specs/2026-06-24-violet-homey-app-m0-foundation-design.md).
-     Collects host + optional write credentials and hands them to driver.js's
-     'connect' handler; button locks while the request runs (review P2). -->
+<!-- Repair view — review 2026-08-28 N5
+     (docs/superpowers/reviews/2026-08-28-adversarial.md, Fund N5): the only way
+     to set/rotate the write password after pairing. Mirrors connect.html but
+     ends the session with Homey.done() (repair has no list_devices step). -->
 <script type="text/javascript">
   function t(key, fallback) {
     try {
@@ -18,18 +18,20 @@
     const password = document.getElementById('password').value;
     const status = document.getElementById('status');
     const btn = document.getElementById('btn-connect');
-    // Review P2: lock the button while the request runs — a second parallel
-    // 'connect' would race the shared pairData in driver.js.
-    btn.disabled = true;
+    btn.disabled = true; // review P2: no parallel connect
     status.textContent = t('pair.connect.connecting', 'Connecting…');
     Homey.emit('connect', { host, username, password })
-      .then(function () { Homey.showView('list_devices'); })
+      .then(function () {
+        status.textContent = t('repair.connect.done', 'Saved.');
+        Homey.done();
+      })
       .catch(function (err) {
         btn.disabled = false;
         status.textContent = t('pair.connect.failed', 'Failed: ') + (err.message || err);
       });
   }
   function applyI18n() {
+    document.getElementById('repair-hint').textContent = t('repair.connect.hint', 'Set or rotate the write credentials; leave the host empty to keep the current one.');
     document.getElementById('lbl-host').textContent = t('pair.connect.host', 'Violet host or IP');
     document.getElementById('lbl-username').textContent = t('pair.connect.username', 'Write username (optional)');
     document.getElementById('lbl-password').textContent = t('pair.connect.password', 'Write password (optional)');
@@ -38,8 +40,9 @@
 </script>
 
 <div class="homey-form-group">
+  <p id="repair-hint">Set or rotate the write credentials; leave the host empty to keep the current one.</p>
   <label class="homey-form-label" id="lbl-host" for="host">Violet host or IP</label>
-  <input class="homey-form-input" id="host" type="text" value="violet.local" />
+  <input class="homey-form-input" id="host" type="text" value="" />
   <label class="homey-form-label" id="lbl-username" for="username">Write username (optional)</label>
   <input class="homey-form-input" id="username" type="text" />
   <label class="homey-form-label" id="lbl-password" for="password">Write password (optional)</label>

@@ -69,7 +69,8 @@ const PUMP_OFF = { ...ALL, PUMP: 0 };
  * recording state — spelled out here so checkJs can follow the tests.
  * @typedef {InstanceType<typeof PoolDevice> & {
  *   __test: { settings: Object<string, any>, store: Object<string, any>,
- *             capabilities: string[], runListeners: Object<string, any> },
+ *             capabilities: string[], runListeners: Object<string, any>,
+ *             capabilityValues: Object<string, any> },
  *   _log: { notifications: Array<{excerpt: string}>, errors: string[] },
  * }} TestDevice
  */
@@ -83,6 +84,9 @@ async function makeDevice(fixture, settings = {}) {
   currentFixture = fixture;
   const device = /** @type {TestDevice} */ (/** @type {any} */ (new PoolDevice()));
   device.__test.settings = { ...DEFAULT_SETTINGS, ...settings };
+  // Static caps from driver.compose.json (review 2026-08-28, Meta M1) — see
+  // pool.device.test.js makeDevice for the rationale.
+  device.__test.capabilities = ['measure_temperature', 'measure_ph', 'measure_orp', 'pump_running', 'measurements_fresh'];
   await device.onInit();
   await new Promise((resolve) => setImmediate(resolve)); // settle the fire-and-forget init tick
   openDevices.push(device);
@@ -158,6 +162,27 @@ test('timeline: exactly one notification on the edge into a warning band, none o
   currentFixture = ALL;
   await device._tick(); // recovery to balanced — never notifies (spec §7.3)
   assert.strictEqual(device._log.notifications.length, 1);
+});
+
+// Review 2026-08-28 N1: an app restart inside an unchanged warning band must
+// not repeat the timeline notification — the band is persisted in the store.
+test('timeline: restart inside the same warning band does not re-notify (N1)', async () => {
+  const first = await makeDevice(ALL);
+  await first._tick(); // balanced
+  currentFixture = SCALING;
+  await first._tick(); // edge → 1 notification
+  assert.strictEqual(first._log.notifications.length, 1);
+
+  const second = /** @type {TestDevice} */ (/** @type {any} */ (new PoolDevice()));
+  second.__test.settings = { ...first.__test.settings };
+  second.__test.capabilities = [...(/** @type {*} */ (first).__test.capabilities)];
+  second.__test.capabilityValues = { ...(/** @type {*} */ (first).__test.capabilityValues) };
+  second.__test.store = { ...first.__test.store };
+  await second.onInit();
+  await new Promise((resolve) => setImmediate(resolve));
+  openDevices.push(second);
+  await second._tick(); // still scaling — same band as before the restart
+  assert.strictEqual(second._log.notifications.length, 0, 'restart must not repeat the band notification (N1)');
 });
 
 test('timeline: advisor_timeline off suppresses the notification for the same transition', async () => {

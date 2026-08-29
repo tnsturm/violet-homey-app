@@ -38,8 +38,8 @@ class Device {
   __listeners = {};
 
   constructor() {
-    /** @type {{settings: Object<string, *>, store: Object<string, *>, capabilities: string[], runListeners: Object<string, *>}} */
-    this.__test = { settings: {}, store: {}, capabilities: [], runListeners: {} };
+    /** @type {{settings: Object<string, *>, store: Object<string, *>, capabilities: string[], runListeners: Object<string, *>, capabilityValues: Object<string, *>}} */
+    this.__test = { settings: {}, store: {}, capabilities: [], runListeners: {}, capabilityValues: {} };
     /** @type {{setValue: Array<*>, addCap: string[], removeCap: string[], setOptions: Array<*>, available: string[], triggers: Object<string, Array<*>>, errors: string[], notifications: Array<*>}} */
     this._log = { setValue: [], addCap: [], removeCap: [], setOptions: [], available: [], triggers: {}, errors: [], notifications: [] };
     this._available = true;
@@ -117,11 +117,23 @@ class Device {
   /** @param {string} cap */
   async removeCapability(cap) {
     this.__test.capabilities = this.__test.capabilities.filter((c) => c !== cap);
+    delete this.__test.capabilityValues[cap]; // Homey discards state with the capability
     this._log.removeCap.push(cap);
   }
 
   /** @param {string} cap @param {*} value */
-  async setCapabilityValue(cap, value) { this._log.setValue.push({ cap, value }); }
+  async setCapabilityValue(cap, value) {
+    this.__test.capabilityValues[cap] = value;
+    this._log.setValue.push({ cap, value });
+  }
+
+  // Persisted capability value, like the real SDK (review 2026-08-28, N1 fix):
+  // survives across device instances when tests copy __test.capabilityValues.
+  /** @param {string} cap */
+  getCapabilityValue(cap) {
+    return Object.prototype.hasOwnProperty.call(this.__test.capabilityValues, cap)
+      ? this.__test.capabilityValues[cap] : null;
+  }
   /** @param {string} cap @param {*} options */
   async setCapabilityOptions(cap, options) { this._log.setOptions.push({ cap, options }); }
 

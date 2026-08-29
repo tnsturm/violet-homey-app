@@ -903,6 +903,11 @@
           "template": "add_devices"
         }
       ],
+      "repair": [
+        {
+          "id": "repair"
+        }
+      ],
       "id": "pool",
       "settings": [
         {
@@ -1252,6 +1257,8 @@
             {
               "id": "chem_fixed_temperature",
               "type": "number",
+              "min": 0,
+              "max": 60,
               "label": {
                 "en": "Fixed temperature for LSI (°C)",
                 "de": "Feste Temperatur für LSI (°C)"

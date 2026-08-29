@@ -54,3 +54,10 @@ test('classifyLSI bands at boundaries', () => {
   assert.strictEqual(classifyLSI(0)?.direction, 'balanced');
   assert.strictEqual(classifyLSI(null), null);
 });
+
+// Review 2026-08-28 N11: an intermediate log10 of a non-positive Kelvin value
+// (tempC <= -273.15) yielded NaN, breaking the docstring contract and letting
+// NaN through Capabilities` `lsi ?? null` onto the measure_lsi tile.
+test('computeLSI: physically impossible temperature yields null, never NaN (N11)', () => {
+  assert.strictEqual(computeLSI({ pH: 7.4, tempC: -300, calciumHardnessPpm: 250, totalAlkalinityPpm: 100, cya: 0 }), null);
+});

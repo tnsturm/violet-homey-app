@@ -43,3 +43,13 @@ test('parseReadings exposes pumpLastOn from PUMP_LAST_ON', () => {
   assert.strictEqual(parseReadings({ PUMP_LAST_ON: '1782331200' }).pumpLastOn, 1782331200);
   assert.strictEqual(parseReadings({}).pumpLastOn, null);
 });
+
+// Review 2026-08-28 N10: users paste URLs into the host field - strip scheme
+// and trailing slashes so buildReadingsUrl never yields http://http://...
+test('normalizeHost strips pasted scheme and trailing slash (N10)', () => {
+  const { normalizeHost } = require('../lib/VioletClient');
+  assert.strictEqual(normalizeHost(' http://192.168.178.30/ '), '192.168.178.30');
+  assert.strictEqual(normalizeHost('HTTPS://violet.local'), 'violet.local');
+  assert.strictEqual(normalizeHost('violet.local'), 'violet.local');
+  assert.strictEqual(normalizeHost(null), '');
+});

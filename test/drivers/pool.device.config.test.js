@@ -102,6 +102,16 @@ test('Migration Bestandsgerät: vorhandener cover_state wird nach Config-Read en
   configResult = referenceConfig;
   const device = await makeDevice({ COVER_STATE: 'OPEN' });
   device.__test.capabilities.push('cover_state'); // Altzustand simulieren
+  // Seit Review-Fix F2/F-C (2026-08-29) ist detektionsgetriebener Abbau über
+  // eine Karenzzeit von 2 Poll-Intervallen entprellt — die Migration passiert
+  // weiterhin, nur nicht mehr im ersten Poll (Schutz vor transienten
+  // Payload-Ausfällen wiegt schwerer). Fake-Clock: 60 s pro Poll.
+  let fakeNow = 1_000_000_000_000;
+  device._nowMs = () => fakeNow;
+  await device._tick();
+  fakeNow += 60_000;
+  await device._tick();
+  fakeNow += 60_000;
   await device._tick();
   assert.ok(!device.getCapabilities().includes('cover_state'));
 });
@@ -125,6 +135,22 @@ test('Retry-Politik: nach 3 Fehlversuchen nur noch bei Marker-Änderung (Spec §
   currentFixture = { ...currentFixture, CONFIGCHANGEMARKER: 149 }; // Marker ändert sich
   await device._tick();
   assert.strictEqual(configCalls, after3 + 1);
+});
+
+// Review 2026-08-28 N6: das 3er-Budget darf kein Dauerstopp sein — bootet der
+// Controller langsamer als 3 Polls, bliebe _configFacts sonst bis zum
+// App-Neustart null (History-Heuristik statt Config, ohne Not).
+test('Retry-Politik: nach dem 3er-Budget kommt ein periodischer Retry (~60 Ticks) (N6)', async () => {
+  configResult = null; // fetch wirft
+  const device = await makeDevice({});
+  configError = new Error('down');
+  await device._tick(); // attempt 2
+  await device._tick(); // attempt 3 — budget burnt
+  const after3 = configCalls;
+  for (let i = 0; i < 59; i += 1) await device._tick();
+  assert.strictEqual(configCalls, after3, 'no hammering inside the backoff window');
+  await device._tick(); // 60th tick since the last attempt
+  assert.strictEqual(configCalls, after3 + 1, 'the periodic retry must fire (N6)');
 });
 
 test('Marker-Änderung refresht Facts im selben Tick (Spec §4.2)', async () => {

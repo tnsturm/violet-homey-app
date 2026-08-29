@@ -52,10 +52,12 @@ const DEFAULT_SETTINGS = {
  * The mock (test/mocks/homey.js) augments the SDK Device surface with its
  * recording state — spelled out here so checkJs can follow the tests.
  * @typedef {InstanceType<typeof PoolDevice> & {
- *   __test: { settings: Object<string, any>, store: Object<string, any>, capabilities: string[] },
+ *   __test: { settings: Object<string, any>, store: Object<string, any>, capabilities: string[],
+ *             capabilityValues: Object<string, any> },
  *   _log: { setValue: Array<{cap: string, value: any}>, addCap: string[], removeCap: string[],
  *           setOptions: Array<{cap: string, options: any}>, available: string[],
- *           triggers: Object<string, Array<{tokens: any, state: any}>> },
+ *           triggers: Object<string, Array<{tokens: any, state: any}>>, errors: string[],
+ *           notifications: Array<{excerpt: string}> },
  * }} TestDevice
  */
 
@@ -66,6 +68,10 @@ async function makeDevice(fixture, settings = {}) {
   failFetch = false;
   const device = /** @type {TestDevice} */ (/** @type {any} */ (new PoolDevice()));
   device.__test.settings = { ...DEFAULT_SETTINGS, ...settings };
+  // Static caps from driver.compose.json — a really paired device always has
+  // them; without this seed the hasCapability guard drops every core write
+  // and the whole apply path is test-blind (review 2026-08-28, Meta M1).
+  device.__test.capabilities = ['measure_temperature', 'measure_ph', 'measure_orp', 'pump_running', 'measurements_fresh'];
   await device.onInit();
   await new Promise((resolve) => setImmediate(resolve)); // settle the fire-and-forget init tick
   openDevices.push(device);
@@ -150,4 +156,239 @@ test('device availability: 3 consecutive fetch failures → setUnavailable', asy
   await device._tick();
   await device._tick();
   assert.strictEqual(device._log.available.at(-1), 'unavailable');
+});
+
+// Diff-Review 2026-08-29 F-B: on the fresh→stale edge the certification must
+// be revoked FIRST — probes clearing to null while fresh still reads true
+// would mis-trigger every "value changed AND fresh" Flow on each pump-off.
+test('apply order: on the stale edge measurements_fresh=false is written before the null-clears (F-B)', async () => {
+  const fixture = FIXTURES['getReadings.all'];
+  const device = await makeDevice(fixture);
+  await device._tick(); // fresh poll
+  currentFixture = { ...fixture, PUMP: '0' }; // pump off → stale edge
+  device._log.setValue.length = 0;
+  await device._tick();
+  const writes = device._log.setValue;
+  const freshIdx = writes.findIndex((w) => w.cap === 'measurements_fresh' && w.value === false);
+  const phIdx = writes.findIndex((w) => w.cap === 'measure_ph' && w.value === null);
+  assert.ok(freshIdx !== -1 && phIdx !== -1, 'both writes must happen on the stale edge');
+  assert.ok(freshIdx < phIdx, 'fresh=false must publish before the probes are cleared');
+});
+
+test('apply order: measurements_fresh is written after the probe values (F5)', async () => {
+  const device = await makeDevice(FIXTURES['getReadings.all']);
+  await device._tick();
+  const caps = device._log.setValue.map((w) => w.cap);
+  const freshIdx = caps.lastIndexOf('measurements_fresh');
+  assert.ok(freshIdx > caps.lastIndexOf('measure_ph'), 'fresh before ph — a Flow gate would race the values');
+  assert.strictEqual(freshIdx, caps.length - 1, 'measurements_fresh must be the last write of the batch');
+});
+
+// Review 2026-08-28 P1 (defensive): a present-but-implausible controller clock
+// (RTC reset after power loss → epoch ~0) must invalidate PUMP_LAST_ON from the
+// same clock — mixing local `now` with a broken timestamp fakes a huge warmup.
+test('controller clock at 0 (RTC reset) must not count as fresh (P1)', async () => {
+  const fixture = { ...FIXTURES['getReadings.all'], CURRENT_TIME_UNIX: 0, PUMP_LAST_ON: 0, PUMP: '1' };
+  const device = await makeDevice(fixture);
+  device._log.setValue.length = 0;
+  await device._tick();
+  const freshWrite = device._log.setValue.find((w) => w.cap === 'measurements_fresh');
+  assert.strictEqual(freshWrite?.value, false, 'broken controller clock ⇒ warmup unprovable ⇒ stale');
+});
+
+// Review 2026-08-28 N4: before the first successful poll _lastParsed is null —
+// the advisor must report the stale reason, not a missing-list that blames
+// chem settings the user did enter (contradicts the _adviseNow comment, spec §9).
+test('advisor before first successful poll reports stale, not a fake missing list (N4)', async () => {
+  // Inline construction (makeDevice resets failFetch): the onInit tick fails,
+  // so no poll has ever succeeded when the Flow action asks for advice.
+  const device = /** @type {TestDevice} */ (/** @type {any} */ (new PoolDevice()));
+  device.__test.settings = {
+    ...DEFAULT_SETTINGS, lsi_enabled: true, chem_calcium_hardness: 250, chem_total_alkalinity: 100, pool_volume_m3: 30,
+  };
+  device.__test.capabilities = ['measure_temperature', 'measure_ph', 'measure_orp', 'pump_running', 'measurements_fresh'];
+  failFetch = true;
+  await device.onInit();
+  await new Promise((resolve) => setImmediate(resolve));
+  openDevices.push(device);
+  const advice = await device._balanceAdvice();
+  assert.match(advice.advice_text, /not fresh/i, 'the stale reason must be named');
+  assert.doesNotMatch(advice.advice_text, /calcium|alkalinity/i, 'must not claim entered settings are missing');
+});
+
+// Review 2026-08-28 N3: getSetting returns null for a never-set key (pre-M3
+// paired devices never get the compose default backfilled) — Number(null)=0 is
+// a VALID pump speed and would force stage 0 instead of keep-configured.
+test('_pumpSpeedArg: never-set setting (null) means keep-configured, not speed 0 (N3)', async () => {
+  const device = await makeDevice(FIXTURES['minimal-pool']); // control_pump_speed absent → getSetting → null
+  assert.strictEqual(device._pumpSpeedArg(), undefined);
+  device.__test.settings.control_pump_speed = 'default';
+  assert.strictEqual(device._pumpSpeedArg(), undefined);
+  device.__test.settings.control_pump_speed = '2';
+  assert.strictEqual(device._pumpSpeedArg(), 2);
+});
+
+// Review Q1 (Runde 2): channel labels in Flow tokens come from the same table
+// as the tile titles, in the user's UI language — no more en-only duplicate.
+test('flow tokens use the Homey UI language for channel labels (Q1)', async () => {
+  const blocked = { ...FIXTURES['salt-electrolysis'], DOS_2_ELO_STATE: '0|BLOCKED_BY_SENSOR_FAULT' };
+  currentFixture = blocked;
+  failFetch = false;
+  const device = /** @type {TestDevice} */ (/** @type {any} */ (new PoolDevice()));
+  device.__test.settings = { ...DEFAULT_SETTINGS };
+  device.__test.capabilities = ['measure_temperature', 'measure_ph', 'measure_orp', 'pump_running', 'measurements_fresh'];
+  device.homey.i18n.getLanguage = () => 'de';
+  await device.onInit();
+  await new Promise((resolve) => setImmediate(resolve));
+  openDevices.push(device);
+  await device._tick();
+  const fired = device._log.triggers.dosing_blocked || [];
+  assert.ok(fired.length > 0, 'precondition: blocked edge fires');
+  assert.ok(fired.some((f) => f.tokens.channel === 'Elektrolyse'), `channel token must be localized, got: ${JSON.stringify(fired.map((f) => f.tokens.channel))}`);
+});
+
+// --- Review 2026-08-28, N1/P6: alarm edge state must survive an app restart
+// --- (no phantom edge) and a Hide/Unhide cycle (re-announce, no swallowed edge).
+
+const DOSING_LOW_FIXTURE = { ...FIXTURES['salt-electrolysis'], DOS_2_ELO_REMAINING_RANGE: '2d' };
+
+test('restart: persisted alarm state does not re-fire the trigger (N1)', async () => {
+  const first = await makeDevice(DOSING_LOW_FIXTURE);
+  await first._tick();
+  // Both fixture channels (elo patched to 2d, phm at 5d) are below the 7d
+  // threshold — the count only matters relatively: >0 before, 0 after restart.
+  assert.ok((first._log.triggers.dosing_low || []).length > 0, 'precondition: edge fires on the first instance');
+
+  // Simulate an app restart: fresh instance, Homey-persisted device state copied.
+  const second = /** @type {TestDevice} */ (/** @type {any} */ (new PoolDevice()));
+  second.__test.settings = { ...first.__test.settings };
+  second.__test.capabilities = [...first.__test.capabilities];
+  second.__test.capabilityValues = { ...first.__test.capabilityValues };
+  second.__test.store = { ...first.__test.store };
+  await second.onInit();
+  await new Promise((resolve) => setImmediate(resolve));
+  openDevices.push(second);
+  await second._tick();
+  assert.strictEqual((second._log.triggers.dosing_low || []).length, 0, 'restart with unchanged state must not re-fire (N1)');
+});
+
+test('hide/unhide: alarm edge fires again after the capability returns (P6)', async () => {
+  const blocked = { ...FIXTURES['salt-electrolysis'], DOS_2_ELO_STATE: '0|BLOCKED_BY_SENSOR_FAULT' };
+  const device = await makeDevice(blocked);
+  await device._tick();
+  const firedBefore = (device._log.triggers.dosing_blocked || []).length;
+  assert.ok(firedBefore > 0, 'precondition: blocked edge fires');
+  device.__test.settings.group_dosing = 'hide';
+  await device._tick(); // user-driven removal — immediate (F2)
+  assert.ok(!device.getCapabilities().includes('alarm_dosing_blocked.elo'), 'precondition: cap removed while hidden');
+  device.__test.settings.group_dosing = 'auto';
+  await device._tick(); // caps re-added, alarms still active — every one re-announces
+  assert.strictEqual((device._log.triggers.dosing_blocked || []).length, firedBefore * 2, 'unhide must re-announce the still-active alarms');
+});
+
+// --- Review 2026-08-28, F2: capability teardown is debounced over 3 polls;
+// --- explicit user choices (Hide override) stay immediate.
+
+test('reconcile debounce: one FAULT poll does not remove the ow sub-capability (F2)', async () => {
+  const fixture = FIXTURES['getReadings.all'];
+  const device = await makeDevice(fixture);
+  // Fake clock (F-C: the debounce measures continuous absence TIME): each
+  // simulated poll advances one 60s interval.
+  let fakeNow = 1_000_000_000_000;
+  device._nowMs = () => fakeNow;
+  await device._tick();
+  assert.ok(device.getCapabilities().some((c) => c.startsWith('measure_temperature.ow')), 'precondition: ow caps exist');
+  currentFixture = { ...fixture, onewire1_state: 'FAULT' };
+  fakeNow += 60_000;
+  await device._tick();
+  assert.ok(
+    !device._log.removeCap.some((c) => c === 'measure_temperature.ow1'),
+    'a single deviant poll must not tear down capabilities',
+  );
+  fakeNow += 60_000;
+  await device._tick();
+  fakeNow += 60_000;
+  await device._tick(); // 3rd consecutive absent poll — grace (2×60s) reached
+  assert.ok(
+    device._log.removeCap.includes('measure_temperature.ow1'),
+    'after 3 consecutive absent polls the removal happens',
+  );
+});
+
+// Diff-Review 2026-08-29 F-C: the debounce must measure TIME, not _tick()
+// invocations — a single multi-key settings save fires 2–3 ticks within one
+// second and must not burn the whole 3-poll grace on one transient fault.
+test('reconcile debounce: a settings-save tick burst does not bypass the grace period (F-C)', async () => {
+  const fixture = FIXTURES['getReadings.all'];
+  const device = await makeDevice(fixture);
+  let fakeNow = 1_000_000_000_000;
+  device._nowMs = () => fakeNow;
+  await device._tick();
+  currentFixture = { ...fixture, onewire1_state: 'FAULT' };
+  await device._tick(); // first absence observed (regular poll)
+  // User saves settings with three tick-triggering keys — all within a second.
+  fakeNow += 500;
+  await device.onSettings({ changedKeys: ['pollIntervalSeconds', 'lsi_enabled', 'show_advanced_diagnostics'] });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.ok(
+    !device._log.removeCap.includes('measure_temperature.ow1'),
+    'a sub-second tick burst must not count as three polls of absence',
+  );
+  // Real time passing (2 poll intervals) still removes as specified.
+  fakeNow += 200_000;
+  await device._tick();
+  assert.ok(
+    device._log.removeCap.includes('measure_temperature.ow1'),
+    'after the real grace period the removal still happens',
+  );
+});
+
+test('reconcile debounce: user Hide override removes immediately (F2)', async () => {
+  const device = await makeDevice(FIXTURES['chlorine-only']);
+  await device._tick();
+  assert.ok(device.getCapabilities().includes('measure_chlorine'), 'precondition: chlorine detected');
+  device.__test.settings.group_chlorine = 'hide';
+  await device._tick();
+  assert.ok(device._log.removeCap.includes('measure_chlorine'), 'explicit user choice stays immediate');
+});
+
+// --- Review 2026-08-28, F1/F3: the failure path must log and must not keep
+// --- declaring day-old values fresh (repro executed in the review).
+
+test('poll failure: first error of a streak is logged via this.error (F3, M0 §10)', async () => {
+  const device = await makeDevice(FIXTURES['minimal-pool']);
+  device._log.errors.length = 0;
+  failFetch = true;
+  await device._tick();
+  assert.ok(device._log.errors.some((e) => e.includes('poll failed')), 'first failure must reach this.error');
+});
+
+test('outage: 3rd consecutive failure clears freshness and probes (F1)', async () => {
+  const device = await makeDevice(FIXTURES['getReadings.all']);
+  await device._tick(); // good poll: fresh values on the tiles
+  failFetch = true;
+  await device._tick();
+  await device._tick();
+  const before = device._log.setValue.length;
+  await device._tick(); // 3rd failure — threshold
+  const writes = device._log.setValue.slice(before);
+  assert.strictEqual(
+    writes.find((w) => w.cap === 'measurements_fresh')?.value, false,
+    'measurements_fresh must be published false on outage',
+  );
+  assert.strictEqual(writes.find((w) => w.cap === 'measure_ph')?.value, null, 'probes clear to the stale shape');
+  assert.strictEqual(device._lastFresh, false, 'advisor state must degrade to stale');
+});
+
+test('outage: advisor answers stale, not with day-old numbers (F1/C-1)', async () => {
+  const device = await makeDevice(FIXTURES['getReadings.all'], {
+    lsi_enabled: true, chem_calcium_hardness: 250, chem_total_alkalinity: 100, pool_volume_m3: 30,
+  });
+  await device._tick();
+  failFetch = true;
+  await device._tick();
+  await device._tick();
+  await device._tick();
+  const advice = await device._balanceAdvice();
+  assert.match(advice.advice_text, /not fresh/i, 'advice must name the stale reason, not prescribe doses');
 });

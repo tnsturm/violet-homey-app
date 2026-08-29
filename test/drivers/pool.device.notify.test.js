@@ -118,6 +118,24 @@ test('notifyPort settings change rebinds to the new port (spec §6)', async () =
   } finally { await device.onUninit(); }
 });
 
+// Review 2026-08-28 N2: user-deletes-device is a DIFFERENT SDK teardown event
+// than app-destroyed — without onDeleted the interval and the port leak until
+// app restart (the 2026-07 CI incident class, production side).
+test('onDeleted frees the port and clears the poll interval (N2)', async () => {
+  const port = await freePort();
+  const device = await makeDevice({ notifyPort: port });
+  /** @type {*[]} */
+  const cleared = [];
+  device.homey.clearInterval = (/** @type {*} */ h) => { cleared.push(h); };
+  await device.onDeleted();
+  assert.ok(cleared.includes(device._poll), 'poll interval must be cleared on delete');
+  const reclaim = net.createServer();
+  await new Promise((resolve, reject) => {
+    reclaim.listen(port, '127.0.0.1', () => reclaim.close(() => resolve(undefined)));
+    reclaim.on('error', reject);
+  });
+});
+
 test('onUninit frees the port (SR-M6-07)', async () => {
   const port = await freePort();
   const device = await makeDevice({ notifyPort: port });

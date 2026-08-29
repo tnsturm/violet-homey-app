@@ -158,6 +158,90 @@ test('oversized POST body is cut off with 400, server survives (SR-M6-02)', asyn
   } finally { await handle.close(); }
 });
 
+// Review 2026-08-28 N9: server-side warnings/errors must reach EVERY attached
+// device (spec §7 "listener errors routed to this.error"), not just the first
+// creator — which may be long deleted while device 2 keeps the port.
+test('rate-limit warning reaches every attacher, and survivors after a close (N9)', async () => {
+  const port = await freePort();
+  /** @type {string[]} */
+  const errorsA = [];
+  /** @type {string[]} */
+  const errorsB = [];
+  const limits = { triggersPerWindow: 2, windowMs: 100 };
+  const h1 = await createNotifyServer({ port, onAlarm: () => {}, error: (m) => errorsA.push(m), limits });
+  const h2 = await createNotifyServer({ port, onAlarm: () => {}, error: (m) => errorsB.push(m), limits });
+  try {
+    for (let i = 0; i < 4; i += 1) await get(port, `/x?ERRORCODE=1&SUBJECT=f${i}`);
+    assert.ok(errorsA.some((m) => /rate/i.test(m)), 'first attacher gets the warning');
+    assert.ok(errorsB.some((m) => /rate/i.test(m)), 'second attacher gets the warning too (N9)');
+
+    await h1.close(); // device 1 deleted — device 2 keeps the port
+    errorsB.length = 0;
+    await new Promise((resolve) => setTimeout(resolve, 150)); // fresh rate window
+    for (let i = 0; i < 4; i += 1) await get(port, `/x?ERRORCODE=1&SUBJECT=g${i}`);
+    assert.ok(errorsB.some((m) => /rate/i.test(m)), 'surviving attacher still gets warnings after the creator left');
+  } finally {
+    // Close BOTH regardless of where an assertion failed — a bound port hangs
+    // the whole test process (2026-07-20 CI lesson).
+    await h1.close().catch(() => {});
+    await h2.close().catch(() => {});
+  }
+});
+
+// Review 2026-08-28 N7: bodies must be collected as bytes and decoded ONCE —
+// per-chunk string concat corrupted multibyte characters on TCP boundaries and
+// measured the SR-M6-02 cap in UTF-16 units (~3x bypass for multibyte payloads).
+
+/** Raw POST with the body sent in explicit chunks. @param {number} port @param {Buffer[]} chunks @returns {Promise<number>} status (-1 on destroyed connection) */
+function rawChunkedPost(port, chunks) {
+  const body = Buffer.concat(chunks);
+  return new Promise((resolve) => {
+    const sock = net.connect(port, '127.0.0.1', async () => {
+      sock.write(`POST /violetmessage HTTP/1.1\r\nHost: x\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: ${body.length}\r\nConnection: close\r\n\r\n`);
+      for (const chunk of chunks) {
+        sock.write(chunk);
+        await new Promise((r) => setTimeout(r, 30)); // force separate TCP segments
+      }
+    });
+    let response = '';
+    sock.on('data', (d) => { response += d; });
+    sock.on('close', () => resolve(Number((response.match(/^HTTP\/1\.1 (\d+)/) || [])[1] ?? -1)));
+    sock.on('error', () => resolve(-1));
+  });
+}
+
+test('POST body split mid-UTF-8-character decodes intact (N7)', async () => {
+  const port = await freePort();
+  /** @type {*[]} */
+  const fired = [];
+  const handle = await createNotifyServer({ port, onAlarm: (a) => fired.push(a) });
+  try {
+    const bytes = Buffer.from('ERRORCODE=7&SUBJECT=Sch%C3%B6n+Anlage=Störung', 'utf8');
+    // Split inside the raw "ö" (0xC3 0xB6) of "Störung" — after the 0xC3 byte.
+    const splitAt = bytes.indexOf(0xc3, bytes.indexOf('Anlage')) + 1;
+    const status = await rawChunkedPost(port, [bytes.subarray(0, splitAt), bytes.subarray(splitAt)]);
+    assert.strictEqual(status, 200);
+    assert.strictEqual(fired.length, 1);
+    assert.ok(!fired[0].subject.includes('�'), `subject corrupted: "${fired[0].subject}"`);
+    assert.ok(fired[0].subject.includes('Störung'), `expected intact "Störung", got "${fired[0].subject}"`);
+  } finally { await handle.close(); }
+});
+
+test('body cap counts BYTES, not UTF-16 code units (N7, SR-M6-02)', async () => {
+  const port = await freePort();
+  let fired = 0;
+  const handle = await createNotifyServer({ port, onAlarm: () => { fired += 1; }, limits: { bodyBytes: 4096 } });
+  try {
+    // 1500 × '€' (3 bytes each) = 4500 bytes but only 1500 UTF-16 units — the
+    // old string-length cap waved this through.
+    const big = Buffer.from(`ERRORCODE=1&SUBJECT=${'€'.repeat(1500)}`, 'utf8');
+    assert.ok(big.length > 4096, 'precondition: payload exceeds the byte cap');
+    const status = await rawChunkedPost(port, [big]);
+    assert.ok(status === 400 || status === -1, `oversized-by-bytes body must be rejected (got ${status})`);
+    assert.strictEqual(fired, 0);
+  } finally { await handle.close(); }
+});
+
 test('destroyed sockets and garbage bytes never crash the process (SR-M6-01)', async () => {
   const port = await freePort();
   const handle = await createNotifyServer({ port, onAlarm: () => {} });
