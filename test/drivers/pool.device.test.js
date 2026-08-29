@@ -167,6 +167,18 @@ test('apply order: measurements_fresh is written after the probe values (F5)', a
   assert.strictEqual(freshIdx, caps.length - 1, 'measurements_fresh must be the last write of the batch');
 });
 
+// Review 2026-08-28 N3: getSetting returns null for a never-set key (pre-M3
+// paired devices never get the compose default backfilled) — Number(null)=0 is
+// a VALID pump speed and would force stage 0 instead of keep-configured.
+test('_pumpSpeedArg: never-set setting (null) means keep-configured, not speed 0 (N3)', async () => {
+  const device = await makeDevice(FIXTURES['minimal-pool']); // control_pump_speed absent → getSetting → null
+  assert.strictEqual(device._pumpSpeedArg(), undefined);
+  device.__test.settings.control_pump_speed = 'default';
+  assert.strictEqual(device._pumpSpeedArg(), undefined);
+  device.__test.settings.control_pump_speed = '2';
+  assert.strictEqual(device._pumpSpeedArg(), 2);
+});
+
 // --- Review 2026-08-28, N1/P6: alarm edge state must survive an app restart
 // --- (no phantom edge) and a Hide/Unhide cycle (re-announce, no swallowed edge).
 

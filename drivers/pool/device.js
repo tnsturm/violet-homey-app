@@ -269,10 +269,13 @@ class PoolDevice extends Homey.Device {
     return res;
   }
 
-  // Tile pump speed from settings: 'default' ⇒ omit (keep configured), else 0-3.
+  // Tile pump speed from settings: unset ⇒ omit (keep configured), else 0-3.
+  // getSetting returns null for a never-set key (pre-M3 paired devices never get
+  // the compose default backfilled) — without the null arm, Number(null)=0 would
+  // pass the PUMP enum and force stage 0 (review 2026-08-28 N3).
   _pumpSpeedArg() {
     const s = this.getSetting('control_pump_speed');
-    return s === undefined || s === 'default' ? undefined : Number(s);
+    return s === undefined || s === null || s === 'default' ? undefined : Number(s);
   }
 
   // Base (un-annotated) title a tile should show, reconstructed deterministically
