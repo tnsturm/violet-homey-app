@@ -81,6 +81,8 @@ class PoolDevice extends Homey.Device {
   _lastPollErrorLogged = false;
   /** @type {Object<string, number>} capId → consecutive polls without evidence (review F2 debounce) */
   _absenceCounts = {};
+  /** @type {boolean} alarm edge state seeded from persisted cap values this app run (review N1) */
+  _edgeStateSeeded = false;
   /** @type {Object<string, boolean>} capInstanceId → last boolean (edge detection) */
   _m2AlarmState = {};
   /** @type {Object<string, *>} capId → FlowCardTriggerDevice */
@@ -119,8 +121,10 @@ class PoolDevice extends Homey.Device {
 
   async onInit() {
     this._failures = 0;
+    // Band persisted in the store (review N1): an app restart inside an
+    // unchanged warning band is not an edge — no repeat timeline notification.
     /** @type {?string} */
-    this._lastLsiBand = null;
+    this._lastLsiBand = /** @type {?string} */ (this.getStoreValue('lsiBand')) ?? null;
     /** @type {*} Homey FlowCardTriggerDevice (SDK type is loose here). */
     this._lsiWarning = this.homey.flow.getDeviceTriggerCard('lsi_warning');
     this._lsiWarning.registerRunListener((/** @type {*} */ args, /** @type {*} */ state) => {
@@ -513,6 +517,20 @@ class PoolDevice extends Homey.Device {
       }
     }
     this._lastLsiBand = band;
+    if (this.getStoreValue('lsiBand') !== band) await this.setStoreValue('lsiBand', band).catch(this.error);
+
+    // Seed the M2 edge state once per app start from the PERSISTED capability
+    // values (review N1): true before the restart / true after it is no edge —
+    // prevents duplicate triggers after every app/firmware update. Runs before
+    // this tick's values are applied (the apply loop follows below).
+    if (!this._edgeStateSeeded) {
+      for (const cap of this.getCapabilities()) {
+        if (cap.startsWith('alarm_') && !(cap in this._m2AlarmState)) {
+          this._m2AlarmState[cap] = this.getCapabilityValue(cap) === true;
+        }
+      }
+      this._edgeStateSeeded = true;
+    }
 
     // Edge-trigger M2 alarms on false→true only (spec §7). Channel-scoped alarms
     // key their state per instance; tokens carry the channel/reason.
@@ -825,6 +843,9 @@ class PoolDevice extends Homey.Device {
           await this.removeCapability(cap).catch(this.error);
           delete this._inputOptState[cap]; // M5.8: Re-Add muss Optionen neu setzen (Churn-Guard invalidieren)
           delete this._absenceCounts[cap];
+          // Review P6: state must not outlive the capability — a re-added alarm
+          // cap re-announces a still-active alarm instead of swallowing the edge.
+          delete this._m2AlarmState[cap];
         }
       } else if (desiredM2.has(cap)) delete this._absenceCounts[cap];
     }

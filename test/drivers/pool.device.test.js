@@ -52,7 +52,8 @@ const DEFAULT_SETTINGS = {
  * The mock (test/mocks/homey.js) augments the SDK Device surface with its
  * recording state — spelled out here so checkJs can follow the tests.
  * @typedef {InstanceType<typeof PoolDevice> & {
- *   __test: { settings: Object<string, any>, store: Object<string, any>, capabilities: string[] },
+ *   __test: { settings: Object<string, any>, store: Object<string, any>, capabilities: string[],
+ *             capabilityValues: Object<string, any> },
  *   _log: { setValue: Array<{cap: string, value: any}>, addCap: string[], removeCap: string[],
  *           setOptions: Array<{cap: string, options: any}>, available: string[],
  *           triggers: Object<string, Array<{tokens: any, state: any}>>, errors: string[],
@@ -164,6 +165,45 @@ test('apply order: measurements_fresh is written after the probe values (F5)', a
   const freshIdx = caps.lastIndexOf('measurements_fresh');
   assert.ok(freshIdx > caps.lastIndexOf('measure_ph'), 'fresh before ph — a Flow gate would race the values');
   assert.strictEqual(freshIdx, caps.length - 1, 'measurements_fresh must be the last write of the batch');
+});
+
+// --- Review 2026-08-28, N1/P6: alarm edge state must survive an app restart
+// --- (no phantom edge) and a Hide/Unhide cycle (re-announce, no swallowed edge).
+
+const DOSING_LOW_FIXTURE = { ...FIXTURES['salt-electrolysis'], DOS_2_ELO_REMAINING_RANGE: '2d' };
+
+test('restart: persisted alarm state does not re-fire the trigger (N1)', async () => {
+  const first = await makeDevice(DOSING_LOW_FIXTURE);
+  await first._tick();
+  // Both fixture channels (elo patched to 2d, phm at 5d) are below the 7d
+  // threshold — the count only matters relatively: >0 before, 0 after restart.
+  assert.ok((first._log.triggers.dosing_low || []).length > 0, 'precondition: edge fires on the first instance');
+
+  // Simulate an app restart: fresh instance, Homey-persisted device state copied.
+  const second = /** @type {TestDevice} */ (/** @type {any} */ (new PoolDevice()));
+  second.__test.settings = { ...first.__test.settings };
+  second.__test.capabilities = [...first.__test.capabilities];
+  second.__test.capabilityValues = { ...first.__test.capabilityValues };
+  second.__test.store = { ...first.__test.store };
+  await second.onInit();
+  await new Promise((resolve) => setImmediate(resolve));
+  openDevices.push(second);
+  await second._tick();
+  assert.strictEqual((second._log.triggers.dosing_low || []).length, 0, 'restart with unchanged state must not re-fire (N1)');
+});
+
+test('hide/unhide: alarm edge fires again after the capability returns (P6)', async () => {
+  const blocked = { ...FIXTURES['salt-electrolysis'], DOS_2_ELO_STATE: '0|BLOCKED_BY_SENSOR_FAULT' };
+  const device = await makeDevice(blocked);
+  await device._tick();
+  const firedBefore = (device._log.triggers.dosing_blocked || []).length;
+  assert.ok(firedBefore > 0, 'precondition: blocked edge fires');
+  device.__test.settings.group_dosing = 'hide';
+  await device._tick(); // user-driven removal — immediate (F2)
+  assert.ok(!device.getCapabilities().includes('alarm_dosing_blocked.elo'), 'precondition: cap removed while hidden');
+  device.__test.settings.group_dosing = 'auto';
+  await device._tick(); // caps re-added, alarms still active — every one re-announces
+  assert.strictEqual((device._log.triggers.dosing_blocked || []).length, firedBefore * 2, 'unhide must re-announce the still-active alarms');
 });
 
 // --- Review 2026-08-28, F2: capability teardown is debounced over 3 polls;
