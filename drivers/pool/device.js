@@ -76,6 +76,8 @@ class PoolDevice extends Homey.Device {
   // the real values; these defaults exist only to pin the types.
   /** @type {number} */
   _failures = 0;
+  /** @type {boolean} first-failure-of-a-streak log throttle (review F3) */
+  _lastPollErrorLogged = false;
   /** @type {Object<string, boolean>} capInstanceId → last boolean (edge detection) */
   _m2AlarmState = {};
   /** @type {Object<string, *>} capId → FlowCardTriggerDevice */
@@ -388,11 +390,33 @@ class PoolDevice extends Homey.Device {
     try {
       raw = await fetchReadings(host, { timeoutMs: 10000 });
       this._failures = 0;
+      this._lastPollErrorLogged = false;
       if (!this.getAvailable()) await this.setAvailable().catch(this.error);
     } catch (err) {
       // 3 consecutive failures → unavailable; transient errors keep last values (spec §10).
       this._failures += 1;
-      if (this._failures >= 3) await this.setUnavailable(this.homey.__('error.unreachable')).catch(this.error);
+      // M0 §10 "Errors logged via this.error" (review F3): first failure of a
+      // streak via error() (surfaces in diagnostics), repeats via log() so a
+      // long outage at 1 poll/min does not flood the error channel.
+      const msg = err instanceof Error ? err.message : String(err);
+      if (!this._lastPollErrorLogged) { this.error('poll failed:', msg); this._lastPollErrorLogged = true; }
+      else this.log('poll failed:', msg);
+      if (this._failures >= 3) {
+        await this.setUnavailable(this.homey.__('error.unreachable')).catch(this.error);
+        // Review F1: values of unknown age must not stay declared fresh. At the
+        // threshold crossing publish the stale shape once (clear-stale §3) and
+        // degrade the advisor state — spec §10 only protects the first two,
+        // transient, failures.
+        if (this._failures === 3) {
+          this._lastFresh = false;
+          const staleUpdates = /** @type {Object<string, *>} */ ({
+            measure_ph: null, measure_orp: null, measure_chlorine: null, measure_lsi: null, alarm_water_balance: false, measurements_fresh: false,
+          });
+          for (const [cap, value] of Object.entries(staleUpdates)) {
+            if (this.hasCapability(cap)) await this.setCapabilityValue(cap, value).catch(this.error);
+          }
+        }
+      }
       return;
     }
 

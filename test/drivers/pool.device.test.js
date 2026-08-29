@@ -55,7 +55,8 @@ const DEFAULT_SETTINGS = {
  *   __test: { settings: Object<string, any>, store: Object<string, any>, capabilities: string[] },
  *   _log: { setValue: Array<{cap: string, value: any}>, addCap: string[], removeCap: string[],
  *           setOptions: Array<{cap: string, options: any}>, available: string[],
- *           triggers: Object<string, Array<{tokens: any, state: any}>> },
+ *           triggers: Object<string, Array<{tokens: any, state: any}>>, errors: string[],
+ *           notifications: Array<{excerpt: string}> },
  * }} TestDevice
  */
 
@@ -154,4 +155,45 @@ test('device availability: 3 consecutive fetch failures → setUnavailable', asy
   await device._tick();
   await device._tick();
   assert.strictEqual(device._log.available.at(-1), 'unavailable');
+});
+
+// --- Review 2026-08-28, F1/F3: the failure path must log and must not keep
+// --- declaring day-old values fresh (repro executed in the review).
+
+test('poll failure: first error of a streak is logged via this.error (F3, M0 §10)', async () => {
+  const device = await makeDevice(FIXTURES['minimal-pool']);
+  device._log.errors.length = 0;
+  failFetch = true;
+  await device._tick();
+  assert.ok(device._log.errors.some((e) => e.includes('poll failed')), 'first failure must reach this.error');
+});
+
+test('outage: 3rd consecutive failure clears freshness and probes (F1)', async () => {
+  const device = await makeDevice(FIXTURES['getReadings.all']);
+  await device._tick(); // good poll: fresh values on the tiles
+  failFetch = true;
+  await device._tick();
+  await device._tick();
+  const before = device._log.setValue.length;
+  await device._tick(); // 3rd failure — threshold
+  const writes = device._log.setValue.slice(before);
+  assert.strictEqual(
+    writes.find((w) => w.cap === 'measurements_fresh')?.value, false,
+    'measurements_fresh must be published false on outage',
+  );
+  assert.strictEqual(writes.find((w) => w.cap === 'measure_ph')?.value, null, 'probes clear to the stale shape');
+  assert.strictEqual(device._lastFresh, false, 'advisor state must degrade to stale');
+});
+
+test('outage: advisor answers stale, not with day-old numbers (F1/C-1)', async () => {
+  const device = await makeDevice(FIXTURES['getReadings.all'], {
+    lsi_enabled: true, chem_calcium_hardness: 250, chem_total_alkalinity: 100, pool_volume_m3: 30,
+  });
+  await device._tick();
+  failFetch = true;
+  await device._tick();
+  await device._tick();
+  await device._tick();
+  const advice = await device._balanceAdvice();
+  assert.match(advice.advice_text, /not fresh/i, 'advice must name the stale reason, not prescribe doses');
 });
