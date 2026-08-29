@@ -91,6 +91,8 @@ class PoolDevice extends Homey.Device {
   _configFacts = null;
   /** @type {number} consecutive failed config fetches (spec §4.3: stop after 3) */
   _configAttempts = 0;
+  /** @type {number} polls since the last config fetch attempt (review N6 backoff retry) */
+  _ticksSinceConfigAttempt = 0;
   /** @type {?number} CONFIGCHANGEMARKER seen on the previous poll */
   _lastSeenMarker = null;
   /** @type {ReturnType<typeof ConfigSource.createConfigLogThrottle>} */
@@ -200,10 +202,16 @@ class PoolDevice extends Homey.Device {
     const storedMarker = /** @type {?number} */ (this.getStoreValue('configMarker'));
     const markerMoved = marker !== null && storedMarker !== null && marker !== storedMarker;
     const markerMovedBetweenPolls = marker !== null && this._lastSeenMarker !== null && marker !== this._lastSeenMarker;
+    // Review N6: the 3-attempt budget must not become a permanent stop — a
+    // controller that boots slower than 3 polls would otherwise leave
+    // _configFacts null until app restart. Retry once per ~hour of ticks.
+    this._ticksSinceConfigAttempt += 1;
+    const retryDue = this._ticksSinceConfigAttempt >= 60;
     const needFirstFacts = this._configFacts === null
-      && (this._configAttempts < 3 || markerMovedBetweenPolls);
+      && (this._configAttempts < 3 || markerMovedBetweenPolls || retryDue);
     this._lastSeenMarker = marker;
     if (!needFirstFacts && !markerMoved) return;
+    this._ticksSinceConfigAttempt = 0; // an attempt is being made now
 
     // Write creds double as the restricted-fallback for the config read (SR-14);
     // absent creds keep the default credential-free path.

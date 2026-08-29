@@ -132,6 +132,22 @@ test('Retry-Politik: nach 3 Fehlversuchen nur noch bei Marker-Änderung (Spec §
   assert.strictEqual(configCalls, after3 + 1);
 });
 
+// Review 2026-08-28 N6: das 3er-Budget darf kein Dauerstopp sein — bootet der
+// Controller langsamer als 3 Polls, bliebe _configFacts sonst bis zum
+// App-Neustart null (History-Heuristik statt Config, ohne Not).
+test('Retry-Politik: nach dem 3er-Budget kommt ein periodischer Retry (~60 Ticks) (N6)', async () => {
+  configResult = null; // fetch wirft
+  const device = await makeDevice({});
+  configError = new Error('down');
+  await device._tick(); // attempt 2
+  await device._tick(); // attempt 3 — budget burnt
+  const after3 = configCalls;
+  for (let i = 0; i < 59; i += 1) await device._tick();
+  assert.strictEqual(configCalls, after3, 'no hammering inside the backoff window');
+  await device._tick(); // 60th tick since the last attempt
+  assert.strictEqual(configCalls, after3 + 1, 'the periodic retry must fire (N6)');
+});
+
 test('Marker-Änderung refresht Facts im selben Tick (Spec §4.2)', async () => {
   configResult = referenceConfig;
   const device = await makeDevice({ COVER_STATE: 'OPEN' });
