@@ -158,6 +158,36 @@ test('oversized POST body is cut off with 400, server survives (SR-M6-02)', asyn
   } finally { await handle.close(); }
 });
 
+// Review 2026-08-28 N9: server-side warnings/errors must reach EVERY attached
+// device (spec §7 "listener errors routed to this.error"), not just the first
+// creator — which may be long deleted while device 2 keeps the port.
+test('rate-limit warning reaches every attacher, and survivors after a close (N9)', async () => {
+  const port = await freePort();
+  /** @type {string[]} */
+  const errorsA = [];
+  /** @type {string[]} */
+  const errorsB = [];
+  const limits = { triggersPerWindow: 2, windowMs: 100 };
+  const h1 = await createNotifyServer({ port, onAlarm: () => {}, error: (m) => errorsA.push(m), limits });
+  const h2 = await createNotifyServer({ port, onAlarm: () => {}, error: (m) => errorsB.push(m), limits });
+  try {
+    for (let i = 0; i < 4; i += 1) await get(port, `/x?ERRORCODE=1&SUBJECT=f${i}`);
+    assert.ok(errorsA.some((m) => /rate/i.test(m)), 'first attacher gets the warning');
+    assert.ok(errorsB.some((m) => /rate/i.test(m)), 'second attacher gets the warning too (N9)');
+
+    await h1.close(); // device 1 deleted — device 2 keeps the port
+    errorsB.length = 0;
+    await new Promise((resolve) => setTimeout(resolve, 150)); // fresh rate window
+    for (let i = 0; i < 4; i += 1) await get(port, `/x?ERRORCODE=1&SUBJECT=g${i}`);
+    assert.ok(errorsB.some((m) => /rate/i.test(m)), 'surviving attacher still gets warnings after the creator left');
+  } finally {
+    // Close BOTH regardless of where an assertion failed — a bound port hangs
+    // the whole test process (2026-07-20 CI lesson).
+    await h1.close().catch(() => {});
+    await h2.close().catch(() => {});
+  }
+});
+
 // Review 2026-08-28 N7: bodies must be collected as bytes and decoded ONCE —
 // per-chunk string concat corrupted multibyte characters on TCP boundaries and
 // measured the SR-M6-02 cap in UTF-16 units (~3x bypass for multibyte payloads).
