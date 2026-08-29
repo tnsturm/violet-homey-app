@@ -650,8 +650,11 @@ class PoolDevice extends Homey.Device {
    */
   _advisorInputs() {
     const parsed = this._lastParsed;
+    // "No successful poll yet" counts as stale too (review N4): with parsed
+    // null the old `parsed && !fresh` short-circuited to reason null, and the
+    // generic missing-list blamed settings the user did enter (spec §9).
     const reason = this.getSetting('lsi_enabled') !== true ? 'lsi_disabled'
-      : (parsed && !this._lastFresh) ? 'stale' : null;
+      : (!parsed || !this._lastFresh) ? 'stale' : null;
     const state = reason === null ? parsed : null;
     const channels = (this._lastFeatures && this._lastFeatures.dosingChannels) || [];
     return {

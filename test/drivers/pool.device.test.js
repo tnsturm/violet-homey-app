@@ -167,6 +167,26 @@ test('apply order: measurements_fresh is written after the probe values (F5)', a
   assert.strictEqual(freshIdx, caps.length - 1, 'measurements_fresh must be the last write of the batch');
 });
 
+// Review 2026-08-28 N4: before the first successful poll _lastParsed is null —
+// the advisor must report the stale reason, not a missing-list that blames
+// chem settings the user did enter (contradicts the _adviseNow comment, spec §9).
+test('advisor before first successful poll reports stale, not a fake missing list (N4)', async () => {
+  // Inline construction (makeDevice resets failFetch): the onInit tick fails,
+  // so no poll has ever succeeded when the Flow action asks for advice.
+  const device = /** @type {TestDevice} */ (/** @type {any} */ (new PoolDevice()));
+  device.__test.settings = {
+    ...DEFAULT_SETTINGS, lsi_enabled: true, chem_calcium_hardness: 250, chem_total_alkalinity: 100, pool_volume_m3: 30,
+  };
+  device.__test.capabilities = ['measure_temperature', 'measure_ph', 'measure_orp', 'pump_running', 'measurements_fresh'];
+  failFetch = true;
+  await device.onInit();
+  await new Promise((resolve) => setImmediate(resolve));
+  openDevices.push(device);
+  const advice = await device._balanceAdvice();
+  assert.match(advice.advice_text, /not fresh/i, 'the stale reason must be named');
+  assert.doesNotMatch(advice.advice_text, /calcium|alkalinity/i, 'must not claim entered settings are missing');
+});
+
 // Review 2026-08-28 N3: getSetting returns null for a never-set key (pre-M3
 // paired devices never get the compose default backfilled) — Number(null)=0 is
 // a VALID pump speed and would force stage 0 instead of keep-configured.
