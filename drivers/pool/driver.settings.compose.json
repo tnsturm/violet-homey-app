@@ -2,36 +2,21 @@
   {
     "id": "host",
     "type": "text",
-    "label": {
-      "en": "Violet host or IP",
-      "de": "Violet-Host oder IP"
-    },
+    "label": { "en": "Violet host or IP", "de": "Violet-Host oder IP" },
     "value": "violet.local",
-    "hint": {
-      "en": "Use a static IP outside the DHCP range for reliability.",
-      "de": "Aus Zuverlässigkeitsgründen eine statische IP außerhalb des DHCP-Bereichs verwenden."
-    }
+    "hint": { "en": "Use a static IP outside the DHCP range for reliability.", "de": "Aus Zuverlässigkeitsgründen eine statische IP außerhalb des DHCP-Bereichs verwenden." }
   },
   {
     "id": "writeUsername",
     "type": "text",
-    "label": {
-      "en": "Write username (optional)",
-      "de": "Schreib-Benutzername (optional)"
-    },
+    "label": { "en": "Write username (optional)", "de": "Schreib-Benutzername (optional)" },
     "value": "",
-    "hint": {
-      "en": "Optional. Reading works without credentials. Only needed to enable control (write), and as a fallback if your controller restricts config reads. Leave empty for read-only monitoring.",
-      "de": "Optional. Das Auslesen funktioniert ohne Zugangsdaten. Nur nötig, um die Steuerung (Schreibzugriff) zu aktivieren, und als Rückfall, falls dein Regler Konfig-Lesezugriffe sperrt. Für reine Überwachung leer lassen."
-    }
+    "hint": { "en": "Optional. Reading works without credentials. Only needed to enable control (write), and as a fallback if your controller restricts config reads. Leave empty for read-only monitoring.", "de": "Optional. Das Auslesen funktioniert ohne Zugangsdaten. Nur nötig, um die Steuerung (Schreibzugriff) zu aktivieren, und als Rückfall, falls dein Regler Konfig-Lesezugriffe sperrt. Für reine Überwachung leer lassen." }
   },
   {
     "id": "pollIntervalSeconds",
     "type": "number",
-    "label": {
-      "en": "Poll interval (seconds)",
-      "de": "Abfrageintervall (Sekunden)"
-    },
+    "label": { "en": "Poll interval (seconds)", "de": "Abfrageintervall (Sekunden)" },
     "value": 60,
     "min": 60,
     "max": 900
@@ -39,203 +24,71 @@
   {
     "id": "notifyPort",
     "type": "number",
-    "label": {
-      "en": "Alarm listener port (Violet NOTIFY)",
-      "de": "Alarm-Empfangsport (Violet NOTIFY)"
-    },
+    "label": { "en": "Alarm listener port (Violet NOTIFY)", "de": "Alarm-Empfangsport (Violet NOTIFY)" },
     "value": 22222,
     "min": 1024,
     "max": 65535,
-    "hint": {
-      "en": "Port this app listens on for the Violet's NOTIFY alarm pushes (plain HTTP, LAN only — never port-forward it). The Violet's regular web UI cannot change its receiver port: open http://<violet-ip>/modifyParameter.htm?NOTIFY_http_baseport in a browser and enter this port in the form there (the path does not matter). Default 22222 avoids Homey's own ports and the ephemeral range.",
-      "de": "Port, auf dem diese App die NOTIFY-Alarme der Violet empfängt (reines HTTP, nur LAN — niemals ins Internet weiterleiten). Der Empfangsport lässt sich nicht über die normale Violet-Weboberfläche ändern: dazu im Browser http://<violet-ip>/modifyParameter.htm?NOTIFY_http_baseport öffnen und diesen Port im Formular eintragen (der Pfad ist egal). Standard 22222 vermeidet Homeys eigene Ports und den Ephemeral-Bereich."
-    }
+    "hint": { "en": "Port this app listens on for the Violet's NOTIFY alarm pushes (plain HTTP, LAN only — never port-forward it). The Violet's regular web UI cannot change its receiver port: open http://<violet-ip>/modifyParameter.htm?NOTIFY_http_baseport in a browser and enter this port in the form there (the path does not matter). Default 22222 avoids Homey's own ports and the ephemeral range.", "de": "Port, auf dem diese App die NOTIFY-Alarme der Violet empfängt (reines HTTP, nur LAN — niemals ins Internet weiterleiten). Der Empfangsport lässt sich nicht über die normale Violet-Weboberfläche ändern: dazu im Browser http://<violet-ip>/modifyParameter.htm?NOTIFY_http_baseport öffnen und diesen Port im Formular eintragen (der Pfad ist egal). Standard 22222 vermeidet Homeys eigene Ports und den Ephemeral-Bereich." }
   },
   {
     "id": "pumpWarmupSeconds",
     "type": "number",
-    "label": {
-      "en": "Pump warmup before trusting readings (seconds)",
-      "de": "Pumpen-Vorlaufzeit, bevor Werte als gültig gelten (Sekunden)"
-    },
+    "label": { "en": "Pump warmup before trusting readings (seconds)", "de": "Pumpen-Vorlaufzeit, bevor Werte als gültig gelten (Sekunden)" },
     "value": 120,
     "min": 0,
     "max": 1800,
-    "hint": {
-      "en": "pH/ORP/chlorine and the LSI are shown only after the pump has circulated water this long — a stagnant sensor is not representative, so they read '-' while the pump is off. 0 = trust immediately.",
-      "de": "pH/Redox/Chlor und der LSI werden erst angezeigt, wenn die Pumpe so lange Wasser umgewälzt hat — ein stehender Fühler ist nicht repräsentativ, daher zeigen sie bei ausgeschalteter Pumpe '-'. 0 = sofort vertrauen."
-    }
+    "hint": { "en": "pH/ORP/chlorine and the LSI are shown only after the pump has circulated water this long — a stagnant sensor is not representative, so they read '-' while the pump is off. 0 = trust immediately.", "de": "pH/Redox/Chlor und der LSI werden erst angezeigt, wenn die Pumpe so lange Wasser umgewälzt hat — ein stehender Fühler ist nicht repräsentativ, daher zeigen sie bei ausgeschalteter Pumpe '-'. 0 = sofort vertrauen." }
   },
   {
     "id": "waterTempChannel",
     "type": "dropdown",
-    "label": {
-      "en": "Water temperature sensor",
-      "de": "Wassertemperatur-Sensor"
-    },
+    "label": { "en": "Water temperature sensor", "de": "Wassertemperatur-Sensor" },
     "value": "auto",
-    "hint": {
-      "en": "This is the main pool-water temperature (also used for the LSI). Auto picks the sensor whose Violet name looks like the pool (e.g. 'Schwimmbad'). With several sensors and no clear name it stays '-': pick your pool sensor here — the temperature tiles below are labelled with your Violet names, so you can tell which Sensor number is which.",
-      "de": "Das ist die Haupt-Poolwassertemperatur (auch für den LSI). Auto wählt den Fühler, dessen Violet-Name nach Pool aussieht (z. B. 'Schwimmbad'). Bei mehreren Fühlern ohne eindeutigen Namen bleibt sie '-': Wähle hier deinen Pool-Fühler — die Temperatur-Kacheln unten tragen deine Violet-Namen, so erkennst du, welche Sensor-Nummer welche ist."
-    },
+    "hint": { "en": "This is the main pool-water temperature (also used for the LSI). Auto picks the sensor whose Violet name looks like the pool (e.g. 'Schwimmbad'). With several sensors and no clear name it stays '-': pick your pool sensor here — the temperature tiles below are labelled with your Violet names, so you can tell which Sensor number is which.", "de": "Das ist die Haupt-Poolwassertemperatur (auch für den LSI). Auto wählt den Fühler, dessen Violet-Name nach Pool aussieht (z. B. 'Schwimmbad'). Bei mehreren Fühlern ohne eindeutigen Namen bleibt sie '-': Wähle hier deinen Pool-Fühler — die Temperatur-Kacheln unten tragen deine Violet-Namen, so erkennst du, welche Sensor-Nummer welche ist." },
     "values": [
-      {
-        "id": "auto",
-        "label": {
-          "en": "Auto",
-          "de": "Auto"
-        }
-      },
-      {
-        "id": "1",
-        "label": {
-          "en": "Sensor 1",
-          "de": "Sensor 1"
-        }
-      },
-      {
-        "id": "2",
-        "label": {
-          "en": "Sensor 2",
-          "de": "Sensor 2"
-        }
-      },
-      {
-        "id": "3",
-        "label": {
-          "en": "Sensor 3",
-          "de": "Sensor 3"
-        }
-      },
-      {
-        "id": "4",
-        "label": {
-          "en": "Sensor 4",
-          "de": "Sensor 4"
-        }
-      },
-      {
-        "id": "5",
-        "label": {
-          "en": "Sensor 5",
-          "de": "Sensor 5"
-        }
-      },
-      {
-        "id": "6",
-        "label": {
-          "en": "Sensor 6",
-          "de": "Sensor 6"
-        }
-      },
-      {
-        "id": "7",
-        "label": {
-          "en": "Sensor 7",
-          "de": "Sensor 7"
-        }
-      },
-      {
-        "id": "8",
-        "label": {
-          "en": "Sensor 8",
-          "de": "Sensor 8"
-        }
-      },
-      {
-        "id": "9",
-        "label": {
-          "en": "Sensor 9",
-          "de": "Sensor 9"
-        }
-      },
-      {
-        "id": "10",
-        "label": {
-          "en": "Sensor 10",
-          "de": "Sensor 10"
-        }
-      },
-      {
-        "id": "11",
-        "label": {
-          "en": "Sensor 11",
-          "de": "Sensor 11"
-        }
-      },
-      {
-        "id": "12",
-        "label": {
-          "en": "Sensor 12",
-          "de": "Sensor 12"
-        }
-      }
+      { "id": "auto", "label": { "en": "Auto", "de": "Auto" } },
+      { "id": "1", "label": { "en": "Sensor 1", "de": "Sensor 1" } },
+      { "id": "2", "label": { "en": "Sensor 2", "de": "Sensor 2" } },
+      { "id": "3", "label": { "en": "Sensor 3", "de": "Sensor 3" } },
+      { "id": "4", "label": { "en": "Sensor 4", "de": "Sensor 4" } },
+      { "id": "5", "label": { "en": "Sensor 5", "de": "Sensor 5" } },
+      { "id": "6", "label": { "en": "Sensor 6", "de": "Sensor 6" } },
+      { "id": "7", "label": { "en": "Sensor 7", "de": "Sensor 7" } },
+      { "id": "8", "label": { "en": "Sensor 8", "de": "Sensor 8" } },
+      { "id": "9", "label": { "en": "Sensor 9", "de": "Sensor 9" } },
+      { "id": "10", "label": { "en": "Sensor 10", "de": "Sensor 10" } },
+      { "id": "11", "label": { "en": "Sensor 11", "de": "Sensor 11" } },
+      { "id": "12", "label": { "en": "Sensor 12", "de": "Sensor 12" } }
     ]
   },
   {
     "id": "group_chlorine",
     "type": "dropdown",
-    "label": {
-      "en": "Chlorine measurement",
-      "de": "Chlor-Messung"
-    },
+    "label": { "en": "Chlorine measurement", "de": "Chlor-Messung" },
     "value": "auto",
-    "hint": {
-      "en": "Auto shows the tile only when the hardware is detected; Always show forces it; Hide removes it. The same three choices apply to the feature groups further below.",
-      "de": "Auto zeigt die Kachel nur, wenn die Hardware erkannt wird; Immer anzeigen erzwingt sie; Ausblenden entfernt sie. Dieselben drei Optionen gelten für die Funktionsgruppen weiter unten."
-    },
+    "hint": { "en": "Auto shows the tile only when the hardware is detected; Always show forces it; Hide removes it. The same three choices apply to the feature groups further below.", "de": "Auto zeigt die Kachel nur, wenn die Hardware erkannt wird; Immer anzeigen erzwingt sie; Ausblenden entfernt sie. Dieselben drei Optionen gelten für die Funktionsgruppen weiter unten." },
     "values": [
-      {
-        "id": "auto",
-        "label": {
-          "en": "Auto (show if detected)",
-          "de": "Auto (anzeigen, wenn erkannt)"
-        }
-      },
-      {
-        "id": "force",
-        "label": {
-          "en": "Always show",
-          "de": "Immer anzeigen"
-        }
-      },
-      {
-        "id": "hide",
-        "label": {
-          "en": "Hide",
-          "de": "Ausblenden"
-        }
-      }
+      { "id": "auto", "label": { "en": "Auto (show if detected)", "de": "Auto (anzeigen, wenn erkannt)" } },
+      { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } },
+      { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } }
     ]
   },
   {
     "id": "group_lsi",
     "type": "group",
-    "label": {
-      "en": "Water chemistry (LSI)",
-      "de": "Wasserchemie (LSI)"
-    },
+    "label": { "en": "Water chemistry (LSI)", "de": "Wasserchemie (LSI)" },
     "children": [
       {
         "id": "lsi_enabled",
         "type": "checkbox",
-        "label": {
-          "en": "Compute LSI (Langelier index)",
-          "de": "LSI (Langelier-Index) berechnen"
-        },
+        "label": { "en": "Compute LSI (Langelier index)", "de": "LSI (Langelier-Index) berechnen" },
         "value": false,
-        "hint": {
-          "en": "Off by default. Enable to show the LSI and water-balance warnings (needs the values below).",
-          "de": "Standardmäßig aus. Aktivieren, um LSI und Wasserbalance-Warnungen anzuzeigen (benötigt die Werte unten)."
-        }
+        "hint": { "en": "Off by default. Enable to show the LSI and water-balance warnings (needs the values below).", "de": "Standardmäßig aus. Aktivieren, um LSI und Wasserbalance-Warnungen anzuzeigen (benötigt die Werte unten)." }
       },
       {
         "id": "chem_info",
         "type": "label",
-        "label": {
-          "en": "About the LSI",
-          "de": "Über den LSI"
-        },
+        "label": { "en": "About the LSI", "de": "Über den LSI" },
         "value": "Langelier Saturation Index (LSI)",
         "hint": {
           "en": "The LSI (Langelier Saturation Index) rates the water's scaling/corrosion balance. Balanced is -0.3 to +0.5 (0 ideal) — deliberately asymmetric: a slightly positive value is safer because a thin scale layer protects surfaces whereas corrosive water (copper/heater!) causes permanent damage. Classification per ANSI/PHTA/ICC-11. Note: the index applies to the calcium-carbonate/CO2 equilibrium and metals such as copper/iron and cement-based materials; per DIN 19643 it is NOT a valid indicator for stainless-steel corrosion. Tip: in the Homey iOS app a dropdown's current selection may show as '-' in the list — the value is still saved; tap the row to see or change it.",
@@ -245,134 +98,62 @@
       {
         "id": "chem_calcium_hardness",
         "type": "number",
-        "label": {
-          "en": "Calcium hardness",
-          "de": "Calciumhärte"
-        },
-        "hint": {
-          "en": "From your PoolLab/test. Required for the LSI.",
-          "de": "Aus deinem PoolLab/Test. Für den LSI erforderlich."
-        }
+        "label": { "en": "Calcium hardness", "de": "Calciumhärte" },
+        "hint": { "en": "From your PoolLab/test. Required for the LSI.", "de": "Aus deinem PoolLab/Test. Für den LSI erforderlich." }
       },
       {
         "id": "chem_calcium_unit",
         "type": "dropdown",
-        "label": {
-          "en": "Calcium hardness unit",
-          "de": "Einheit Calciumhärte"
-        },
+        "label": { "en": "Calcium hardness unit", "de": "Einheit Calciumhärte" },
         "value": "ppm",
         "values": [
-          {
-            "id": "ppm",
-            "label": {
-              "en": "ppm (mg/L CaCO₃)",
-              "de": "ppm (mg/L CaCO₃)"
-            }
-          },
-          {
-            "id": "dH",
-            "label": {
-              "en": "°dH",
-              "de": "°dH"
-            }
-          },
-          {
-            "id": "fH",
-            "label": {
-              "en": "°f",
-              "de": "°f"
-            }
-          }
+          { "id": "ppm", "label": { "en": "ppm (mg/L CaCO₃)", "de": "ppm (mg/L CaCO₃)" } },
+          { "id": "dH", "label": { "en": "°dH", "de": "°dH" } },
+          { "id": "fH", "label": { "en": "°f", "de": "°f" } }
         ]
       },
       {
         "id": "chem_total_alkalinity",
         "type": "number",
-        "label": {
-          "en": "Total alkalinity",
-          "de": "Gesamtalkalität"
-        },
-        "hint": {
-          "en": "From your PoolLab/test. Required for the LSI.",
-          "de": "Aus deinem PoolLab/Test. Für den LSI erforderlich."
-        }
+        "label": { "en": "Total alkalinity", "de": "Gesamtalkalität" },
+        "hint": { "en": "From your PoolLab/test. Required for the LSI.", "de": "Aus deinem PoolLab/Test. Für den LSI erforderlich." }
       },
       {
         "id": "chem_alkalinity_unit",
         "type": "dropdown",
-        "label": {
-          "en": "Total alkalinity unit",
-          "de": "Einheit Gesamtalkalität"
-        },
+        "label": { "en": "Total alkalinity unit", "de": "Einheit Gesamtalkalität" },
         "value": "ppm",
         "values": [
-          {
-            "id": "ppm",
-            "label": {
-              "en": "ppm (mg/L CaCO₃)",
-              "de": "ppm (mg/L CaCO₃)"
-            }
-          },
-          {
-            "id": "dH",
-            "label": {
-              "en": "°dH",
-              "de": "°dH"
-            }
-          },
-          {
-            "id": "fH",
-            "label": {
-              "en": "°f",
-              "de": "°f"
-            }
-          }
+          { "id": "ppm", "label": { "en": "ppm (mg/L CaCO₃)", "de": "ppm (mg/L CaCO₃)" } },
+          { "id": "dH", "label": { "en": "°dH", "de": "°dH" } },
+          { "id": "fH", "label": { "en": "°f", "de": "°f" } }
         ]
       },
       {
         "id": "chem_cya",
         "type": "number",
-        "label": {
-          "en": "Cyanuric acid (CYA, ppm)",
-          "de": "Cyanursäure (CYA, ppm)"
-        },
+        "label": { "en": "Cyanuric acid (CYA, ppm)", "de": "Cyanursäure (CYA, ppm)" },
         "value": 0,
-        "hint": {
-          "en": "0 if unstabilised. Used for the pH-dependent alkalinity correction.",
-          "de": "0 wenn unstabilisiert. Für die pH-abhängige Alkalitäts-Korrektur."
-        }
+        "hint": { "en": "0 if unstabilised. Used for the pH-dependent alkalinity correction.", "de": "0 wenn unstabilisiert. Für die pH-abhängige Alkalitäts-Korrektur." }
       },
       {
         "id": "chem_fixed_temperature",
         "type": "number",
-        "label": {
-          "en": "Fixed temperature for LSI (°C)",
-          "de": "Feste Temperatur für LSI (°C)"
-        },
-        "hint": {
-          "en": "Only used if no water-temperature sensor is available/selected. Keep it representative.",
-          "de": "Nur genutzt, wenn kein Wassertemperatur-Sensor verfügbar/gewählt ist. Repräsentativ halten."
-        },
         "min": 0,
-        "max": 60
+        "max": 60,
+        "label": { "en": "Fixed temperature for LSI (°C)", "de": "Feste Temperatur für LSI (°C)" },
+        "hint": { "en": "Only used if no water-temperature sensor is available/selected. Keep it representative.", "de": "Nur genutzt, wenn kein Wassertemperatur-Sensor verfügbar/gewählt ist. Repräsentativ halten." }
       }
     ]
   },
   {
     "type": "group",
-    "label": {
-      "en": "Water-balance advice",
-      "de": "Wasserbalance-Empfehlungen"
-    },
+    "label": { "en": "Water-balance advice", "de": "Wasserbalance-Empfehlungen" },
     "children": [
       {
         "id": "advisor_info",
         "type": "label",
-        "label": {
-          "en": "About the advisor",
-          "de": "Über den Berater"
-        },
+        "label": { "en": "About the advisor", "de": "Über den Berater" },
         "value": "Water-balance advisor",
         "hint": {
           "en": "The advisor turns the LSI into concrete dosing suggestions and a fill-water startup plan. It needs 'Compute LSI' above (lsi_enabled) turned on, and the pool volume below for gram/mL amounts (without it, advice comes without quantities). Assumptions: the fill-water calcium share defaults to 75% of total hardness (adjustable below); dosing amounts assume the fixed product concentrations named in the dropdowns (e.g. sulfuric acid 14.9%, hydrochloric acid 30%) — actual concentrations may vary by supplier.",
@@ -382,694 +163,151 @@
       {
         "id": "pool_volume_m3",
         "type": "number",
-        "label": {
-          "en": "Pool volume (m3)",
-          "de": "Beckenvolumen (m3)"
-        },
+        "label": { "en": "Pool volume (m3)", "de": "Beckenvolumen (m3)" },
         "min": 0.5,
         "max": 200,
-        "hint": {
-          "en": "Required to convert dosing recommendations into gram/mL amounts. Without it, advice is given without quantities.",
-          "de": "Erforderlich, um Dosierempfehlungen in Gramm-/mL-Mengen umzurechnen. Ohne dieses Feld kommen Empfehlungen ohne Mengenangabe."
-        }
+        "hint": { "en": "Required to convert dosing recommendations into gram/mL amounts. Without it, advice is given without quantities.", "de": "Erforderlich, um Dosierempfehlungen in Gramm-/mL-Mengen umzurechnen. Ohne dieses Feld kommen Empfehlungen ohne Mengenangabe." }
       },
       {
         "id": "chem_ph_minus_type",
         "type": "dropdown",
-        "label": {
-          "en": "pH-minus product",
-          "de": "pH-Minus-Produkt"
-        },
+        "label": { "en": "pH-minus product", "de": "pH-Minus-Produkt" },
         "value": "h2so4_15",
-        "hint": {
-          "en": "The acid product you use to lower pH/alkalinity. Concentration is fixed per entry and used for the dose calculation.",
-          "de": "Das Säureprodukt, mit dem du pH/Alkalität senkst. Die Konzentration ist je Eintrag fest und fließt in die Dosisberechnung ein."
-        },
+        "hint": { "en": "The acid product you use to lower pH/alkalinity. Concentration is fixed per entry and used for the dose calculation.", "de": "Das Säureprodukt, mit dem du pH/Alkalität senkst. Die Konzentration ist je Eintrag fest und fließt in die Dosisberechnung ein." },
         "values": [
-          {
-            "id": "h2so4_15",
-            "label": {
-              "en": "Sulfuric acid 14.9% (liquid)",
-              "de": "Schwefelsäure 14,9 % (flüssig)"
-            }
-          },
-          {
-            "id": "hcl_30",
-            "label": {
-              "en": "Hydrochloric acid 30%",
-              "de": "Salzsäure 30 %"
-            }
-          },
-          {
-            "id": "nahso4",
-            "label": {
-              "en": "Dry acid granules (NaHSO₄)",
-              "de": "pH-Minus-Granulat (NaHSO₄)"
-            }
-          },
-          {
-            "id": "none",
-            "label": {
-              "en": "None",
-              "de": "Keine"
-            }
-          }
+          { "id": "h2so4_15", "label": { "en": "Sulfuric acid 14.9% (liquid)", "de": "Schwefelsäure 14,9 % (flüssig)" } },
+          { "id": "hcl_30", "label": { "en": "Hydrochloric acid 30%", "de": "Salzsäure 30 %" } },
+          { "id": "nahso4", "label": { "en": "Dry acid granules (NaHSO₄)", "de": "pH-Minus-Granulat (NaHSO₄)" } },
+          { "id": "none", "label": { "en": "None", "de": "Keine" } }
         ]
       },
       {
         "id": "chem_chlorine_type",
         "type": "dropdown",
-        "label": {
-          "en": "Chlorine product",
-          "de": "Chlorprodukt"
-        },
+        "label": { "en": "Chlorine product", "de": "Chlorprodukt" },
         "value": "naocl",
-        "hint": {
-          "en": "The chlorine product in use. Only its side effects on the water balance (pH/alkalinity/CYA drift) are modeled — not disinfection dosing itself.",
-          "de": "Das eingesetzte Chlorprodukt. Modelliert werden nur dessen Nebenwirkungen auf die Wasserbalance (pH-/Alkalität-/CYA-Drift) — nicht die Desinfektionsdosierung selbst."
-        },
+        "hint": { "en": "The chlorine product in use. Only its side effects on the water balance (pH/alkalinity/CYA drift) are modeled — not disinfection dosing itself.", "de": "Das eingesetzte Chlorprodukt. Modelliert werden nur dessen Nebenwirkungen auf die Wasserbalance (pH-/Alkalität-/CYA-Drift) — nicht die Desinfektionsdosierung selbst." },
         "values": [
-          {
-            "id": "naocl",
-            "label": {
-              "en": "Liquid chlorine (NaOCl)",
-              "de": "Flüssigchlor (NaOCl)"
-            }
-          },
-          {
-            "id": "calhypo",
-            "label": {
-              "en": "Calcium hypochlorite",
-              "de": "Calciumhypochlorit"
-            }
-          },
-          {
-            "id": "dichlor",
-            "label": {
-              "en": "Dichlor",
-              "de": "Dichlor"
-            }
-          },
-          {
-            "id": "trichlor",
-            "label": {
-              "en": "Trichlor",
-              "de": "Trichlor"
-            }
-          },
-          {
-            "id": "electrolysis",
-            "label": {
-              "en": "Salt electrolysis",
-              "de": "Salzelektrolyse"
-            }
-          },
-          {
-            "id": "none",
-            "label": {
-              "en": "None",
-              "de": "Keine"
-            }
-          }
+          { "id": "naocl", "label": { "en": "Liquid chlorine (NaOCl)", "de": "Flüssigchlor (NaOCl)" } },
+          { "id": "calhypo", "label": { "en": "Calcium hypochlorite", "de": "Calciumhypochlorit" } },
+          { "id": "dichlor", "label": { "en": "Dichlor", "de": "Dichlor" } },
+          { "id": "trichlor", "label": { "en": "Trichlor", "de": "Trichlor" } },
+          { "id": "electrolysis", "label": { "en": "Salt electrolysis", "de": "Salzelektrolyse" } },
+          { "id": "none", "label": { "en": "None", "de": "Keine" } }
         ]
       },
       {
         "id": "fill_hardness_dh",
         "type": "number",
-        "label": {
-          "en": "Fill water: total hardness (dH)",
-          "de": "Füllwasser: Gesamthärte (dH)"
-        },
+        "label": { "en": "Fill water: total hardness (dH)", "de": "Füllwasser: Gesamthärte (dH)" },
         "min": 0,
         "max": 60,
-        "hint": {
-          "en": "Gesamthärte in degrees dH from the annual water analysis published by your water utility (Trinkwasseranalyse deines Wasserwerks).",
-          "de": "Gesamthärte in Grad dH aus der jährlich veröffentlichten Trinkwasseranalyse deines Wasserwerks."
-        }
+        "hint": { "en": "Gesamthärte in degrees dH from the annual water analysis published by your water utility (Trinkwasseranalyse deines Wasserwerks).", "de": "Gesamthärte in Grad dH aus der jährlich veröffentlichten Trinkwasseranalyse deines Wasserwerks." }
       },
       {
         "id": "fill_ca_fraction_pct",
         "type": "number",
-        "label": {
-          "en": "Fill water: calcium share of total hardness (%)",
-          "de": "Füllwasser: Calcium-Anteil der Gesamthärte (%)"
-        },
+        "label": { "en": "Fill water: calcium share of total hardness (%)", "de": "Füllwasser: Calcium-Anteil der Gesamthärte (%)" },
         "value": 75,
         "min": 50,
         "max": 100,
-        "hint": {
-          "en": "Share of total hardness that is calcium (the rest is magnesium). Typical German drinking water is about 75% — adjust only if your waterworks publishes the Ca/Mg split.",
-          "de": "Anteil der Gesamthärte, der auf Calcium entfällt (der Rest ist Magnesium). Typisches deutsches Trinkwasser liegt bei etwa 75 % — nur anpassen, wenn dein Wasserwerk die Ca/Mg-Aufteilung veröffentlicht."
-        }
+        "hint": { "en": "Share of total hardness that is calcium (the rest is magnesium). Typical German drinking water is about 75% — adjust only if your waterworks publishes the Ca/Mg split.", "de": "Anteil der Gesamthärte, der auf Calcium entfällt (der Rest ist Magnesium). Typisches deutsches Trinkwasser liegt bei etwa 75 % — nur anpassen, wenn dein Wasserwerk die Ca/Mg-Aufteilung veröffentlicht." }
       },
       {
         "id": "fill_ks43_mmol",
         "type": "number",
-        "label": {
-          "en": "Fill water: acid capacity K_S4.3 (mmol/L)",
-          "de": "Füllwasser: Säurekapazität K_S4,3 (mmol/L)"
-        },
+        "label": { "en": "Fill water: acid capacity K_S4.3 (mmol/L)", "de": "Füllwasser: Säurekapazität K_S4,3 (mmol/L)" },
         "min": 0,
         "max": 15,
-        "hint": {
-          "en": "Säurekapazität K_S4,3 in mmol/L from the annual water analysis published by your water utility (Trinkwasseranalyse deines Wasserwerks).",
-          "de": "Säurekapazität K_S4,3 in mmol/L aus der jährlich veröffentlichten Trinkwasseranalyse deines Wasserwerks."
-        }
+        "hint": { "en": "Säurekapazität K_S4,3 in mmol/L from the annual water analysis published by your water utility (Trinkwasseranalyse deines Wasserwerks).", "de": "Säurekapazität K_S4,3 in mmol/L aus der jährlich veröffentlichten Trinkwasseranalyse deines Wasserwerks." }
       },
       {
         "id": "fill_ph",
         "type": "number",
-        "label": {
-          "en": "Fill water: pH",
-          "de": "Füllwasser: pH"
-        },
+        "label": { "en": "Fill water: pH", "de": "Füllwasser: pH" },
         "min": 4,
         "max": 10,
-        "hint": {
-          "en": "pH value from the annual water analysis published by your water utility (Trinkwasseranalyse deines Wasserwerks).",
-          "de": "pH-Wert aus der jährlich veröffentlichten Trinkwasseranalyse deines Wasserwerks."
-        }
+        "hint": { "en": "pH value from the annual water analysis published by your water utility (Trinkwasseranalyse deines Wasserwerks).", "de": "pH-Wert aus der jährlich veröffentlichten Trinkwasseranalyse deines Wasserwerks." }
       },
       {
         "id": "advisor_timeline",
         "type": "checkbox",
-        "label": {
-          "en": "Timeline notification on band change",
-          "de": "Zeitachsen-Benachrichtigung bei Bandwechsel"
-        },
+        "label": { "en": "Timeline notification on band change", "de": "Zeitachsen-Benachrichtigung bei Bandwechsel" },
         "value": true,
-        "hint": {
-          "en": "Notify (Homey timeline) when the LSI changes into a non-balanced band, with the top driver and a dose amount. Fires only when LSI is enabled and the advisor inputs are complete.",
-          "de": "Benachrichtigt (Homey-Zeitachse), wenn der LSI in ein nicht ausgeglichenes Band wechselt, mit dem größten Hebel und einer Dosiermenge. Löst nur aus, wenn LSI aktiviert und die Berater-Eingaben vollständig sind."
-        }
+        "hint": { "en": "Notify (Homey timeline) when the LSI changes into a non-balanced band, with the top driver and a dose amount. Fires only when LSI is enabled and the advisor inputs are complete.", "de": "Benachrichtigt (Homey-Zeitachse), wenn der LSI in ein nicht ausgeglichenes Band wechselt, mit dem größten Hebel und einer Dosiermenge. Löst nur aus, wenn LSI aktiviert und die Berater-Eingaben vollständig sind." }
       }
     ]
   },
   {
     "type": "group",
-    "label": {
-      "en": "Feature groups (show/hide)",
-      "de": "Funktionsgruppen (ein-/ausblenden)"
-    },
+    "label": { "en": "Feature groups (show/hide)", "de": "Funktionsgruppen (ein-/ausblenden)" },
     "children": [
-      {
-        "id": "group_eco",
-        "type": "radio",
-        "label": {
-          "en": "Eco mode",
-          "de": "Eco-Modus"
-        },
-        "value": "auto",
-        "hint": {
-          "en": "Auto follows hardware detection; Always show forces the tile; Hide removes it (and breaks any Flows that use it). Applies to every feature group here.",
-          "de": "Auto folgt der Hardware-Erkennung; Immer anzeigen erzwingt die Kachel; Ausblenden entfernt sie (und bricht Flows, die sie nutzen). Gilt für jede Funktionsgruppe hier."
-        },
+      { "id": "group_eco", "type": "radio", "label": { "en": "Eco mode", "de": "Eco-Modus" }, "value": "auto",
+        "hint": { "en": "Auto follows hardware detection; Always show forces the tile; Hide removes it (and breaks any Flows that use it). Applies to every feature group here.", "de": "Auto folgt der Hardware-Erkennung; Immer anzeigen erzwingt die Kachel; Ausblenden entfernt sie (und bricht Flows, die sie nutzen). Gilt für jede Funktionsgruppe hier." },
         "values": [
-          {
-            "id": "auto",
-            "label": {
-              "en": "Auto (if detected)",
-              "de": "Auto (wenn erkannt)"
-            }
-          },
-          {
-            "id": "force",
-            "label": {
-              "en": "Always show",
-              "de": "Immer anzeigen"
-            }
-          },
-          {
-            "id": "hide",
-            "label": {
-              "en": "Hide",
-              "de": "Ausblenden"
-            }
-          }
-        ]
-      },
-      {
-        "id": "group_heater",
-        "type": "radio",
-        "label": {
-          "en": "Heater",
-          "de": "Heizung"
-        },
-        "value": "auto",
-        "values": [
-          {
-            "id": "auto",
-            "label": {
-              "en": "Auto (if detected)",
-              "de": "Auto (wenn erkannt)"
-            }
-          },
-          {
-            "id": "force",
-            "label": {
-              "en": "Always show",
-              "de": "Immer anzeigen"
-            }
-          },
-          {
-            "id": "hide",
-            "label": {
-              "en": "Hide",
-              "de": "Ausblenden"
-            }
-          }
-        ]
-      },
-      {
-        "id": "group_solar",
-        "type": "radio",
-        "label": {
-          "en": "Solar",
-          "de": "Solar"
-        },
-        "value": "auto",
-        "values": [
-          {
-            "id": "auto",
-            "label": {
-              "en": "Auto (if detected)",
-              "de": "Auto (wenn erkannt)"
-            }
-          },
-          {
-            "id": "force",
-            "label": {
-              "en": "Always show",
-              "de": "Immer anzeigen"
-            }
-          },
-          {
-            "id": "hide",
-            "label": {
-              "en": "Hide",
-              "de": "Ausblenden"
-            }
-          }
-        ]
-      },
-      {
-        "id": "group_backwash",
-        "type": "radio",
-        "label": {
-          "en": "Backwash",
-          "de": "Rückspülung"
-        },
-        "value": "auto",
-        "values": [
-          {
-            "id": "auto",
-            "label": {
-              "en": "Auto (if detected)",
-              "de": "Auto (wenn erkannt)"
-            }
-          },
-          {
-            "id": "force",
-            "label": {
-              "en": "Always show",
-              "de": "Immer anzeigen"
-            }
-          },
-          {
-            "id": "hide",
-            "label": {
-              "en": "Hide",
-              "de": "Ausblenden"
-            }
-          }
-        ]
-      },
-      {
-        "id": "group_cover",
-        "type": "radio",
-        "label": {
-          "en": "Cover",
-          "de": "Abdeckung"
-        },
-        "value": "auto",
-        "values": [
-          {
-            "id": "auto",
-            "label": {
-              "en": "Auto (if detected)",
-              "de": "Auto (wenn erkannt)"
-            }
-          },
-          {
-            "id": "force",
-            "label": {
-              "en": "Always show",
-              "de": "Immer anzeigen"
-            }
-          },
-          {
-            "id": "hide",
-            "label": {
-              "en": "Hide",
-              "de": "Ausblenden"
-            }
-          }
-        ]
-      },
-      {
-        "id": "group_light",
-        "type": "radio",
-        "label": {
-          "en": "Light",
-          "de": "Licht"
-        },
-        "value": "auto",
-        "values": [
-          {
-            "id": "auto",
-            "label": {
-              "en": "Auto (if detected)",
-              "de": "Auto (wenn erkannt)"
-            }
-          },
-          {
-            "id": "force",
-            "label": {
-              "en": "Always show",
-              "de": "Immer anzeigen"
-            }
-          },
-          {
-            "id": "hide",
-            "label": {
-              "en": "Hide",
-              "de": "Ausblenden"
-            }
-          }
-        ]
-      },
-      {
-        "id": "group_refill",
-        "type": "radio",
-        "label": {
-          "en": "Water refill",
-          "de": "Nachfüllung"
-        },
-        "value": "auto",
-        "values": [
-          {
-            "id": "auto",
-            "label": {
-              "en": "Auto (if detected)",
-              "de": "Auto (wenn erkannt)"
-            }
-          },
-          {
-            "id": "force",
-            "label": {
-              "en": "Always show",
-              "de": "Immer anzeigen"
-            }
-          },
-          {
-            "id": "hide",
-            "label": {
-              "en": "Hide",
-              "de": "Ausblenden"
-            }
-          }
-        ]
-      },
-      {
-        "id": "group_overflow",
-        "type": "radio",
-        "label": {
-          "en": "Overflow tank",
-          "de": "Überlaufbehälter"
-        },
-        "value": "auto",
-        "values": [
-          {
-            "id": "auto",
-            "label": {
-              "en": "Auto (if detected)",
-              "de": "Auto (wenn erkannt)"
-            }
-          },
-          {
-            "id": "force",
-            "label": {
-              "en": "Always show",
-              "de": "Immer anzeigen"
-            }
-          },
-          {
-            "id": "hide",
-            "label": {
-              "en": "Hide",
-              "de": "Ausblenden"
-            }
-          }
-        ]
-      },
-      {
-        "id": "group_waterLevel",
-        "type": "radio",
-        "label": {
-          "en": "Water level",
-          "de": "Wasserstand"
-        },
-        "value": "auto",
-        "values": [
-          {
-            "id": "auto",
-            "label": {
-              "en": "Auto (if detected)",
-              "de": "Auto (wenn erkannt)"
-            }
-          },
-          {
-            "id": "force",
-            "label": {
-              "en": "Always show",
-              "de": "Immer anzeigen"
-            }
-          },
-          {
-            "id": "hide",
-            "label": {
-              "en": "Hide",
-              "de": "Ausblenden"
-            }
-          }
-        ]
-      },
-      {
-        "id": "group_pv",
-        "type": "radio",
-        "label": {
-          "en": "PV surplus",
-          "de": "PV-Überschuss"
-        },
-        "value": "auto",
-        "values": [
-          {
-            "id": "auto",
-            "label": {
-              "en": "Auto (if detected)",
-              "de": "Auto (wenn erkannt)"
-            }
-          },
-          {
-            "id": "force",
-            "label": {
-              "en": "Always show",
-              "de": "Immer anzeigen"
-            }
-          },
-          {
-            "id": "hide",
-            "label": {
-              "en": "Hide",
-              "de": "Ausblenden"
-            }
-          }
-        ]
-      },
-      {
-        "id": "group_dosing",
-        "type": "radio",
-        "label": {
-          "en": "Dosing",
-          "de": "Dosierung"
-        },
-        "value": "auto",
-        "values": [
-          {
-            "id": "auto",
-            "label": {
-              "en": "Auto (per detected channel)",
-              "de": "Auto (je erkanntem Kanal)"
-            }
-          },
-          {
-            "id": "hide",
-            "label": {
-              "en": "Hide",
-              "de": "Ausblenden"
-            }
-          }
-        ]
-      },
-      {
-        "id": "group_inputs",
-        "type": "radio",
-        "label": {
-          "en": "Measurement inputs (analog/pulse)",
-          "de": "Messeingänge (Analog/Impuls)"
-        },
-        "value": "auto",
-        "hint": {
-          "en": "Auto shows the inputs enabled in the Violet configuration, with their configured name and unit (e.g. filter pressure in bar). Always show also lists disabled inputs — their raw values may be meaningless. Hide removes all input tiles.",
-          "de": "Auto zeigt die in der Violet-Konfiguration aktivierten Eingänge mit konfiguriertem Namen und Einheit (z. B. Filterdruck in Bar). Immer anzeigen listet auch deaktivierte Eingänge — deren Rohwerte können bedeutungslos sein. Ausblenden entfernt alle Eingangs-Kacheln."
-        },
-        "values": [
-          {
-            "id": "auto",
-            "label": {
-              "en": "Auto (if enabled in Violet)",
-              "de": "Auto (wenn in Violet aktiviert)"
-            }
-          },
-          {
-            "id": "force",
-            "label": {
-              "en": "Always show",
-              "de": "Immer anzeigen"
-            }
-          },
-          {
-            "id": "hide",
-            "label": {
-              "en": "Hide",
-              "de": "Ausblenden"
-            }
-          }
-        ]
-      },
-      {
-        "id": "dosing_low_threshold_days",
-        "type": "number",
-        "label": {
-          "en": "Chemical-low alarm threshold (days)",
-          "de": "Alarmschwelle Chemie-Reichweite (Tage)"
-        },
-        "value": 7,
-        "min": 1,
-        "max": 60,
-        "hint": {
-          "en": "Fire the chemical-low alarm when a canister's remaining range drops below this many days.",
-          "de": "Löst den Chemie-Reichweite-Alarm aus, wenn die Restreichweite eines Kanisters unter so viele Tage fällt."
-        }
-      },
-      {
-        "id": "show_advanced_diagnostics",
-        "type": "checkbox",
-        "label": {
-          "en": "Show advanced diagnostics",
-          "de": "Erweiterte Diagnose anzeigen"
-        },
-        "value": false,
-        "hint": {
-          "en": "Adds CPU/memory/uptime/firmware/error tiles.",
-          "de": "Fügt CPU-/Speicher-/Laufzeit-/Firmware-/Fehler-Kacheln hinzu."
-        }
-      }
+          { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } },
+          { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } },
+          { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } }
+        ] },
+      { "id": "group_heater", "type": "radio", "label": { "en": "Heater", "de": "Heizung" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_solar", "type": "radio", "label": { "en": "Solar", "de": "Solar" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_backwash", "type": "radio", "label": { "en": "Backwash", "de": "Rückspülung" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_cover", "type": "radio", "label": { "en": "Cover", "de": "Abdeckung" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_light", "type": "radio", "label": { "en": "Light", "de": "Licht" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_refill", "type": "radio", "label": { "en": "Water refill", "de": "Nachfüllung" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_overflow", "type": "radio", "label": { "en": "Overflow tank", "de": "Überlaufbehälter" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_waterLevel", "type": "radio", "label": { "en": "Water level", "de": "Wasserstand" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_pv", "type": "radio", "label": { "en": "PV surplus", "de": "PV-Überschuss" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_dosing", "type": "radio", "label": { "en": "Dosing", "de": "Dosierung" }, "value": "auto",
+        "values": [ { "id": "auto", "label": { "en": "Auto (per detected channel)", "de": "Auto (je erkanntem Kanal)" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "group_inputs", "type": "radio", "label": { "en": "Measurement inputs (analog/pulse)", "de": "Messeingänge (Analog/Impuls)" }, "value": "auto",
+        "hint": { "en": "Auto shows the inputs enabled in the Violet configuration, with their configured name and unit (e.g. filter pressure in bar). Always show also lists disabled inputs — their raw values may be meaningless. Hide removes all input tiles.", "de": "Auto zeigt die in der Violet-Konfiguration aktivierten Eingänge mit konfiguriertem Namen und Einheit (z. B. Filterdruck in Bar). Immer anzeigen listet auch deaktivierte Eingänge — deren Rohwerte können bedeutungslos sein. Ausblenden entfernt alle Eingangs-Kacheln." },
+        "values": [ { "id": "auto", "label": { "en": "Auto (if enabled in Violet)", "de": "Auto (wenn in Violet aktiviert)" } }, { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } }, { "id": "hide", "label": { "en": "Hide", "de": "Ausblenden" } } ] },
+      { "id": "dosing_low_threshold_days", "type": "number", "label": { "en": "Chemical-low alarm threshold (days)", "de": "Alarmschwelle Chemie-Reichweite (Tage)" }, "value": 7, "min": 1, "max": 60, "hint": { "en": "Fire the chemical-low alarm when a canister's remaining range drops below this many days.", "de": "Löst den Chemie-Reichweite-Alarm aus, wenn die Restreichweite eines Kanisters unter so viele Tage fällt." } },
+      { "id": "show_advanced_diagnostics", "type": "checkbox", "label": { "en": "Show advanced diagnostics", "de": "Erweiterte Diagnose anzeigen" }, "value": false, "hint": { "en": "Adds CPU/memory/uptime/firmware/error tiles.", "de": "Fügt CPU-/Speicher-/Laufzeit-/Firmware-/Fehler-Kacheln hinzu." } }
     ]
   },
   {
     "type": "group",
-    "label": {
-      "en": "Control (write access)",
-      "de": "Steuerung (Schreibzugriff)"
-    },
+    "label": { "en": "Control (write access)", "de": "Steuerung (Schreibzugriff)" },
     "children": [
       {
         "id": "control_enabled",
         "type": "checkbox",
-        "label": {
-          "en": "Enable control (write)",
-          "de": "Steuerung aktivieren (Schreibzugriff)"
-        },
+        "label": { "en": "Enable control (write)", "de": "Steuerung aktivieren (Schreibzugriff)" },
         "value": false,
-        "hint": {
-          "en": "Off by default. When on, control tiles appear and Flow actions can command the controller. Writes use the write username/password. Plain HTTP on the LAN transmits credentials in cleartext — use a least-privilege controller account and a trusted/segmented network, and rotate the write password before sharing.",
-          "de": "Standardmäßig aus. Wenn an, erscheinen Steuerungs-Kacheln und Flow-Aktionen können den Regler schalten. Schreibzugriffe nutzen Schreib-Benutzer/Passwort. Klartext-HTTP im LAN überträgt Zugangsdaten unverschlüsselt — ein Konto mit minimalen Rechten und ein vertrauenswürdiges/segmentiertes Netz verwenden und das Schreib-Passwort vor Weitergabe rotieren."
-        }
+        "hint": { "en": "Off by default. When on, control tiles appear and Flow actions can command the controller. Writes use the write username/password. Plain HTTP on the LAN transmits credentials in cleartext — use a least-privilege controller account and a trusted/segmented network, and rotate the write password before sharing.", "de": "Standardmäßig aus. Wenn an, erscheinen Steuerungs-Kacheln und Flow-Aktionen können den Regler schalten. Schreibzugriffe nutzen Schreib-Benutzer/Passwort. Klartext-HTTP im LAN überträgt Zugangsdaten unverschlüsselt — ein Konto mit minimalen Rechten und ein vertrauenswürdiges/segmentiertes Netz verwenden und das Schreib-Passwort vor Weitergabe rotieren." }
       },
       {
         "id": "control_default_duration_min",
         "type": "number",
-        "label": {
-          "en": "Default override duration (minutes)",
-          "de": "Standard-Übersteuerungsdauer (Minuten)"
-        },
+        "label": { "en": "Default override duration (minutes)", "de": "Standard-Übersteuerungsdauer (Minuten)" },
         "value": 60,
         "min": 0,
         "max": 1440,
-        "hint": {
-          "en": "Tile pump ON/OFF auto-reverts to Auto after this time (0 = permanent — advanced). Flow actions set their own duration.",
-          "de": "Kachel Pumpe AN/AUS fällt nach dieser Zeit auf Auto zurück (0 = dauerhaft — für Fortgeschrittene). Flow-Aktionen setzen ihre eigene Dauer."
-        }
+        "hint": { "en": "Tile pump ON/OFF auto-reverts to Auto after this time (0 = permanent — advanced). Flow actions set their own duration.", "de": "Kachel Pumpe AN/AUS fällt nach dieser Zeit auf Auto zurück (0 = dauerhaft — für Fortgeschrittene). Flow-Aktionen setzen ihre eigene Dauer." }
       },
       {
         "id": "control_pump_speed",
         "type": "dropdown",
-        "label": {
-          "en": "Pump speed for tile ON",
-          "de": "Pumpendrehzahl für Kachel-AN"
-        },
+        "label": { "en": "Pump speed for tile ON", "de": "Pumpendrehzahl für Kachel-AN" },
         "value": "default",
-        "hint": {
-          "en": "Speed stage used when you switch the pump ON via the tile. 'Keep configured' leaves the controller's own program untouched.",
-          "de": "Drehzahlstufe beim Einschalten der Pumpe über die Kachel. 'Konfigurierte behalten' lässt das Regler-Programm unangetastet."
-        },
+        "hint": { "en": "Speed stage used when you switch the pump ON via the tile. 'Keep configured' leaves the controller's own program untouched.", "de": "Drehzahlstufe beim Einschalten der Pumpe über die Kachel. 'Konfigurierte behalten' lässt das Regler-Programm unangetastet." },
         "values": [
-          {
-            "id": "default",
-            "label": {
-              "en": "Keep configured",
-              "de": "Konfigurierte behalten"
-            }
-          },
-          {
-            "id": "0",
-            "label": {
-              "en": "Stage 0",
-              "de": "Stufe 0"
-            }
-          },
-          {
-            "id": "1",
-            "label": {
-              "en": "Stage 1",
-              "de": "Stufe 1"
-            }
-          },
-          {
-            "id": "2",
-            "label": {
-              "en": "Stage 2",
-              "de": "Stufe 2"
-            }
-          },
-          {
-            "id": "3",
-            "label": {
-              "en": "Stage 3",
-              "de": "Stufe 3"
-            }
-          }
+          { "id": "default", "label": { "en": "Keep configured", "de": "Konfigurierte behalten" } },
+          { "id": "0", "label": { "en": "Stage 0", "de": "Stufe 0" } },
+          { "id": "1", "label": { "en": "Stage 1", "de": "Stufe 1" } },
+          { "id": "2", "label": { "en": "Stage 2", "de": "Stufe 2" } },
+          { "id": "3", "label": { "en": "Stage 3", "de": "Stufe 3" } }
         ]
       }
     ]

@@ -1257,6 +1257,8 @@
             {
               "id": "chem_fixed_temperature",
               "type": "number",
+              "min": 0,
+              "max": 60,
               "label": {
                 "en": "Fixed temperature for LSI (°C)",
                 "de": "Feste Temperatur für LSI (°C)"
@@ -1264,9 +1266,7 @@
               "hint": {
                 "en": "Only used if no water-temperature sensor is available/selected. Keep it representative.",
                 "de": "Nur genutzt, wenn kein Wassertemperatur-Sensor verfügbar/gewählt ist. Repräsentativ halten."
-              },
-              "min": 0,
-              "max": 60
+              }
             }
           ]
         },
