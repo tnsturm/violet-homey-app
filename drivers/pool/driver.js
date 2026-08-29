@@ -38,7 +38,9 @@ class PoolDriver extends Homey.Driver {
 
     // M3 write-control Flow actions (spec §7). Each delegates to device._control,
     // which enforces the interlock + registry validation + sanitized errors.
-    const speedArg = (/** @type {*} */ v) => (v === undefined || v === 'default' ? undefined : Number(v));
+    // null-Guard wie _pumpSpeedArg in device.js (review N3/Q5): ein ungesetztes
+    // Flow-Arg darf nie zu Number(null)=0 = "Stufe 0 erzwingen" werden.
+    const speedArg = (/** @type {*} */ v) => (v === undefined || v === null || v === 'default' ? undefined : Number(v));
 
     this.homey.flow.getActionCard('pump_set_mode').registerRunListener(async (args) => {
       await args.device._control({ target: 'PUMP', state: String(args.mode).toUpperCase(), args: { duration: Math.round((args.duration_min ?? 0) * 60), speed: speedArg(args.speed) } }, 'pump_set_mode');

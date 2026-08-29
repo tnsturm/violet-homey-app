@@ -122,3 +122,18 @@ test('repair: a different controller serial is rejected, nothing stored (N5)', a
   );
   assert.strictEqual(device.__test.store.writePassword, OLD_PW, 'credentials untouched on mismatch');
 });
+
+// Review Q5-Nachpruefung: der N3-null-Guard muss auch fuer die Flow-Action-Seite
+// gelten - sonst erzwingt args.speed === null dort weiterhin Stufe 0.
+test('flow action speedArg: null means keep-configured, mirroring _pumpSpeedArg (N3/Q5)', async () => {
+  resetFetch();
+  const carrier = /** @type {*} */ (new Device());
+  const driver = makeDriver();
+  driver.homey = carrier.homey;
+  await driver.onInit();
+  /** @type {*[]} */
+  const controls = [];
+  const fakeDevice = { _control: async (/** @type {*} */ cmd) => { controls.push(cmd); }, error: () => {} };
+  await carrier.__test.runListeners.pvsurplus_set({ device: fakeDevice, state: 'on', speed: null });
+  assert.strictEqual(controls[0].args.speed, undefined, 'null speed must be omitted, not coerced to 0');
+});
