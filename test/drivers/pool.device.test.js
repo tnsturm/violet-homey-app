@@ -228,6 +228,25 @@ test('_pumpSpeedArg: never-set setting (null) means keep-configured, not speed 0
   assert.strictEqual(device._pumpSpeedArg(), 2);
 });
 
+// Review Q1 (Runde 2): channel labels in Flow tokens come from the same table
+// as the tile titles, in the user's UI language — no more en-only duplicate.
+test('flow tokens use the Homey UI language for channel labels (Q1)', async () => {
+  const blocked = { ...FIXTURES['salt-electrolysis'], DOS_2_ELO_STATE: '0|BLOCKED_BY_SENSOR_FAULT' };
+  currentFixture = blocked;
+  failFetch = false;
+  const device = /** @type {TestDevice} */ (/** @type {any} */ (new PoolDevice()));
+  device.__test.settings = { ...DEFAULT_SETTINGS };
+  device.__test.capabilities = ['measure_temperature', 'measure_ph', 'measure_orp', 'pump_running', 'measurements_fresh'];
+  device.homey.i18n.getLanguage = () => 'de';
+  await device.onInit();
+  await new Promise((resolve) => setImmediate(resolve));
+  openDevices.push(device);
+  await device._tick();
+  const fired = device._log.triggers.dosing_blocked || [];
+  assert.ok(fired.length > 0, 'precondition: blocked edge fires');
+  assert.ok(fired.some((f) => f.tokens.channel === 'Elektrolyse'), `channel token must be localized, got: ${JSON.stringify(fired.map((f) => f.tokens.channel))}`);
+});
+
 // --- Review 2026-08-28, N1/P6: alarm edge state must survive an app restart
 // --- (no phantom edge) and a Hide/Unhide cycle (re-announce, no swallowed edge).
 
