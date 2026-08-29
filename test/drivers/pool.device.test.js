@@ -167,6 +167,18 @@ test('apply order: measurements_fresh is written after the probe values (F5)', a
   assert.strictEqual(freshIdx, caps.length - 1, 'measurements_fresh must be the last write of the batch');
 });
 
+// Review 2026-08-28 P1 (defensive): a present-but-implausible controller clock
+// (RTC reset after power loss → epoch ~0) must invalidate PUMP_LAST_ON from the
+// same clock — mixing local `now` with a broken timestamp fakes a huge warmup.
+test('controller clock at 0 (RTC reset) must not count as fresh (P1)', async () => {
+  const fixture = { ...FIXTURES['getReadings.all'], CURRENT_TIME_UNIX: 0, PUMP_LAST_ON: 0, PUMP: '1' };
+  const device = await makeDevice(fixture);
+  device._log.setValue.length = 0;
+  await device._tick();
+  const freshWrite = device._log.setValue.find((w) => w.cap === 'measurements_fresh');
+  assert.strictEqual(freshWrite?.value, false, 'broken controller clock ⇒ warmup unprovable ⇒ stale');
+});
+
 // Review 2026-08-28 N4: before the first successful poll _lastParsed is null —
 // the advisor must report the stale reason, not a missing-list that blames
 // chem settings the user did enter (contradicts the _adviseNow comment, spec §9).

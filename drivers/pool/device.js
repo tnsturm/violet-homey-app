@@ -446,13 +446,19 @@ class PoolDevice extends Homey.Device {
     await this._maybeRefreshConfig(Number.isFinite(rawMarker) ? rawMarker : null);
     const features = detectFeatures(raw, this._configFacts);
     // Prefer the controller clock for warmup math; fall back to local time if absent.
+    // Defensive (review P1): a present-but-implausible controller clock (RTC
+    // reset → epoch ~0) invalidates PUMP_LAST_ON from that same clock — mixing
+    // the local-time fallback with a broken timestamp would fake a huge warmup
+    // and declare non-circulated water fresh.
+    const CLOCK_SANE_MIN = 1e9; // 2001-09 — any real controller clock is beyond this
+    const clockBroken = parsed.timeUnix !== null && parsed.timeUnix < CLOCK_SANE_MIN;
     const now = parsed.timeUnix || Math.floor(Date.now() / 1000);
 
     // Freshness from the payload's PUMP_LAST_ON (M1 §10; notes 2026-06-26 §1):
     // survives restarts, single coherent controller clock.
     const fresh = isFresh({
       pumpOn: parsed.pumpOn,
-      pumpLastOn: parsed.pumpLastOn,
+      pumpLastOn: clockBroken ? null : parsed.pumpLastOn,
       now,
       warmupSeconds: this.getSetting('pumpWarmupSeconds') ?? 120,
     });
