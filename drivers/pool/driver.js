@@ -11,7 +11,7 @@
 
 const Homey = require('homey');
 const { deriveDeviceId } = require('../../lib/deviceIdentity');
-const { fetchReadings } = require('../../lib/VioletClient');
+const { fetchReadings, normalizeHost } = require('../../lib/VioletClient');
 
 class PoolDriver extends Homey.Driver {
   async onInit() {
@@ -74,11 +74,18 @@ class PoolDriver extends Homey.Driver {
     let pairData = null;
 
     session.setHandler('connect', async (/** @type {{host?: string, username?: string, password?: string}} */ { host, username, password }) => {
-      const cleanHost = String(host || '').trim();
+      const cleanHost = normalizeHost(host);
       if (!cleanHost) throw new Error(this.homey.__('pair.error.host_required'));
-      // Pairing completes only on a valid live response: this throws on any
-      // fetch/parse failure, surfacing a clear error to the pairing view (spec §6).
-      const raw = await fetchReadings(cleanHost, { timeoutMs: 10000 });
+      // Pairing completes only on a valid live response (spec §6). Raw
+      // fetch/JSON/abort internals are useless in the pairing dialog (review
+      // N10): log the detail, surface one actionable localized message.
+      let raw;
+      try {
+        raw = await fetchReadings(cleanHost, { timeoutMs: 10000 });
+      } catch (err) {
+        this.error('pairing connect failed:', err instanceof Error ? err.message : String(err));
+        throw new Error(this.homey.__('pair.error.unreachable'));
+      }
       // data.id = controller serial (HW_SERIAL_CARRIER): stable per unit, so Homey
       // itself blocks adding the same controller twice. Fail-closed when missing —
       // never fall back to a random/weak id (device-identity spec §Decision,
@@ -116,6 +123,31 @@ class PoolDriver extends Homey.Driver {
           store: { writePassword: pairData.writePassword },
         },
       ];
+    });
+  }
+
+  // Repair flow (review 2026-08-28 N5): the ONLY way to set/rotate the write
+  // password after pairing — it lives in the device store (SR-01/02), which the
+  // settings UI must never expose. The host may be updated too (controller
+  // moved IP); the serial check prevents silently rebinding the device to a
+  // DIFFERENT controller (all Flows would act on the wrong pool).
+  /** @param {*} session Homey repair session. @param {*} device The device being repaired. */
+  async onRepair(session, device) {
+    session.setHandler('connect', async (/** @type {{host?: string, username?: string, password?: string}} */ { host, username, password }) => {
+      const cleanHost = normalizeHost(host) || device.getSetting('host');
+      let raw;
+      try {
+        raw = await fetchReadings(cleanHost, { timeoutMs: 10000 });
+      } catch (err) {
+        this.error('repair connect failed:', err instanceof Error ? err.message : String(err));
+        throw new Error(this.homey.__('pair.error.unreachable'));
+      }
+      const id = deriveDeviceId(raw);
+      if (!id) throw new Error(this.homey.__('pair.error.no_serial'));
+      if (id !== device.getData().id) throw new Error(this.homey.__('pair.error.wrong_device'));
+      await device.setStoreValue('writePassword', String(password || ''));
+      await device.setSettings({ writeUsername: String(username || '').trim(), host: cleanHost });
+      return true;
     });
   }
 }

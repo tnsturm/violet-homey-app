@@ -903,6 +903,11 @@
           "template": "add_devices"
         }
       ],
+      "repair": [
+        {
+          "id": "repair"
+        }
+      ],
       "id": "pool",
       "settings": [
         {

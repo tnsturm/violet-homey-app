@@ -1,5 +1,8 @@
 {
-  "name": { "en": "Pool", "de": "Pool" },
+  "name": {
+    "en": "Pool",
+    "de": "Pool"
+  },
   "class": "sensor",
   "capabilities": [
     "measure_temperature",
@@ -9,18 +12,43 @@
     "measurements_fresh"
   ],
   "capabilitiesOptions": {
-    "measure_temperature": { "title": { "en": "Water temperature", "de": "Wassertemperatur" } }
+    "measure_temperature": {
+      "title": {
+        "en": "Water temperature",
+        "de": "Wassertemperatur"
+      }
+    }
   },
-  "platforms": ["local"],
-  "connectivity": ["lan"],
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "lan"
+  ],
   "images": {
     "small": "/drivers/pool/assets/images/small.png",
     "large": "/drivers/pool/assets/images/large.png",
     "xlarge": "/drivers/pool/assets/images/xlarge.png"
   },
   "pair": [
-    { "id": "connect" },
-    { "id": "list_devices", "template": "list_devices", "navigation": { "next": "add_devices" } },
-    { "id": "add_devices", "template": "add_devices" }
+    {
+      "id": "connect"
+    },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
+  "repair": [
+    {
+      "id": "repair"
+    }
   ]
 }

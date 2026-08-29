@@ -10,7 +10,9 @@
     },
     "error": {
       "host_required": "Host ist erforderlich",
-      "no_serial": "Der Regler hat keine Seriennummer gemeldet (HW_SERIAL_CARRIER). Bitte die Regler-Firmware aktualisieren und erneut versuchen."
+      "no_serial": "Der Regler hat keine Seriennummer gemeldet (HW_SERIAL_CARRIER). Bitte die Regler-Firmware aktualisieren und erneut versuchen.",
+      "unreachable": "Unter dieser Adresse ist kein Violet-Controller erreichbar. Host/IP prüfen (ohne http://) und ob der Controller online ist.",
+      "wrong_device": "Der Controller unter dieser Adresse ist ein anderes Gerät. Host/IP prüfen."
     }
   },
   "error": {
@@ -21,5 +23,12 @@
     "write_failed": "Schreiben zum Regler fehlgeschlagen (__detail__).",
     "invalid_value": "Ungültiger Wert: __detail__",
     "unreachable": "Violet nicht erreichbar"
+  },
+  "repair": {
+    "connect": {
+      "title": "Verbindung aktualisieren",
+      "hint": "Schreib-Zugangsdaten setzen oder erneuern; Host leer lassen, um den aktuellen zu behalten.",
+      "done": "Gespeichert."
+    }
   }
 }
