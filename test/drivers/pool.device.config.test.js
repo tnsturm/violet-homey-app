@@ -102,11 +102,16 @@ test('Migration Bestandsgerät: vorhandener cover_state wird nach Config-Read en
   configResult = referenceConfig;
   const device = await makeDevice({ COVER_STATE: 'OPEN' });
   device.__test.capabilities.push('cover_state'); // Altzustand simulieren
-  // Seit Review-Fix F2 (2026-08-29) ist detektionsgetriebener Abbau über 3
-  // Polls entprellt — die Migration passiert weiterhin, nur nicht mehr im
-  // ersten Poll (Schutz vor transienten Payload-Ausfällen wiegt schwerer).
+  // Seit Review-Fix F2/F-C (2026-08-29) ist detektionsgetriebener Abbau über
+  // eine Karenzzeit von 2 Poll-Intervallen entprellt — die Migration passiert
+  // weiterhin, nur nicht mehr im ersten Poll (Schutz vor transienten
+  // Payload-Ausfällen wiegt schwerer). Fake-Clock: 60 s pro Poll.
+  let fakeNow = 1_000_000_000_000;
+  device._nowMs = () => fakeNow;
   await device._tick();
+  fakeNow += 60_000;
   await device._tick();
+  fakeNow += 60_000;
   await device._tick();
   assert.ok(!device.getCapabilities().includes('cover_state'));
 });

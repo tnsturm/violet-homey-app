@@ -79,8 +79,8 @@ class PoolDevice extends Homey.Device {
   _failures = 0;
   /** @type {boolean} first-failure-of-a-streak log throttle (review F3) */
   _lastPollErrorLogged = false;
-  /** @type {Object<string, number>} capId → consecutive polls without evidence (review F2 debounce) */
-  _absenceCounts = {};
+  /** @type {Object<string, number>} capId → epoch ms of first absent observation (review F2/F-C time-based debounce) */
+  _absentSinceMs = {};
   /** @type {boolean} alarm edge state seeded from persisted cap values this app run (review N1) */
   _edgeStateSeeded = false;
   /** @type {Object<string, boolean>} capInstanceId → last boolean (edge detection) */
@@ -277,6 +277,10 @@ class PoolDevice extends Homey.Device {
     return res;
   }
 
+  // Wall clock as an overridable seam (diff review F-C): the removal debounce
+  // measures continuous absence TIME, and tests inject a fake clock here.
+  _nowMs() { return Date.now(); }
+
   // Tile pump speed from settings: unset ⇒ omit (keep configured), else 0-3.
   // getSetting returns null for a never-set key (pre-M3 paired devices never get
   // the compose default backfilled) — without the null arm, Number(null)=0 would
@@ -435,8 +439,9 @@ class PoolDevice extends Homey.Device {
         // transient, failures.
         if (this._failures === 3) {
           this._lastFresh = false;
+          // measurements_fresh first (F-B direction rule): revoke before clearing.
           const staleUpdates = /** @type {Object<string, *>} */ ({
-            measure_ph: null, measure_orp: null, measure_chlorine: null, measure_lsi: null, alarm_water_balance: false, measurements_fresh: false,
+            measurements_fresh: false, measure_ph: null, measure_orp: null, measure_chlorine: null, measure_lsi: null, alarm_water_balance: false,
           });
           for (const [cap, value] of Object.entries(staleUpdates)) {
             if (this.hasCapability(cap)) await this.setCapabilityValue(cap, value).catch(this.error);
@@ -592,21 +597,24 @@ class PoolDevice extends Homey.Device {
 
     // Apply rule (clear-stale §3): undefined = leave as-is; null = clear to "–"
     // (Insights gap); else set. What is fresh-gated/cleared is decided in /lib (§7).
-    // measurements_fresh goes last (review F5): the flag certifies the probe
-    // values, so it may only publish after they are written. The lib already
-    // orders it after the probes; Object.assign(updates, m2) then APPENDS the
-    // M2 keys after it — the split here keeps fresh the very last write of the
-    // whole batch (also past M2), the strongest form of the F5 guarantee.
+    // Direction rule for the flag (review F5 + diff review F-B): fresh=true is
+    // a certification and goes LAST (after every value of the merged batch);
+    // fresh=false is a revocation and goes FIRST (before the null-clears) —
+    // the flag must never certify more than currently holds, in either edge.
     const freshValue = updates.measurements_fresh;
     delete updates.measurements_fresh;
+    const canWriteFresh = this.hasCapability('measurements_fresh');
+    if (freshValue === false && canWriteFresh) {
+      await this.setCapabilityValue('measurements_fresh', false).catch(this.error);
+    }
     for (const [cap, value] of Object.entries(updates)) {
       if (value === undefined) continue;
       if (this.hasCapability(cap)) {
         await this.setCapabilityValue(cap, value).catch(this.error);
       }
     }
-    if (freshValue !== undefined && this.hasCapability('measurements_fresh')) {
-      await this.setCapabilityValue('measurements_fresh', freshValue).catch(this.error);
+    if (freshValue === true && canWriteFresh) {
+      await this.setCapabilityValue('measurements_fresh', true).catch(this.error);
     }
 
     // Diagnostics tile-title annotation (gated by show_advanced_diagnostics).
@@ -755,6 +763,11 @@ class PoolDevice extends Homey.Device {
    * @param {import('../../lib/FeatureDetector').Features} features
    */
   async _reconcileCapabilities(parsed, features) {
+    // Time-based removal debounce (F2/F-C): grace = 2× the poll interval, so
+    // the 3rd REGULAR poll is the first observation at/after the grace — while
+    // a settings-save tick burst (2–3 ticks in a second) adds no absence time.
+    const nowMs = this._nowMs();
+    const graceMs = (this.getSetting('pollIntervalSeconds') || 60) * 2000;
     // 1) Feature-group capabilities via auto-detect + override (spec §9; M0: chlorine only).
     const overrides = { chlorine: this.getSetting('group_chlorine') || 'auto' };
     const desiredFeatureCaps = desiredFeatureCapabilities({ features, overrides });
@@ -764,12 +777,12 @@ class PoolDevice extends Homey.Device {
       if (!want && this.hasCapability(cap)) {
         // Hide = explicit user choice → immediate; lost detection → debounced
         // over 3 polls (review F2) so one deviant payload can't break Flows.
-        if (overrides.chlorine === 'hide' || shouldRemoveAfterAbsence(this._absenceCounts, cap, false)) {
+        if (overrides.chlorine === 'hide' || shouldRemoveAfterAbsence(this._absentSinceMs, cap, false, nowMs, graceMs)) {
           await this.removeCapability(cap).catch(this.error);
-          delete this._absenceCounts[cap];
+          delete this._absentSinceMs[cap];
         }
       }
-      if (want) delete this._absenceCounts[cap];
+      if (want) delete this._absentSinceMs[cap];
     }
 
     // measure_lsi + alarm_water_balance present iff LSI is enabled (M1 §6,§7.3).
@@ -801,11 +814,11 @@ class PoolDevice extends Homey.Device {
         // Payload-driven only (a channel leaves the OK set) → debounce (review
         // F2): 1-wire FAULT/freeze glitches are regular operation per the
         // payload's own fault counters.
-        if (shouldRemoveAfterAbsence(this._absenceCounts, cap, false)) {
+        if (shouldRemoveAfterAbsence(this._absentSinceMs, cap, false, nowMs, graceMs)) {
           await this.removeCapability(cap).catch(this.error);
-          delete this._absenceCounts[cap];
+          delete this._absentSinceMs[cap];
         }
-      } else delete this._absenceCounts[cap];
+      } else delete this._absentSinceMs[cap];
     }
 
     // 3) M2 feature-group capabilities (spec M2 §4,§6). Overrides come from the
@@ -869,15 +882,15 @@ class PoolDevice extends Homey.Device {
     const baseOf = (/** @type {string} */ cap) => (cap.includes('.') ? cap.slice(0, cap.indexOf('.')) : cap);
     for (const cap of [...this.getCapabilities()]) {
       if (M2_MANAGED_BASES.has(baseOf(cap)) && !desiredM2.has(cap)) {
-        if (detectableM2.has(cap) || shouldRemoveAfterAbsence(this._absenceCounts, cap, false)) {
+        if (detectableM2.has(cap) || shouldRemoveAfterAbsence(this._absentSinceMs, cap, false, nowMs, graceMs)) {
           await this.removeCapability(cap).catch(this.error);
           delete this._inputOptState[cap]; // M5.8: Re-Add muss Optionen neu setzen (Churn-Guard invalidieren)
-          delete this._absenceCounts[cap];
+          delete this._absentSinceMs[cap];
           // Review P6: state must not outlive the capability — a re-added alarm
           // cap re-announces a still-active alarm instead of swallowing the edge.
           delete this._m2AlarmState[cap];
         }
-      } else if (desiredM2.has(cap)) delete this._absenceCounts[cap];
+      } else if (desiredM2.has(cap)) delete this._absentSinceMs[cap];
     }
 
     // 4) M3 control capabilities — present only while control is enabled (SR-07)
@@ -895,12 +908,12 @@ class PoolDevice extends Homey.Device {
       if (want && !this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
       if (!want && this.hasCapability(cap)) {
         // Control off = user choice → immediate; feature lost → debounced (F2).
-        if (!controlOn || shouldRemoveAfterAbsence(this._absenceCounts, cap, false)) {
+        if (!controlOn || shouldRemoveAfterAbsence(this._absentSinceMs, cap, false, nowMs, graceMs)) {
           await this.removeCapability(cap).catch(this.error);
-          delete this._absenceCounts[cap];
+          delete this._absentSinceMs[cap];
         }
       }
-      if (want) delete this._absenceCounts[cap];
+      if (want) delete this._absentSinceMs[cap];
     }
   }
 }

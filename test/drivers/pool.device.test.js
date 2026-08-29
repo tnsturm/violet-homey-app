@@ -158,6 +158,23 @@ test('device availability: 3 consecutive fetch failures → setUnavailable', asy
   assert.strictEqual(device._log.available.at(-1), 'unavailable');
 });
 
+// Diff-Review 2026-08-29 F-B: on the fresh→stale edge the certification must
+// be revoked FIRST — probes clearing to null while fresh still reads true
+// would mis-trigger every "value changed AND fresh" Flow on each pump-off.
+test('apply order: on the stale edge measurements_fresh=false is written before the null-clears (F-B)', async () => {
+  const fixture = FIXTURES['getReadings.all'];
+  const device = await makeDevice(fixture);
+  await device._tick(); // fresh poll
+  currentFixture = { ...fixture, PUMP: '0' }; // pump off → stale edge
+  device._log.setValue.length = 0;
+  await device._tick();
+  const writes = device._log.setValue;
+  const freshIdx = writes.findIndex((w) => w.cap === 'measurements_fresh' && w.value === false);
+  const phIdx = writes.findIndex((w) => w.cap === 'measure_ph' && w.value === null);
+  assert.ok(freshIdx !== -1 && phIdx !== -1, 'both writes must happen on the stale edge');
+  assert.ok(freshIdx < phIdx, 'fresh=false must publish before the probes are cleared');
+});
+
 test('apply order: measurements_fresh is written after the probe values (F5)', async () => {
   const device = await makeDevice(FIXTURES['getReadings.all']);
   await device._tick();
@@ -256,19 +273,54 @@ test('hide/unhide: alarm edge fires again after the capability returns (P6)', as
 test('reconcile debounce: one FAULT poll does not remove the ow sub-capability (F2)', async () => {
   const fixture = FIXTURES['getReadings.all'];
   const device = await makeDevice(fixture);
+  // Fake clock (F-C: the debounce measures continuous absence TIME): each
+  // simulated poll advances one 60s interval.
+  let fakeNow = 1_000_000_000_000;
+  device._nowMs = () => fakeNow;
   await device._tick();
   assert.ok(device.getCapabilities().some((c) => c.startsWith('measure_temperature.ow')), 'precondition: ow caps exist');
   currentFixture = { ...fixture, onewire1_state: 'FAULT' };
+  fakeNow += 60_000;
   await device._tick();
   assert.ok(
     !device._log.removeCap.some((c) => c === 'measure_temperature.ow1'),
     'a single deviant poll must not tear down capabilities',
   );
+  fakeNow += 60_000;
   await device._tick();
-  await device._tick(); // 3rd consecutive absence — now it may go
+  fakeNow += 60_000;
+  await device._tick(); // 3rd consecutive absent poll — grace (2×60s) reached
   assert.ok(
     device._log.removeCap.includes('measure_temperature.ow1'),
-    'after 3 consecutive absences the removal happens',
+    'after 3 consecutive absent polls the removal happens',
+  );
+});
+
+// Diff-Review 2026-08-29 F-C: the debounce must measure TIME, not _tick()
+// invocations — a single multi-key settings save fires 2–3 ticks within one
+// second and must not burn the whole 3-poll grace on one transient fault.
+test('reconcile debounce: a settings-save tick burst does not bypass the grace period (F-C)', async () => {
+  const fixture = FIXTURES['getReadings.all'];
+  const device = await makeDevice(fixture);
+  let fakeNow = 1_000_000_000_000;
+  device._nowMs = () => fakeNow;
+  await device._tick();
+  currentFixture = { ...fixture, onewire1_state: 'FAULT' };
+  await device._tick(); // first absence observed (regular poll)
+  // User saves settings with three tick-triggering keys — all within a second.
+  fakeNow += 500;
+  await device.onSettings({ changedKeys: ['pollIntervalSeconds', 'lsi_enabled', 'show_advanced_diagnostics'] });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.ok(
+    !device._log.removeCap.includes('measure_temperature.ow1'),
+    'a sub-second tick burst must not count as three polls of absence',
+  );
+  // Real time passing (2 poll intervals) still removes as specified.
+  fakeNow += 200_000;
+  await device._tick();
+  assert.ok(
+    device._log.removeCap.includes('measure_temperature.ow1'),
+    'after the real grace period the removal still happens',
   );
 });
 
