@@ -146,7 +146,18 @@ class PoolDriver extends Homey.Driver {
       }
       const id = deriveDeviceId(raw);
       if (!id) throw new Error(this.homey.__('pair.error.no_serial'));
-      if (id !== device.getData().id) throw new Error(this.homey.__('pair.error.wrong_device'));
+      // Diff review 2026-08-29 F-A: devices paired ≤0.4.5 carry a frozen random
+      // UUID in data.id (identity spec §Migration) — serial and UUID never
+      // collide (§Decision), so the serial check can never pass for them and
+      // would lock exactly the population N5 exists for out of repair. UUID-form
+      // ids skip the comparison (logged); serial-form ids stay fail-closed.
+      const dataId = String(device.getData().id || '');
+      const legacyUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(dataId);
+      if (legacyUuid) {
+        this.log('repair: legacy UUID device identity — serial check skipped (controller serial:', id, ')');
+      } else if (id !== dataId) {
+        throw new Error(this.homey.__('pair.error.wrong_device'));
+      }
       // Empty fields KEEP the stored values (diff review 2026-08-29): the view
       // labels them "(optional)" and the common repair reason is an IP change —
       // silently wiping the write password would break every control Flow.

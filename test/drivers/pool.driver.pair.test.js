@@ -125,6 +125,22 @@ test('repair: empty credential fields keep the stored values (host-only repair)'
   assert.strictEqual(device.__test.settings.host, '192.168.178.99', 'host is updated');
 });
 
+// Diff-Review 2026-08-29 F-A: devices paired ≤0.4.5 carry a frozen random UUID
+// in data.id (identity spec §Migration) — the serial check would reject exactly
+// the population N5 exists for. UUID-form ids skip the serial comparison
+// (spec §Decision: UUIDs and serials never collide).
+test('repair: legacy random-UUID device identity passes the serial check (F-A)', async () => {
+  resetFetch();
+  const driver = makeDriver();
+  const session = makeSession();
+  const device = makePairedDevice();
+  device.getData = () => ({ id: '2f1c1f88-6a1d-4f0a-9f0f-2b3c4d5e6f70' }); // frozen pre-serial UUID
+  await driver.onRepair(session, device);
+  const ok = await session.handlers.connect({ host: '', username: '', password: NEW_PW });
+  assert.strictEqual(ok, true, 'legacy device must be repairable');
+  assert.strictEqual(device.__test.store.writePassword, NEW_PW);
+});
+
 test('repair: a different controller serial is rejected, nothing stored (N5)', async () => {
   resetFetch();
   const driver = makeDriver();
