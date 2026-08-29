@@ -66,6 +66,10 @@ async function makeDevice(fixture, settings = {}) {
   failFetch = false;
   const device = /** @type {TestDevice} */ (/** @type {any} */ (new PoolDevice()));
   device.__test.settings = { ...DEFAULT_SETTINGS, ...settings };
+  // Static caps from driver.compose.json — a really paired device always has
+  // them; without this seed the hasCapability guard drops every core write
+  // and the whole apply path is test-blind (review 2026-08-28, Meta M1).
+  device.__test.capabilities = ['measure_temperature', 'measure_ph', 'measure_orp', 'pump_running', 'measurements_fresh'];
   await device.onInit();
   await new Promise((resolve) => setImmediate(resolve)); // settle the fire-and-forget init tick
   openDevices.push(device);

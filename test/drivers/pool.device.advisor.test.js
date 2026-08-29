@@ -83,6 +83,9 @@ async function makeDevice(fixture, settings = {}) {
   currentFixture = fixture;
   const device = /** @type {TestDevice} */ (/** @type {any} */ (new PoolDevice()));
   device.__test.settings = { ...DEFAULT_SETTINGS, ...settings };
+  // Static caps from driver.compose.json (review 2026-08-28, Meta M1) — see
+  // pool.device.test.js makeDevice for the rationale.
+  device.__test.capabilities = ['measure_temperature', 'measure_ph', 'measure_orp', 'pump_running', 'measurements_fresh'];
   await device.onInit();
   await new Promise((resolve) => setImmediate(resolve)); // settle the fire-and-forget init tick
   openDevices.push(device);
