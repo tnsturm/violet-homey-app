@@ -67,6 +67,27 @@ class PoolDriver extends Homey.Driver {
     });
   }
 
+  // Shared connect core for pair AND repair (review R2-2): normalize the host,
+  // fetch a live payload with the N10 error mapping, derive the serial. Throws
+  // localized errors; callers add their own identity/persistence rules.
+  /** @param {*} host Raw user input. @param {string} logLabel 'pairing'|'repair'.
+   * @returns {Promise<{cleanHost: string, raw: *, id: ?string}>} */
+  async _connectAndVerify(host, logLabel) {
+    const cleanHost = normalizeHost(host);
+    let raw;
+    try {
+      raw = await fetchReadings(cleanHost, { timeoutMs: 10000 });
+    } catch (err) {
+      // Raw fetch/JSON/abort internals are useless in the dialog (review N10):
+      // log the detail, surface one actionable localized message.
+      this.error(logLabel, 'connect failed:', err instanceof Error ? err.message : String(err));
+      throw new Error(this.homey.__('pair.error.unreachable'));
+    }
+    const id = deriveDeviceId(raw);
+    if (!id) throw new Error(this.homey.__('pair.error.no_serial'));
+    return { cleanHost, raw, id };
+  }
+
   // async to match the SDK's declared onPair signature (checkJs TS2416, M4.5 eval doc
   // §3) — typing strictness, not a runtime bug: handler registration stays synchronous
   // and Homey awaits the returned promise either way.
@@ -76,26 +97,15 @@ class PoolDriver extends Homey.Driver {
     let pairData = null;
 
     session.setHandler('connect', async (/** @type {{host?: string, username?: string, password?: string}} */ { host, username, password }) => {
-      const cleanHost = normalizeHost(host);
-      if (!cleanHost) throw new Error(this.homey.__('pair.error.host_required'));
-      // Pairing completes only on a valid live response (spec §6). Raw
-      // fetch/JSON/abort internals are useless in the pairing dialog (review
-      // N10): log the detail, surface one actionable localized message.
-      let raw;
-      try {
-        raw = await fetchReadings(cleanHost, { timeoutMs: 10000 });
-      } catch (err) {
-        this.error('pairing connect failed:', err instanceof Error ? err.message : String(err));
-        throw new Error(this.homey.__('pair.error.unreachable'));
-      }
+      if (!normalizeHost(host)) throw new Error(this.homey.__('pair.error.host_required'));
+      // Pairing completes only on a valid live response (spec §6).
       // data.id = controller serial (HW_SERIAL_CARRIER): stable per unit, so Homey
       // itself blocks adding the same controller twice. Fail-closed when missing —
       // never fall back to a random/weak id (device-identity spec §Decision,
       // §Missing/invalid serial). Existing devices keep their frozen UUIDs.
-      const id = deriveDeviceId(raw);
-      if (!id) throw new Error(this.homey.__('pair.error.no_serial'));
+      const { cleanHost, id } = await this._connectAndVerify(host, 'pairing');
       pairData = {
-        id,
+        id: /** @type {string} */ (id),
         host: cleanHost,
         writeUsername: String(username || '').trim(),
         writePassword: String(password || ''),
@@ -136,16 +146,8 @@ class PoolDriver extends Homey.Driver {
   /** @param {*} session Homey repair session. @param {*} device The device being repaired. */
   async onRepair(session, device) {
     session.setHandler('connect', async (/** @type {{host?: string, username?: string, password?: string}} */ { host, username, password }) => {
-      const cleanHost = normalizeHost(host) || device.getSetting('host');
-      let raw;
-      try {
-        raw = await fetchReadings(cleanHost, { timeoutMs: 10000 });
-      } catch (err) {
-        this.error('repair connect failed:', err instanceof Error ? err.message : String(err));
-        throw new Error(this.homey.__('pair.error.unreachable'));
-      }
-      const id = deriveDeviceId(raw);
-      if (!id) throw new Error(this.homey.__('pair.error.no_serial'));
+      // Empty host = keep the stored one (repair.html hint text).
+      const { cleanHost, id } = await this._connectAndVerify(normalizeHost(host) || device.getSetting('host'), 'repair');
       // Diff review 2026-08-29 F-A: devices paired ≤0.4.5 carry a frozen random
       // UUID in data.id (identity spec §Migration) — serial and UUID never
       // collide (§Decision), so the serial check can never pass for them and
