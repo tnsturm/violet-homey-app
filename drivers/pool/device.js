@@ -380,6 +380,14 @@ class PoolDevice extends Homey.Device {
     if (changedKeys.includes('notifyPort')) this._startNotifyServer().catch(this.error);
   }
 
+  // User deleted the device while the app keeps running — a distinct SDK
+  // teardown event from onUninit (app destroyed); both must clean up, or the
+  // poll interval and the NOTIFY port outlive the device until app restart
+  // (review 2026-08-28 N2; @types/homey Device.d.ts onDeleted/onUninit).
+  async onDeleted() {
+    await this.onUninit();
+  }
+
   async onUninit() {
     if (this._poll) this.homey.clearInterval(this._poll);
     // SR-M6-07: append the close as another _notifyOp link (not a bare close)
