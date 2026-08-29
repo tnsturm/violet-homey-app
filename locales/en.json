@@ -27,7 +27,7 @@
   "repair": {
     "connect": {
       "title": "Update connection",
-      "hint": "Set or rotate the write credentials; leave the host empty to keep the current one.",
+      "hint": "Leave any field empty to keep its current value; enter a new password to rotate it.",
       "done": "Saved."
     }
   }

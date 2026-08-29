@@ -109,6 +109,22 @@ test('repair: stores new write credentials on the existing device (N5)', async (
   assert.strictEqual(seenHost, 'violet.local', 'empty host keeps the stored one');
 });
 
+// Diff-Review 2026-08-29 (Winkel B): empty fields are labeled "(optional)" —
+// they must KEEP the stored credentials, not silently wipe them. The IP-only
+// repair (host changed, creds untouched) is the most common repair reason.
+test('repair: empty credential fields keep the stored values (host-only repair)', async () => {
+  resetFetch();
+  const driver = makeDriver();
+  const session = makeSession();
+  const device = makePairedDevice();
+  await driver.onRepair(session, device);
+  const ok = await session.handlers.connect({ host: '192.168.178.99', username: '', password: '' });
+  assert.strictEqual(ok, true);
+  assert.strictEqual(device.__test.store.writePassword, OLD_PW, 'empty password must not wipe the stored one');
+  assert.strictEqual(device.__test.settings.writeUsername, OLD_USER, 'empty username must not wipe the stored one');
+  assert.strictEqual(device.__test.settings.host, '192.168.178.99', 'host is updated');
+});
+
 test('repair: a different controller serial is rejected, nothing stored (N5)', async () => {
   resetFetch();
   const driver = makeDriver();

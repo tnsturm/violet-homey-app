@@ -147,8 +147,15 @@ class PoolDriver extends Homey.Driver {
       const id = deriveDeviceId(raw);
       if (!id) throw new Error(this.homey.__('pair.error.no_serial'));
       if (id !== device.getData().id) throw new Error(this.homey.__('pair.error.wrong_device'));
-      await device.setStoreValue('writePassword', String(password || ''));
-      await device.setSettings({ writeUsername: String(username || '').trim(), host: cleanHost });
+      // Empty fields KEEP the stored values (diff review 2026-08-29): the view
+      // labels them "(optional)" and the common repair reason is an IP change —
+      // silently wiping the write password would break every control Flow.
+      const newPassword = String(password || '');
+      if (newPassword) await device.setStoreValue('writePassword', newPassword);
+      const newUsername = String(username || '').trim();
+      const patch = /** @type {Object<string, *>} */ ({ host: cleanHost });
+      if (newUsername) patch.writeUsername = newUsername;
+      await device.setSettings(patch);
       return true;
     });
   }
