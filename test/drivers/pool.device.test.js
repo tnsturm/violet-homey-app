@@ -157,6 +157,15 @@ test('device availability: 3 consecutive fetch failures → setUnavailable', asy
   assert.strictEqual(device._log.available.at(-1), 'unavailable');
 });
 
+test('apply order: measurements_fresh is written after the probe values (F5)', async () => {
+  const device = await makeDevice(FIXTURES['getReadings.all']);
+  await device._tick();
+  const caps = device._log.setValue.map((w) => w.cap);
+  const freshIdx = caps.lastIndexOf('measurements_fresh');
+  assert.ok(freshIdx > caps.lastIndexOf('measure_ph'), 'fresh before ph — a Flow gate would race the values');
+  assert.strictEqual(freshIdx, caps.length - 1, 'measurements_fresh must be the last write of the batch');
+});
+
 // --- Review 2026-08-28, F1/F3: the failure path must log and must not keep
 // --- declaring day-old values fresh (repro executed in the review).
 

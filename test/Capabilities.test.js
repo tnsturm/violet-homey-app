@@ -149,3 +149,18 @@ test('buildCapabilityUpdates places alarm_water_balance (LSI warning state)', ()
     false,
   );
 });
+
+// Review 2026-08-28 F5: the freshness flag certifies the probe values — it must
+// be the LAST key so the apply loop publishes it after the values it certifies.
+test('buildCapabilityUpdates orders measurements_fresh last (review F5)', () => {
+  const updates = buildCapabilityUpdates({
+    parsed: {
+      pumpOn: true, tempChannels: [{ id: 1, value: 25 }], ph: 7.3, orp: 650, chlorine: null,
+    },
+    fresh: true,
+    primaryChannel: 25,
+    lsi: null,
+    alarm: false,
+  });
+  assert.strictEqual(Object.keys(updates).at(-1), 'measurements_fresh');
+});

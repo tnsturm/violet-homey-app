@@ -546,11 +546,19 @@ class PoolDevice extends Homey.Device {
 
     // Apply rule (clear-stale §3): undefined = leave as-is; null = clear to "–"
     // (Insights gap); else set. What is fresh-gated/cleared is decided in /lib (§7).
+    // measurements_fresh goes last (review F5): the flag certifies the probe
+    // values, so it may only publish after they are written — the M2 merge
+    // above re-buries the lib ordering, hence the explicit split here.
+    const freshValue = updates.measurements_fresh;
+    delete updates.measurements_fresh;
     for (const [cap, value] of Object.entries(updates)) {
       if (value === undefined) continue;
       if (this.hasCapability(cap)) {
         await this.setCapabilityValue(cap, value).catch(this.error);
       }
+    }
+    if (freshValue !== undefined && this.hasCapability('measurements_fresh')) {
+      await this.setCapabilityValue('measurements_fresh', freshValue).catch(this.error);
     }
 
     // Diagnostics tile-title annotation (gated by show_advanced_diagnostics).
