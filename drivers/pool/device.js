@@ -20,6 +20,7 @@ const {
   choosePrimaryTemperature,
   desiredFeatureCapabilities,
   buildCapabilityUpdates,
+  shouldRemoveAfterAbsence,
 } = require('../../lib/Capabilities');
 const { computeLSI, classifyLSI, toPpmCaCO3 } = require('../../lib/Lsi');
 // M8.1 water-balance advisor (spec §7-§9): pure + total, so every advisor call
@@ -78,6 +79,8 @@ class PoolDevice extends Homey.Device {
   _failures = 0;
   /** @type {boolean} first-failure-of-a-streak log throttle (review F3) */
   _lastPollErrorLogged = false;
+  /** @type {Object<string, number>} capId → consecutive polls without evidence (review F2 debounce) */
+  _absenceCounts = {};
   /** @type {Object<string, boolean>} capInstanceId → last boolean (edge detection) */
   _m2AlarmState = {};
   /** @type {Object<string, *>} capId → FlowCardTriggerDevice */
@@ -710,7 +713,15 @@ class PoolDevice extends Homey.Device {
     for (const cap of ['measure_chlorine']) {
       const want = desiredFeatureCaps.includes(cap);
       if (want && !this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
-      if (!want && this.hasCapability(cap)) await this.removeCapability(cap).catch(this.error);
+      if (!want && this.hasCapability(cap)) {
+        // Hide = explicit user choice → immediate; lost detection → debounced
+        // over 3 polls (review F2) so one deviant payload can't break Flows.
+        if (overrides.chlorine === 'hide' || shouldRemoveAfterAbsence(this._absenceCounts, cap, false)) {
+          await this.removeCapability(cap).catch(this.error);
+          delete this._absenceCounts[cap];
+        }
+      }
+      if (want) delete this._absenceCounts[cap];
     }
 
     // measure_lsi + alarm_water_balance present iff LSI is enabled (M1 §6,§7.3).
@@ -737,9 +748,16 @@ class PoolDevice extends Homey.Device {
       }
     }
     for (const cap of [...this.getCapabilities()]) {
-      if (cap.startsWith('measure_temperature.ow') && !wanted.has(cap)) {
-        await this.removeCapability(cap).catch(this.error);
-      }
+      if (!cap.startsWith('measure_temperature.ow')) continue;
+      if (!wanted.has(cap)) {
+        // Payload-driven only (a channel leaves the OK set) → debounce (review
+        // F2): 1-wire FAULT/freeze glitches are regular operation per the
+        // payload's own fault counters.
+        if (shouldRemoveAfterAbsence(this._absenceCounts, cap, false)) {
+          await this.removeCapability(cap).catch(this.error);
+          delete this._absenceCounts[cap];
+        }
+      } else delete this._absenceCounts[cap];
     }
 
     // 3) M2 feature-group capabilities (spec M2 §4,§6). Overrides come from the
@@ -796,12 +814,19 @@ class PoolDevice extends Homey.Device {
       ...DIAGNOSTIC_CAPS,
       ...INPUT_SUBCAPS,
     ]);
+    // User-hidden vs. detection-lost (review F2): what all-auto detection would
+    // still keep. cap ∈ detectable ∧ ∉ desired ⇒ the user hid it ⇒ immediate;
+    // cap ∉ detectable ⇒ the payload lost it ⇒ debounced over 3 polls.
+    const detectableM2 = new Set(desiredM2Capabilities({ features, overrides: {}, diagnosticsEnabled: true }));
     const baseOf = (/** @type {string} */ cap) => (cap.includes('.') ? cap.slice(0, cap.indexOf('.')) : cap);
     for (const cap of [...this.getCapabilities()]) {
       if (M2_MANAGED_BASES.has(baseOf(cap)) && !desiredM2.has(cap)) {
-        await this.removeCapability(cap).catch(this.error);
-        delete this._inputOptState[cap]; // M5.8: Re-Add muss Optionen neu setzen (Churn-Guard invalidieren)
-      }
+        if (detectableM2.has(cap) || shouldRemoveAfterAbsence(this._absenceCounts, cap, false)) {
+          await this.removeCapability(cap).catch(this.error);
+          delete this._inputOptState[cap]; // M5.8: Re-Add muss Optionen neu setzen (Churn-Guard invalidieren)
+          delete this._absenceCounts[cap];
+        }
+      } else if (desiredM2.has(cap)) delete this._absenceCounts[cap];
     }
 
     // 4) M3 control capabilities — present only while control is enabled (SR-07)
@@ -817,7 +842,14 @@ class PoolDevice extends Homey.Device {
     for (const cap of ['pump_control', 'light_control', 'pvsurplus_control']) {
       const want = desiredControl.has(cap);
       if (want && !this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
-      if (!want && this.hasCapability(cap)) await this.removeCapability(cap).catch(this.error);
+      if (!want && this.hasCapability(cap)) {
+        // Control off = user choice → immediate; feature lost → debounced (F2).
+        if (!controlOn || shouldRemoveAfterAbsence(this._absenceCounts, cap, false)) {
+          await this.removeCapability(cap).catch(this.error);
+          delete this._absenceCounts[cap];
+        }
+      }
+      if (want) delete this._absenceCounts[cap];
     }
   }
 }

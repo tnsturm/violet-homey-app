@@ -164,3 +164,16 @@ test('buildCapabilityUpdates orders measurements_fresh last (review F5)', () => 
   });
   assert.strictEqual(Object.keys(updates).at(-1), 'measurements_fresh');
 });
+
+// Review 2026-08-28 F2: a single deviant poll must not tear down capabilities.
+const { shouldRemoveAfterAbsence } = require('../lib/Capabilities');
+
+test('shouldRemoveAfterAbsence: removes only after 3 consecutive absences, presence resets (F2)', () => {
+  const counts = /** @type {Object<string, number>} */ ({});
+  assert.strictEqual(shouldRemoveAfterAbsence(counts, 'x', false), false);
+  assert.strictEqual(shouldRemoveAfterAbsence(counts, 'x', false), false);
+  assert.strictEqual(shouldRemoveAfterAbsence(counts, 'x', true), false); // reappeared - reset
+  assert.strictEqual(shouldRemoveAfterAbsence(counts, 'x', false), false);
+  assert.strictEqual(shouldRemoveAfterAbsence(counts, 'x', false), false);
+  assert.strictEqual(shouldRemoveAfterAbsence(counts, 'x', false), true);
+});

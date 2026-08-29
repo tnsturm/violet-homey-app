@@ -166,6 +166,37 @@ test('apply order: measurements_fresh is written after the probe values (F5)', a
   assert.strictEqual(freshIdx, caps.length - 1, 'measurements_fresh must be the last write of the batch');
 });
 
+// --- Review 2026-08-28, F2: capability teardown is debounced over 3 polls;
+// --- explicit user choices (Hide override) stay immediate.
+
+test('reconcile debounce: one FAULT poll does not remove the ow sub-capability (F2)', async () => {
+  const fixture = FIXTURES['getReadings.all'];
+  const device = await makeDevice(fixture);
+  await device._tick();
+  assert.ok(device.getCapabilities().some((c) => c.startsWith('measure_temperature.ow')), 'precondition: ow caps exist');
+  currentFixture = { ...fixture, onewire1_state: 'FAULT' };
+  await device._tick();
+  assert.ok(
+    !device._log.removeCap.some((c) => c === 'measure_temperature.ow1'),
+    'a single deviant poll must not tear down capabilities',
+  );
+  await device._tick();
+  await device._tick(); // 3rd consecutive absence — now it may go
+  assert.ok(
+    device._log.removeCap.includes('measure_temperature.ow1'),
+    'after 3 consecutive absences the removal happens',
+  );
+});
+
+test('reconcile debounce: user Hide override removes immediately (F2)', async () => {
+  const device = await makeDevice(FIXTURES['chlorine-only']);
+  await device._tick();
+  assert.ok(device.getCapabilities().includes('measure_chlorine'), 'precondition: chlorine detected');
+  device.__test.settings.group_chlorine = 'hide';
+  await device._tick();
+  assert.ok(device._log.removeCap.includes('measure_chlorine'), 'explicit user choice stays immediate');
+});
+
 // --- Review 2026-08-28, F1/F3: the failure path must log and must not keep
 // --- declaring day-old values fresh (repro executed in the review).
 
