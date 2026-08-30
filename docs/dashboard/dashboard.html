@@ -101,7 +101,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-08-24",
+  updatedAt: "2026-08-30",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -780,6 +780,84 @@ window.DASHBOARD_STATUS = {
         { at: "2026-08-24", note: "Schritt 7 Framework-Abgleich: Drift-Tabelle vor und nach dem Editieren gezeigt, jede Zeile konsistent. Gespiegelt nach skill-agentic-loop-framework 0.1.30 (Commit b5420f0, Template-Suite 75/75 gruen): templates/CLAUDE.md §9/§10/§11, neuer §10-Unterabschnitt zu if-Filtern inkl. der Compound-Command-Falle, templates/.claude/settings.json mit if-Filtern, lib/log.js durationMs, Checkpoint-Template (Schritt 2 = /doctor, /insights in der Retro), Agent-Templates model: inherit + effort: high, CHANGELOG. Als eigene Zeilen vermerkt, was im Framework fehlt: dashboard-sync-Skill, model-tiering-Notiz, reference.md des Checkpoint-Skills. Schritt 7b Native-Feature-Review: 4 Zeilen neu bewertet, 3 neue Zeilen (if-Filter, Cloud-Routine als replace des lokalen Tasks, /insights), und die seit 2026-07-21 offene Frage homey-cli vs. Homey-MCP geschlossen — der Skill ist laut eigener Beschreibung die Obermenge des Connectors, also keep." }
       ],
       prompt: null
+    },
+    {
+      id: "M9.0b",
+      title: "Housekeeping Agentic Loop",
+      status: "active",
+      recommendedModel: {
+        model: "Claude Opus 5",
+        effort: "high",
+        why: "Checkpoint mit Retro ueber einen Review-Loop ohne FRICTION-Log: die Signalquellen muessen aus Review-Dokumenten, Hook-Ledger und Repo-Zustand rekonstruiert werden, und die Codifizierung greift in Gate-Hooks und Protokollregeln ein."
+      },
+      startedAt: "2026-08-30",
+      finishedAt: null,
+      commit: "ccc17f5/7938db9/8e61354/a552eac/9e7c776",
+      summary: "Zweiter Checkpoint des M9-Gates, ausgeloest durch den ersten vollstaendigen adversarialen Review-Loop nach §9 (PR #19, Squash 82462c6, 2026-08-29). Der Loop lief OHNE aktiven Milestone, daher war das FRICTION-Log fuer ihn leer; Primaerquellen der Retro waren die Review-Dokumente, der Hook-Ledger und der Repo-Zustand selbst.",
+      steps: [
+        { label: "Branch-/Worktree-Cleanup", done: true },
+        { label: "/doctor-Lauf", done: false },
+        { label: "/claude-automation-recommender", done: true },
+        { label: "Skill-Quellen geprüft", done: true },
+        { label: "Workflow-Retrospektive", done: true },
+        { label: "Memory-Konsolidierung", done: true },
+        { label: "Framework-Abgleich (Drift + Native-Features)", done: true },
+        { label: "Dashboard aktualisieren", done: true },
+        { label: "Handover", done: false }
+      ],
+      currentActivity: "Wartet auf /doctor und /insights (disableModelInvocation — nur der Nutzer kann sie tippen), dann Abschluss + Handover.",
+      runtime: null,
+      log: [
+        {
+          at: "2026-08-30",
+          note: "Schritt 1 Branch-/Worktree-Cleanup: lokaler Branch feat/adversarial-review-gate (3d90ad8) geloescht — sein origin-Branch war nach dem Squash-Merge von PR #18 entfernt, und git diff --stat gegen den Squash-Commit 49d6bf0 war leer, der Inhalt also vollstaendig in main. BLOCKIERT: .git/worktrees/adversarial-review-2026-08-28 laesst sich nicht prunen (git worktree prune meldet \"gitdir file does not exist\", das Loeschen scheitert an Permission denied — OneDrive-Sperre, dieselbe Klasse wie die zwei gesperrten Ordnerhuellen im M7.0-Checkpoint). Steht auf der Kommandoliste am Ende des Berichts."
+        },
+        {
+          at: "2026-08-30",
+          note: "BEFUND ausserhalb des Auftrags — zwei vollstaendige Checkouts: C:\\Users\\TorstenSturm\\source\\repos\\VioletApp existiert weiterhin (Stand 774d440) neben dem OneDrive-Checkout. Folge: Claudes Memory-Ordner haengt am cwd-Schluessel, alle 13 Memory-Dateien lagen unter dem ALTEN Schluessel, und Recall in diesem Projekt lieferte nichts — ununterscheidbar von \"es gibt keine Memories\". Dateien in den aktuellen Schluessel kopiert (byte-identisch verifiziert, Originale als Rollback stehengelassen). Genau dieselbe Klasse wie Befund 2 des Auftrags: eine Degradation, die still aussieht wie Normalbetrieb."
+        },
+        {
+          at: "2026-08-30",
+          note: "Schritt 5 Retro, Signalquellen: das FRICTION-Log war fuer den Review-Loop leer (kein aktiver Milestone) UND der Hook-Ledger ebenfalls — er ist gitignored und pro Checkout, lief also im geloeschten Worktree mit und ist mit ihm verschwunden. Der Ledger im Haupt-Checkout traegt nur 13 Records vom 2026-08-27, davon 5x test-gate mit decision \"skip\": das node_modules-Problem war also schon am 27. da und test-gate hat es gemeldet, nur hat es niemand gelesen. Ersatzquellen waren die drei Review-Dokumente, der Repo-Zustand und die Hook-Quelltexte."
+        },
+        {
+          at: "2026-08-30",
+          note: "BEFUND 1 ENTSCHIEDEN — UMGESETZT (Commit 7938db9). Der Nachreview des Fix-Diffs wird fester Bestandteil von §9: neuer Pflichtschritt 3 (/code-review medium + adversarial-reviewer ueber den Diff der Fix-Commits, nicht noch einmal ueber den ganzen Branch), alter Schritt 3 wird 4. Begruendung im Text belegt statt behauptet: der erste Loop fand damit vier reale Defekte in zwanzig frischen Fixes (Repair-Dialog sperrte Legacy-UUID-Geraete aus, F5-Reihenfolgeregel nur einseitig implementiert, F2-Entprellung zaehlte Ticks statt Wanduhrzeit, leere Repair-Felder loeschten Credentials). Gespiegelt ins Framework 0.1.34."
+        },
+        {
+          at: "2026-08-30",
+          note: "BEFUND 2 ENTSCHIEDEN — UMGESETZT (Commit 8e61354). typecheck-gate kehrte bei nicht aufloesbarem tsc und bei fehlgeschlagenem Spawn mit exit 0 zurueck, ohne Ledger-Eintrag und ohne stderr-Zeile; das Commit-Gate war damit wirkungslos und von \"lief und war gruen\" nicht zu unterscheiden. Der Fix war billig, weil das Muster schon existierte: test-gate macht diese Unterscheidung seit dem /insights-Report 2026-08-21 ueber den gemeinsamen Probe lib/env-ready.js. Der Hook nutzt jetzt denselben toolchainMissing(), loggt \"skip\" und schreibt \"Nothing was verified; tsc did not run.\" Blockierverhalten unveraendert. Test-first: zwei rote Tests vor dem Fix, danach 7/7 gruen."
+        },
+        {
+          at: "2026-08-30",
+          note: "BEFUND 3 Hook-Reibung, vier Punkte einzeln beurteilt statt pauschal. (a) secrets-guard: ECHTER DEFEKT, gefixt (Commit a552eac) — die Ausnahme fuer test/ stand nur im *.json-Zweig, waehrend lib/ und drivers/ an jeder Pfadstelle matchten, also waren test/drivers/ und test/lib/ bewacht, entgegen dem Header der Datei; Repro vorher exit 2, nachher exit 0. (b) json-guard: kein Hook-Defekt, sondern eine zu weit formulierte Regel — HOMEY.md praezisiert (Commit 9e7c776), dass JSON.stringify fuer neue Dateien und neue Werte gilt, nicht fuers Neu-Serialisieren einer gepflegten Datei. (c) control-bytes-guard: KEIN Handlungsbedarf — er hat die rohen Steuerbytes korrekt geblockt und nennt den Ausweg selbst in der Fehlermeldung. (d) git add -A: Ursache war der Agent, nicht die Disziplin — adversarial-reviewer baut per Auftrag Repro-Harnesse, hatte aber keine Ansage wohin; jetzt explizit ausserhalb des Repos, git status muss nach seinem Lauf sauber sein."
+        },
+        {
+          at: "2026-08-30",
+          note: "BEFUND 4 erledigt (Commit ccc17f5): Frontmatter beider Adversarial-Reports nachgezogen. Der M0-Dryrun vom 2026-08-25 trug noch \"triage: offen\" und der Lauf vom 2026-08-28 ebenfalls — beide sind durch den vollstaendigen Loop erledigt. Ein Report mit \"triage: offen\" liest sich fuer die naechste Session wie eine offene Fehlerliste."
+        },
+        {
+          at: "2026-08-30",
+          note: "NEBENERGEBNIS: der seit M9.0 offene commit-msg-guard-Follow-up ist erledigt und faellt NEGATIV aus — der Hook blockt live. Sichere Gegenprobe mit git commit --dry-run -m \"$(cat <<EOF ... EOF)\": exit 2 mit korrekter Meldung, vor der Ausfuehrung. Der M9.0-Verdacht \"feuert im Betrieb nie\" ist damit widerlegt. Erklaerung fuer die duenne Ledger-Spur (1 Record bei 6 Commit-Zyklen heute): der Hook kehrt bei -F ohne Eintrag zurueck, weil es nichts zu inspizieren gibt — die ABWESENHEIT von Records beweist also nichts. Weiterhin offen aus M9.0: der Laufzeitnachweis der if-Filter, der einen Neustart braucht."
+        },
+        {
+          at: "2026-08-30",
+          note: "Schritt 3 automation-recommender: MCP und Hooks ohne Luecke (context7 + GitHub decken alles ab; das Gate-Netz ist vollstaendig, die Schwaeche dieses Zyklus war ein stiller Hook, kein fehlender). Zwei echte Befunde, beide auf Nutzerentscheid ZURUECKGESTELLT: (1) der §9-Review-Loop ist reine Prosa in CLAUDE.md, hat jetzt vier Schritte und lief ueber drei Sessions von Hand — §0 sagt, Prozeduren leben in Skills; ein review-loop-Skill waere der fehlende Halter. (2) security-reviewer und write-path-security-reviewer ueberschneiden sich (beide M3/M4-Schreibpfad) — Kandidat zum Zusammenlegen. Beide sind Milestone-Kandidaten, nicht Checkpoint-Arbeit."
+        },
+        {
+          at: "2026-08-30",
+          note: "Schritt 4 Skill-Quellen: disableSkillShellExecution weiterhin true (global UND projekt-lokal). Beide Git-Checkout-Quellen frisch geklont und gegen die installierten Kopien geprueft — JEDE gemeinsame Datei byte-identisch, Unterschiede nur Repo-Beiwerk (LICENSE, README, .github, docs), das nie kopiert wurde. Bei homey-app stammen die references/ aus dem gepackten homey-app.skill-Bundle und sind ebenfalls byte-identisch. §5-Vorfilter sauber: keine dynamischen Kontext-Bloecke, keine Netz-/Skript-Muster ausser shields.io-Badges. Juengste Upstream-Commits 2026-06-23 bzw. 2026-03-10 — nichts nachzuziehen. Plugin-Versionen: superpowers 6.3.0, claude-code-setup 1.0.0, general-settings 0.1.0, agentic-loop-framework 0.1.31 — letzteres ist nach dem heutigen Framework-Commit auf 0.1.34 veraltet und braucht ein Update plus Neustart (Kommandoliste)."
+        },
+        {
+          at: "2026-08-30",
+          note: "Schritt 7a Framework-Abgleich: Drift-Tabelle vor UND nach dem Editieren gezeigt. Gespiegelt nach skill-agentic-loop-framework 0.1.34 (Commit a699d8d, lokal — nicht gepusht): templates/CLAUDE.md §9 Schritt 3, homey/hooks/secrets-guard.js + Test, homey/HOMEY.md JSON-Regel, templates/.claude/agents/adversarial-reviewer.md. Die 0.1.33-Pflegeregel fuer MILESTONE-CYCLE griff hier zum ersten Mal: beide Sprachfassungen, beide milestone-cycle-SVGs (Knoten \"optional\" -> \"Pflicht\"), neue FIX-Zeile in der Mapping-Tabelle, FREIGABE-Zeile auf Schritt 4, beide Stand-Stempel und die zwei struktur-SVG-Badges auf 0.1.34. Mirror-Nachweis statt Behauptung: die alte Framework-Fassung des Hooks faellt gegen die neuen Testfaelle mit 2 Fehlern durch, die neue ist 13/13 gruen. ALS LUECKE VERMERKT, nicht gefixt: typecheck-gate.js + Test fehlen in templates/ (seit M4.9), weshalb die generische Fail-open-Telemetrie dort NICHT ankommt; ebenso weiter offen dashboard-sync-Skill, Model-Tiering-Notiz und reference.md des Checkpoint-Skills."
+        },
+        {
+          at: "2026-08-30",
+          note: "Schritt 7b Native-Feature-Review: Claude Code steht auf 2.1.241 — exakt dem Stand, den /doctor im M9.0-Checkpoint installiert hat. Fuer die 2026-08-24-Zeilen gibt es also kein Plattform-Delta, die Ledger-Regel trifft sie nicht. Drei Zeilen neu bewertet, weil dieser Zyklus neue Belege lieferte, alle Verdikte unveraendert: §9 Finishing a Branch (dritter nicht-nativer Teil: /code-review kennt kein \"pruefe erneut nach dem Fixen\"), Memory-Dateien (nativ zusaetzlich pfad-gekoppelt, ein Projektumzug ist immer auch ein Memory-Umzug), Gate-/Guard-Hooks (keep jetzt belegt durch den live blockenden commit-msg-guard, plus neue Auflage: jeder Fail-open-Pfad muss hoerbar sein). 3 geprueft -> 0 ersetzt / 3 behalten."
+        }
+      ],
+      prompt: null,
     },
     {
       id: "M9.1",
