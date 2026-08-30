@@ -21,7 +21,9 @@ Beide Befehle aktualisieren `.homeycompose/app.json`; das generierte Root-`app.j
 
 `.homeychangelog.json` für jede neue Version mit einer klaren, nutzerverständlichen Änderungsnotiz füllen — **en + de**.
 
-**JSON-Authoring-Regel:** Manifest-/Changelog-JSON **programmatisch bauen** (`node` + `JSON.stringify`; deutsche Innen-Anführungszeichen als `„…"` = U+201E/U+201C) — Hand-getippte Delimiter geraten zu Smart Quotes, die `homey app validate` durchlässt. Der `json-guard`-PostToolUse-Hook (`.claude/hooks/json-guard.js`) erzwingt das mechanisch.
+**JSON-Authoring-Regel:** Manifest-/Changelog-JSON **programmatisch bauen** (`node` + `JSON.stringify`; deutsche Innen-Anführungszeichen als `„…"` = U+201E/U+201C) — Hand-getippte Delimiter geraten zu Smart Quotes, die `homey app validate` durchlässt. Der `json-guard`-PostToolUse-Hook (`.claude/hooks/json-guard.js`) prüft danach mechanisch, dass die Datei noch parst.
+
+Die Regel gilt für **neue Dateien und neue Werte**, nicht für das Neu-Serialisieren einer bestehenden. Eine punktuelle Änderung an einem gepflegten Manifest läuft über einen gezielten Edit plus `node -e "JSON.parse(require('fs').readFileSync('<datei>','utf8'))"` als Gegenprobe. Grund: `JSON.stringify(obj, null, 2)` formatiert die ganze Datei um. `drivers/pool/driver.settings.compose.json` hält `label`/`hint`-Paare bewusst einzeilig (`{ "en": …, "de": … }`) — der Round-Trip sprengt jedes davon auf vier Zeilen und macht aus einer Zwei-Zeilen-Änderung einen mehrhundertzeiligen Diff, in dem kein Reviewer die eigentliche Änderung mehr findet. Passiert am 2026-08-29 in der Fix-Runde (Checkpoint-Retro M9.0b, Befund 3).
 
 ## App-Store-Readme & Community-Kurzanleitung
 

@@ -23,6 +23,10 @@ sie in Minuten prüfen kann.
 **Grenzen.**
 - Du schreibst genau eine Datei: den Report unter `<REPORTPFAD>`. Keine Änderung an Quell-, Test-
   oder Konfigurationsdateien, auch nicht über Bash.
+- Deine Repro-Harnesse sind Wegwerfcode und gehören **außerhalb des Repos** — ins Temp-/Scratchpad-
+  Verzeichnis, nie in den Repo-Root oder einen Repo-Unterordner. Am 2026-08-29 blieb eine solche
+  Harness-Datei im Root liegen und wurde von einem `git add -A` der Hauptsession mit eingesammelt.
+  Der Repo-Baum muss nach deinem Lauf bis auf den Report unverändert sein (`git status` sauber).
 - Kein Fix, kein Aufräumen, keine Verbesserungsvorschläge jenseits der Funde. Fällt dir eine
   Refactoring-Gelegenheit auf: nicht melden — das ist die Aufgabe von `/code-review`.
 - Sicherheitsanalyse gehört nicht hierher, dafür gibt es `/security-review`. Du prüfst Korrektheit
