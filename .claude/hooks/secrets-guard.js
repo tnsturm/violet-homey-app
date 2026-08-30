@@ -29,7 +29,13 @@ const { logHook } = require('./lib/log');
 // Deliberate residual scope: a real credential pasted into a test file is NOT caught
 // here — review (CLAUDE.md §9) is the net for that, and SR-01/SR-02 govern the shipped
 // app, not the test harness.
-const OUT_OF_SCOPE = /(?:^|\/)(node_modules|\.git|\.claude|docs|test|scratchpad)\//;
+//
+// `.claude/` is deliberately NOT in this list. Its exclusion belongs to the *.json rule
+// alone, where it means "tooling JSON may be JSONC" — hoisting it too would unguard the
+// hook sources under `.claude/hooks/lib/`, and this very file's header explains why a
+// credential must never appear there. Caught by the fix-diff re-review (§9 step 3) on
+// 2026-08-30, hours after the hoist introduced it — pinned by two tests below.
+const OUT_OF_SCOPE = /(?:^|\/)(node_modules|\.git|docs|test|scratchpad)\//;
 
 function isGuardedPath(filePath) {
   const p = String(filePath || '').replace(/\\/g, '/');
@@ -38,8 +44,9 @@ function isGuardedPath(filePath) {
   if (/(?:^|\/)lib\//.test(p)) return true;
   if (/(?:^|\/)drivers\//.test(p)) return true;
   if (/(?:^|\/)\.homeycompose\//.test(p)) return true;
-  // Committed *.json (app.json, package.json, .homeychangelog.json, locales/*.json).
-  if (/\.json$/.test(p)) return true;
+  // Committed *.json (app.json, package.json, .homeychangelog.json, locales/*.json),
+  // but not the tooling JSON under .claude/ — that may legitimately be JSONC.
+  if (/\.json$/.test(p)) return !/(?:^|\/)\.claude\//.test(p);
   return false;
 }
 

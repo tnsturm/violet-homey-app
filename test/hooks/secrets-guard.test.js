@@ -43,6 +43,12 @@ const cases = [
   ['test mock → PASS', { file_path: 'test/mocks/homey.js', content: "writePassword: 'fixture-secret'" }, 0],
   // Gegenprobe: die Verengung darf den Produktivpfad nicht aufweichen.
   ['production drivers/ still BLOCKED after the test-path carve-out', { file_path: 'drivers/pool/driver.js', content: "writePassword: 'hunter2secret'" }, 2],
+  // Nachreview des Fix-Diffs (CLAUDE.md §9 Schritt 3, 2026-08-30): beim Hochziehen der
+  // Ausnahme wanderte '.claude' mit und nahm den Hook-Quelltext selbst aus dem Scope.
+  // Genau dort darf nie ein Credential landen — secrets-guard.js sagt das im eigenen
+  // Header über sich selbst. Nur die JSONC-Configs unter .claude/ sollen ausgenommen sein.
+  ['hook source under .claude/hooks/lib → BLOCK', { file_path: '.claude/hooks/lib/changelog.js', content: `const h = '${SECRET_B64}';` }, 2],
+  ['.claude tooling JSON → PASS (may be JSONC)', { file_path: '.claude/launch.json', content: '{ /* comment */ }' }, 0],
 ];
 
 for (const [name, toolInput, expected] of cases) {
