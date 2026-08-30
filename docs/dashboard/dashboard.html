@@ -855,7 +855,8 @@ window.DASHBOARD_STATUS = {
         {
           at: "2026-08-30",
           note: "Schritt 7b Native-Feature-Review: Claude Code steht auf 2.1.241 — exakt dem Stand, den /doctor im M9.0-Checkpoint installiert hat. Fuer die 2026-08-24-Zeilen gibt es also kein Plattform-Delta, die Ledger-Regel trifft sie nicht. Drei Zeilen neu bewertet, weil dieser Zyklus neue Belege lieferte, alle Verdikte unveraendert: §9 Finishing a Branch (dritter nicht-nativer Teil: /code-review kennt kein \"pruefe erneut nach dem Fixen\"), Memory-Dateien (nativ zusaetzlich pfad-gekoppelt, ein Projektumzug ist immer auch ein Memory-Umzug), Gate-/Guard-Hooks (keep jetzt belegt durch den live blockenden commit-msg-guard, plus neue Auflage: jeder Fail-open-Pfad muss hoerbar sein). 3 geprueft -> 0 ersetzt / 3 behalten."
-        }
+        },
+        { at: "2026-08-30", note: "NACHREVIEW DES FIX-DIFFS ANGEWANDT (§9 Schritt 3, heute eingefuehrt) — und er hat sofort geliefert: /code-review medium ueber die eigenen Commits dieser Session fand einen realen Defekt IN MEINEM EIGENEN FIX von Stunden zuvor. In a552eac war beim Hochziehen der Scope-Ausnahme .claude mit in die gemeinsame OUT_OF_SCOPE-Liste gewandert; gemeint war nur test/. Folge: Hook-Quelltext unter .claude/hooks/lib/ war nicht mehr gegen hartkodierte Credentials bewacht — ausgerechnet dort, wo secrets-guard.js im eigenen Header erklaert, dass nie ein Secret stehen darf. Repro beidseitig ausgefuehrt (origin/main exit 2, a552eac exit 0). Test-first behoben in 9b559f9 (zwei Tests pinnen beide Seiten: Hook-Quelltext blockt, .claude/launch.json passiert), ins Framework nachgezogen (73f72e1). npm test 448/448. Das ist der beste verfuegbare Beleg fuer die Regel selbst: der Fix einer Review-Runde ist ungepruefter Code wie jeder andere — auch wenn er klein ist, test-first entstand und von derselben Session stammt, die die Regel geschrieben hat." }
       ],
       prompt: null,
     },
