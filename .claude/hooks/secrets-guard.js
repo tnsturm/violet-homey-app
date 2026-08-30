@@ -19,18 +19,27 @@ const path = require('path');
 const { logHook } = require('./lib/log');
 
 // Files where a credential must never appear: app source + generated/committed
-// manifests. Tooling/config/docs/tests/scratchpad are out of scope.
+// manifests. Tooling/config/docs/tests/scratchpad are out of scope — OUT_OF_SCOPE.
+//
+// That carve-out lived ONLY inside the *.json branch until 2026-08-30, so
+// `test/drivers/…` and `test/lib/…` still matched the drivers//lib/ rules: a fixture
+// password in a test file was blocked as a leak, contradicting this header, and the
+// error text even printed the path without its `test/` prefix. Cost a detour via a
+// constant during the 2026-08-29 fix round (Checkpoint-Retro M9.0b, Befund 3).
+// Deliberate residual scope: a real credential pasted into a test file is NOT caught
+// here — review (CLAUDE.md §9) is the net for that, and SR-01/SR-02 govern the shipped
+// app, not the test harness.
+const OUT_OF_SCOPE = /(?:^|\/)(node_modules|\.git|\.claude|docs|test|scratchpad)\//;
+
 function isGuardedPath(filePath) {
   const p = String(filePath || '').replace(/\\/g, '/');
   if (!p) return false;
+  if (OUT_OF_SCOPE.test(p)) return false;
   if (/(?:^|\/)lib\//.test(p)) return true;
   if (/(?:^|\/)drivers\//.test(p)) return true;
   if (/(?:^|\/)\.homeycompose\//.test(p)) return true;
-  // Committed *.json (app.json, package.json, .homeychangelog.json, locales/*.json)
-  // but not dependency/config/doc/test/scratchpad JSON.
-  if (/\.json$/.test(p) && !/(?:^|\/)(node_modules|\.git|\.claude|docs|test|scratchpad)\//.test(p)) {
-    return true;
-  }
+  // Committed *.json (app.json, package.json, .homeychangelog.json, locales/*.json).
+  if (/\.json$/.test(p)) return true;
   return false;
 }
 
