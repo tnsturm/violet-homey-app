@@ -5,7 +5,7 @@ date: 2026-08-25
 lens: adversarial-reviewer
 verify: npm test → 17/17 grün (unverändert)
 purpose: Kalibrierungslauf der neuen Linse — kein Review eines laufenden Meilensteins
-triage: offen (Stand 2026-08-27)
+triage: erledigt (Stand 2026-08-30) — durch den Lauf 2026-08-28 überholt: alle sechs Funde F1–F6 wurden dort am heutigen Code neu belegt (F1/F2/F3/F5/F6 gelten, F4 ist behoben) und in 2026-08-28-approved.md triagiert. Dieser Report bleibt als Kalibrierungsnachweis der Linse liegen, er trägt keine offene Fundliste mehr.
 ---
 
 # Adversarial Review — M0 Foundation + Clear-on-Stale

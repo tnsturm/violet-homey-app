@@ -5,7 +5,7 @@ date: 2026-08-28
 lenses: adversarial-reviewer (mit F1–F6-Hypothesen), runtime-resource-reviewer, api-contract-reviewer, /code-review xhigh (11 Finder-Winkel + 8 Verifier + Sweep)
 verify: npm test → 408/408 grün (Baseline, Worktree); Repros je Fund einzeln ausgeführt, s. u.
 purpose: Vollständiger §9-Loop auf main; Altfunde des M0-Kalibrierungslaufs (2026-08-25) neu belegen oder verwerfen
-triage: offen
+triage: erledigt (2026-08-29) — Urteile in 2026-08-28-approved.md: 20 approved (umgesetzt, PR #19 / Squash 82462c6), 1 rejected (P4), 2 deferred (P3, P5 → triage-inbox); Cleanup Q1–Q17 + R2-1..4 in Runde 2 entschieden.
 ---
 
 # Adversarial Review — main @ 556faae (2026-08-28)
