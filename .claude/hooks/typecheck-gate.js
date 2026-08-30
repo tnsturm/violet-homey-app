@@ -9,11 +9,18 @@
 // alias first (this repo: the literal name would flip homey-cli into TS mode,
 // eval doc §1 Nachtrag), plain "typescript" as fallback for other repos; no npx,
 // shell-free for Windows. Repos without config or checker are never blocked.
+// JEDER Fail-open-Pfad meldet sich: Ledger-Eintrag 'skip' + eine stderr-Zeile
+// "Nothing was verified". Bis 2026-08-30 kehrte der Hook hier still mit exit 0
+// zurueck — als im Haupt-Checkout node_modules fehlte, war das Gate wirkungslos
+// und von "lief und war gruen" nicht zu unterscheiden (Checkpoint-Retro M9.0b;
+// dieselbe Klasse wie der commit-msg-guard mit leerem Ledger in M9.0). test-gate.js
+// macht diese Unterscheidung seit dem /insights-Report 2026-08-21, hier fehlte sie.
 
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { logHook } = require('./lib/log');
+const { toolchainMissing } = require('./lib/env-ready');
 
 let payload = '';
 process.stdin.on('data', (chunk) => { payload += chunk; });
@@ -35,6 +42,20 @@ process.stdin.on('end', () => {
     process.exit(0); // no checker config -> not ours to gate
   }
 
+  /** @param {string} reason Warum nichts geprueft wurde — landet im Ledger und auf stderr. */
+  const skip = (reason) => {
+    logHook('typecheck-gate', 'skip', cwd);
+    console.error(`typecheck-gate: skipped — ${reason}. Nothing was verified; tsc did not run.`);
+    process.exit(0);
+  };
+
+  // "konnte nicht pruefen" != "Pruefung fehlgeschlagen": ein Checkout ohne installierte
+  // Abhaengigkeiten ist beweisbar nicht pruefbar. Nicht blockieren — aber auch nicht schweigen.
+  const notReady = toolchainMissing(cwd);
+  if (notReady) {
+    skip(notReady);
+  }
+
   let tscPath = null;
   for (const pkg of ['typescript-checkjs', 'typescript']) {
     try {
@@ -45,7 +66,7 @@ process.stdin.on('end', () => {
     }
   }
   if (!tscPath) {
-    process.exit(0); // checker not installed -> fail open
+    skip('neither "typescript-checkjs" nor "typescript" resolves from this repo');
   }
 
   const r = spawnSync(process.execPath, [tscPath, '-p', 'tsconfig.checkjs.json'], { cwd, encoding: 'utf8' });
@@ -54,7 +75,7 @@ process.stdin.on('end', () => {
     process.exit(0); // green
   }
   if (r.status === null) {
-    process.exit(0); // tsc itself failed to spawn -> fail open (no telemetry: nothing was checked)
+    skip(`tsc could not be spawned (${r.error ? r.error.message : 'unknown reason'})`);
   }
 
   logHook('typecheck-gate', 'block', cwd);

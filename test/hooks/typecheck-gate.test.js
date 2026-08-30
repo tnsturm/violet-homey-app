@@ -85,11 +85,27 @@ test('typecheck-gate: repo without tsconfig.checkjs.json → PASS (not ours to g
   assert.strictEqual(code, 0);
 });
 
-test('typecheck-gate: typescript not resolvable → PASS (fail-open)', () => {
+test('typecheck-gate: typescript not resolvable → PASS (fail-open), aber SICHTBAR', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'typecheck-gate-'));
   fs.writeFileSync(path.join(dir, 'tsconfig.checkjs.json'), '{}');
-  const { code } = runHook('git commit -m "x"', dir);
+  const { code, err } = runHook('git commit -m "x"', dir);
   assert.strictEqual(code, 0);
+  // Checkpoint-Retro 2026-08-30: ein stilles exit 0 ist von "lief und war gruen"
+  // nicht unterscheidbar. Der Fail-open-Pfad MUSS sagen, dass nichts geprueft wurde.
+  assert.match(err, /Nothing was verified/);
+});
+
+test('typecheck-gate: declared deps but no node_modules → SKIP, sichtbar und nicht blockierend', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'typecheck-gate-'));
+  fs.writeFileSync(path.join(dir, 'tsconfig.checkjs.json'), '{}');
+  fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({
+    name: 'x', devDependencies: { 'typescript-checkjs': 'npm:typescript@^6.0.3' },
+  }));
+  // kein node_modules -> toolchainMissing() beweist den Grund vor jedem Aufloesungsversuch
+  const { code, err } = runHook('git commit -m "x"', dir);
+  assert.strictEqual(code, 0, 'darf nicht blockieren: nichts wurde geprueft, nichts ist widerlegt');
+  assert.match(err, /node_modules is missing/);
+  assert.match(err, /Nothing was verified/);
 });
 
 test('typecheck-gate: malformed stdin → PASS (fail-open)', () => {
