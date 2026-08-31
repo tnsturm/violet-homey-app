@@ -944,6 +944,8 @@ Optional (im Brainstorming entscheiden): zusätzlich eine Pairing-Intro-View ("B
 
 Store-Changelog-Freigabe: bei Publish Version-Notes (en+de) vom Nutzer freigeben lassen. Dev-Gate: npx homey app validate --level=debug muss PASSEN. Live-Sicht der Seite über homey app run/install gegen "Torstens Homey Pro".
 
+UI-Abnahme (Lehre aus /insights 2026-08-31, buggy_code-Klasse — UI-Fehler tauchten regelmäßig erst beim manuellen Klicken des Nutzers auf): vor jeder "done"-Meldung zur Settings-Seite ein nummeriertes manuelles Testskript schreiben — exakte Klickpfade, erwartetes Ergebnis je Pfad, Fehlerbild falls kaputt — und den eigenen Diff dagegen lesen, erst dann abnehmen.
+
 DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
 1. npm test zeigt fail 0 — Output im Chat gezeigt.
 2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.

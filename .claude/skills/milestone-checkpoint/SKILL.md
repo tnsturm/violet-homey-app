@@ -21,6 +21,19 @@ gehörte er; gemergt, verwaist oder aktiv?), dann per `AskUserQuestion` (multiSe
 gelöscht werden; danach Branches (lokal + origin) und Worktrees (`git worktree remove` inkl.
 Verzeichnis) löschen. Keine Kandidaten ist ein gültiges Ergebnis — vermerken statt leer zu fragen.
 
+Vor jeder Worktree-/Checkout-Löschung drei Vorprüfungen: (1) das cwd der Session liegt NICHT im
+Löschziel, (2) kein laufender Prozess hält es (typisch: `node --test --watch`, OneDrive-Sync),
+(3) nichts Unpubliziertes darin (`git log --branches --not --remotes`, `git status`, `git stash list`).
+Scheitert das Entfernen trotzdem an einem Windows-Lock: die exakten Pfade für manuelles Entfernen
+listen statt Wiederholungsversuche — die Hülle verschwindet meist erst mit dem Neustart
+(beobachtet M7.0 und M9.0b).
+
+Wird ein Checkpoint lang (viele Befunde, mehrere Reparaturen), Befund-Sammlung von der Reparatur
+trennen: erst alle Diagnose-Schritte read-only durchziehen und eine priorisierte Befundliste zeigen,
+dann reparieren — nach Nutzerentscheid ggf. in Folge-Sessions. Hinweis, kein Verbot: kurze
+Checkpoints fahren Discovery+Repair weiterhin gemischt. Grund: die Checkpoints M6.1/M7.1 liefen
+mit gemischtem Modus in Session-Crashes und Limits (/insights 2026-08-31).
+
 ## Schritt 2: /doctor-Lauf
 
 `/doctor` (Alias `/checkup`) deckt Installations-Gesundheit, ungenutzte Skills/MCP/Plugins vs.

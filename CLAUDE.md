@@ -14,6 +14,8 @@ Project instructions. A rule earns its place here only if it carries information
 
 If multiple interpretations of a request exist, name them — don't pick one silently. Push back when a simpler approach exists. During brainstorming, before converging on a design: **hunt unknown unknowns** — bring your own domain knowledge, name risks, constraints and pitfalls the user hasn't mentioned, don't only extract what they already know — and order clarifying questions so that **architecture-changing questions come first**.
 
+**Facts about the environment are never assumed** — enabled features, installed integrations, auth requirements: verify with a read-only probe or ask. This class leaves no FRICTION trace (a wrong assumption doesn't feel like friction while it happens); /insights 2026-08-31 traced four incidents to it, none of them logged.
+
 ## 2. Simplicity First
 
 Minimum code that solves the problem — nothing speculative. Kept as the tie-breaker when in doubt; the rest is model default.
@@ -28,6 +30,7 @@ State verifiable success criteria before multi-step work ("write a test that rep
 - Known defects are frozen immediately as `{ todo: true }` tests encoding the CORRECT expectation — every run lists them without going red; the fixing session removes the flag.
 - Red-to-green **budget**: if the suite is still red after ~10 rounds, stop trying — `git bisect` onto the introducing commit and report instead. And state explicitly at the end **what was fixed by suppression rather than by understanding** (timeout raised, test skipped, warning silenced). Such a fix is a valid interim result — but only if it is named as one.
 - Count/grep checks on repo files must be **CRLF-safe** (Windows checkout): a `sed`/`grep` pattern anchored with `$` silently counts zero on CRLF files — and a silent zero reads like "clean". Observed 2026-07 during the CI-hang investigation.
+- **Multi-line content never travels through a heredoc** (Git Bash on Windows): heredocs mangle backslash literals in source code, and a PreToolUse block discards the WHOLE compound command — including the file-write it contained, so the follow-up error points anywhere but the cause. File content goes through the Write tool (or a script file), commit messages through `git commit -F <file>`, and the message file is written in a separate call from the commit. ≥6 sessions hit this (/insights 2026-08-31), twice more that same day.
 - Generated visualizations are **static/precomputed** by default. A `requestAnimationFrame`/`setInterval` loop without an explicit stop condition or frame cap does not ship — such a loop pinned the user's CPU at 100 % in 2026-07.
 
 ## 5. Security by Design
