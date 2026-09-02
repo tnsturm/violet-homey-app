@@ -98,5 +98,9 @@
   "0.8.0": {
     "en": "New: water-balance advisor. Get quantified dosing advice (which lever moves your LSI most, with gram/mL amounts for your pool volume), analyze your tap water from the published waterworks values, and receive a timeline notification with the top recommendation when the water balance drifts off. Purely advisory - the app never doses anything itself.",
     "de": "Neu: Wasserbalance-Berater. Erhalte berechnete Dosier-Empfehlungen (welche Stellgröße deinen LSI am stärksten verbessert, mit Gramm-/ml-Mengen für dein Beckenvolumen), analysiere dein Leitungswasser anhand der veröffentlichten Wasserwerks-Werte und bekomme bei kippender Wasserbalance eine Timeline-Benachrichtigung mit der wichtigsten Empfehlung. Rein beratend - die App dosiert nie selbst."
+  },
+  "0.9.0": {
+    "en": "Stability update after an in-depth code review. When the controller is unreachable, values are now cleared and marked stale instead of staying \"fresh\", and alarm Flow triggers survive app restarts and hidden tiles without missing or repeating an edge. New: renew the write password without re-pairing (device → Maintenance → Repair). A never-set pump speed no longer forces level 0, and value updates reach Homey faster.",
+    "de": "Stabilitäts-Update nach einer eingehenden Code-Prüfung. Ist die Steuerung nicht erreichbar, werden die Werte jetzt geleert und als veraltet markiert statt weiter als „aktuell“ zu gelten; Alarm-Flow-Trigger überstehen App-Neustarts und ausgeblendete Kacheln, ohne eine Flanke zu verlieren oder zu wiederholen. Neu: Schreib-Passwort ohne erneutes Pairing erneuern (Gerät → Wartung → Reparieren). Eine nie gesetzte Pumpenstufe erzwingt nicht mehr Stufe 0, und Wertaktualisierungen erreichen Homey schneller."
   }
 }
