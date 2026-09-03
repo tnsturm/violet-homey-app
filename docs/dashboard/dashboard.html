@@ -101,7 +101,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-08-31",
+  updatedAt: "2026-09-03",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -1039,7 +1039,46 @@ NO-ACTION: Laesst sich ein Plugin-Hook nicht pro Projekt scopen (feuert also in 
 /remote-control M9.4 — Framework-Hooks als Plugin (B1)`
     },
     {
-      id: "M9.5",
+      id: "M10.0",
+      title: "Housekeeping Agentic Loop",
+      status: "todo",
+      recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Housekeeping zwischen M9.4 und M10.3: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      steps: [
+        { label: "Branch-/Worktree-Cleanup", done: false },
+        { label: "/fewer-permission-prompts", done: false },
+        { label: "/claude-automation-recommender", done: false },
+        { label: "Skill-Quellen geprüft", done: false },
+        { label: "Workflow-Retrospektive", done: false },
+        { label: "Memory-Konsolidierung", done: false },
+        { label: "Framework-Abgleich (Drift + Native-Features)", done: false },
+        { label: "Handover", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+
+Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+
+Housekeeping Agentic Loop vor M10.3 (CLAUDE.md §7 Punkt 4). M9.4 ist abgeschlossen, M10.3 startet als Naechstes.
+
+Fuehre aus: /milestone-checkpoint — der Branch-/Worktree-Cleanup ist Schritt 1 des Skills.
+
+Das aktualisiert automatisch den M10.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+
+DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
+1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
+2. Alle Checkpoint-Schritte 1-9 durchlaufen (inkl. Branch-/Worktree-Cleanup als Schritt 1, Memory-Konsolidierung als Diff, Framework-Abgleich 7a Drift + 7b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
+3. Der M10.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
+
+/remote-control M10.0 — Housekeeping Agentic Loop`
+    },
+    {
+      id: "M10.3",
       title: "Framework-Templates: PR-Babysitter, Fehlersichtbarkeit, Hill-Climbing (D2–D4)",
       status: "todo",
       recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Drei kleine, klar umrissene Template-/Doku-Artefakte im Framework-Repo (Loop-Prompt, Test-Konvention, Prompt-Baustein) — Schreibarbeit mit wenig Ambiguitaet, kein neuer Code-Pfad, keine Angriffsflaeche. Workhorse medium." },
@@ -1063,13 +1102,13 @@ NO-ACTION: Laesst sich ein Plugin-Hook nicht pro Projekt scopen (feuert also in 
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto. Lies zuerst docs/dashboard/triage-inbox.md (§7) und Abschnitt 7 (Karten D2–D4) des Plan-Artifacts: https://claude.ai/code/artifact/c097194a-57b4-41d2-89c4-bef43ebbcef1
 
-Framework — Milestone M9.5 (Templates aus dem Cherny×Sumner-Video: D2 PR-Babysitter, D3 Fehlersichtbarkeit, D4 Hill-Climbing).
+Framework — Milestone M10.3 (Templates aus dem Cherny×Sumner-Video: D2 PR-Babysitter, D3 Fehlersichtbarkeit, D4 Hill-Climbing).
 
 ZIEL: Die drei Artefakte im Framework-Repo anlegen und die Violet-Seite nachziehen, wo die Konvention auch hier gilt (D3 in Projekt-CLAUDE.md-Testregeln bzw. documenting-code-Skill).
 
-Aktualisiere beim Start den M9.5-Eintrag in docs/dashboard/dashboard.html (status "active", startedAt, log); Steps abhaken; am Ende status "done" + commit (§7).
+Aktualisiere beim Start den M10.3-Eintrag in docs/dashboard/dashboard.html (status "active", startedAt, log); Steps abhaken; am Ende status "done" + commit (§7).
 
-/goal Alle Done-Bedingungen unten erfuellt und je mit Kommando+Ausgabe im Transcript belegt; M9.5-Eintrag steht auf done.
+/goal Alle Done-Bedingungen unten erfuellt und je mit Kommando+Ausgabe im Transcript belegt; M10.3-Eintrag steht auf done.
 
 DONE-BEDINGUNGEN (maschinell pruefbar):
 1. templates/.claude/loop.md existiert im Framework-Repo, enthaelt die Verbote (nie mergen, nie Branches loeschen, nie Tests schwaechen) und den /autofix-pr-Verweis — Datei gezeigt.
@@ -1081,49 +1120,10 @@ DONE-BEDINGUNGEN (maschinell pruefbar):
 SCOPE-NEGATIV: Keine Hook-Aenderungen (das ist M9.4); kein Violet-App-Code, kein Versionsbump der App; dashboard.html nur im Datenblock.
 NO-ACTION: Existiert ein natives Claude-Code-Feature inzwischen fuer einen der drei Bausteine (z. B. gepflegtes loop.md-Aequivalent), Feature verlinken statt Template duplizieren und das im CHANGELOG begruenden.
 
-/remote-control M9.5 — Framework-Templates D2–D4`
+/remote-control M10.3 — Framework-Templates D2–D4`
     },
     {
-      id: "M10.0",
-      title: "Housekeeping Agentic Loop",
-      status: "todo",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
-      startedAt: null,
-      finishedAt: null,
-      commit: null,
-      summary: "Housekeeping zwischen M9.3 und M10.1: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
-      steps: [
-        { label: "Branch-/Worktree-Cleanup", done: false },
-        { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false },
-        { label: "Skill-Quellen geprüft", done: false },
-        { label: "Workflow-Retrospektive", done: false },
-        { label: "Memory-Konsolidierung", done: false },
-        { label: "Framework-Abgleich (Drift + Native-Features)", done: false },
-        { label: "Handover", done: false }
-      ],
-      currentActivity: null,
-      runtime: null,
-      log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Housekeeping Agentic Loop vor M10.1 (CLAUDE.md §7 Punkt 4). M9.3 ist abgeschlossen, M10.1 startet als Naechstes.
-
-Fuehre aus: /milestone-checkpoint — der Branch-/Worktree-Cleanup ist Schritt 1 des Skills.
-
-Das aktualisiert automatisch den M10.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
-2. Alle Checkpoint-Schritte 1-9 durchlaufen (inkl. Branch-/Worktree-Cleanup als Schritt 1, Memory-Konsolidierung als Diff, Framework-Abgleich 7a Drift + 7b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
-3. Der M10.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
-
-/remote-control M10.0 — Housekeeping Agentic Loop`
-    },
-    {
-      id: "M10.1",
+      id: "M10.4",
       title: "CRA-Readiness (freiwillig, ohne CE/DoC)",
       status: "todo",
       recommendedModel: { model: "Claude Sonnet 5", effort: "high", why: "Kein Code und keine neue Angriffsfläche — aber die Kernarbeit ist ein Syntheseurteil: vier Milestone-Threat-Models zu einer Produkt-Risikobewertung verdichten und die Restrisiko-Akzeptanz für die unverschlüsselte Violet-API begründen. Offenes Urteil auf bereits reviewtem Material, daher Workhorse mit hohem Effort statt Flaggschiff." },
@@ -1145,9 +1145,9 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
 
-Violet Homey Pro App — Milestone M10.1 (freiwillige CRA-Readiness: die nutzwertigen Artefakte, ohne formale Konformitätserklärung).
+Violet Homey Pro App — Milestone M10.4 (freiwillige CRA-Readiness: die nutzwertigen Artefakte, ohne formale Konformitätserklärung).
 
-Aktualisiere beim Start den M10.1-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Reiner Dokumentations-Milestone: kein deploybarer Build, also kein Versions-Bump und kein versions.md-Eintrag (CLAUDE.md §8).
+Aktualisiere beim Start den M10.4-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Reiner Dokumentations-Milestone: kein deploybarer Build, also kein Versions-Bump und kein versions.md-Eintrag (CLAUDE.md §8).
 
 AUSGANGSLAGE: Die App ist nach heutiger Einschätzung vom EU Cyber Resilience Act (VO (EU) 2024/2847) AUSGENOMMEN — freie, MIT-lizenzierte, nicht-kommerzielle Software ohne Monetarisierung und ohne Datenerhebung; festgehalten in README.md, Abschnitt "Project status & regulatory". Eine CVD-Policy existiert bereits (SECURITY.md). Dieser Milestone setzt FREIWILLIG die Teilmenge der CRA-Pflichten um, die auch außerhalb des Anwendungsbereichs echten Nutzwert hat.
 
@@ -1172,10 +1172,10 @@ DONE-BEDINGUNGEN (transcript-verifizierbar):
 4. README.md und SECURITY.md nennen den bestätigten Support-Zeitraum mit konkretem Enddatum — grep-Nachweis im Chat gezeigt.
 5. /security-review auf dem Diff ohne offene Findings — Ergebnis im Chat gezeigt.
 
-/remote-control M10.1 — CRA-Readiness (freiwillig)`
+/remote-control M10.4 — CRA-Readiness (freiwillig)`
     },
     {
-      id: "M10.2",
+      id: "M10.5",
       title: "Repro-Bot: Triage-Loop von melden auf handeln (D1)",
       status: "todo",
       recommendedModel: { model: "Claude Sonnet 5", effort: "high", why: "Design einer autonom handelnden Loop (Repro → todo-Test → Branch → Draft-PR): moderate Ambiguitaet plus Leitplanken-Urteil, aber kein GO/NO-GO gegen Messkriterien und kein Produktions-Schreibpfad in die Poolsteuerung — Workhorse high statt Flagship (§11). Die Loop selbst laeuft spaeter als Workhorse low (autonome Routine)." },
@@ -1199,7 +1199,7 @@ DONE-BEDINGUNGEN (transcript-verifizierbar):
 
 Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto. Lies zuerst docs/dashboard/triage-inbox.md (§7) und Abschnitt 7 (Karte D1) des Plan-Artifacts: https://claude.ai/code/artifact/c097194a-57b4-41d2-89c4-bef43ebbcef1
 
-Violet — Milestone M10.2 (Repro-Bot nach RoboBun-Muster, Vorschlag D1).
+Violet — Milestone M10.5 (Repro-Bot nach RoboBun-Muster, Vorschlag D1).
 
 VORAUSSETZUNG PRUEFEN: Die Cloud-Triage-Routine aus M9.0 Block c laeuft stabil (Routine-Historie ohne Luecken seit mindestens 7 Laeufen). Wenn nein: abbrechen und das als Blocker in triage-inbox.md eintragen.
 
@@ -1207,9 +1207,9 @@ ZIEL: Eine zweite Routine (oder Erweiterung der Triage-Routine), die pro geeigne
 
 SICHERHEIT: neue Automations-Angriffsflaeche (unbeaufsichtigte Schreibrechte auf Branches, Verarbeitung fremder Issue-Texte = untrusted input) → ZUERST security-requirement-extraction, Threat-Model nach docs/superpowers/security/, Anforderungen als testbare Verifikationsschritte in den Plan (§5).
 
-Aktualisiere beim Start den M10.2-Eintrag in docs/dashboard/dashboard.html (status "active", startedAt, log); Steps abhaken; am Ende status "done" + commit (§7).
+Aktualisiere beim Start den M10.5-Eintrag in docs/dashboard/dashboard.html (status "active", startedAt, log); Steps abhaken; am Ende status "done" + commit (§7).
 
-/goal Alle Done-Bedingungen unten erfuellt und je mit Kommando+Ausgabe im Transcript belegt; M10.2-Eintrag steht auf done.
+/goal Alle Done-Bedingungen unten erfuellt und je mit Kommando+Ausgabe im Transcript belegt; M10.5-Eintrag steht auf done.
 
 DONE-BEDINGUNGEN (maschinell pruefbar):
 1. Threat-Model existiert unter docs/superpowers/security/ und jede abgeleitete Anforderung hat einen Verifikationsschritt im Plan — grep-Nachweis.
@@ -1221,7 +1221,7 @@ DONE-BEDINGUNGEN (maschinell pruefbar):
 SCOPE-NEGATIV: Kein Auto-Merge, keine Aenderung am bestehenden Triage-Ledger-Format, kein Schreibpfad Richtung Pool-Controller, keine Feature-Implementierung aus Issues (nur Bugs/Repros).
 NO-ACTION: Findet die Routine kein reproduzierbares Finding, ist ein leerer Lauf korrekt — Inbox-Eintrag "nichts reproduzierbar", kein erzwungener PR.
 
-/remote-control M10.2 — Repro-Bot (D1)`
+/remote-control M10.5 — Repro-Bot (D1)`
     }
   ]
 };
