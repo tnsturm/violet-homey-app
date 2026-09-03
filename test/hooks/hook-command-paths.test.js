@@ -131,11 +131,12 @@ test('hook wiring: every hook script on disk is actually registered', () => {
 // Both halves run the hook script the way Claude Code would, from a cwd that is NOT the
 // repo root. The negative control pins the defect; the positive one pins the fix.
 //
-// The probe is deliberately control-bytes-guard: it requires no child_process at all and
-// returns 0 on an empty tool_input. Probing with test-gate would make this file's safety
-// depend on that hook's trigger condition — broaden it once and `npm test` re-enters
-// `npm test` from inside the suite.
-const PROBE = 'control-bytes-guard.js';
+// The probe is deliberately lib/log.js — a helper that merely loads and exits 0, with no
+// child_process and no trigger condition. Probing with a real gate would tie this file's
+// safety to that gate's predicate — broaden it once and `npm test` re-enters `npm test` from
+// inside the suite. (Until M9.4 the probe was control-bytes-guard.js; that hook now ships in
+// the agentic-loop-framework plugin and has no copy here.)
+const PROBE = path.join('lib', 'log.js');
 
 /**
  * Runs `node <script>` from a foreign cwd and returns the combined stderr.
