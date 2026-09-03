@@ -102,5 +102,9 @@
   "0.9.0": {
     "en": "Stability update after an in-depth code review. When the controller is unreachable, values are now cleared and marked stale instead of staying \"fresh\", and alarm Flow triggers survive app restarts and hidden tiles without missing or repeating an edge. New: renew the write password without re-pairing (device → Maintenance → Repair). A never-set pump speed no longer forces level 0, and value updates reach Homey faster.",
     "de": "Stabilitäts-Update nach einer eingehenden Code-Prüfung. Ist die Steuerung nicht erreichbar, werden die Werte jetzt geleert und als veraltet markiert statt weiter als „aktuell“ zu gelten; Alarm-Flow-Trigger überstehen App-Neustarts und ausgeblendete Kacheln, ohne eine Flanke zu verlieren oder zu wiederholen. Neu: Schreib-Passwort ohne erneutes Pairing erneuern (Gerät → Wartung → Reparieren). Eine nie gesetzte Pumpenstufe erzwingt nicht mehr Stufe 0, und Wertaktualisierungen erreichen Homey schneller."
+  },
+  "0.9.1": {
+    "en": "Fix: the Repair dialog (device → Maintenance → Repair) failed to open with an error; it now opens so the write password can be renewed without re-pairing.",
+    "de": "Fix: Der Reparieren-Dialog (Gerät → Wartung → Reparieren) ließ sich nicht öffnen; jetzt öffnet er sich, sodass das Schreib-Passwort ohne erneutes Pairing erneuert werden kann."
   }
 }
