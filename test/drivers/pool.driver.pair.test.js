@@ -175,14 +175,23 @@ test('flow action speedArg: null means keep-configured, mirroring _pumpSpeedArg 
 // custom REPAIR views from drivers/<id>/repair/<viewId>.html, custom PAIR views
 // from drivers/<id>/pair/<viewId>.html (homey CLI HomeyCompose.js:303 writes
 // template repair views to the repair/ folder). Pin the folder convention for
-// every template-less view in the compose manifest.
+// every template-less view. Source of truth is the GENERATED app.json — the
+// manifest Homey actually reads (nachreview 2026-09-03 F2: the CLI replaces the
+// compose arrays wholesale when driver.{pair,repair}.compose.json exist, so
+// driver.compose.json can lie). And pin the repair view positively (F1): the
+// dialog is the only post-pairing way to rotate the write password, so a
+// missing block must go red, not silently skip the loop.
 test('custom pair/repair views live in the folder Homey loads them from (live finding 2026-09-03)', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const driverDir = path.join(__dirname, '..', '..', 'drivers', 'pool');
-  const compose = JSON.parse(fs.readFileSync(path.join(driverDir, 'driver.compose.json'), 'utf8'));
+  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'app.json'), 'utf8'));
+  const pool = manifest.drivers.find((/** @type {*} */ d) => d.id === 'pool');
+  assert.ok(pool, 'app.json must declare the pool driver');
+  assert.deepStrictEqual(pool.repair, [{ id: 'repair' }], 'pool driver must ship exactly one custom repair view "repair"');
+  assert.ok((pool.pair || []).some((/** @type {*} */ v) => v.id === 'connect' && !v.template), 'pool driver must ship the custom pair view "connect"');
   for (const kind of ['pair', 'repair']) {
-    for (const view of compose[kind] || []) {
+    for (const view of pool[kind]) {
       if (view.template) continue;
       const file = path.join(driverDir, kind, `${view.id}.html`);
       assert.ok(fs.existsSync(file), `${kind} view "${view.id}" must exist at drivers/pool/${kind}/${view.id}.html`);
