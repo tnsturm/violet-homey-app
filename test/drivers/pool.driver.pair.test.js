@@ -169,3 +169,23 @@ test('flow action speedArg: null means keep-configured, mirroring _pumpSpeedArg 
   await carrier.__test.runListeners.pvsurplus_set({ device: fakeDevice, state: 'on', speed: null });
   assert.strictEqual(controls[0].args.speed, undefined, 'null speed must be omitted, not coerced to 0');
 });
+
+// Live finding 2026-09-03 (triage-inbox): the Repair dialog failed with
+// `unknown_error_getting_file` while the app log stayed silent — Homey loads
+// custom REPAIR views from drivers/<id>/repair/<viewId>.html, custom PAIR views
+// from drivers/<id>/pair/<viewId>.html (homey CLI HomeyCompose.js:303 writes
+// template repair views to the repair/ folder). Pin the folder convention for
+// every template-less view in the compose manifest.
+test('custom pair/repair views live in the folder Homey loads them from (live finding 2026-09-03)', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const driverDir = path.join(__dirname, '..', '..', 'drivers', 'pool');
+  const compose = JSON.parse(fs.readFileSync(path.join(driverDir, 'driver.compose.json'), 'utf8'));
+  for (const kind of ['pair', 'repair']) {
+    for (const view of compose[kind] || []) {
+      if (view.template) continue;
+      const file = path.join(driverDir, kind, `${view.id}.html`);
+      assert.ok(fs.existsSync(file), `${kind} view "${view.id}" must exist at drivers/pool/${kind}/${view.id}.html`);
+    }
+  }
+});
