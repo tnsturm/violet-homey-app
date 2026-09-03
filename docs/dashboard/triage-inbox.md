@@ -33,7 +33,7 @@ Einträge tragen `[Cloud]`) und den lokalen Task `violet-nightly-triage` (Live-S
 
 ## Erledigt (2026-09-03)
 
-- Repair-Dialog `unknown_error_getting_file` (Live-Test-Fund vom selben Tag, Eintrag oben) → **behoben in 0.9.1** (Fix `d3f4372`, Release `1e7d4a7`): Ordner-Hypothese bestätigt — Custom-Repair-View von `drivers/pool/pair/` nach `drivers/pool/repair/` verschoben, test-first (neuer Test pinnt die Ordnerkonvention, rot vor dem Move). Nutzer-Verifikation live: Dialog öffnet sich und schließt sich nach Passworteingabe → damit ist die letzte offene PR-#19-Annahme (Repair inkl. Homey.done()) belegt. R2-3 bleibt offen (Asset-Serving aus dem View-Ordner weiterhin ungeprüft, der Fix brauchte keine Assets). Der Eintrag in „Offen" kann beim nächsten Routine-Lauf entfernt werden.
+- Repair-Dialog `unknown_error_getting_file` (Live-Test-Fund vom selben Tag, Eintrag oben) → **behoben in 0.9.1** (PR #20, Squash `3e87bed` auf main; Branch-Commits `d3f4372`/`1e7d4a7`): Ordner-Hypothese bestätigt — Custom-Repair-View von `drivers/pool/pair/` nach `drivers/pool/repair/` verschoben, test-first (neuer Test pinnt die Ordnerkonvention, rot vor dem Move). Nutzer-Verifikation live: Dialog öffnet sich und schließt sich nach Passworteingabe → damit ist die letzte offene PR-#19-Annahme (Repair inkl. Homey.done()) belegt. R2-3 bleibt offen (Asset-Serving aus dem View-Ordner weiterhin ungeprüft, der Fix brauchte keine Assets). Der Eintrag in „Offen" kann beim nächsten Routine-Lauf entfernt werden.
 
 ## Erledigt (2026-09-02)
 
