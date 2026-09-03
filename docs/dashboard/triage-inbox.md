@@ -10,10 +10,11 @@ Seit 2026-08-24 (Checkpoint M9.0, Vorschlag A5) gibt es **zwei** Routinen: den C
 Einträge tragen `[Cloud]`) und den lokalen Task `violet-nightly-triage` (Live-Smoke,
 `homey app validate`, alles was den Pool-Controller braucht).
 
-**Stand:** 2026-09-02 (Cloud-Triage-Lauf)
+**Stand:** 2026-09-03 (Live-Test-Fund 0.9.0, nach Cloud-Triage-Lauf 2026-09-02)
 
 ## Offen
 
+- 2026-09-03 · Live-Test/Defekt (NEU, offen) · **Repair-Dialog öffnet nicht:** in der Homey-App wirft Gerät → Wartung → Reparieren sofort `Error: unknown_error_getting_file` (Nutzerbeobachtung auf 0.9.0, Torstens Homey Pro). Der Repair-Flow aus PR #19 (N5/F-A, `drivers/pool/pair/repair.html` + `repair`-View in `driver.compose.json`) ist damit live unbenutzbar; die Annahme „Repair-Dialog inkl. Homey.done()" bleibt unverifiziert. Verdacht: die Pairing-Runtime findet die View-Datei nicht — passt zu R2-3 (View-Asset-Verhalten unverifiziert) und evtl. zum ungeklärten ersten `homey app install`-Versuch derselben Session („× Missing File", zweiter Versuch OK). Vor dem Fix per `homey app run` + Repair-Klick reproduzieren und die Homey-Log-Zeile sichern; dann §9-Triage. Beleg: docs/dashboard/versions.md (Zeile 0.9.0).
 - 2026-08-29 · Review/Deferred (R2-3) · `repair.html` ist eine Fast-Kopie von `connect.html` (nur Hint/Default-Host/Success-Callback abweichend). Dedup über ein gemeinsames `pair-common.js` setzt voraus, dass Homeys Pairing-Runtime `<script src>`-Assets aus dem pair/-Ordner der Custom-Views ausliefert — lokal nicht verifizierbar; bei nächster Live-Pairing-Gelegenheit prüfen, dann umsetzen. Beleg: 2026-08-28-approved.md (Runde 2).
 - 2026-08-29 · Review/Deferred (P3) · `renderExcerpt` ohne fine_tuning-Check (lib/WaterBalanceText.js:376–388): realer Defekt der puren Funktion (Excerpt empfiehlt Dosierung bei balanciertem Wasser), am einzigen Produktions-Callsite (device.js, severity!=='ok'-Gate) konstruktiv unerreichbar. Wird relevant, sobald ein weiterer Callsite entsteht (z. B. On-Demand-Flow-Karte). Beleg + Repro: docs/superpowers/reviews/2026-08-28-adversarial.md (P3), Entscheidung: 2026-08-28-approved.md.
 - 2026-08-29 · Review/Deferred (P5) · Reentrante `_tick`-Läufe aus einem Multi-Key-Settings-Save (device.js onSettings): kein falscher Endzustand, kein Doppel-Trigger konstruierbar — übrig bleiben 2–3 redundante fetchReadings + teure Capability-Call-Dubletten pro Save. Effizienzthema, zusammen mit Q12–Q15 der Cleanup-Liste angehen (In-Flight-Coalescing oder needTick-Boolean). Beleg: 2026-08-28-adversarial.md (P5).
