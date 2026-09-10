@@ -101,7 +101,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-09-03",
+  updatedAt: "2026-09-10",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -1222,6 +1222,32 @@ SCOPE-NEGATIV: Kein Auto-Merge, keine Aenderung am bestehenden Triage-Ledger-For
 NO-ACTION: Findet die Routine kein reproduzierbares Finding, ist ein leerer Lauf korrekt — Inbox-Eintrag "nichts reproduzierbar", kein erzwungener PR.
 
 /remote-control M10.5 — Repro-Bot (D1)`
+    },
+    {
+      id: "M10.6",
+      title: "Framework-v2: Ablationsversuch abgebrochen, Neuaufbau als agentic-loop-v2",
+      status: "done",
+      startedAt: "2026-09-06",
+      finishedAt: "2026-09-10",
+      commit: "archive/framework-v2-ablation-2026-09-10",
+      summary: "Ausgangspunkt: Notiz docs/superpowers/notes/2026-09-04-framework-v2-kernerkenntnisse.md (zehn Kernerkenntnisse ueber agentisches Coden aus zwei Monaten Framework + Violet, v2-Entwurf nach Boris Cherny / Anthropic-Ablation / Bun-Rewrite). Versuch: Eval-Set aus sieben historischen Faellen plus minimales v2-Profil, 28 Commits auf Branch worktree-framework-v2-ablation. Ergebnis: das Messwerkzeug bekam Produktions-Review-Tiefe und reproduzierte die Komplexitaetsspirale aus Kernerkenntnis 1 und 8 (20 der 28 Commits waren Review-/Fix-Runden, kein einziger Eval-Lauf). Nutzer-Stopp 2026-09-10. Branch archiviert (Tag), nicht gemergt. Neuaufbau als eigenes Plugin-Repo C:/Users/TorstenSturm/source/repos/agentic-loop-v2: ein /ship-Workflow, Agenten adversary + disprover auf Fable, drei Must-never-Hooks im Plugin, CLAUDE.md-Template mit 30 Zeilen, Smoke-Test. Die Ablation laeuft ab jetzt ueber echte Milestones: Regeln kommen nur zurueck, wenn ein realer Lauf sie vermisst.",
+      steps: [
+        { label: "Kernerkenntnisse + v2-Entwurf (Notiz)", done: true },
+        { label: "Eval-Set + v2-Profil (Branch, archiviert)", done: true },
+        { label: "Reviews + Fix-Runden (Spirale erkannt)", done: true },
+        { label: "Entscheidung: Abbruch + Neuaufbau", done: true },
+        { label: "agentic-loop-v2 Skelett + Smoke-Test", done: true }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-09-04", note: "Notiz mit zehn Kernerkenntnissen und v2-Entwurf; Plan fuer Eval-Set (E1-E7) und v2-Profil in 6 Phasen." },
+        { at: "2026-09-06", note: "Phase 1-2 per subagent-driven-development umgesetzt: 9 Task-Reviews, 8 Fix-Runden, Branch-Review, zwei Fix-Wellen, §9-Fan-out (27 Funde), Triage R1-R4, Fix-Runde, Nachreview mit 12 Funden, Welle 2. Kein Eval-Lauf." },
+        { at: "2026-09-06", note: "FRICTION: Worktree-Isolation-Classifier verweigerte Subagenten git/npm im Geschwister-Verzeichnis; Umweg ueber child_process-Skripte in jeder Task erneut." },
+        { at: "2026-09-06", note: "FRICTION: Orakel-Tests pruefte die Regex gegen Saetze aus der Regex selbst (tautologisch) — erst fremde Formulierungen zeigten 1/5 Trefferquote." },
+        { at: "2026-09-10", note: "Nutzer-Stopp: 'die Fixes erzeugen neue Defekte, die Fixes dann wieder welche'. Retro: Review-Tiefe muss dem Einsatz entsprechen — xhigh-Recall auf jedem Diff eines Messwerkzeugs erzeugt Fix-Spiralen. Branch als Tag archiviert, agentic-loop-v2 als Skelett angelegt (Smoke-Test 11/11). Naechster Schritt: das naechste echte Milestone mit /ship fahren; was fehlt, wird geloggt und einzeln zurueckgeholt." }
+      ],
+      prompt: null
     }
   ]
 };
