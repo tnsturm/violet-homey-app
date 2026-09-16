@@ -106,6 +106,42 @@ test('schema hints that generalise "Always show" to every group name the excepti
   assert.ok(checked >= 2, `expected the generalising hints to be found, matched ${checked}`);
 });
 
+// --- B2: the guides must call a group what the settings page calls it --------------
+// Three names for one setting ("Wassernachspeisung" / "Nachfüllung" / "Frischwasser")
+// leave the reader hunting for a setting that does not exist under that name, so the
+// group list in each quick-start guide may only use labels the schema actually has.
+
+/** @param {string} label @returns {string} */
+function bareLabel(label) {
+  return label.replace(/\s*\(.*$/, '').trim().toLowerCase();
+}
+
+test('the quick-start guides enumerate feature groups by their schema labels', () => {
+  const groups = groupSettings();
+  const guides = /** @type {Array<{lang: 'en'|'de', file: string, re: RegExp}>} */ ([
+    { lang: 'en', file: 'docs/community/quickstart-guide.en.md', re: /equipment group \(([^)]*)\)/ },
+    { lang: 'de', file: 'docs/community/quickstart-guide.de.md', re: /Ausstattungsgruppe \(([^)]*)\)/ },
+  ]);
+
+  for (const guide of guides) {
+    const m = readText(guide.file).replace(/\s+/g, ' ').match(guide.re);
+    assert.ok(m, `no feature-group enumeration found in ${guide.file}`);
+    const known = new Set(groups.map((g) => bareLabel(g.label[guide.lang])));
+    const listed = m[1]
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter((s) => s.length > 0 && s !== '…' && s !== '...');
+    assert.ok(listed.length >= 4, `expected a list of groups in ${guide.file}, got ${m[1]}`);
+
+    for (const name of listed) {
+      assert.ok(
+        known.has(name),
+        `${guide.file} calls a feature group "${name}", which is no schema label (${[...known].join(', ')})`,
+      );
+    }
+  }
+});
+
 test('README does not promise "Always show" for a force-less group', () => {
   const forceless = groupSettings().filter((g) => !g.values.includes('force'));
   const readme = readText('README.md');

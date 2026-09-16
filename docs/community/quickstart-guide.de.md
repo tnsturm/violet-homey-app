@@ -117,7 +117,7 @@ Passwort nötig, nur zum Schreiben von Befehlen.
 
 ## Anlagenteile ein-/ausblenden
 
-Jede Ausstattungsgruppe (Heizung, Solar, Abdeckung, Rückspülung, Frischwasser,
+Jede Ausstattungsgruppe (Heizung, Solar, Abdeckung, Rückspülung, Nachfüllung,
 Überlaufbehälter, …) hat eine Einstellung **Auto / Immer anzeigen /
 Ausblenden**; die Dosierung kennt nur **Auto / Ausblenden**. Auto — die
 Standardeinstellung — zeigt eine Kachel nur, wenn dein

@@ -199,6 +199,58 @@ test('settings.groups.p1 never promises "Always show" for a group that has no fo
   }
 });
 
+// --- Group names must be the schema's own labels (review finding B2) ---------------
+// The page names the feature groups in prose; the user then looks for exactly that
+// name in the device settings. So every group of the "Feature groups (show/hide)"
+// block must appear in settings.groups.p1 under its schema label — a synonym
+// ("Wassernachspeisung" for "Nachfüllung") sends the reader hunting for a setting
+// that does not exist under that name.
+
+/**
+ * The `group_*` settings of the "Feature groups (show/hide)" block — the block
+ * settings.groups.p1 enumerates. (group_chlorine sits outside it, on its own.)
+ * @returns {Array<{id: string, label: {en: string, de: string}, values: Array<string>}>}
+ */
+function featureGroupBlock() {
+  const compose = readJson('drivers/pool/driver.settings.compose.json');
+  const block = compose.find(
+    (/** @type {*} */ n) => n.type === 'group' && n.label?.en === 'Feature groups (show/hide)',
+  );
+  assert.ok(block, 'no "Feature groups (show/hide)" block in the device-settings schema');
+  return block.children.filter((/** @type {*} */ n) => Array.isArray(n.values));
+}
+
+/**
+ * A label as the prose has to spell it: the part before a parenthetical, matched
+ * on Unicode letter boundaries (\b is ASCII-only and would fail on "Überlaufbehälter").
+ * @param {string} label
+ * @returns {RegExp}
+ */
+function labelRegex(label) {
+  const bare = label.replace(/\s*\(.*$/, '').trim();
+  return new RegExp(`(?<!\\p{L})${bare.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?!\\p{L})`, 'iu');
+}
+
+test('settings.groups.p1 names every feature group by its schema label', () => {
+  const groups = featureGroupBlock();
+  assert.ok(groups.length >= 10, `expected many group_* settings, found ${groups.length}`);
+
+  const text = {
+    en: readJson('locales/en.json').settings.groups.p1,
+    de: readJson('locales/de.json').settings.groups.p1,
+  };
+
+  for (const g of groups) {
+    for (const lang of /** @type {Array<'en'|'de'>} */ (['en', 'de'])) {
+      assert.match(
+        text[lang],
+        labelRegex(g.label[lang]),
+        `${lang}: settings.groups.p1 does not name ${g.id} by its schema label "${g.label[lang]}"`,
+      );
+    }
+  }
+});
+
 // The Violet controller has exactly one write login — no account model, no roles.
 // So the control paragraph must not recommend a "dedicated, least-privilege
 // account" (review finding A2); it states the two facts that are true instead:
