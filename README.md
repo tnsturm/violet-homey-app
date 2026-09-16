@@ -285,8 +285,9 @@ What made it work as an *engineering* process rather than vibe‑coding:
 - **Milestone‑driven**, spec‑first workflow — each milestone brainstormed into a design
   doc, then a plan, then implemented **test‑first (TDD)**; all pure logic (LSI, freshness,
   feature detection) is unit‑tested.
-- **Automated guardrails** — git hooks that block malformed manifest/changelog JSON and
-  accidental secret commits, plus automated **security reviews** on write‑path changes.
+- **Adversarial review on every change** — two independent reviewer agents attack each diff
+  and a verifier tries to refute every finding before a human triages it; three fail‑closed
+  hooks block secret commits, unverified dependencies and unreviewed releases.
 - **Bilingual (en/de)** UI, Flow cards and changelog throughout.
 - A live **progress dashboard** tracking every milestone.
 

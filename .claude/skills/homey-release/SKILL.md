@@ -35,5 +35,3 @@ beim Nutzer nachfragen — das ist ein sichtbarer, kaum reversibler Schritt.
 
 - `homey app run` (flüchtiger Dev-Modus, wird beim Stoppen entfernt) zählt **nicht** als
   Release — kein Bump/Log-Eintrag nötig.
-- Das Dashboard (`docs/dashboard/dashboard.html`) für das aktive Milestone separat aktuell
-  halten — siehe den `dashboard-sync`-Skill.
