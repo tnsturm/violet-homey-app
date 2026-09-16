@@ -56,7 +56,7 @@
     },
     "control": {
       "h": "Steuerung (Schreibzugriff)",
-      "p1": "Standardmäßig aus. Einmal aktiviert, erscheinen Steuerkacheln, und Flow-Aktionen können den Regler schalten — mit dem Schreib-Benutzernamen und Schreib-Passwort aus den Geräteeinstellungen.",
+      "p1": "Standardmäßig aus. Einmal aktiviert, erscheinen Steuerkacheln, und Flow-Aktionen können den Regler schalten — mit dem Schreib-Benutzernamen aus den Geräteeinstellungen und dem Schreib-Passwort, das du beim Koppeln eingegeben hast; änderbar ist dieses Passwort über „Reparieren“ am Gerät, nicht in den Geräteeinstellungen.",
       "p2": "Die lokale Schnittstelle des Reglers läuft als unverschlüsseltes HTTP im LAN — das Schreib-Passwort wird also unverschlüsselt in deinem Netzwerk übertragen. Schaltest du die Pumpe über die Kachel EIN oder AUS, fällt sie nach der eingestellten Standard-Übersteuerungsdauer wieder auf Auto zurück."
     },
     "diag": {

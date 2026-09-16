@@ -279,6 +279,62 @@ test('settings.control.p2 recommends no account model the controller does not ha
   }
 });
 
+// --- Credentials must be located where they actually live (review finding B3) -------
+// The device settings hold only writeUsername; the write password is captured during
+// pairing and changed via the Repair dialog (drivers/pool/driver.js), then read from
+// the device store by _writeCreds(). Prose that sends the user to the device settings
+// for the password describes a field that is not there.
+
+test('no settings.* sentence puts the write password in the device settings', () => {
+  const pwd = { en: /password/i, de: /passwort/i };
+  const where = { en: /device settings/i, de: /Geräteeinstellungen/i };
+  // The places the password can actually be entered.
+  const realPlace = { en: /pairing|paired|repair/i, de: /koppel|reparier/i };
+
+  for (const lang of /** @type {Array<'en'|'de'>} */ (['en', 'de'])) {
+    const strings = flatten(readJson(`locales/${lang}.json`).settings, '');
+    for (const key of strings) {
+      const value = String(lookup(readJson(`locales/${lang}.json`), `settings.${key}`));
+      for (const s of sentences(value)) {
+        if (!pwd[lang].test(s) || !where[lang].test(s)) continue;
+        assert.ok(
+          realPlace[lang].test(s),
+          `${lang}: settings.${key} locates the write password in the device settings: "${s}"`,
+        );
+      }
+    }
+  }
+});
+
+test('a settings.* sentence may only claim a credential field the schema really has', () => {
+  const user = { en: /username/i, de: /Benutzername/i };
+  const where = { en: /device settings/i, de: /Geräteeinstellungen/i };
+  const compose = readJson('drivers/pool/driver.settings.compose.json');
+  /** @type {Array<*>} */
+  const labels = [];
+  const walk = (/** @type {*} */ node) => {
+    if (Array.isArray(node)) return node.forEach(walk);
+    if (node === null || typeof node !== 'object') return;
+    if (node.label) labels.push(node.label);
+    if (Array.isArray(node.children)) walk(node.children);
+  };
+  walk(compose);
+
+  for (const lang of /** @type {Array<'en'|'de'>} */ (['en', 'de'])) {
+    const locale = readJson(`locales/${lang}.json`);
+    for (const key of flatten(locale.settings, '')) {
+      const value = String(lookup(locale, `settings.${key}`));
+      for (const s of sentences(value)) {
+        if (!user[lang].test(s) || !where[lang].test(s)) continue;
+        assert.ok(
+          labels.some((l) => user[lang].test(String(l[lang] ?? ''))),
+          `${lang}: settings.${key} sends the user to a "username" field the schema does not have: "${s}"`,
+        );
+      }
+    }
+  }
+});
+
 test('every fill() fallback in the page matches locales/en.json verbatim', () => {
   const html = readIndex();
   const en = readJson('locales/en.json');
