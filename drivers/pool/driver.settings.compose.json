@@ -66,7 +66,7 @@
     "type": "dropdown",
     "label": { "en": "Chlorine measurement", "de": "Chlor-Messung" },
     "value": "auto",
-    "hint": { "en": "Auto shows the tile only when the hardware is detected; Always show forces it; Hide removes it. The same three choices apply to the feature groups further below.", "de": "Auto zeigt die Kachel nur, wenn die Hardware erkannt wird; Immer anzeigen erzwingt sie; Ausblenden entfernt sie. Dieselben drei Optionen gelten für die Funktionsgruppen weiter unten." },
+    "hint": { "en": "Auto shows the tile only when the hardware is detected; Always show forces it; Hide removes it. The same three choices apply to the feature groups further below, except Dosing, which offers Auto or Hide only.", "de": "Auto zeigt die Kachel nur, wenn die Hardware erkannt wird; Immer anzeigen erzwingt sie; Ausblenden entfernt sie. Dieselben drei Optionen gelten für die Funktionsgruppen weiter unten — außer der Dosierung, die nur Auto oder Ausblenden kennt." },
     "values": [
       { "id": "auto", "label": { "en": "Auto (show if detected)", "de": "Auto (anzeigen, wenn erkannt)" } },
       { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } },
@@ -243,7 +243,7 @@
     "label": { "en": "Feature groups (show/hide)", "de": "Funktionsgruppen (ein-/ausblenden)" },
     "children": [
       { "id": "group_eco", "type": "radio", "label": { "en": "Eco mode", "de": "Eco-Modus" }, "value": "auto",
-        "hint": { "en": "Auto follows hardware detection; Always show forces the tile; Hide removes it (and breaks any Flows that use it). Applies to every feature group here.", "de": "Auto folgt der Hardware-Erkennung; Immer anzeigen erzwingt die Kachel; Ausblenden entfernt sie (und bricht Flows, die sie nutzen). Gilt für jede Funktionsgruppe hier." },
+        "hint": { "en": "Auto follows hardware detection; Always show forces the tile; Hide removes it (and breaks any Flows that use it). Applies to every feature group here, except Dosing, which offers Auto or Hide only.", "de": "Auto folgt der Hardware-Erkennung; Immer anzeigen erzwingt die Kachel; Ausblenden entfernt sie (und bricht Flows, die sie nutzen). Gilt für jede Funktionsgruppe hier — außer der Dosierung, die nur Auto oder Ausblenden kennt." },
         "values": [
           { "id": "auto", "label": { "en": "Auto (if detected)", "de": "Auto (wenn erkannt)" } },
           { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } },

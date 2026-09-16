@@ -87,8 +87,9 @@ control tiles and let Flow command the controller.
 ### Feature groups (show / hide)
 
 Each equipment group — Eco, Heater, Solar, Backwash, Cover, Light, Water refill,
-Overflow tank, Water level, PV surplus, Dosing (per detected channel) — has an
-**Auto / Always show / Hide** setting. *Auto* shows the group only when the controller
+Overflow tank, Water level, PV surplus, Measurement inputs — has an
+**Auto / Always show / Hide** setting; Dosing (per detected channel) offers
+**Auto / Hide** only. *Auto* shows the group only when the controller
 reports it. This keeps the tile focused on the hardware you actually run.
 
 * * *
