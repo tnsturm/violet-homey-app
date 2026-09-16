@@ -101,7 +101,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-09-10",
+  updatedAt: "2026-09-16",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -1039,6 +1039,44 @@ NO-ACTION: Laesst sich ein Plugin-Hook nicht pro Projekt scopen (feuert also in 
 /remote-control M9.4 — Framework-Hooks als Plugin (B1)`
     },
     {
+      id: "M9.9",
+      title: "Housekeeping-Milestones an Framework v2 anpassen",
+      status: "todo",
+      recommendedModel: { model: "Claude Fable 5", effort: "medium", why: "Prozess-Design-Urteil ohne Codeaenderung: entscheiden, welche der neun Checkpoint-Schritte unter dem v2-Loop (kein Checkpoint-Skill, kein Dashboard-Protokoll, keine Telemetrie) noch einen Zweck haben und wie ein Housekeeping-Milestone kuenftig aussieht. Das ist die Ablations-Entscheidung aus dem v2-Handover — Flagship-Urteil, kein Workhorse-Mechanikjob." },
+      startedAt: null,
+      finishedAt: null,
+      commit: null,
+      summary: "Die offenen Housekeeping-Milestones (M10.0 und alle spaeteren Mx.0-Eintraege) sind noch auf das v1-Framework zugeschnitten: neun Checkpoint-Schritte aus dem entfernten milestone-checkpoint-Skill, Framework-Drift-Abgleich gegen skill-agentic-loop-framework, FRICTION-Log als Retro-Quelle. Unter skill-agentic-loop-framework-V2 (ab 2026-09-16, siehe docs/superpowers/notes/2026-09-16-v2-handover.md) existieren diese Quellen nicht mehr. Aufgabe: den Housekeeping-Milestone neu zuschneiden — welche Schritte bleiben (Worktree-/Branch-Cleanup, Skill-Quellen-Review, Memory-Konsolidierung, Handover), welche entfallen, was die Retro stattdessen liest (Ablation-Log + Klassifikationswoerter der Adversary-Funde aus den -approved.md-Dateien), und die offenen Mx.0-Eintraege im Dashboard entsprechend umschreiben.",
+      steps: [
+        { label: "Brainstorming", done: false },
+        { label: "Spec", done: false },
+        { label: "Plan", done: false },
+        { label: "Umsetzung (Dashboard-Eintraege + Notiz)", done: false },
+        { label: "Validate + Push", done: false }
+      ],
+      currentActivity: null,
+      runtime: null,
+      log: [
+        { at: "2026-09-16", note: "Milestone angelegt (Nutzer): die kuenftigen Housekeeping-Milestones an das neue Framework anpassen. Voraussetzung: mindestens ein echter Milestone-Lauf mit /ship (M9.2) ist durch, damit das Ablation-Log als Entscheidungsgrundlage gefuellt ist." }
+      ],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten, eigener Worktree; alle Pfade unten sind repo-relativ.
+
+Lies zuerst docs/dashboard/triage-inbox.md, dann docs/superpowers/notes/2026-09-16-v2-handover.md und docs/superpowers/notes/2026-09-16-v2-ablation-log.md.
+
+Violet Homey Pro App — Milestone M9.9 (Housekeeping-Milestones an Framework v2 anpassen).
+
+Kontext: Seit 2026-09-16 laeuft das Repo auf skill-agentic-loop-framework-V2 (ein /ship-Workflow, zwei Adversaries + Disprover, drei Must-never-Hooks im Plugin, CLAUDE.md mit ~38 Zeilen). Der milestone-checkpoint-Skill, das Dashboard-Protokoll (dashboard-sync), die Hook-Telemetrie und das FRICTION-Log sind entfernt. Die offenen Housekeeping-Eintraege im Dashboard (M10.0 und alle spaeteren Mx.0) beschreiben aber noch den v1-Ablauf mit neun Schritten und verweisen auf Quellen, die es nicht mehr gibt.
+
+Aufgabe: Den Housekeeping-Milestone fuer v2 neu definieren und die offenen Mx.0-Eintraege in docs/dashboard/dashboard.html (nur Datenblock window.DASHBOARD_STATUS) darauf umschreiben. Grundlage ist der erste echte /ship-Lauf (M9.2) und sein Ablation-Log: Was dort als vermisst geloggt wurde, entscheidet, welche Checkpoint-Schritte zurueckkommen — als Test, als Satz im Adversary-Suchraum oder als Zeile im CLAUDE.md, in dieser Reihenfolge, nie als Hook ausser fuer ein Must-never. Ergebnis als kurze Notiz docs/superpowers/notes/<datum>-housekeeping-v2.md (Schritte, Quellen der Retro, was bewusst entfaellt und warum).
+
+/goal Jeder offene Mx.0-Eintrag im Dashboard beschreibt den v2-Housekeeping-Ablauf (keine Referenz mehr auf milestone-checkpoint, dashboard-sync-Checkpoint-Steps, Framework-Drift 7a oder FRICTION-Log), die Notiz existiert, der Datenblock parst (node -e mit vm wie im alten dashboard-guard, Output im Transcript), und der M9.9-Eintrag steht auf done.
+
+SCOPE-NEGATIV: Renderer in dashboard.html unberuehrt; abgeschlossene Milestones (status done) nicht umschreiben; kein Eingriff in das Plugin-Repo skill-agentic-loop-framework-V2 ausser einer dort geloggten Beobachtung; kein Version-Bump; CLAUDE.md nur, wenn das Ablation-Log eine konkrete Zeile verlangt.
+NO-ACTION: Ist das Ablation-Log aus M9.2 leer oder M9.2 noch nicht abgeschlossen, Milestone NICHT starten — Notiz mit dem Stand anlegen und den Eintrag auf todo lassen; ohne echten Lauf gibt es keine Entscheidungsgrundlage, und ein aus dem Kopf entworfener Checkpoint ist genau die Spirale, die M10.6 abgebrochen hat.
+
+/remote-control M9.9 — Housekeeping-Milestones an Framework v2 anpassen`
+    },
+    {
       id: "M10.0",
       title: "Housekeeping Agentic Loop",
       status: "todo",
@@ -1264,7 +1302,8 @@ NO-ACTION: Findet die Routine kein reproduzierbares Finding, ist ein leerer Lauf
   };
   function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
-  var ms = S.milestones;
+  // Datenblock bleibt chronologisch (append-only); nur die Anzeige ist neueste-zuerst (2026-09-16).
+  var ms = S.milestones.slice().reverse();
   var totalSteps = 0, doneSteps = 0;
   ms.forEach(function (m) { m.steps.forEach(function (s) { totalSteps++; if (s.done) doneSteps++; }); });
   var pct = totalSteps ? Math.round((doneSteps / totalSteps) * 100) : 0;
@@ -1272,7 +1311,7 @@ NO-ACTION: Findet die Routine kein reproduzierbares Finding, ist ein leerer Lauf
   var activeM = ms.filter(function (m) { return m.status === "active"; }).map(function (m) { return m.id; });
   var statusLine = doneCount + " von " + ms.length + " abgeschlossen"
     + (activeM.length ? " · " + activeM.join(", ") + " in Arbeit"
-       : (doneCount < ms.length ? " · " + (ms.find(function(m){return m.status!=="done";})||{}).id + " als Naechstes" : " · fertig"));
+       : (doneCount < ms.length ? " · " + (S.milestones.find(function(m){return m.status!=="done";})||{}).id + " als Naechstes" : " · fertig"));
 
   var html = "";
   html += '<h1>' + esc(S.project) + ' — Fortschritt</h1>';
