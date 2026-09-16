@@ -106,6 +106,45 @@ test('schema hints that generalise "Always show" to every group name the excepti
   assert.ok(checked >= 2, `expected the generalising hints to be found, matched ${checked}`);
 });
 
+// --- B4: no advice about an account model the controller does not have -------------
+// Twin of the settings.control.p2 check in test/Settings.test.js (finding A2): the
+// Violet has exactly one write login — no accounts, no roles — so no hint and no
+// guide may recommend a "dedicated, least-privilege account". The plain-HTTP-on-LAN
+// warning is the true part and stays. (The dated threat model under
+// docs/superpowers/security/ is a historical record and deliberately untouched.)
+
+const BANNED = {
+  en: [/least[- ]privilege/i, /dedicated[^.]{0,20}account/i],
+  de: [/minimalen Rechten/i, /wenig Rechten/i, /eigenes Konto/i],
+};
+
+test('no schema hint recommends a controller account model', () => {
+  for (const node of schemaNodes()) {
+    if (!node.hint || typeof node.hint !== 'object') continue;
+    for (const lang of /** @type {Array<'en'|'de'>} */ (['en', 'de'])) {
+      const hint = String(node.hint[lang] ?? '');
+      for (const re of BANNED[lang]) {
+        assert.ok(!re.test(hint), `${lang}: hint of ${node.id} still matches ${re}: "${hint}"`);
+      }
+    }
+  }
+});
+
+test('no quick-start guide recommends a controller account model', () => {
+  for (const [lang, file] of /** @type {Array<['en'|'de', string]>} */ ([
+    ['en', 'docs/community/quickstart-guide.en.md'],
+    ['de', 'docs/community/quickstart-guide.de.md'],
+  ])) {
+    const text = readText(file).replace(/\s+/g, ' ');
+    for (const re of BANNED[lang]) {
+      assert.ok(!re.test(text), `${file} still matches ${re}`);
+    }
+    // The fact that justified the advice must survive it.
+    assert.match(text, lang === 'en' ? /plain HTTP/i : /unverschlüsseltes HTTP/i,
+      `${file} no longer states that the controller API is plain HTTP`);
+  }
+});
+
 // --- B2: the guides must call a group what the settings page calls it --------------
 // Three names for one setting ("Wassernachspeisung" / "Nachfüllung" / "Frischwasser")
 // leave the reader hunting for a setting that does not exist under that name, so the

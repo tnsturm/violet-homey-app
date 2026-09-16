@@ -1914,8 +1914,8 @@
               },
               "value": false,
               "hint": {
-                "en": "Off by default. When on, control tiles appear and Flow actions can command the controller. Writes use the write username/password. Plain HTTP on the LAN transmits credentials in cleartext — use a least-privilege controller account and a trusted/segmented network, and rotate the write password before sharing.",
-                "de": "Standardmäßig aus. Wenn an, erscheinen Steuerungs-Kacheln und Flow-Aktionen können den Regler schalten. Schreibzugriffe nutzen Schreib-Benutzer/Passwort. Klartext-HTTP im LAN überträgt Zugangsdaten unverschlüsselt — ein Konto mit minimalen Rechten und ein vertrauenswürdiges/segmentiertes Netz verwenden und das Schreib-Passwort vor Weitergabe rotieren."
+                "en": "Off by default. When on, control tiles appear and Flow actions can command the controller. Writes use the write username/password. Plain HTTP on the LAN transmits credentials in cleartext — keep the controller on a trusted/segmented network, and rotate the write password before sharing.",
+                "de": "Standardmäßig aus. Wenn an, erscheinen Steuerungs-Kacheln und Flow-Aktionen können den Regler schalten. Schreibzugriffe nutzen Schreib-Benutzer/Passwort. Klartext-HTTP im LAN überträgt Zugangsdaten unverschlüsselt — den Regler in einem vertrauenswürdigen/segmentierten Netz betreiben und das Schreib-Passwort vor Weitergabe rotieren."
               }
             },
             {
