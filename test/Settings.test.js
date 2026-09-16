@@ -199,6 +199,34 @@ test('settings.groups.p1 never promises "Always show" for a group that has no fo
   }
 });
 
+// The Violet controller has exactly one write login — no account model, no roles.
+// So the control paragraph must not recommend a "dedicated, least-privilege
+// account" (review finding A2); it states the two facts that are true instead:
+// plain HTTP on the LAN, and the tile override falling back to Auto.
+test('settings.control.p2 recommends no account model the controller does not have', () => {
+  const text = {
+    en: readJson('locales/en.json').settings.control.p2,
+    de: readJson('locales/de.json').settings.control.p2,
+  };
+  const banned = {
+    en: [/least[- ]privilege/i, /dedicated[^.]{0,20}account/i],
+    de: [/wenig Rechten/i, /eigenes Konto/i],
+  };
+  const required = {
+    en: [/plain HTTP/i, /override duration/i],
+    de: [/HTTP/i, /Übersteuerungsdauer/i],
+  };
+
+  for (const lang of /** @type {Array<'en'|'de'>} */ (['en', 'de'])) {
+    for (const re of banned[lang]) {
+      assert.ok(!re.test(text[lang]), `${lang}: settings.control.p2 still matches ${re}`);
+    }
+    for (const re of required[lang]) {
+      assert.ok(re.test(text[lang]), `${lang}: settings.control.p2 no longer states ${re}`);
+    }
+  }
+});
+
 test('every fill() fallback in the page matches locales/en.json verbatim', () => {
   const html = readIndex();
   const en = readJson('locales/en.json');

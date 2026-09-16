@@ -57,7 +57,7 @@
     "control": {
       "h": "Control (write access)",
       "p1": "Off by default. Once enabled, control tiles appear and Flow actions can command the controller, using the write username and password from the device settings.",
-      "p2": "The controller’s local API is plain HTTP on your LAN, so use a dedicated, least-privilege account. Switching the pump ON or OFF from the tile reverts to Auto after the default override duration."
+      "p2": "The controller’s local API is plain HTTP on your LAN, so the write password travels unencrypted inside your network. Switching the pump ON or OFF from the tile reverts to Auto after the default override duration."
     },
     "diag": {
       "h": "Diagnostics and alarms",
