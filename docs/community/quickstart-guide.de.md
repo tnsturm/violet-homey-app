@@ -118,8 +118,9 @@ Passwort nötig, nur zum Schreiben von Befehlen.
 ## Anlagenteile ein-/ausblenden
 
 Jede Ausstattungsgruppe (Heizung, Solar, Abdeckung, Rückspülung, Frischwasser,
-Überlaufbehälter, Dosierung, …) hat eine Einstellung **Auto / Immer anzeigen /
-Ausblenden**. Auto — die Standardeinstellung — zeigt eine Kachel nur, wenn dein
+Überlaufbehälter, …) hat eine Einstellung **Auto / Immer anzeigen /
+Ausblenden**; die Dosierung kennt nur **Auto / Ausblenden**. Auto — die
+Standardeinstellung — zeigt eine Kachel nur, wenn dein
 Regler diese Hardware tatsächlich meldet, damit die Geräteansicht auf das
 fokussiert bleibt, was du wirklich installiert hast.
 

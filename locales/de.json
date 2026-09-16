@@ -46,7 +46,7 @@
     },
     "groups": {
       "h": "Funktionsgruppen",
-      "p1": "Jede Gruppe — Eco-Modus, Heizung, Solar, Rückspülung, Abdeckung, Licht, Wassernachspeisung, Überlaufbehälter, Wasserstand, PV-Überschuss, Dosierung und Messeingänge — bietet „Auto“, „Immer anzeigen“ oder „Ausblenden“.",
+      "p1": "Jede Gruppe — Eco-Modus, Heizung, Solar, Rückspülung, Abdeckung, Licht, Wassernachspeisung, Überlaufbehälter, Wasserstand, PV-Überschuss und Messeingänge — bietet „Auto“, „Immer anzeigen“ oder „Ausblenden“. Die Dosierung kennt nur „Auto“ oder „Ausblenden“.",
       "p2": "„Auto“ richtet sich nach der Hardware, die dein Regler tatsächlich meldet — so bleiben leere Kacheln aus. „Immer anzeigen“ erzwingt die Kachel. „Ausblenden“ entfernt sie — und bricht damit jeden Flow, der sie verwendet."
     },
     "lsi": {

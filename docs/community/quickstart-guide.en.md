@@ -109,9 +109,10 @@ values never needs a password, only writing commands does.
 ## Showing/hiding equipment tiles
 
 Every equipment group (heater, solar, cover, backwash, water refill, overflow
-tank, dosing, …) has an **Auto / Always show / Hide** setting. Auto — the
-default — shows a tile only when your controller actually reports that hardware,
-so your device view stays focused on what you actually have installed.
+tank, …) has an **Auto / Always show / Hide** setting; dosing offers **Auto /
+Hide** only. Auto — the default — shows a tile only when your controller actually
+reports that hardware, so your device view stays focused on what you actually
+have installed.
 
 ## Flow automation
 

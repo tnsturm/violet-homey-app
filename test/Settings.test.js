@@ -125,3 +125,93 @@ test('en.settings and de.settings have identical key sets, all non-empty strings
     }
   }
 });
+
+// --- Wording must stay true to the device-settings schema (review finding A1) --------
+// The page is the only place that describes the device settings in prose, so the
+// prose has to be derived from — not merely written alongside — the schema in
+// drivers/pool/driver.settings.compose.json. A group without a `force` value
+// (group_dosing: auto|hide, mirrored by lib/FeatureGroups.js) must never appear in
+// the sentence that promises "Always show".
+
+/**
+ * Every `group_*` radio in the device-settings schema with the value ids it offers.
+ * @returns {Array<{id: string, group: string, label: {en: string, de: string}, values: Array<string>}>}
+ */
+function groupSettings() {
+  const compose = readJson('drivers/pool/driver.settings.compose.json');
+  /** @type {Array<*>} */
+  const out = [];
+  const walk = (/** @type {*} */ node) => {
+    if (Array.isArray(node)) return node.forEach(walk);
+    if (node === null || typeof node !== 'object') return;
+    if (typeof node.id === 'string' && node.id.startsWith('group_') && Array.isArray(node.values)) {
+      out.push({
+        id: node.id,
+        group: node.id.slice('group_'.length),
+        label: node.label,
+        values: node.values.map((/** @type {*} */ v) => v.id),
+      });
+    }
+    if (Array.isArray(node.children)) walk(node.children);
+  };
+  walk(compose);
+  return out;
+}
+
+/** @param {string} s @returns {Array<string>} */
+function sentences(s) {
+  return s.split(/(?<=[.!?])\s+/);
+}
+
+test('settings.groups.p1 never promises "Always show" for a group that has no force value', () => {
+  const groups = groupSettings();
+  assert.ok(groups.length >= 10, `expected many group_* settings, found ${groups.length}`);
+
+  const forceless = groups.filter((g) => !g.values.includes('force'));
+  assert.ok(forceless.length > 0, 'no force-less group in the schema — update this test');
+
+  const text = {
+    en: readJson('locales/en.json').settings.groups.p1,
+    de: readJson('locales/de.json').settings.groups.p1,
+  };
+  // The wording that promises all three options, per language.
+  const forcePhrase = { en: /always show/i, de: /immer anzeigen/i };
+  // The wording that names the exception ("Auto or Hide only"), quotes stripped.
+  const exceptionPhrase = { en: /auto or hide only/i, de: /nur auto oder ausblenden/i };
+
+  for (const g of forceless) {
+    for (const lang of /** @type {Array<'en'|'de'>} */ (['en', 'de'])) {
+      const label = g.label[lang];
+      const flat = text[lang].replace(/[„“”"']/g, '');
+      const labelRe = new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+
+      for (const s of sentences(flat)) {
+        assert.ok(
+          !(forcePhrase[lang].test(s) && labelRe.test(s)),
+          `${lang}: settings.groups.p1 offers "Always show" for ${g.id}, which has only ${g.values.join('|')}: "${s}"`,
+        );
+      }
+      assert.ok(
+        labelRe.test(flat) && exceptionPhrase[lang].test(flat),
+        `${lang}: settings.groups.p1 does not name ${g.id} as the Auto-or-Hide-only exception`,
+      );
+    }
+  }
+});
+
+test('every fill() fallback in the page matches locales/en.json verbatim', () => {
+  const html = readIndex();
+  const en = readJson('locales/en.json');
+  const fills = [...html.matchAll(/fill\('([^']+)',\s*'([^']+)'\)/g)].map((m) => [m[1], m[2]]);
+  assert.ok(fills.length >= 20, `expected the page to fill many elements, found ${fills.length}`);
+
+  for (const [id, key] of fills) {
+    const m = html.match(new RegExp(`<([a-z0-9]+)[^>]*\\bid="${id}"[^>]*>([\\s\\S]*?)</\\1>`));
+    assert.ok(m, `no element with id="${id}" in the page`);
+    assert.strictEqual(
+      m[2].trim(),
+      lookup(en, key),
+      `fallback text of #${id} differs from ${key} in locales/en.json`,
+    );
+  }
+});
