@@ -30,5 +30,44 @@
       "hint": "Leave any field empty to keep its current value; enter a new password to rotate it.",
       "done": "Saved."
     }
+  },
+  "settings": {
+    "title": "Violet — Quick Start",
+    "intro": "This app talks to your Violet or BADU Blue pool controller over your local network — no cloud account needed. Here is the short version of what the settings do.",
+    "start": {
+      "h": "Getting started",
+      "p1": "Add a Pool device and enter the controller’s host or IP. Try violet.local first; if that does not resolve on your network, use the IP address instead. A static IP is recommended so Homey does not lose the controller after a router reboot.",
+      "p2": "Reading values needs no credentials at all. The write username and password are optional: you only need them to enable control (write), and as a fallback if your controller restricts config reads."
+    },
+    "temp": {
+      "h": "Water temperature sensor",
+      "p1": "Auto picks the sensor whose Violet name looks like the pool. With several sensors and no clear name, choose yours manually — the temperature tiles are labelled with your own Violet names, so you can tell which sensor is which.",
+      "p2": "This is also the temperature the LSI calculation uses."
+    },
+    "groups": {
+      "h": "Feature groups",
+      "p1": "Every group — eco mode, heater, solar, backwash, cover, light, water refill, overflow tank, water level, PV surplus, dosing and measurement inputs — offers Auto, Always show or Hide.",
+      "p2": "Auto follows the hardware your controller actually reports, so you get no empty tiles. Always show forces the tile. Hide removes it — and that breaks any Flow that uses it."
+    },
+    "lsi": {
+      "h": "Water chemistry (LSI)",
+      "p1": "Off by default. Switch on Compute LSI and enter calcium hardness, total alkalinity and cyanuric acid from your test kit or PoolLab. Balanced water sits between -0.3 and +0.5, with 0 as the ideal.",
+      "p2": "The advisor turns the LSI into concrete dosing suggestions and a startup plan for freshly filled water. It needs LSI enabled, plus the pool volume if you want amounts in grams or millilitres. It only advises — it never doses anything itself."
+    },
+    "control": {
+      "h": "Control (write access)",
+      "p1": "Off by default. Once enabled, control tiles appear and Flow actions can command the controller, using the write username and password from the device settings.",
+      "p2": "The controller’s local API is plain HTTP on your LAN, so use a dedicated, least-privilege account. Switching the pump ON or OFF from the tile reverts to Auto after the default override duration."
+    },
+    "diag": {
+      "h": "Diagnostics and alarms",
+      "p1": "Show advanced diagnostics adds tiles for CPU, memory, uptime, firmware and controller errors.",
+      "p2": "On the alarm listener port this app receives the Violet’s own NOTIFY pushes. That channel has neither encryption nor authentication, so keep it on your LAN and never forward the port to the internet. The hint on the setting itself explains how to point the controller at it."
+    },
+    "more": {
+      "h": "More",
+      "p1": "The full guide, covering every function in detail, lives in the Homey Community topic for this app.",
+      "button": "Open the community guide"
+    }
   }
 }
