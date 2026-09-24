@@ -131,6 +131,16 @@ als eigene Zeile „fehlt dort"), dann editieren, dann die Tabelle erneut zeigen
 zweite Tabelle ist die Spiegelung eine Behauptung. EOL-normalisiert vergleichen
 (`git diff --no-index --ignore-cr-at-eol`), sonst zählen CRLF/LF-Unterschiede als Drift.
 
+**Seit M9.4 außerhalb von 7a:** `test-gate`, `typecheck-gate`, `commit-msg-guard`,
+`package-guard`, `control-bytes-guard`, `dashboard-guard`, `run-matching-test`,
+`selftest-guards`, `handoff-notice` haben in diesem Repo KEINE Kopie mehr — sie laufen aus dem
+`agentic-loop-framework`-Plugin (`plugin/hooks/`, Opt-in über `enabledPlugins` in
+`.claude/settings.json`). Für sie gibt es nichts abzugleichen; ein Änderungswunsch ist eine
+Plugin-Änderung + Plugin-Release, die dieses Projekt per `claude plugin update
+agentic-loop-framework` bezieht. 7a deckt weiterhin ab: projektlokale Hooks und ihre Helfer
+(`.claude/hooks/lib/` ↔ `templates/.claude/hooks/lib/`; die Template-Kopie hält der Plugin-Test
+`lib-drift` gleich mit der Plugin-Kopie), Skills, Agents, CLAUDE.md-Abschnitte.
+
 **7b — Native-Feature-Review (Framework → Plattform).** Das Framework wächst nur, wenn nie jemand
 fragt, was es abwerfen kann — ein dupliziertes Feature ist schlimmer als keins, weil es still vom
 echten Verhalten wegdriftet. Ledger `docs/dashboard/native-feature-review.md`: eine Zeile je Artefakt
