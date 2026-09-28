@@ -36,14 +36,15 @@ function readIndex() {
 }
 
 /**
- * Every `settings.*` string literal in the page. Superset of "referenced via
- * Homey.__ or the t() helper": the page reaches its keys through t(), and any
- * other literal that looks like a locale key must resolve too.
+ * Every quoted `settings.*` literal in the page — data-i18n attribute values and
+ * script strings alike. Superset of "referenced via Homey.__ or the t() helper":
+ * the page reaches its keys through t(), and any other literal that looks like a
+ * locale key must resolve too.
  * @param {string} html
  * @returns {Array<string>}
  */
 function settingsKeysIn(html) {
-  const found = html.match(/'settings\.[A-Za-z0-9_.]+'/g) || [];
+  const found = html.match(/['"]settings\.[A-Za-z0-9_.]+['"]/g) || [];
   return [...new Set(found.map((s) => s.slice(1, -1)))];
 }
 
@@ -304,19 +305,22 @@ test('a settings.* sentence may only claim a credential field the schema really 
   assert.ok(claims > 0, 'no settings.* sentence claims a username field — update this test');
 });
 
-test('every fill() fallback in the page matches locales/en.json verbatim', () => {
+// Review finding E8: the page translates every element that carries a data-i18n
+// key in one loop, so the markup — not a hand-kept fill() list — is the source.
+// Every settings.* key has exactly one element, and its static text (the fallback)
+// is the en.json string verbatim; a forgotten element fails here, not silently.
+test('every data-i18n element carries its locales/en.json text verbatim, one element per key', () => {
   const html = readIndex();
   const en = readJson('locales/en.json');
-  const fills = [...html.matchAll(/fill\('([^']+)',\s*'([^']+)'\)/g)].map((m) => [m[1], m[2]]);
-  assert.ok(fills.length >= 20, `expected the page to fill many elements, found ${fills.length}`);
+  const elements = [
+    ...html.matchAll(/<([a-z0-9]+)[^>]*\bdata-i18n="(settings\.[a-z0-9.]+)"[^>]*>([\s\S]*?)<\/\1>/g),
+  ].map((m) => ({ key: m[2], text: m[3].trim() }));
 
-  for (const [id, key] of fills) {
-    const m = html.match(new RegExp(`<([a-z0-9]+)[^>]*\\bid="${id}"[^>]*>([\\s\\S]*?)</\\1>`));
-    assert.ok(m, `no element with id="${id}" in the page`);
-    assert.strictEqual(
-      m[2].trim(),
-      lookup(en, key),
-      `fallback text of #${id} differs from ${key} in locales/en.json`,
-    );
+  for (const { key, text } of elements) {
+    assert.strictEqual(text, lookup(en, key), `fallback text of [data-i18n="${key}"] differs from locales/en.json`);
   }
+  const used = elements.map((e) => e.key).sort();
+  const all = flatten(en.settings, 'settings').sort();
+  assert.deepStrictEqual(used, all, 'every settings.* key must be used by exactly one data-i18n element');
+  assert.deepStrictEqual(html.match(/\bfill\('/g) || [], [], 'id-based fill() calls remain in the page');
 });
