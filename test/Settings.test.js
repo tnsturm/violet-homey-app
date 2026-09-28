@@ -233,9 +233,19 @@ const HISTORIC = new Set([
   'changelog:0.3.0',
 ]);
 
+// "Device settings" as the prose sources spell it. The German guide writes the
+// hyphenated "Geräte-Einstellungen" throughout, the locales the compound form
+// (review finding F2 — the sweep missed the guide's spelling).
+const WHERE = { en: /device settings/i, de: /Geräte-?einstellungen/i };
+
+test('the device-settings matcher knows both German spellings', () => {
+  assert.match('in den Geräteeinstellungen', WHERE.de);
+  assert.match('in den Geräte-Einstellungen', WHERE.de);
+});
+
 test('no prose sentence puts the write password in the device settings', () => {
   const pwd = { en: /password|credentials/i, de: /passwort|zugangsdaten/i };
-  const where = { en: /device settings/i, de: /Geräteeinstellungen/i };
+  const where = WHERE;
   // The places the password can actually be entered.
   const realPlace = { en: /pairing|paired|repair/i, de: /koppel|reparier|pairing|repair/i };
 
@@ -265,17 +275,34 @@ test('no prose sentence promises the tile override reverts to Auto without the 0
     de: /dauerhaft|(?<![\d.,])0(?![\d.,])/i,
   };
 
+  // Review finding F1: device.js sends the same override duration for tile ON and
+  // tile OFF (no OFF branch in _control()), so a sentence about the tile revert must
+  // name both states, as the compose hint does ("ON/OFF"). The lookbehind skips the
+  // option list "Auto / On / Off", which names the states without claiming anything.
+  const tile = { en: /tile/i, de: /Kachel/i };
+  const bothStates = {
+    en: /(?<!Auto \/ )\bON\s*(?:\/|or)\s*OFF\b/i,
+    de: /(?<!Auto \/ )\b(?:AN|EIN)\s*(?:\/|oder)\s*AUS\b/i,
+  };
+
   /** @type {Array<string>} */
   const wrong = [];
+  /** @type {Array<string>} */
+  const oneState = [];
   for (const { src, lang, text } of proseSources()) {
     if (HISTORIC.has(src)) continue;
     for (const s of sentences(text)) {
-      if (reverts[lang].test(s) && /Auto/.test(s) && !permanent[lang].test(s)) {
-        wrong.push(`${lang}: ${src}: "${s}"`);
-      }
+      if (!reverts[lang].test(s) || !/Auto/.test(s)) continue;
+      if (!permanent[lang].test(s)) wrong.push(`${lang}: ${src}: "${s}"`);
+      // Markdown tables have no sentence boundaries, so judge the states in a window
+      // around the revert word, not in the whole pseudo-sentence.
+      const at = s.search(reverts[lang]);
+      const win = s.slice(Math.max(0, at - 70), at + 70);
+      if (tile[lang].test(win) && !bothStates[lang].test(win)) oneState.push(`${lang}: ${src}: "${win}"`);
     }
   }
   assert.deepStrictEqual(wrong, [], 'these sentences hide that 0 makes the tile override permanent');
+  assert.deepStrictEqual(oneState, [], 'these sentences claim the tile revert for one state only; ON and OFF both revert');
 });
 
 // Review finding E6: the claim resolves to a node the user can actually edit — a
@@ -283,7 +310,7 @@ test('no prose sentence promises the tile override reverts to Auto without the 0
 // to any label that merely contains the word (a read-only `label` node would do).
 test('a settings.* sentence may only claim a credential field the schema really has', () => {
   const user = { en: /username/i, de: /Benutzername/i };
-  const where = { en: /device settings/i, de: /Geräteeinstellungen/i };
+  const where = WHERE;
   const nodes = schemaNodes();
 
   let claims = 0;

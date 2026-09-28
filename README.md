@@ -80,7 +80,7 @@ control tiles and let Flow command the controller.
 
 | Capability | Control |
 |---|---|
-| `pump_control` | Pump: Auto / On / Off (tile ON auto‑reverts to Auto after a configurable duration, or never if set to 0) |
+| `pump_control` | Pump: Auto / On / Off (tile ON/OFF auto‑reverts to Auto after a configurable duration, or never if set to 0) |
 | `light_control` | Light: Auto / On / Off |
 | `pvsurplus_control` | PV‑surplus mode on/off |
 
