@@ -101,7 +101,7 @@
 window.DASHBOARD_STATUS = {
   project: "Violet Homey App",
   subtitle: "Homey Pro App für den PoolDigital „Violet“ Pool-Controller",
-  updatedAt: "2026-09-16",
+  updatedAt: "2026-09-28",
   workflow: ["Brainstorming", "Spec", "Plan", "Implementierung (SDD)", "Validate + Push"],
   milestones: [
     {
@@ -908,23 +908,25 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
     {
       id: "M9.2",
       title: "In-App Quick-Start-Guide (App-Settings-Seite)",
-      status: "todo",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Offenes Design/Content-Urteil (Struktur + zweisprachige Texte einer Onboarding-Seite), aber kein Sicherheits-/Chemie-Risiko und keine kritische Codepfad-Berührung — mittleres Urteil, keine Flaggschiff-Tiefe nötig." },
-      startedAt: null,
+      status: "active",
+      recommendedModel: { model: "Claude Fable 5", effort: "medium", why: "Erster echter Lauf mit skill-agentic-loop-framework-V2 (/ship): Orchestrator triagiert Adversary-Funde und entscheidet über die Ablation — Flagship-Urteil; Implementer laut Plugin Opus, Adversary/Disprover Fable." },
+      startedAt: "2026-09-16",
       finishedAt: null,
-      commit: null,
+      commit: "782eac1",
       summary: "Eingebauter Quick-Start-Guide über eine App-Settings-HTML-Seite (/settings/index.html, self-contained, kein Server), erreichbar über das ⚙ am App-Kachel. Zweisprachig (en+de), erklärt die nicht-selbsterklärenden Konfigurationen (Pairing/Credentials-Optionalität, Wassertemperatur-Auswahl, Feature-Gruppen Auto/Force/Hide, LSI-Werte, Steuerung/Schreibzugriff, Diagnose) und verweist auf den Community-Post als ausführliche Referenz. Per-Setting-Hints wurden bereits in 0.5.1 nachgerüstet — diese Seite ist die zusammenhängende Kurzanleitung. Optional zusätzlich: Pairing-Intro-View. Auslöser: Nutzer-Feedback 2026-07-14 (viele Konfigurationen, deren Sinn sich nicht auf Anhieb erschließt).",
       steps: [
-        { label: "Brainstorming", done: false },
-        { label: "Spec", done: false },
-        { label: "Plan", done: false },
-        { label: "Implementierung (SDD)", done: false },
+        { label: "Brainstorming", done: true },
+        { label: "Spec", done: true },
+        { label: "Plan", done: true },
+        { label: "Implementierung (SDD)", done: true },
         { label: "Validate + Release", done: false }
       ],
-      currentActivity: null,
-      runtime: null,
+      currentActivity: "Test-Release 0.9.2 auf Torstens Homey Pro + Geräte-Test der Settings-Seite (Done-Bedingung 3); danach Forenbeitrag 157109 nachziehen und Ablation-Entscheidung",
+      runtime: "1 /ship build + 4 /ship fix + 1 /code-review xhigh; 27 Branch-Commits",
       log: [
-        { at: "2026-07-14", note: "Milestone angelegt (Nutzer-Feedback: In-App-Quickstart-Guide gewünscht; Per-Setting-Hints bereits in 0.5.1 erledigt, diese Seite ist die zusammenhängende Kurzanleitung)" }
+        { at: "2026-07-14", note: "Milestone angelegt (Nutzer-Feedback: In-App-Quickstart-Guide gewünscht; Per-Setting-Hints bereits in 0.5.1 erledigt, diese Seite ist die zusammenhängende Kurzanleitung)" },
+        { at: "2026-09-16", note: "Gestartet als erster echter Lauf mit skill-agentic-loop-framework-V2 auf dem v2-Bootstrap-Branch (v1-Framework entfernt, CLAUDE.md 35 Zeilen). Brainstorming/Spec/Plan bewusst durch einen vollständigen Task-Vertrag im /ship-Aufruf ersetzt (SDK-Vertrag vorab per context7 verifiziert) — Steps als erledigt markiert, weil das, was sie gaten, geliefert ist. /ship build: Implementer Opus test-first, 2 Adversaries, 1 confirmed (Dosierung hat kein 'Immer anzeigen'), 1 refuted (globales Homey existiert im echten Webview — Disprover holte /homey.js vom Homey Pro). Zwei Plugin-Defekte umgangen (agentType unqualifiziert, verifyCommit-JSON verschachtelt) — nur in der run-lokalen Skriptkopie, Plugin unverändert." },
+        { at: "2026-09-28", note: "Vier /ship-fix-Runden + /code-review xhigh: 22 bestätigte Funde, alle Klasse Eingabe/testblind (Prosa widersprach dem Schema: Dosierung-Optionen, erfundener Konto-Rat, Passwort-Ort Reparieren statt Geräteeinstellungen, 0 = dauerhaft, Kachel-OFF revertiert auch). Fakten-Sweep als Testmuster eingeführt (test/helpers/prose.js: jede Aussage über ein Setting aus dem Compose-Schema abgeleitet, über alle Prosa-Quellen inkl. Changelog/Manifest/Pair-Views geprüft). PR #22 gemergt als 782eac1 (Squash, inkl. v2-Bootstrap). Ablation-Log: 7 Zeilen (docs/superpowers/notes/2026-09-16-v2-ablation-log.md). Offen: Geräte-Test, Test-Release 0.9.2, Forenbeitrag, D3 (breitere Verbotsmuster), Pairing-Intro-View (Empfehlung: weglassen)." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
 
