@@ -1020,24 +1020,25 @@ NO-ACTION: Laesst sich ein Plugin-Hook nicht pro Projekt scopen (feuert also in 
     {
       id: "M9.9",
       title: "Housekeeping-Milestones an Framework v2 anpassen",
-      status: "todo",
+      status: "done",
       recommendedModel: { model: "Claude Fable 5", effort: "medium", why: "Prozess-Design-Urteil ohne Codeaenderung: entscheiden, welche der neun Checkpoint-Schritte unter dem v2-Loop (kein Checkpoint-Skill, kein Dashboard-Protokoll, keine Telemetrie) noch einen Zweck haben und wie ein Housekeeping-Milestone kuenftig aussieht. Das ist die Ablations-Entscheidung aus dem v2-Handover — Flagship-Urteil, kein Workhorse-Mechanikjob." },
-      startedAt: null,
-      finishedAt: null,
-      commit: null,
+      startedAt: "2026-09-28",
+      finishedAt: "2026-09-28",
+      commit: "Branch worktree-m9-9-housekeeping-v2 (Squash-SHA nach dem Merge eintragen — Schritt 1 von M10.0)",
       summary: "Die offenen Housekeeping-Milestones (M10.0 und alle spaeteren Mx.0-Eintraege) sind noch auf das v1-Framework zugeschnitten: neun Checkpoint-Schritte aus dem entfernten milestone-checkpoint-Skill, Framework-Drift-Abgleich gegen skill-agentic-loop-framework, FRICTION-Log als Retro-Quelle. Unter skill-agentic-loop-framework-V2 (ab 2026-09-16, siehe docs/superpowers/notes/2026-09-16-v2-handover.md) existieren diese Quellen nicht mehr. Aufgabe: den Housekeeping-Milestone neu zuschneiden — welche Schritte bleiben (Worktree-/Branch-Cleanup, Skill-Quellen-Review, Memory-Konsolidierung, Handover), welche entfallen, was die Retro stattdessen liest (Ablation-Log + Klassifikationswoerter der Adversary-Funde aus den -approved.md-Dateien), und die offenen Mx.0-Eintraege im Dashboard entsprechend umschreiben.",
       steps: [
-        { label: "Brainstorming", done: false },
-        { label: "Spec", done: false },
-        { label: "Plan", done: false },
-        { label: "Umsetzung (Dashboard-Eintraege + Notiz)", done: false },
-        { label: "Validate + Push", done: false }
+        { label: "Brainstorming", done: true },
+        { label: "Spec", done: true },
+        { label: "Plan", done: true },
+        { label: "Umsetzung (Dashboard-Eintraege + Notiz)", done: true },
+        { label: "Validate + Review (Push: Nutzer)", done: true }
       ],
       currentActivity: null,
-      runtime: null,
+      runtime: "1 Session am 2026-09-28, kein /ship (kein Code); /code-review medium auf den Diff",
       log: [
         { at: "2026-09-16", note: "Milestone angelegt (Nutzer): die kuenftigen Housekeeping-Milestones an das neue Framework anpassen. Voraussetzung: mindestens ein echter Milestone-Lauf mit /ship (M9.2) ist durch, damit das Ablation-Log als Entscheidungsgrundlage gefuellt ist." },
-        { at: "2026-09-28", note: "Voraussetzung erfuellt: M9.2 Teil 1 ist durch (PR #22, 0.9.2 live, Geraete-Test bestanden). Prompt nach dem ersten Lauf ueberarbeitet: Ablation-Log hat 8 Zeilen + Entscheidungsabschnitt, die Retro-Quellen existieren jetzt real (Freigabedatei mit Klassifikationswoertern, Ablation-Log, versions.md), und die Housekeeping-Arbeit, die der Lauf von Hand brauchte, ist benannt (Worktree-Cleanup, Memory-Dateien noch v1-foermig, Handover fehlte am Session-Ende, Plugin-Quelle gelesen). Kein /ship noetig — Dashboard-Datenblock + Notiz + Memory sind kein Code; stattdessen /code-review medium auf den Diff." }
+        { at: "2026-09-28", note: "Voraussetzung erfuellt: M9.2 Teil 1 ist durch (PR #22, 0.9.2 live, Geraete-Test bestanden). Prompt nach dem ersten Lauf ueberarbeitet: Ablation-Log hat 8 Zeilen + Entscheidungsabschnitt, die Retro-Quellen existieren jetzt real (Freigabedatei mit Klassifikationswoertern, Ablation-Log, versions.md), und die Housekeeping-Arbeit, die der Lauf von Hand brauchte, ist benannt (Worktree-Cleanup, Memory-Dateien noch v1-foermig, Handover fehlte am Session-Ende, Plugin-Quelle gelesen). Kein /ship noetig — Dashboard-Datenblock + Notiz + Memory sind kein Code; stattdessen /code-review medium auf den Diff." },
+        { at: "2026-09-28", note: "Abgeschlossen: Housekeeping-v2 als fuenf Schritte definiert (Cleanup, Plugin-Inventar + Quellen, Memory, Retro + Ablation-Entscheidung, Handover-Notiz) — Notiz docs/superpowers/notes/2026-09-28-housekeeping-v2.md mit Retro-Quellen, Baseline 2026-09-28 und der Liste dessen, was gegenueber v1 entfaellt (jeweils geprueft: Drift-Abgleich ist per Konstruktion null, weil keine Hook-Kopie mehr im Repo liegt; /doctor, /fewer-permission-prompts, /claude-automation-recommender, 7b, /insights ohne Bedarf im ersten Lauf). M10.0-Eintrag umgeschrieben, Prompt allein lauffaehig. Memory konsolidiert: 1 Datei geloescht (hook-log-pollution-audit), 5 als historisch markiert, 4 aktualisiert, Index nachgezogen. Inventar-Befunde fuer M10.0: v1-Plugin noch enabled, V2 doppelt registriert (user 0.1.1 / project 0.1.0), drei Alt-Branches, M9.4 + M10.3 mit v1-Praemisse. Kein CLAUDE.md-Eingriff (Ablation-Log verlangt keine Zeile), Ablation-Log unveraendert." }
       ],
       prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten, eigener Worktree; alle Pfade unten sind repo-relativ. Plugin skill-agentic-loop-framework-V2 0.1.1 ist installiert (Quelle: C:/Users/TorstenSturm/source/repos/skill-agentic-loop-framework-V2).
 
@@ -1060,42 +1061,51 @@ NO-ACTION: Ist eine Retro-Quelle fuer einen Schritt leer (z. B. keine Klasse mit
     },
     {
       id: "M10.0",
-      title: "Housekeeping Agentic Loop",
+      title: "Housekeeping (Framework v2)",
       status: "todo",
-      recommendedModel: { model: "Claude Sonnet 5", effort: "low", why: "Checkliste mit definierten Schritten (Allowlist-Scan, Automation-Empfehlungen, Retro, Memory-Diff, Handover) — mechanisch, kein offenes Design-Urteil." },
+      recommendedModel: { model: "Claude Sonnet 5", effort: "medium", why: "Vier der fuenf Schritte sind Mechanik (Cleanup, Plugin-Inventar, Memory-Diff, Handover); die Retro (Schritt 4) verlangt ein Urteil ueber Klassifikationswoerter und Ablation-Log, das der Mensch am Ende ohnehin triagiert. Workhorse medium, kein Flagship." },
       startedAt: null,
       finishedAt: null,
       commit: null,
-      summary: "Housekeeping zwischen M9.4 und M10.3: Branch-/Worktree-Cleanup, Permission-Allowlist pruefen, Automation-Empfehlungen pruefen (CLAUDE.md §7 Punkt 4).",
+      summary: "Erstes Housekeeping unter skill-agentic-loop-framework-V2, zwischen M9.9 und dem naechsten Implementierungs-Milestone (M9.3 oder M10.4, Nutzerwahl). Fuenf Schritte nach docs/superpowers/notes/2026-09-28-housekeeping-v2.md: Branch-/Worktree-Cleanup (inkl. Dashboard-Eintraege mit v1-Praemisse: M9.4, M10.3), Plugin-Inventar + Quellen gelesen (v1-Plugin noch aktiv, V2 doppelt registriert), Memory-Konsolidierung (Diff seit 2026-09-28), Retro + Ablation-Entscheidung aus den drei realen Quellen (Freigabedateien, Ablation-Log, versions.md), Handover-Notiz. Entfallen gegenueber v1 und warum: siehe Notiz.",
       steps: [
         { label: "Branch-/Worktree-Cleanup", done: false },
-        { label: "/fewer-permission-prompts", done: false },
-        { label: "/claude-automation-recommender", done: false },
-        { label: "Skill-Quellen geprüft", done: false },
-        { label: "Workflow-Retrospektive", done: false },
+        { label: "Plugin-Inventar + Quellen gelesen", done: false },
         { label: "Memory-Konsolidierung", done: false },
-        { label: "Framework-Abgleich (Drift + Native-Features)", done: false },
-        { label: "Handover", done: false }
+        { label: "Retro + Ablation-Entscheidung", done: false },
+        { label: "Handover-Notiz", done: false }
       ],
       currentActivity: null,
       runtime: null,
-      log: [],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
+      log: [
+        { at: "2026-09-28", note: "Eintrag in M9.9 auf den v2-Ablauf umgeschrieben (fuenf Schritte statt neun Checkpoint-Schritte; Quellen: docs/superpowers/notes/2026-09-28-housekeeping-v2.md). Bekannte Startlage: v1-Plugin agentic-loop-framework noch enabled (user 0.1.36 / project 0.1.34), V2 doppelt (user 0.1.1 / project 0.1.0), Branches worktree-v2-bootstrap, worktree-framework-v2-ablation, worktree-m9.4-hooks-plugin (lokal+origin) als Cleanup-Kandidaten." }
+      ],
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten, eigener Worktree (npm ci zuerst); alle Pfade unten sind repo-relativ. Plugin skill-agentic-loop-framework-V2 ist installiert (Quelle: C:/Users/TorstenSturm/source/repos/skill-agentic-loop-framework-V2). Memory liegt unter C:/Users/TorstenSturm/.claude/projects/C--Users-TorstenSturm-source-repos-VioletApp/memory/.
 
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
+Lies zuerst docs/dashboard/triage-inbox.md, dann in dieser Reihenfolge: docs/superpowers/notes/2026-09-28-housekeeping-v2.md (Definition der fuenf Schritte, Retro-Quellen, Baseline vom 2026-09-28 und die Inventar-Beobachtungen — das ist der Vertrag dieses Milestones), docs/superpowers/notes/2026-09-16-v2-ablation-log.md, alle docs/superpowers/reviews/*-approved.md mit Datum nach 2026-09-28, die Zeilen in docs/dashboard/versions.md nach 0.9.2, MEMORY.md im Memory-Ordner.
 
-Housekeeping Agentic Loop vor M10.3 (CLAUDE.md §7 Punkt 4). M9.4 ist abgeschlossen, M10.3 startet als Naechstes.
+Violet Homey Pro App — Milestone M10.0 (Housekeeping, Framework v2). Letztes Housekeeping-aequivalent: M9.9 (2026-09-28). Naechster Implementierungs-Milestone: M9.3 oder M10.4 — den Nutzer am Ende fragen, nicht selbst waehlen.
 
-Fuehre aus: /milestone-checkpoint — der Branch-/Worktree-Cleanup ist Schritt 1 des Skills.
+Beim Start den M10.0-Eintrag in docs/dashboard/dashboard.html (nur Datenblock window.DASHBOARD_STATUS) auf status "active" + startedAt + Log-Zeile setzen; am Ende status "done", finishedAt, Steps abhaken, Log, Commit-Feld nach dem Merge (bis dahin Branch-Name).
 
-Das aktualisiert automatisch den M10.0-Eintrag in docs/dashboard/dashboard.html (status "done", finishedAt, alle Steps abhaken, log-Eintraege).
+SCHRITT 1 — Branch-/Worktree-Cleanup: git fetch --prune origin; git worktree list; git branch -a. Jeden Kandidaten mit Grund listen (in origin/main enthalten, per Squash enthalten, als Tag archiviert, Praemisse entfallen). Bekannte Kandidaten: worktree-v2-bootstrap (per Squash in PR #22), worktree-framework-v2-ablation (Tag archive/framework-v2-ablation-2026-09-10 existiert), worktree-m9.4-hooks-plugin lokal + origin (durch V2 gegenstandslos; im v1-Framework-Repo C:/Users/TorstenSturm/source/repos/skill-agentic-loop-framework liegt dazu .worktrees/m9.4). Dashboard-Eintraege mit v1-Praemisse in dieselbe Liste: M9.4 (Hooks als Plugin — V2 liefert sie), M10.3 (Templates im v1-Framework-Repo). Auswahl vom Nutzer abfragen; erst dann loeschen (git branch -D, git push origin --delete, git worktree remove, Ordner). Dashboard-Eintraege, die der Nutzer als obsolet markiert, bekommen status "done" mit einer Log-Zeile "obsolet seit v2", Steps unveraendert.
 
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. Branch-/Worktree-Cleanup durchgefuehrt: Kandidaten mit Erklaerung gelistet, Auswahl abgefragt, angewaehlte Branches (lokal + origin) und Worktrees geloescht — Ergebnis im Chat gezeigt.
-2. Alle Checkpoint-Schritte 1-9 durchlaufen (inkl. Branch-/Worktree-Cleanup als Schritt 1, Memory-Konsolidierung als Diff, Framework-Abgleich 7a Drift + 7b Native-Feature-Review, Handover) — Ergebnisse im Chat zusammengefasst.
-3. Der M10.0-Eintrag im Dashboard steht auf done (alle 8 Steps abgehakt) — Diff gezeigt.
+SCHRITT 2 — Plugin-Inventar + Quellen gelesen: claude plugin list. Bekannte Lage vom 2026-09-28: v1-Plugin agentic-loop-framework@skill-agentic-loop-framework enabled (user 0.1.36, project 0.1.34, liefert nur einen Skill, keine Hooks) — Vorschlag: deaktivieren/deinstallieren, Nutzer entscheidet. V2 doppelt registriert (user 0.1.1, project 0.1.0; Ursache: enabledPlugins-Marker in .claude/settings.json) — klaeren, welche Kopie die Hooks stellt; project-scope-Kopie entfernen (claude plugin uninstall skill-agentic-loop-framework-V2@skill-agentic-loop-framework-V2 --scope project), Nutzer prueft in einer frischen Session, dass release-gate/package-guard/secrets-guard noch feuern (ein absichtlich geblocktes Kommando reicht). Liegt im V2-Quell-Repo eine neuere Version als installiert: CHANGELOG + Diff lesen, erst dann updaten (CLAUDE.md Must-never). Kein Datei-Diff gegen das Plugin: im Repo existiert keine Hook-Kopie.
 
-/remote-control M10.0 — Housekeeping Agentic Loop`
+SCHRITT 3 — Memory-Konsolidierung: jede Datei im Memory-Ordner gegen den heutigen Stand lesen. Falsch → loeschen; ueberholt → Praefix "Historisch (…)" mit Datum; gueltig → unveraendert. MEMORY.md-Index nachziehen (eine Zeile je Datei, kein Inhalt). Stand 2026-09-28 ist konsolidiert — es geht nur um das, was seitdem dazukam oder kippte (M9.2-Abschluss, Plugin-Aenderungen, geloeschte Branches, Entscheidungen aus Schritt 1/2/4).
+
+SCHRITT 4 — Retro + Ablation-Entscheidung: (a) Klassifikationswoerter aller Freigabedateien seit 2026-09-28 zaehlen; eine Klasse mit drei Treffern im Monat wird zu genau einer Sache — Satz im Adversary-Suchraum (plugin/agents/adversary.md im V2-Repo, dort als Beobachtung loggen, nicht selbst aendern) oder Testmuster in test/. Nie eine CLAUDE.md-Regel. Baseline: Eingabe ist umgesetzt (Fakten-Sweep + Adversary-Satz, 0.1.1), testblind ist durch den vorhandenen Mutations-Satz abgedeckt. (b) Ablation-Log: neue Zeilen seit 2026-09-28 lesen; pruefen, ob der letzte Implementierungs-Milestone seinen Entscheidungsabschnitt hat, sonst hier nachholen — Reihenfolge Test → Adversary-Satz → CLAUDE.md-Zeile, ein Hook nur fuer ein Must-never. Das Log nur ergaenzen, nie umschreiben. (c) versions.md: Zeilen seit 0.9.2 auf wiederkehrende Beobachtungen; "× Missing File" beim ersten homey app install steht bei drei Datenpunkten (0.9.0, 0.9.2) — wenn ein vierter dazukam: Eintrag in die Triage-Inbox als offene Beobachtung, kein Test, keine Regel. Jede Quelle ohne Befund wird als "nichts zu tun" protokolliert (Notiz), nicht gefuellt.
+
+SCHRITT 5 — Handover-Notiz: docs/superpowers/notes/<datum>-handover.md mit Stand, offenen Entscheidungen des Nutzers, naechstem Milestone (Nutzerwahl aus M9.3/M10.4), ungeprueften Annahmen. Kurz; die naechste Session liest sie zuerst.
+
+ABSCHLUSS: Ergebnisse der fuenf Schritte in einer kurzen Notiz docs/superpowers/notes/<datum>-housekeeping-m10.0.md (je Schritt: getan / nichts zu tun / vom Nutzer entschieden). Kein /ship (kein Code). Vor dem Push /code-review medium auf den Diff, dann Push-/PR-Frage stellen — nicht selbst pushen.
+
+/goal Alle fuenf Schritte sind mit Kommando + Ausgabe im Transcript belegt oder als "nichts zu tun" protokolliert; die Cleanup-Auswahl und die Plugin-Entscheidungen hat der Nutzer im Chat getroffen; MEMORY.md ist aktuell; der Datenblock parst (node -e mit vm, Output im Transcript); der M10.0-Eintrag steht auf done; die Handover-Notiz existiert.
+
+SCOPE-NEGATIV: Renderer in dashboard.html unberuehrt; abgeschlossene Milestones nicht umschreiben (obsolet-Markierung per Log-Zeile ist erlaubt); kein Eingriff in das V2-Plugin-Repo ausser einer dort geloggten Beobachtung; kein Version-Bump; CLAUDE.md nur fuer eine Zeile, die das Ablation-Log konkret verlangt, oder das Datum in "last ablation"; keine neuen Hooks, Skills oder Agenten; nichts loeschen, was der Nutzer nicht im Chat ausgewaehlt hat.
+NO-ACTION: Ist eine Retro-Quelle leer oder ohne Klasse mit drei Treffern, ist "nichts zu tun" das korrekte Ergebnis. Ein v1-Schritt aus der Tabelle "Was bewusst entfaellt" der Housekeeping-Notiz kommt nicht zurueck, nur weil ein Anlass plausibel klingt — nur wenn dieser Lauf einen konkreten Bedarf zeigt, und dann als Zeile im Ablation-Log, nicht als Schritt.
+
+/remote-control M10.0 — Housekeeping (Framework v2)`
     },
     {
       id: "M10.3",

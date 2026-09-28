@@ -1,6 +1,11 @@
 # Native-Feature-Review
 
-Ledger für `milestone-checkpoint` Schritt 7b: Welche eigenen Artefakte (CLAUDE.md-Regeln, Skills,
+> **Historisch (seit 2026-09-16, Framework v2).** Der Checkpoint-Schritt 7b existiert nicht mehr; unter
+> v2 ist die Native-Feature-Review kein stehender Housekeeping-Schritt (Begründung:
+> `docs/superpowers/notes/2026-09-28-housekeeping-v2.md`). Native Neuerungen kommen über die
+> News-Review-Einträge der Triage-Inbox herein. Die Tabelle bleibt als Stand vom letzten v1-Lauf.
+
+Ledger für den v1-`milestone-checkpoint` Schritt 7b: Welche eigenen Artefakte (CLAUDE.md-Regeln, Skills,
 Hooks, Agents) sind inzwischen durch native Claude-Code-Funktionen ersetzbar?
 
 Verdikt: **replace** (native deckt es vollständig ab) · **keep + note** (Teilüberlappung, Notiz
