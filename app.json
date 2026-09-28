@@ -1092,8 +1092,8 @@
           },
           "value": "auto",
           "hint": {
-            "en": "Auto shows the tile only when the hardware is detected; Always show forces it; Hide removes it. The same three choices apply to the feature groups further below.",
-            "de": "Auto zeigt die Kachel nur, wenn die Hardware erkannt wird; Immer anzeigen erzwingt sie; Ausblenden entfernt sie. Dieselben drei Optionen gelten für die Funktionsgruppen weiter unten."
+            "en": "Auto shows the tile only when the hardware is detected; Always show forces it; Hide removes it.",
+            "de": "Auto zeigt die Kachel nur, wenn die Hardware erkannt wird; Immer anzeigen erzwingt sie; Ausblenden entfernt sie."
           },
           "values": [
             {
@@ -1492,8 +1492,8 @@
               },
               "value": "auto",
               "hint": {
-                "en": "Auto follows hardware detection; Always show forces the tile; Hide removes it (and breaks any Flows that use it). Applies to every feature group here.",
-                "de": "Auto folgt der Hardware-Erkennung; Immer anzeigen erzwingt die Kachel; Ausblenden entfernt sie (und bricht Flows, die sie nutzen). Gilt für jede Funktionsgruppe hier."
+                "en": "Auto follows hardware detection; Always show forces the tile; Hide removes it (and breaks any Flows that use it). Applies to every feature group here, except Dosing, which offers Auto or Hide only.",
+                "de": "Auto folgt der Hardware-Erkennung; Immer anzeigen erzwingt die Kachel; Ausblenden entfernt sie (und bricht Flows, die sie nutzen). Gilt für jede Funktionsgruppe hier — außer der Dosierung, die nur Auto oder Ausblenden kennt."
               },
               "values": [
                 {
@@ -1914,8 +1914,8 @@
               },
               "value": false,
               "hint": {
-                "en": "Off by default. When on, control tiles appear and Flow actions can command the controller. Writes use the write username/password. Plain HTTP on the LAN transmits credentials in cleartext — use a least-privilege controller account and a trusted/segmented network, and rotate the write password before sharing.",
-                "de": "Standardmäßig aus. Wenn an, erscheinen Steuerungs-Kacheln und Flow-Aktionen können den Regler schalten. Schreibzugriffe nutzen Schreib-Benutzer/Passwort. Klartext-HTTP im LAN überträgt Zugangsdaten unverschlüsselt — ein Konto mit minimalen Rechten und ein vertrauenswürdiges/segmentiertes Netz verwenden und das Schreib-Passwort vor Weitergabe rotieren."
+                "en": "Off by default. When on, control tiles appear and Flow actions can command the controller. Writes use the write username/password. Plain HTTP on the LAN transmits credentials in cleartext — keep the controller on a trusted/segmented network, and rotate the write password before sharing.",
+                "de": "Standardmäßig aus. Wenn an, erscheinen Steuerungs-Kacheln und Flow-Aktionen können den Regler schalten. Schreibzugriffe nutzen Schreib-Benutzer/Passwort. Klartext-HTTP im LAN überträgt Zugangsdaten unverschlüsselt — den Regler in einem vertrauenswürdigen/segmentierten Netz betreiben und das Schreib-Passwort vor Weitergabe rotieren."
               }
             },
             {

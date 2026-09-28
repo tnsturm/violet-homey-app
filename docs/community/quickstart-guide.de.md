@@ -111,15 +111,16 @@ stattdessen auf Alkalität und Calciumhärte.
 **Steuerung aktivieren (Schreibzugriff)** in den Geräte-Einstellungen
 einschalten, um Pumpe, Licht, DMX-Szenen und PV-Überschuss-Modus über
 Homey-Kacheln und Flow zu steuern. Dafür braucht es Benutzername/Passwort für
-den Regler — am besten ein eigenes Konto mit minimalen Rechten, da die lokale
-API der Violet unverschlüsseltes HTTP im LAN nutzt. Zum Auslesen ist nie ein
-Passwort nötig, nur zum Schreiben von Befehlen.
+den Regler. Die lokale API der Violet nutzt unverschlüsseltes HTTP im LAN, die
+Zugangsdaten werden also unverschlüsselt in deinem Netzwerk übertragen. Zum
+Auslesen ist nie ein Passwort nötig, nur zum Schreiben von Befehlen.
 
 ## Anlagenteile ein-/ausblenden
 
-Jede Ausstattungsgruppe (Heizung, Solar, Abdeckung, Rückspülung, Frischwasser,
-Überlaufbehälter, Dosierung, …) hat eine Einstellung **Auto / Immer anzeigen /
-Ausblenden**. Auto — die Standardeinstellung — zeigt eine Kachel nur, wenn dein
+Jede Ausstattungsgruppe (Heizung, Solar, Abdeckung, Rückspülung, Nachfüllung,
+Überlaufbehälter, …) hat eine Einstellung **Auto / Immer anzeigen /
+Ausblenden**; die Dosierung kennt nur **Auto / Ausblenden**. Auto — die
+Standardeinstellung — zeigt eine Kachel nur, wenn dein
 Regler diese Hardware tatsächlich meldet, damit die Geräteansicht auf das
 fokussiert bleibt, was du wirklich installiert hast.
 

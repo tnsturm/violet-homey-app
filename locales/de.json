@@ -16,10 +16,10 @@
     }
   },
   "error": {
-    "write_creds_missing": "Schreib-Zugangsdaten sind nicht gesetzt (Geräteeinstellungen).",
+    "write_creds_missing": "Schreib-Passwort ist nicht gesetzt — über „Reparieren“ am Gerät setzen.",
     "control_disabled": "Steuerung ist deaktiviert — in den Geräteeinstellungen aktivieren.",
     "controller_rejected": "Regler hat abgelehnt: __label__",
-    "write_auth": "Schreibzugriff verweigert — Schreib-Benutzer/Passwort in den Geräteeinstellungen prüfen.",
+    "write_auth": "Schreibzugriff verweigert — Schreib-Benutzer in den Geräteeinstellungen und Schreib-Passwort über „Reparieren“ am Gerät prüfen.",
     "write_failed": "Schreiben zum Regler fehlgeschlagen (__detail__).",
     "invalid_value": "Ungültiger Wert: __detail__",
     "unreachable": "Violet nicht erreichbar"
@@ -29,6 +29,45 @@
       "title": "Verbindung aktualisieren",
       "hint": "Leere Felder behalten den aktuellen Wert; neues Passwort eintragen, um es zu erneuern.",
       "done": "Gespeichert."
+    }
+  },
+  "settings": {
+    "title": "Violet — Kurzanleitung",
+    "intro": "Diese App bindet deinen Violet- oder BADU-Blue-Poolregler über dein lokales Netzwerk in Homey ein — ganz ohne Cloud-Konto. Hier in Kurzform, was die Einstellungen bewirken.",
+    "start": {
+      "h": "Erste Schritte",
+      "p1": "Füge ein Pool-Gerät hinzu und trage Host oder IP des Reglers ein. Versuche zuerst violet.local; löst das in deinem Netzwerk nicht auf, nimm stattdessen die IP-Adresse. Eine statische IP ist empfehlenswert, damit Homey den Regler nach einem Router-Neustart nicht verliert.",
+      "p2": "Werte auslesen funktioniert ganz ohne Zugangsdaten. Schreib-Benutzername und Schreib-Passwort sind optional: Du brauchst sie nur, um die Steuerung (Schreibzugriff) freizuschalten — und als Rückfalloption, falls dein Regler das Lesen der Konfiguration einschränkt."
+    },
+    "temp": {
+      "h": "Wasserfühler",
+      "p1": "„Auto“ wählt den Fühler, dessen Violet-Name nach dem Becken aussieht. Bei mehreren Fühlern ohne eindeutigen Namen wählst du deinen selbst aus — die Temperatur-Kacheln tragen deine eigenen Violet-Namen, so erkennst du, welcher Fühler welcher ist.",
+      "p2": "Mit diesem Wert rechnet auch der LSI."
+    },
+    "groups": {
+      "h": "Funktionsgruppen",
+      "p1": "Jede Gruppe — Eco-Modus, Heizung, Solar, Rückspülung, Abdeckung, Licht, Nachfüllung, Überlaufbehälter, Wasserstand, PV-Überschuss und Messeingänge — bietet „Auto“, „Immer anzeigen“ oder „Ausblenden“. Die Dosierung kennt nur „Auto“ oder „Ausblenden“.",
+      "p2": "„Auto“ richtet sich nach der Hardware, die dein Regler tatsächlich meldet — so bleiben leere Kacheln aus. „Immer anzeigen“ erzwingt die Kachel. „Ausblenden“ entfernt sie — und bricht damit jeden Flow, der sie verwendet."
+    },
+    "lsi": {
+      "h": "Wasserchemie (LSI)",
+      "p1": "Standardmäßig aus. Schalte „LSI berechnen“ ein und trage Calciumhärte, Gesamtalkalität und Cyanursäure aus deinem Testkit oder PoolLab ein. Ausgeglichen ist Wasser zwischen -0,3 und +0,5, ideal ist 0.",
+      "p2": "Der Berater übersetzt den LSI in konkrete Dosiervorschläge und einen Startplan für frisch eingefülltes Wasser. Er braucht den aktivierten LSI und zusätzlich das Beckenvolumen, wenn du Mengen in Gramm oder Millilitern willst. Er empfiehlt nur — dosieren tut er nie selbst."
+    },
+    "control": {
+      "h": "Steuerung (Schreibzugriff)",
+      "p1": "Standardmäßig aus. Einmal aktiviert, erscheinen Steuerkacheln, und Flow-Aktionen können den Regler schalten — mit dem Schreib-Benutzernamen aus den Geräteeinstellungen und dem Schreib-Passwort, das du beim Koppeln eingegeben hast; änderbar ist dieses Passwort über „Reparieren“ am Gerät, nicht in den Geräteeinstellungen.",
+      "p2": "Die lokale Schnittstelle des Reglers läuft als unverschlüsseltes HTTP im LAN — das Schreib-Passwort wird also unverschlüsselt in deinem Netzwerk übertragen. Schaltest du die Pumpe über die Kachel EIN oder AUS, fällt sie nach der eingestellten Standard-Übersteuerungsdauer wieder auf Auto zurück (0 = dauerhaft)."
+    },
+    "diag": {
+      "h": "Diagnose und Alarme",
+      "p1": "„Erweiterte Diagnose anzeigen“ ergänzt Kacheln für CPU, Speicher, Laufzeit, Firmware und Reglerfehler.",
+      "p2": "Auf dem Alarm-Listener-Port empfängt diese App die NOTIFY-Meldungen der Violet. Dieser Kanal ist weder verschlüsselt noch authentifiziert — halte ihn im LAN und gib den Port niemals ins Internet frei. Wie du den Regler darauf einstellst, steht im Hinweis direkt an der Einstellung."
+    },
+    "more": {
+      "h": "Mehr",
+      "p1": "Die ausführliche Anleitung mit allen Funktionen findest du im Homey-Community-Thema zu dieser App.",
+      "button": "Community-Anleitung öffnen"
     }
   }
 }

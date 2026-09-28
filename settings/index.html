@@ -1,0 +1,171 @@
+<!doctype html>
+<!-- App-settings page: in-app Quick-Start Guide (M9.2 sub-task 1).
+     Homey SDK v3 custom view (docs: apps.developer.homey.app → Advanced →
+     Custom Views → App Settings; no URL here on purpose, see the self-containment
+     rule below and test/Settings.test.js):
+     the file lives at settings/index.html, needs no manifest entry, must load
+     /homey.js with data-origin="settings", and stays hidden until Homey.ready().
+     Content is the short version of docs/community/quickstart-guide.{en,de}.md
+     (HOMEY.md § App-Store-Readme & Community-Kurzanleitung — the long guide stays
+     in Community topic 157109, which the button at the bottom opens).
+     Self-contained by rule: inline CSS/JS only, no external stylesheet/script/font/
+     image and no fetch — the webview gets exactly what ships in the app bundle.
+     Each translated element carries its locale key in a data-i18n attribute, and
+     the visible English text doubles as the i18n fallback: applyI18n() walks every
+     [data-i18n] element and feeds its own textContent to t() as the fallback, so a
+     missing locale key leaves the page readable instead of showing the raw key
+     (same t() contract as drivers/pool/pair/connect.html). -->
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Violet — Quick Start</title>
+  <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #1b1b1f;
+      --muted: #5c5c66;
+      --rule: #e2e2e8;
+      --accent: #1f7ae0;
+      --accent-fg: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #17171a;
+        --fg: #ececed;
+        --muted: #a5a5ae;
+        --rule: #303036;
+        --accent: #4f9bf0;
+        --accent-fg: #10131a;
+      }
+    }
+    body {
+      margin: 0;
+      padding: 16px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-text-size-adjust: 100%;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 8px;
+    }
+    h2 {
+      font-size: 16px;
+      margin: 0 0 6px;
+    }
+    p {
+      margin: 0 0 10px;
+    }
+    #intro {
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    section {
+      border-top: 1px solid var(--rule);
+      padding-top: 14px;
+      margin-bottom: 14px;
+    }
+    button {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 4px;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--accent);
+      color: var(--accent-fg);
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1 id="title" data-i18n="settings.title">Violet — Quick Start</h1>
+<p id="intro" data-i18n="settings.intro">This app talks to your Violet or BADU Blue pool controller over your local network — no cloud account needed. Here is the short version of what the settings do.</p>
+
+<section>
+  <h2 id="start-h" data-i18n="settings.start.h">Getting started</h2>
+  <p id="start-p1" data-i18n="settings.start.p1">Add a Pool device and enter the controller’s host or IP. Try violet.local first; if that does not resolve on your network, use the IP address instead. A static IP is recommended so Homey does not lose the controller after a router reboot.</p>
+  <p id="start-p2" data-i18n="settings.start.p2">Reading values needs no credentials at all. The write username and password are optional: you only need them to enable control (write), and as a fallback if your controller restricts config reads.</p>
+</section>
+
+<section>
+  <h2 id="temp-h" data-i18n="settings.temp.h">Water temperature sensor</h2>
+  <p id="temp-p1" data-i18n="settings.temp.p1">Auto picks the sensor whose Violet name looks like the pool. With several sensors and no clear name, choose yours manually — the temperature tiles are labelled with your own Violet names, so you can tell which sensor is which.</p>
+  <p id="temp-p2" data-i18n="settings.temp.p2">This is also the temperature the LSI calculation uses.</p>
+</section>
+
+<section>
+  <h2 id="groups-h" data-i18n="settings.groups.h">Feature groups</h2>
+  <p id="groups-p1" data-i18n="settings.groups.p1">Every group — eco mode, heater, solar, backwash, cover, light, water refill, overflow tank, water level, PV surplus and measurement inputs — offers Auto, Always show or Hide. Dosing offers Auto or Hide only.</p>
+  <p id="groups-p2" data-i18n="settings.groups.p2">Auto follows the hardware your controller actually reports, so you get no empty tiles. Always show forces the tile. Hide removes it — and that breaks any Flow that uses it.</p>
+</section>
+
+<section>
+  <h2 id="lsi-h" data-i18n="settings.lsi.h">Water chemistry (LSI)</h2>
+  <p id="lsi-p1" data-i18n="settings.lsi.p1">Off by default. Switch on Compute LSI and enter calcium hardness, total alkalinity and cyanuric acid from your test kit or PoolLab. Balanced water sits between -0.3 and +0.5, with 0 as the ideal.</p>
+  <p id="lsi-p2" data-i18n="settings.lsi.p2">The advisor turns the LSI into concrete dosing suggestions and a startup plan for freshly filled water. It needs LSI enabled, plus the pool volume if you want amounts in grams or millilitres. It only advises — it never doses anything itself.</p>
+</section>
+
+<section>
+  <h2 id="control-h" data-i18n="settings.control.h">Control (write access)</h2>
+  <p id="control-p1" data-i18n="settings.control.p1">Off by default. Once enabled, control tiles appear and Flow actions can command the controller, using the write username from the device settings and the write password you entered when pairing — change that password with the device’s Repair option, not in the device settings.</p>
+  <p id="control-p2" data-i18n="settings.control.p2">The controller’s local API is plain HTTP on your LAN, so the write password travels unencrypted inside your network. Switching the pump ON or OFF from the tile reverts to Auto after the default override duration (0 makes it permanent).</p>
+</section>
+
+<section>
+  <h2 id="diag-h" data-i18n="settings.diag.h">Diagnostics and alarms</h2>
+  <p id="diag-p1" data-i18n="settings.diag.p1">Show advanced diagnostics adds tiles for CPU, memory, uptime, firmware and controller errors.</p>
+  <p id="diag-p2" data-i18n="settings.diag.p2">On the alarm listener port this app receives the Violet’s own NOTIFY pushes. That channel has neither encryption nor authentication, so keep it on your LAN and never forward the port to the internet. The hint on the setting itself explains how to point the controller at it.</p>
+</section>
+
+<section>
+  <h2 id="more-h" data-i18n="settings.more.h">More</h2>
+  <p id="more-p1" data-i18n="settings.more.p1">The full guide, covering every function in detail, lives in the Homey Community topic for this app.</p>
+  <button type="button" id="more-button" data-i18n="settings.more.button" onclick="openGuide()">Open the community guide</button>
+</section>
+
+<script type="text/javascript">
+  // Same contract as drivers/pool/pair/connect.html: Homey.__ returns the key
+  // itself when it is missing, so treat that as "missing" and keep the fallback.
+  function t(key, fallback) {
+    try {
+      if (typeof Homey !== 'undefined' && typeof Homey.__ === 'function') {
+        var s = Homey.__(key);
+        if (s && s !== key) return s;
+      }
+    } catch (e) {}
+    return fallback;
+  }
+
+  function openGuide() {
+    // Webviews may not follow a bare <a href>; openURL hands it to the OS browser.
+    Homey.openURL('https://community.homey.app/t/157109');
+  }
+
+  // Every element names its own locale key in data-i18n; the fallback is the
+  // element's own English text from the static markup above.
+  function applyI18n() {
+    var els = document.querySelectorAll('[data-i18n]');
+    for (var i = 0; i < els.length; i++) {
+      els[i].textContent = t(els[i].getAttribute('data-i18n'), els[i].textContent);
+    }
+  }
+
+  // Homey entry point: the view stays hidden until ready() — translate first.
+  function onHomeyReady(Homey) {
+    applyI18n();
+    Homey.ready();
+  }
+</script>
+
+</body>
+</html>

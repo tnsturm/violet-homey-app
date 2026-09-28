@@ -1,76 +1,15 @@
 {
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash|PowerShell",
-        "hooks": [
-          { "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/check-version-sync.js\"" },
-          { "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/typecheck-gate.js\"" },
-          { "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/test-gate.js\"" },
-          { "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/release-gate.js\"" },
-          { "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/package-guard.js\"" },
-          { "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/commit-msg-guard.js\"" }
-        ]
-      },
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          { "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/secrets-guard.js\"" },
-          { "type": "command", "if": "Edit(app.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/compose-guard.js\"" },
-          { "type": "command", "if": "Write(app.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/compose-guard.js\"" },
-          { "type": "command", "if": "Edit(**/app.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/compose-guard.js\"" },
-          { "type": "command", "if": "Write(**/app.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/compose-guard.js\"" },
-          { "type": "command", "if": "Edit(package.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/package-guard.js\"" },
-          { "type": "command", "if": "Write(package.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/package-guard.js\"" },
-          { "type": "command", "if": "Edit(**/package.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/package-guard.js\"" },
-          { "type": "command", "if": "Write(**/package.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/package-guard.js\"" }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          { "type": "command", "if": "Edit(lib/**)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/run-matching-test.js\"" },
-          { "type": "command", "if": "Write(lib/**)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/run-matching-test.js\"" },
-          { "type": "command", "if": "Edit(drivers/**)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/run-matching-test.js\"" },
-          { "type": "command", "if": "Write(drivers/**)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/run-matching-test.js\"" },
-          { "type": "command", "if": "Edit(*.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/json-guard.js\"" },
-          { "type": "command", "if": "Write(*.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/json-guard.js\"" },
-          { "type": "command", "if": "Edit(**/*.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/json-guard.js\"" },
-          { "type": "command", "if": "Write(**/*.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/json-guard.js\"" },
-          { "type": "command", "if": "Edit(docs/dashboard/dashboard.html)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/dashboard-guard.js\"" },
-          { "type": "command", "if": "Write(docs/dashboard/dashboard.html)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/dashboard-guard.js\"" },
-          { "type": "command", "if": "Edit(.homeychangelog.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/changelog-lang-guard.js\"" },
-          { "type": "command", "if": "Write(.homeychangelog.json)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/changelog-lang-guard.js\"" },
-          { "type": "command", "if": "Edit(lib/**)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-header-guard.js\"" },
-          { "type": "command", "if": "Write(lib/**)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-header-guard.js\"" },
-          { "type": "command", "if": "Edit(drivers/**)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-header-guard.js\"" },
-          { "type": "command", "if": "Write(drivers/**)", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/docs-header-guard.js\"" },
-          { "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/control-bytes-guard.js\"" }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          { "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/selftest-guards.js\"" }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          { "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/stop-verify.js\"" },
-          { "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/handoff-notice.js\"" }
-        ]
-      }
-    ]
+  "disableSkillShellExecution": true,
+  "enabledPlugins": {
+    "skill-agentic-loop-framework-V2@skill-agentic-loop-framework-V2": true
   },
   "permissions": {
     "ask": [
+      "Bash(git push*)",
       "Bash(homey app publish*)",
-      "Bash(npx homey app publish*)"
+      "Bash(npx homey app publish*)",
+      "Bash(homey app install*)",
+      "Bash(npx homey app install*)"
     ],
     "allow": [
       "Bash(git merge-base *)",
@@ -97,6 +36,5 @@
       "Bash(curl -s --max-time 15 \"http://violet/get*)",
       "mcp__github__search_code"
     ]
-  },
-  "disableSkillShellExecution": true
+  }
 }

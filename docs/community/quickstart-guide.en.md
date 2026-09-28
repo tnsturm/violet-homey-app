@@ -102,16 +102,17 @@ the controller and focuses on alkalinity and calcium hardness instead.
 
 Enable **Control (write)** in the device settings to command the pump, lights, DMX
 scenes and PV-surplus mode from Homey tiles and Flow. This needs a
-username/password for the controller — use a dedicated, least-privilege account,
-since the Violet's local API is plain HTTP (no encryption) on your LAN. Reading
-values never needs a password, only writing commands does.
+username/password for the controller. The Violet's local API is plain HTTP (no
+encryption) on your LAN, so those credentials travel unencrypted inside your
+network. Reading values never needs a password, only writing commands does.
 
 ## Showing/hiding equipment tiles
 
 Every equipment group (heater, solar, cover, backwash, water refill, overflow
-tank, dosing, …) has an **Auto / Always show / Hide** setting. Auto — the
-default — shows a tile only when your controller actually reports that hardware,
-so your device view stays focused on what you actually have installed.
+tank, …) has an **Auto / Always show / Hide** setting; dosing offers **Auto /
+Hide** only. Auto — the default — shows a tile only when your controller actually
+reports that hardware, so your device view stays focused on what you actually
+have installed.
 
 ## Flow automation
 

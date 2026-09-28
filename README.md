@@ -80,15 +80,16 @@ control tiles and let Flow command the controller.
 
 | Capability | Control |
 |---|---|
-| `pump_control` | Pump: Auto / On / Off (tile ON auto‑reverts to Auto after a configurable duration) |
+| `pump_control` | Pump: Auto / On / Off (tile ON/OFF auto‑reverts to Auto after a configurable duration, or never if set to 0) |
 | `light_control` | Light: Auto / On / Off |
 | `pvsurplus_control` | PV‑surplus mode on/off |
 
 ### Feature groups (show / hide)
 
 Each equipment group — Eco, Heater, Solar, Backwash, Cover, Light, Water refill,
-Overflow tank, Water level, PV surplus, Dosing (per detected channel) — has an
-**Auto / Always show / Hide** setting. *Auto* shows the group only when the controller
+Overflow tank, Water level, PV surplus, Measurement inputs — has an
+**Auto / Always show / Hide** setting; Dosing (per detected channel) offers
+**Auto / Hide** only. *Auto* shows the group only when the controller
 reports it. This keeps the tile focused on the hardware you actually run.
 
 * * *
@@ -218,7 +219,6 @@ Control (write) is **off by default**. When you enable it, the app authenticates
 with a controller username/password you provide. The Violet's local API is **plain HTTP**,
 so credentials travel the LAN in cleartext. Therefore:
 
-- use a **least‑privilege** controller account for the app,
 - keep the controller on a **trusted / segmented** network, and
 - **rotate the write password** before sharing configs or logs.
 
@@ -285,8 +285,9 @@ What made it work as an *engineering* process rather than vibe‑coding:
 - **Milestone‑driven**, spec‑first workflow — each milestone brainstormed into a design
   doc, then a plan, then implemented **test‑first (TDD)**; all pure logic (LSI, freshness,
   feature detection) is unit‑tested.
-- **Automated guardrails** — git hooks that block malformed manifest/changelog JSON and
-  accidental secret commits, plus automated **security reviews** on write‑path changes.
+- **Adversarial review on every change** — two independent reviewer agents attack each diff
+  and a verifier tries to refute every finding before a human triages it; three fail‑closed
+  hooks block secret commits, unverified dependencies and unreviewed releases.
 - **Bilingual (en/de)** UI, Flow cards and changelog throughout.
 - A live **progress dashboard** tracking every milestone.
 
