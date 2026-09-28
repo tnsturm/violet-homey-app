@@ -280,9 +280,11 @@ test('no prose sentence promises the tile override reverts to Auto without the 0
   // name both states, as the compose hint does ("ON/OFF"). The lookbehind skips the
   // option list "Auto / On / Off", which names the states without claiming anything.
   const tile = { en: /tile/i, de: /Kachel/i };
+  // "ON/OFF", "ON or OFF" and "ON and OFF alike" all name both states; the changelog
+  // 0.9.2 uses the third form and went red in CI when the rule knew only the first two.
   const bothStates = {
-    en: /(?<!Auto \/ )\bON\s*(?:\/|or)\s*OFF\b/i,
-    de: /(?<!Auto \/ )\b(?:AN|EIN)\s*(?:\/|oder)\s*AUS\b/i,
+    en: /(?<!Auto \/ )\bON\s*(?:\/|or|and)\s*OFF\b/i,
+    de: /(?<!Auto \/ )\b(?:AN|EIN)\s*(?:\/|oder|und)\s*AUS\b/i,
   };
 
   /** @type {Array<string>} */
