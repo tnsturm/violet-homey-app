@@ -25,7 +25,9 @@ beim Nutzer nachfragen — das ist ein sichtbarer, kaum reversibler Schritt.
    **erst dem Nutzer zur Freigabe vorlegen** — er gibt frei oder schreibt um; erst
    danach in die Datei schreiben und committen.
 4. **Sync prüfen**: Version im generierten `app.json` == `.homeycompose/app.json`?
-   Bump + Changelog zusammen committen.
+   Danach `npm test` — der Changelog ist eine Prosa-Quelle des Fakten-Sweeps
+   (`test/helpers/prose.js`), ein neuer Eintrag kann eine Regel brechen (0.9.2 ging
+   erst in CI rot, weil nur `validate` lief). Bump + Changelog zusammen committen.
 5. **Ausliefern**: `npx homey app install` (Testinstallation) oder Store-Publish.
    Store-Publish nur nach expliziter Bestätigung durch den Nutzer.
 6. **Versions-Log**: Zeile in `docs/dashboard/versions.md` ergänzen (Version, Datum,
