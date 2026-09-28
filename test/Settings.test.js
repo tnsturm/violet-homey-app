@@ -11,6 +11,15 @@ const { test } = require('node:test');
 const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
+const {
+  readJson,
+  sentences,
+  lookup,
+  flatten,
+  groupSettings,
+  featureGroupBlock,
+  labelRegex,
+} = require('./helpers/prose');
 
 const ROOT = path.join(__dirname, '..');
 const INDEX = path.join(ROOT, 'settings/index.html');
@@ -24,11 +33,6 @@ function readIndex() {
   return fs.readFileSync(INDEX, 'utf8');
 }
 
-/** @param {string} rel @returns {*} */
-function readJson(rel) {
-  return JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
-}
-
 /**
  * Every `settings.*` string literal in the page. Superset of "referenced via
  * Homey.__ or the t() helper": the page reaches its keys through t(), and any
@@ -39,23 +43,6 @@ function readJson(rel) {
 function settingsKeysIn(html) {
   const found = html.match(/'settings\.[A-Za-z0-9_.]+'/g) || [];
   return [...new Set(found.map((s) => s.slice(1, -1)))];
-}
-
-/** @param {*} obj @param {string} dotted @returns {*} */
-function lookup(obj, dotted) {
-  return dotted.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);
-}
-
-/** @param {*} obj @param {string} prefix @returns {Array<string>} */
-function flatten(obj, prefix) {
-  /** @type {Array<string>} */
-  const out = [];
-  for (const [k, v] of Object.entries(obj ?? {})) {
-    const key = prefix ? `${prefix}.${k}` : k;
-    if (v !== null && typeof v === 'object') out.push(...flatten(v, key));
-    else out.push(key);
-  }
-  return out;
 }
 
 test('settings/index.html exists', () => {
@@ -133,36 +120,6 @@ test('en.settings and de.settings have identical key sets, all non-empty strings
 // (group_dosing: auto|hide, mirrored by lib/FeatureGroups.js) must never appear in
 // the sentence that promises "Always show".
 
-/**
- * Every `group_*` radio in the device-settings schema with the value ids it offers.
- * @returns {Array<{id: string, group: string, label: {en: string, de: string}, values: Array<string>}>}
- */
-function groupSettings() {
-  const compose = readJson('drivers/pool/driver.settings.compose.json');
-  /** @type {Array<*>} */
-  const out = [];
-  const walk = (/** @type {*} */ node) => {
-    if (Array.isArray(node)) return node.forEach(walk);
-    if (node === null || typeof node !== 'object') return;
-    if (typeof node.id === 'string' && node.id.startsWith('group_') && Array.isArray(node.values)) {
-      out.push({
-        id: node.id,
-        group: node.id.slice('group_'.length),
-        label: node.label,
-        values: node.values.map((/** @type {*} */ v) => v.id),
-      });
-    }
-    if (Array.isArray(node.children)) walk(node.children);
-  };
-  walk(compose);
-  return out;
-}
-
-/** @param {string} s @returns {Array<string>} */
-function sentences(s) {
-  return s.split(/(?<=[.!?])\s+/);
-}
-
 test('settings.groups.p1 never promises "Always show" for a group that has no force value', () => {
   const groups = groupSettings();
   assert.ok(groups.length >= 10, `expected many group_* settings, found ${groups.length}`);
@@ -205,31 +162,6 @@ test('settings.groups.p1 never promises "Always show" for a group that has no fo
 // block must appear in settings.groups.p1 under its schema label — a synonym
 // ("Wassernachspeisung" for "Nachfüllung") sends the reader hunting for a setting
 // that does not exist under that name.
-
-/**
- * The `group_*` settings of the "Feature groups (show/hide)" block — the block
- * settings.groups.p1 enumerates. (group_chlorine sits outside it, on its own.)
- * @returns {Array<{id: string, label: {en: string, de: string}, values: Array<string>}>}
- */
-function featureGroupBlock() {
-  const compose = readJson('drivers/pool/driver.settings.compose.json');
-  const block = compose.find(
-    (/** @type {*} */ n) => n.type === 'group' && n.label?.en === 'Feature groups (show/hide)',
-  );
-  assert.ok(block, 'no "Feature groups (show/hide)" block in the device-settings schema');
-  return block.children.filter((/** @type {*} */ n) => Array.isArray(n.values));
-}
-
-/**
- * A label as the prose has to spell it: the part before a parenthetical, matched
- * on Unicode letter boundaries (\b is ASCII-only and would fail on "Überlaufbehälter").
- * @param {string} label
- * @returns {RegExp}
- */
-function labelRegex(label) {
-  const bare = label.replace(/\s*\(.*$/, '').trim();
-  return new RegExp(`(?<!\\p{L})${bare.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?!\\p{L})`, 'iu');
-}
 
 test('settings.groups.p1 names every feature group by its schema label', () => {
   const groups = featureGroupBlock();
