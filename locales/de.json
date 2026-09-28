@@ -16,10 +16,10 @@
     }
   },
   "error": {
-    "write_creds_missing": "Schreib-Zugangsdaten sind nicht gesetzt (Geräteeinstellungen).",
+    "write_creds_missing": "Schreib-Passwort ist nicht gesetzt — über „Reparieren“ am Gerät setzen.",
     "control_disabled": "Steuerung ist deaktiviert — in den Geräteeinstellungen aktivieren.",
     "controller_rejected": "Regler hat abgelehnt: __label__",
-    "write_auth": "Schreibzugriff verweigert — Schreib-Benutzer/Passwort in den Geräteeinstellungen prüfen.",
+    "write_auth": "Schreibzugriff verweigert — Schreib-Benutzer in den Geräteeinstellungen und Schreib-Passwort über „Reparieren“ am Gerät prüfen.",
     "write_failed": "Schreiben zum Regler fehlgeschlagen (__detail__).",
     "invalid_value": "Ungültiger Wert: __detail__",
     "unreachable": "Violet nicht erreichbar"

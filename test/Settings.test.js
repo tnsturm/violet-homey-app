@@ -284,26 +284,29 @@ test('settings.control.p2 recommends no account model the controller does not ha
 // pairing and changed via the Repair dialog (drivers/pool/driver.js), then read from
 // the device store by _writeCreds(). Prose that sends the user to the device settings
 // for the password describes a field that is not there.
+// Scans EVERY locale key, not only settings.* (review finding C1): the runtime error
+// toasts error.write_creds_missing / error.write_auth are the copy a user actually
+// meets when a write fails, and they say "credentials", not "password".
 
-test('no settings.* sentence puts the write password in the device settings', () => {
-  const pwd = { en: /password/i, de: /passwort/i };
+test('no locale sentence puts the write password in the device settings', () => {
+  const pwd = { en: /password|credentials/i, de: /passwort|zugangsdaten/i };
   const where = { en: /device settings/i, de: /Geräteeinstellungen/i };
   // The places the password can actually be entered.
-  const realPlace = { en: /pairing|paired|repair/i, de: /koppel|reparier/i };
+  const realPlace = { en: /pairing|paired|repair/i, de: /koppel|reparier|pairing|repair/i };
 
+  /** @type {Array<string>} */
+  const wrong = [];
   for (const lang of /** @type {Array<'en'|'de'>} */ (['en', 'de'])) {
-    const strings = flatten(readJson(`locales/${lang}.json`).settings, '');
-    for (const key of strings) {
-      const value = String(lookup(readJson(`locales/${lang}.json`), `settings.${key}`));
-      for (const s of sentences(value)) {
-        if (!pwd[lang].test(s) || !where[lang].test(s)) continue;
-        assert.ok(
-          realPlace[lang].test(s),
-          `${lang}: settings.${key} locates the write password in the device settings: "${s}"`,
-        );
+    const locale = readJson(`locales/${lang}.json`);
+    for (const key of flatten(locale, '')) {
+      for (const s of sentences(String(lookup(locale, key)))) {
+        if (pwd[lang].test(s) && where[lang].test(s) && !realPlace[lang].test(s)) {
+          wrong.push(`${lang}: ${key}: "${s}"`);
+        }
       }
     }
   }
+  assert.deepStrictEqual(wrong, [], 'these sentences locate the write password in the device settings');
 });
 
 test('a settings.* sentence may only claim a credential field the schema really has', () => {

@@ -16,10 +16,10 @@
     }
   },
   "error": {
-    "write_creds_missing": "Write credentials are not set (device settings).",
+    "write_creds_missing": "Write password is not set — set it with the device’s Repair option.",
     "control_disabled": "Control is disabled — enable it in the device settings.",
     "controller_rejected": "Controller rejected: __label__",
-    "write_auth": "Write access denied — check the write username/password in the device settings.",
+    "write_auth": "Write access denied — check the write username in the device settings and the write password via the device’s Repair option.",
     "write_failed": "Write to the controller failed (__detail__).",
     "invalid_value": "Invalid value: __detail__",
     "unreachable": "Violet not reachable"
