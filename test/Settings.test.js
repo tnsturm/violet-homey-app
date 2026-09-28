@@ -19,6 +19,7 @@ const {
   groupSettings,
   featureGroupBlock,
   labelRegex,
+  proseSources,
 } = require('./helpers/prose');
 
 const ROOT = path.join(__dirname, '..');
@@ -219,22 +220,32 @@ test('settings.control.p2 recommends no account model the controller does not ha
 // Scans EVERY locale key, not only settings.* (review finding C1): the runtime error
 // toasts error.write_creds_missing / error.write_auth are the copy a user actually
 // meets when a write fails, and they say "credentials", not "password".
+// Sweeps proseSources(), not only the locales (review finding E2): the store version
+// notes and the manifest description are prose a user reads too.
 
-test('no locale sentence puts the write password in the device settings', () => {
+// Sources exempt from the rule, each with its reason. Dated store history is kept
+// verbatim, not rewritten after the fact.
+const HISTORIC = new Set([
+  // Published 2026-07 (0.3.0), before the Repair dialog existed: back then the write
+  // password really was a device setting. Kept verbatim as store history.
+  'changelog:0.3.0',
+]);
+
+test('no prose sentence puts the write password in the device settings', () => {
   const pwd = { en: /password|credentials/i, de: /passwort|zugangsdaten/i };
   const where = { en: /device settings/i, de: /Geräteeinstellungen/i };
   // The places the password can actually be entered.
   const realPlace = { en: /pairing|paired|repair/i, de: /koppel|reparier|pairing|repair/i };
 
+  const sources = proseSources();
+  assert.ok(sources.some((p) => p.src.startsWith('changelog:')), 'prose sweep lost the changelog');
   /** @type {Array<string>} */
   const wrong = [];
-  for (const lang of /** @type {Array<'en'|'de'>} */ (['en', 'de'])) {
-    const locale = readJson(`locales/${lang}.json`);
-    for (const key of flatten(locale, '')) {
-      for (const s of sentences(String(lookup(locale, key)))) {
-        if (pwd[lang].test(s) && where[lang].test(s) && !realPlace[lang].test(s)) {
-          wrong.push(`${lang}: ${key}: "${s}"`);
-        }
+  for (const { src, lang, text } of sources) {
+    if (HISTORIC.has(src)) continue;
+    for (const s of sentences(text)) {
+      if (pwd[lang].test(s) && where[lang].test(s) && !realPlace[lang].test(s)) {
+        wrong.push(`${lang}: ${src}: "${s}"`);
       }
     }
   }

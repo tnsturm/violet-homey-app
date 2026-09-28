@@ -130,8 +130,10 @@ function labelRegex(label) {
 
 /**
  * Every text a user can read, per language: all locale strings, every schema
- * label/hint, the settings page, the three READMEs and both community guides.
- * Fact sweep (review finding C2): one fact, every prose copy checked.
+ * label/hint, the store version notes (.homeychangelog.json) and the manifest
+ * description, the settings page, the pair/repair views (their literal English text
+ * and t() fallbacks), the three READMEs and both community guides.
+ * Fact sweep (review findings C2, E2): one fact, every prose copy checked.
  * @returns {Array<{src: string, lang: 'en'|'de', text: string}>}
  */
 function proseSources() {
@@ -153,9 +155,15 @@ function proseSources() {
         add(`compose:${node.id}.values.${v.id}`, lang, v.label?.[lang]);
       }
     }
+    for (const [version, notes] of Object.entries(readJson('.homeychangelog.json'))) {
+      add(`changelog:${version}`, lang, notes?.[lang]);
+    }
+    add('manifest:description', lang, readJson('.homeycompose/app.json').description?.[lang]);
   }
   for (const [lang, file] of /** @type {Array<['en'|'de', string]>} */ ([
     ['en', 'settings/index.html'],
+    ['en', 'drivers/pool/pair/connect.html'],
+    ['en', 'drivers/pool/repair/repair.html'],
     ['en', 'README.md'],
     ['en', 'README.txt'],
     ['de', 'README.de.txt'],
