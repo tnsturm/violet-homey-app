@@ -123,35 +123,64 @@ test('the prose sources still state that the controller API is plain HTTP', () =
 // Three names for one setting ("Wassernachspeisung" / "Nachfüllung" / "Frischwasser")
 // leave the reader hunting for a setting that does not exist under that name, so the
 // group list in each quick-start guide may only use labels the schema actually has.
+// Checks the fact, not the sentence shape (review finding E7): the section may
+// phrase the list any way it likes, as long as it names groups by schema label and
+// uses none of the synonyms below.
 
-/** @param {string} label @returns {string} */
-function bareLabel(label) {
-  return label.replace(/\s*\(.*$/, '').trim().toLowerCase();
+// Synonyms that already slipped in once — keep this list short.
+const GROUP_SYNONYMS = {
+  en: ['water top-up', 'fresh water'],
+  de: ['Frischwasser', 'Wassernachspeisung', 'Nachspeisung'],
+};
+
+/**
+ * The guide's feature-group section: from its heading to the next "## " heading.
+ * @param {string} md @param {string} heading @returns {string|null}
+ */
+function guideSection(md, heading) {
+  const i = md.indexOf(heading);
+  if (i < 0) return null;
+  const rest = md.slice(i + heading.length);
+  const next = rest.search(/\n## /);
+  return (next < 0 ? rest : rest.slice(0, next)).replace(/\s+/g, ' ');
 }
 
-test('the quick-start guides enumerate feature groups by their schema labels', () => {
-  const groups = groupSettings();
-  const guides = /** @type {Array<{lang: 'en'|'de', file: string, re: RegExp}>} */ ([
-    { lang: 'en', file: 'docs/community/quickstart-guide.en.md', re: /equipment group \(([^)]*)\)/ },
-    { lang: 'de', file: 'docs/community/quickstart-guide.de.md', re: /Ausstattungsgruppe \(([^)]*)\)/ },
-  ]);
+/**
+ * Schema labels named in a feature-group section, and synonyms it uses instead.
+ * @param {string} section @param {'en'|'de'} lang
+ * @returns {{named: Array<string>, synonyms: Array<string>}}
+ */
+function groupNaming(section, lang) {
+  return {
+    named: groupSettings()
+      .filter((g) => labelRegex(g.label[lang]).test(section))
+      .map((g) => g.id),
+    synonyms: GROUP_SYNONYMS[lang].filter((s) => labelRegex(s).test(section)),
+  };
+}
 
-  for (const guide of guides) {
-    const m = readText(guide.file).replace(/\s+/g, ' ').match(guide.re);
-    assert.ok(m, `no feature-group enumeration found in ${guide.file}`);
-    const known = new Set(groups.map((g) => bareLabel(g.label[guide.lang])));
-    const listed = m[1]
-      .split(',')
-      .map((s) => s.trim().toLowerCase())
-      .filter((s) => s.length > 0 && s !== '…' && s !== '...');
-    assert.ok(listed.length >= 4, `expected a list of groups in ${guide.file}, got ${m[1]}`);
+test('the group-naming check accepts any phrasing and rejects a synonym', () => {
+  const free = groupNaming(
+    'Heater, solar, cover, backwash, water refill and overflow tank each have an Auto / Always show / Hide setting.',
+    'en',
+  );
+  assert.ok(free.named.length >= 4, `a list without parentheses was not recognised: ${free.named}`);
+  assert.deepStrictEqual(free.synonyms, []);
 
-    for (const name of listed) {
-      assert.ok(
-        known.has(name),
-        `${guide.file} calls a feature group "${name}", which is no schema label (${[...known].join(', ')})`,
-      );
-    }
+  const old = groupNaming('Jede Ausstattungsgruppe (Heizung, Solar, Abdeckung, Rückspülung, Frischwasser, Überlaufbehälter, …)', 'de');
+  assert.deepStrictEqual(old.synonyms, ['Frischwasser']);
+});
+
+test('the quick-start guides name feature groups by their schema labels', () => {
+  for (const [lang, file, heading] of /** @type {Array<['en'|'de', string, string]>} */ ([
+    ['en', 'docs/community/quickstart-guide.en.md', '## Showing/hiding equipment tiles'],
+    ['de', 'docs/community/quickstart-guide.de.md', '## Anlagenteile ein-/ausblenden'],
+  ])) {
+    const section = guideSection(readText(file), heading);
+    assert.ok(section, `${file} has no "${heading}" section`);
+    const { named, synonyms } = groupNaming(section, lang);
+    assert.ok(named.length >= 4, `${file}: expected the section to name groups by schema label, found ${named}`);
+    assert.deepStrictEqual(synonyms, [], `${file} calls a feature group by a name the settings do not use`);
   }
 });
 
