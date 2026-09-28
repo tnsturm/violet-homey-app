@@ -13,7 +13,7 @@ dieser Lauf den Bedarf gezeigt hat — nicht, weil v1 ihn hatte (M10.6-Lehre).
 |---|---|---|---|
 | 1 | **Branch-/Worktree-Cleanup** | Ja: nach dem Squash-Merge von PR #22 war der Worktree-Ordner weg, der Branch blieb; den Remote-Branch löschte GitHub selbst. | `git fetch --prune`, `git worktree list`, `git branch -a`; Kandidaten mit Grund listen (gemergt / archiviert als Tag / Prämisse entfallen), der Mensch wählt, dann löschen (lokal + origin + Ordner). Dashboard-Einträge, deren Prämisse mit v1 entfallen ist, gehören in dieselbe Liste (Mensch entscheidet: obsolet markieren oder behalten). |
 | 2 | **Plugin-Inventar + Quellen gelesen** | Ja: das V2-Plugin ist selbst geschrieben, aber jede Version wird vor dem Update gelesen (CLAUDE.md Must-never). Das Inventar am 2026-09-28 zeigte zwei Altlasten (siehe unten). | `claude plugin list`; für jedes Plugin, das seit dem letzten Mx.0 eine neue Version hat: Quelle lesen (Diff zur installierten Version), dann updaten. Doppelte Registrierungen (user- und project-scope) und stillgelegte v1-Plugins auflösen. Drift-Abgleich entfällt: die Hooks liegen nur im Plugin-Cache, im Repo existiert keine Kopie (`.claude/` enthält settings + `homey-release`). |
-| 3 | **Memory-Konsolidierung** | Ja: MEMORY.md und acht Memory-Dateien beschrieben am 2026-09-28 noch v1 (dashboard-sync, Hook-Namen, commit-msg-guard, M9.4-Stand). | Jede Memory-Datei gegen den heutigen Stand lesen: falsch → löschen, überholt → „Historisch"-Präfix, gültig → unverändert. MEMORY.md-Index nachziehen (eine Zeile je Datei, kein Inhalt). Erledigt für den Stand 2026-09-28 in M9.9. |
+| 3 | **Memory-Konsolidierung** | Ja: MEMORY.md und zehn der 16 Memory-Dateien beschrieben am 2026-09-28 noch v1 (dashboard-sync, Hook-Namen, commit-msg-guard, M9.4-Stand). | Jede Memory-Datei gegen den heutigen Stand lesen: falsch → löschen, überholt → „Historisch"-Präfix, gültig → unverändert. MEMORY.md-Index nachziehen (eine Zeile je Datei, kein Inhalt). Erledigt für den Stand 2026-09-28 in M9.9. |
 | 4 | **Retro + Ablation-Entscheidung** | Ja: die Quellen sind seit M9.2 real (unten). | Drei Quellen lesen, je Quelle eine Entscheidung oder ein protokolliertes „nichts zu tun". Reihenfolge der Konsequenz: Test → Satz im Adversary-Suchraum → CLAUDE.md-Zeile; ein Hook nur für ein Must-never. Prüfen, ob der letzte Implementierungs-Milestone seine Ablation-Entscheidung im Log eingetragen hat; wenn nicht, hier nachholen. Ergebnis: Ergänzung (nie Umschreiben) im Ablation-Log, ggf. `last ablation: YYYY-MM` im CLAUDE.md-Kopf. |
 | 5 | **Handover-Notiz** | Ja: am Ende der M9.2-Session gab es keinen; die Wiederaufnahme nach 12 Tagen lief nur über den Chat-Verlauf. | Eine kurze Datei `docs/superpowers/notes/<datum>-handover.md`: Stand, offene Entscheidungen, nächster Milestone, ungeprüfte Annahmen. Kein Skill, kein Hook — eine Datei, die die nächste Session zuerst liest. |
 
@@ -31,7 +31,7 @@ Push `/code-review medium` auf den Diff, dann die Push-/PR-Frage an den Menschen
 2. **Ablation-Log** `docs/superpowers/notes/2026-09-16-v2-ablation-log.md`: neue Zeilen seit dem
    letzten Mx.0 und ob der Entscheidungsabschnitt des letzten Milestones existiert.
 3. **`docs/dashboard/versions.md`**: die Zeilen seit dem letzten Mx.0 auf wiederkehrende
-   Beobachtungen (z. B. dreimal „× Missing File" beim ersten `homey app install`).
+   Beobachtungen (z. B. „× Missing File" beim ersten `homey app install` in zwei von drei Installs).
 
 Die Triage-Inbox (`docs/dashboard/triage-inbox.md`) ist keine Retro-Quelle, sondern Pflichtlektüre
 jeder Session; offene Einträge, die eine menschliche Entscheidung brauchen, werden im Mx.0 dem
@@ -48,8 +48,8 @@ Menschen vorgelegt, nicht von der Session entschieden.
   sofern bis dahin keine neue Freigabedatei dazukommt.
 - Ablation-Log: 8 Zeilen + Entscheidung 2026-09-28 vorhanden. Offen aus der Entscheidung: D3
   (breitere Verbotsmuster im Sweep) — ein Testthema für den nächsten `/ship`, kein Housekeeping.
-- versions.md: „× Missing File" beim ersten `homey app install` dreimal beobachtet (0.9.0, 0.9.2;
-  0.9.1 lief beim ersten Mal durch), Ursache ungeklärt. Kein Test möglich (Homey-CLI-Verhalten);
+- versions.md: „× Missing File" beim ersten `homey app install` in zwei von drei Installs (0.9.0 und
+  0.9.2 ja, 0.9.1 nein), Ursache ungeklärt. Kein Test möglich (Homey-CLI-Verhalten);
   Kandidat für die Triage-Inbox als offener Beobachtungseintrag, nicht für eine Regel.
 
 ## Was bewusst entfällt — geprüft, nicht übernommen
@@ -78,8 +78,8 @@ Menschen vorgelegt, nicht von der Session entschieden.
   (`claude plugin uninstall … --scope project`, dann Hooks-Feuern in einer frischen Session prüfen).
 - Branches: `worktree-v2-bootstrap` (ad73f5e, per Squash in PR #22 enthalten),
   `worktree-framework-v2-ablation` (70fbec1, archiviert als Tag `archive/framework-v2-ablation-2026-09-10`),
-  `worktree-m9.4-hooks-plugin` (lokal + origin, bb5d3ca, Prämisse durch V2 entfallen; im
-  Framework-v1-Repo liegt dazu `.worktrees/m9.4`). `worktree-m9.2-quickstart` ist bereits weg.
+  `worktree-m9.4-hooks-plugin` (lokal + origin, bb5d3ca, Prämisse durch V2 entfallen; laut
+  Memory-Stand 2026-09-03 liegt im Framework-v1-Repo dazu `.worktrees/m9.4` — nicht neu geprüft). `worktree-m9.2-quickstart` ist bereits weg.
 - Dashboard-Einträge mit v1-Prämisse (nicht `Mx.0`, deshalb in M9.9 nicht umgeschrieben): M9.4
   (Hooks als Plugin — durch V2 erledigt), M10.3 (Templates im v1-Framework-Repo, Verweis auf den
   `dashboard-sync`-Skill). Entscheidung „obsolet markieren oder umwidmen" gehört zu Schritt 1 in M10.0.
