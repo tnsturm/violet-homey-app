@@ -106,5 +106,9 @@
   "0.9.1": {
     "en": "Fix: the Repair dialog (device → Maintenance → Repair) failed to open with an error; it now opens so the write password can be renewed without re-pairing.",
     "de": "Fix: Der Reparieren-Dialog (Gerät → Wartung → Reparieren) ließ sich nicht öffnen; jetzt öffnet er sich, sodass das Schreib-Passwort ohne erneutes Pairing erneuert werden kann."
+  },
+  "0.9.2": {
+    "en": "New: a built-in Quick Start guide — open the app's settings (gear on the app tile) for a short, plain-language overview of what each setting does: getting started without credentials, water temperature sensor, feature groups, LSI water chemistry, control (write access) and diagnostics, with a link to the full community guide. Also corrected a few misleading texts: the Dosing group offers Auto or Hide only, the write password is set via the device's Repair option (not in the device settings), and the tile pump override reverts for ON and OFF alike (0 = permanent).",
+    "de": "Neu: eine eingebaute Kurzanleitung — öffne die App-Einstellungen (Zahnrad an der App-Kachel) für einen kurzen, verständlichen Überblick, was die einzelnen Einstellungen bewirken: Einstieg ohne Zugangsdaten, Wasserfühler, Funktionsgruppen, LSI-Wasserchemie, Steuerung (Schreibzugriff) und Diagnose, mit Link zur ausführlichen Community-Anleitung. Außerdem einige irreführende Texte korrigiert: die Gruppe Dosierung kennt nur Auto oder Ausblenden, das Schreib-Passwort wird über „Reparieren“ am Gerät gesetzt (nicht in den Geräteeinstellungen), und die Kachel-Übersteuerung der Pumpe fällt bei EIN und AUS gleichermaßen auf Auto zurück (0 = dauerhaft)."
   }
 }
