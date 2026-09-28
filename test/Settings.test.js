@@ -19,6 +19,7 @@ const {
   groupSettings,
   featureGroupBlock,
   labelRegex,
+  schemaNodes,
   proseSources,
 } = require('./helpers/prose');
 
@@ -276,33 +277,31 @@ test('no prose sentence promises the tile override reverts to Auto without the 0
   assert.deepStrictEqual(wrong, [], 'these sentences hide that 0 makes the tile override permanent');
 });
 
+// Review finding E6: the claim resolves to a node the user can actually edit — a
+// `text` setting (top level or inside a group) whose label names the username — not
+// to any label that merely contains the word (a read-only `label` node would do).
 test('a settings.* sentence may only claim a credential field the schema really has', () => {
   const user = { en: /username/i, de: /Benutzername/i };
   const where = { en: /device settings/i, de: /Geräteeinstellungen/i };
-  const compose = readJson('drivers/pool/driver.settings.compose.json');
-  /** @type {Array<*>} */
-  const labels = [];
-  const walk = (/** @type {*} */ node) => {
-    if (Array.isArray(node)) return node.forEach(walk);
-    if (node === null || typeof node !== 'object') return;
-    if (node.label) labels.push(node.label);
-    if (Array.isArray(node.children)) walk(node.children);
-  };
-  walk(compose);
+  const nodes = schemaNodes();
 
+  let claims = 0;
   for (const lang of /** @type {Array<'en'|'de'>} */ (['en', 'de'])) {
+    const editable = nodes.find((n) => n.type === 'text' && user[lang].test(String(n.label?.[lang] ?? '')));
     const locale = readJson(`locales/${lang}.json`);
     for (const key of flatten(locale.settings, '')) {
       const value = String(lookup(locale, `settings.${key}`));
       for (const s of sentences(value)) {
         if (!user[lang].test(s) || !where[lang].test(s)) continue;
+        claims += 1;
         assert.ok(
-          labels.some((l) => user[lang].test(String(l[lang] ?? ''))),
-          `${lang}: settings.${key} sends the user to a "username" field the schema does not have: "${s}"`,
+          editable,
+          `${lang}: settings.${key} sends the user to an editable "username" field the device settings do not have: "${s}"`,
         );
       }
     }
   }
+  assert.ok(claims > 0, 'no settings.* sentence claims a username field — update this test');
 });
 
 test('every fill() fallback in the page matches locales/en.json verbatim', () => {
