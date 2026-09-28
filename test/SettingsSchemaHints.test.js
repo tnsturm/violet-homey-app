@@ -13,12 +13,22 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert');
-const { readText, sentences, schemaNodes, groupSettings, proseSources } = require('./helpers/prose');
+const {
+  readText,
+  sentences,
+  schemaNodes,
+  groupSettings,
+  labelRegex,
+  proseSources,
+} = require('./helpers/prose');
 
-/** @param {string} s @returns {RegExp} */
-function wordRe(s) {
-  return new RegExp(`\\b${s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i');
-}
+// Review finding E5: the label matcher must use Unicode letter boundaries — \b is
+// ASCII-only, so it never matches before an umlaut-initial German label.
+test('the label matcher finds umlaut-initial labels on Unicode boundaries only', () => {
+  const re = labelRegex('Überlaufbehälter');
+  assert.ok(re.test('der Überlaufbehälter'), 'misses the label after a space');
+  assert.ok(!re.test('der Überlaufbehälterdeckel'), 'matches inside a longer word');
+});
 
 // --- B1: a hint that generalises the three options must name the exception ----------
 // group_dosing offers only auto|hide (mirrored by lib/FeatureGroups.js), so any hint
@@ -49,7 +59,7 @@ test('schema hints that generalise "Always show" to every group name the excepti
       carriers.add(`${node.id}/${lang}`);
       for (const g of forceless) {
         assert.ok(
-          wordRe(g.label[lang]).test(hint),
+          labelRegex(g.label[lang]).test(hint),
           `${lang}: hint of ${node.id} generalises "Always show" without naming ${g.id} (${g.label[lang]}): "${hint}"`,
         );
         assert.ok(
@@ -153,7 +163,7 @@ test('README does not promise "Always show" for a force-less group', () => {
     if (!FORCE_PHRASE.en.test(s)) continue;
     for (const g of forceless) {
       assert.ok(
-        !wordRe(g.label.en).test(s),
+        !labelRegex(g.label.en).test(s),
         `README offers "Always show" for ${g.id}, which has only ${g.values.join('|')}: "${s}"`,
       );
     }
