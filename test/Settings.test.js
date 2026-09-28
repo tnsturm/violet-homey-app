@@ -252,6 +252,30 @@ test('no prose sentence puts the write password in the device settings', () => {
   assert.deepStrictEqual(wrong, [], 'these sentences locate the write password in the device settings');
 });
 
+// --- The tile override does not always revert (review finding E3) -------------------
+// control_default_duration_min allows 0 = permanent (its compose hint says so), so a
+// sentence promising that the tile override reverts to Auto is false for that value
+// unless it names the permanent case.
+test('no prose sentence promises the tile override reverts to Auto without the 0 = permanent case', () => {
+  const reverts = { en: /revert|falls? back/i, de: /zurück|fällt/i };
+  const permanent = {
+    en: /permanent|(?<![\d.,])0(?![\d.,])/i,
+    de: /dauerhaft|(?<![\d.,])0(?![\d.,])/i,
+  };
+
+  /** @type {Array<string>} */
+  const wrong = [];
+  for (const { src, lang, text } of proseSources()) {
+    if (HISTORIC.has(src)) continue;
+    for (const s of sentences(text)) {
+      if (reverts[lang].test(s) && /Auto/.test(s) && !permanent[lang].test(s)) {
+        wrong.push(`${lang}: ${src}: "${s}"`);
+      }
+    }
+  }
+  assert.deepStrictEqual(wrong, [], 'these sentences hide that 0 makes the tile override permanent');
+});
+
 test('a settings.* sentence may only claim a credential field the schema really has', () => {
   const user = { en: /username/i, de: /Benutzername/i };
   const where = { en: /device settings/i, de: /Geräteeinstellungen/i };
