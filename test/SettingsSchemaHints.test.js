@@ -6,7 +6,8 @@
 // Sibling of test/Settings.test.js, which guards the app-settings page prose:
 // this file guards the OTHER user-facing wording that describes the same schema —
 // the `hint` strings inside drivers/pool/driver.settings.compose.json, README.md
-// and the Community quick-start guides. Same technique as there: read the schema
+// and the Community quick-start guides; the account-model sweep (B4/C2) runs over
+// every prose source via proseSources(). Same technique as there: read the schema
 // with fs+JSON.parse and derive the expectation from it, never from a hand-kept
 // list. Nothing here requires the app, so it runs under plain `node --test`.
 
@@ -113,35 +114,70 @@ test('schema hints that generalise "Always show" to every group name the excepti
 // warning is the true part and stays. (The dated threat model under
 // docs/superpowers/security/ is a historical record and deliberately untouched.)
 
-const BANNED = {
-  en: [/least[- ]privilege/i, /dedicated[^.]{0,20}account/i],
-  de: [/minimalen Rechten/i, /wenig Rechten/i, /eigenes Konto/i],
-};
-
-test('no schema hint recommends a controller account model', () => {
-  for (const node of schemaNodes()) {
-    if (!node.hint || typeof node.hint !== 'object') continue;
-    for (const lang of /** @type {Array<'en'|'de'>} */ (['en', 'de'])) {
-      const hint = String(node.hint[lang] ?? '');
-      for (const re of BANNED[lang]) {
-        assert.ok(!re.test(hint), `${lang}: hint of ${node.id} still matches ${re}: "${hint}"`);
+// Fact sweep (review finding C2): one fact, every prose copy checked. Each fix round
+// found the next copy of the same false fact in a file the previous sweep never read.
+/**
+ * Every text a user can read, per language: all locale strings, every schema
+ * label/hint, the settings page, the three READMEs and both community guides.
+ * @returns {Array<{src: string, lang: 'en'|'de', text: string}>}
+ */
+function proseSources() {
+  /** @type {Array<{src: string, lang: 'en'|'de', text: string}>} */
+  const out = [];
+  const add = (/** @type {string} */ src, /** @type {'en'|'de'} */ lang, /** @type {*} */ text) => {
+    if (typeof text === 'string') out.push({ src, lang, text: text.replace(/\s+/g, ' ') });
+  };
+  for (const lang of /** @type {Array<'en'|'de'>} */ (['en', 'de'])) {
+    const walk = (/** @type {*} */ v, /** @type {string} */ key) => {
+      if (v !== null && typeof v === 'object') {
+        for (const [k, c] of Object.entries(v)) walk(c, key ? `${key}.${k}` : k);
+      } else add(`locales/${lang}.json:${key}`, lang, v);
+    };
+    walk(readJson(`locales/${lang}.json`), '');
+    for (const node of schemaNodes()) {
+      for (const field of ['label', 'hint']) add(`compose:${node.id}.${field}`, lang, node[field]?.[lang]);
+      for (const v of Array.isArray(node.values) ? node.values : []) {
+        add(`compose:${node.id}.values.${v.id}`, lang, v.label?.[lang]);
       }
     }
   }
-});
-
-test('no quick-start guide recommends a controller account model', () => {
   for (const [lang, file] of /** @type {Array<['en'|'de', string]>} */ ([
+    ['en', 'settings/index.html'],
+    ['en', 'README.md'],
+    ['en', 'README.txt'],
+    ['de', 'README.de.txt'],
     ['en', 'docs/community/quickstart-guide.en.md'],
     ['de', 'docs/community/quickstart-guide.de.md'],
+  ])) add(file, lang, readText(file));
+  return out;
+}
+
+// Hyphen class covers ASCII '-', U+2010 hyphen, U+2011 non-breaking hyphen,
+// U+2012 figure dash, U+2013 en dash and a space ("least‑privilege" slipped past B4).
+const BANNED = {
+  en: [/least[-‐-– ]privilege/i, /dedicated[^.]{0,20}account/i],
+  de: [/minimalen Rechten/i, /wenig Rechten/i, /eigenes Konto/i],
+};
+
+test('no prose source recommends a controller account model', () => {
+  const sources = proseSources();
+  assert.ok(sources.length > 100, `prose sweep found only ${sources.length} texts`);
+  /** @type {Array<string>} */
+  const hits = [];
+  for (const { src, lang, text } of sources) {
+    for (const re of BANNED[lang]) if (re.test(text)) hits.push(`${src} matches ${re}`);
+  }
+  assert.deepStrictEqual(hits, [], 'account-model advice survives in these prose sources');
+});
+
+test('the prose sources still state that the controller API is plain HTTP', () => {
+  // The fact that justified the advice must survive it.
+  for (const [file, re] of /** @type {Array<[string, RegExp]>} */ ([
+    ['README.md', /plain HTTP/i],
+    ['docs/community/quickstart-guide.en.md', /plain HTTP/i],
+    ['docs/community/quickstart-guide.de.md', /unverschlüsseltes HTTP/i],
   ])) {
-    const text = readText(file).replace(/\s+/g, ' ');
-    for (const re of BANNED[lang]) {
-      assert.ok(!re.test(text), `${file} still matches ${re}`);
-    }
-    // The fact that justified the advice must survive it.
-    assert.match(text, lang === 'en' ? /plain HTTP/i : /unverschlüsseltes HTTP/i,
-      `${file} no longer states that the controller API is plain HTTP`);
+    assert.match(readText(file).replace(/\s+/g, ' '), re, `${file} no longer states that the controller API is plain HTTP`);
   }
 });
 

@@ -219,7 +219,6 @@ Control (write) is **off by default**. When you enable it, the app authenticates
 with a controller username/password you provide. The Violet's local API is **plain HTTP**,
 so credentials travel the LAN in cleartext. Therefore:
 
-- use a **least‑privilege** controller account for the app,
 - keep the controller on a **trusted / segmented** network, and
 - **rotate the write password** before sharing configs or logs.
 
