@@ -66,7 +66,7 @@
     "type": "dropdown",
     "label": { "en": "Chlorine measurement", "de": "Chlor-Messung" },
     "value": "auto",
-    "hint": { "en": "Auto shows the tile only when the hardware is detected; Always show forces it; Hide removes it. The same three choices apply to the feature groups further below, except Dosing, which offers Auto or Hide only.", "de": "Auto zeigt die Kachel nur, wenn die Hardware erkannt wird; Immer anzeigen erzwingt sie; Ausblenden entfernt sie. Dieselben drei Optionen gelten für die Funktionsgruppen weiter unten — außer der Dosierung, die nur Auto oder Ausblenden kennt." },
+    "hint": { "en": "Auto shows the tile only when the hardware is detected; Always show forces it; Hide removes it.", "de": "Auto zeigt die Kachel nur, wenn die Hardware erkannt wird; Immer anzeigen erzwingt sie; Ausblenden entfernt sie." },
     "values": [
       { "id": "auto", "label": { "en": "Auto (show if detected)", "de": "Auto (anzeigen, wenn erkannt)" } },
       { "id": "force", "label": { "en": "Always show", "de": "Immer anzeigen" } },

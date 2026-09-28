@@ -39,13 +39,14 @@ test('schema hints that generalise "Always show" to every group name the excepti
   const forceless = groupSettings().filter((g) => !g.values.includes('force'));
   assert.ok(forceless.length > 0, 'no force-less group in the schema — update this test');
 
-  let checked = 0;
+  /** @type {Set<string>} */
+  const carriers = new Set();
   for (const node of schemaNodes()) {
     if (!node.hint || typeof node.hint !== 'object') continue;
     for (const lang of /** @type {Array<'en'|'de'>} */ (['en', 'de'])) {
       const hint = String(node.hint[lang] ?? '');
       if (!FORCE_PHRASE[lang].test(hint) || !GENERALISES[lang].test(hint)) continue;
-      checked += 1;
+      carriers.add(`${node.id}/${lang}`);
       for (const g of forceless) {
         assert.ok(
           wordRe(g.label[lang]).test(hint),
@@ -58,7 +59,13 @@ test('schema hints that generalise "Always show" to every group name the excepti
       }
     }
   }
-  assert.ok(checked >= 2, `expected the generalising hints to be found, matched ${checked}`);
+  // Single carrier (review finding E4): the group_eco hint heads the feature-group
+  // block and states the rule once; group_chlorine only describes its own options.
+  assert.deepStrictEqual(
+    [...carriers].sort(),
+    ['group_eco/de', 'group_eco/en'],
+    'the "same three options for every group" statement must live in the group_eco hint only',
+  );
 });
 
 // --- B4: no advice about an account model the controller does not have -------------
