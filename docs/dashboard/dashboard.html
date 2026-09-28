@@ -908,50 +908,27 @@ DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Cod
     {
       id: "M9.2",
       title: "In-App Quick-Start-Guide (App-Settings-Seite)",
-      status: "active",
-      recommendedModel: { model: "Claude Fable 5", effort: "medium", why: "Erster echter Lauf mit skill-agentic-loop-framework-V2 (/ship): Orchestrator triagiert Adversary-Funde und entscheidet über die Ablation — Flagship-Urteil; Implementer laut Plugin Opus, Adversary/Disprover Fable." },
+      status: "done",
       startedAt: "2026-09-16",
-      finishedAt: null,
-      commit: "782eac1",
+      finishedAt: "2026-09-28",
+      commit: "782eac1 (PR #22) · Release 3fe69ee (0.9.2)",
       summary: "Eingebauter Quick-Start-Guide über eine App-Settings-HTML-Seite (/settings/index.html, self-contained, kein Server), erreichbar über das ⚙ am App-Kachel. Zweisprachig (en+de), erklärt die nicht-selbsterklärenden Konfigurationen (Pairing/Credentials-Optionalität, Wassertemperatur-Auswahl, Feature-Gruppen Auto/Force/Hide, LSI-Werte, Steuerung/Schreibzugriff, Diagnose) und verweist auf den Community-Post als ausführliche Referenz. Per-Setting-Hints wurden bereits in 0.5.1 nachgerüstet — diese Seite ist die zusammenhängende Kurzanleitung. Optional zusätzlich: Pairing-Intro-View. Auslöser: Nutzer-Feedback 2026-07-14 (viele Konfigurationen, deren Sinn sich nicht auf Anhieb erschließt).",
       steps: [
         { label: "Brainstorming", done: true },
         { label: "Spec", done: true },
         { label: "Plan", done: true },
         { label: "Implementierung (SDD)", done: true },
-        { label: "Validate + Release", done: false }
+        { label: "Validate + Release", done: true }
       ],
-      currentActivity: "Test-Release 0.9.2 auf Torstens Homey Pro + Geräte-Test der Settings-Seite (Done-Bedingung 3); danach Forenbeitrag 157109 nachziehen und Ablation-Entscheidung",
-      runtime: "1 /ship build + 4 /ship fix + 1 /code-review xhigh; 27 Branch-Commits",
+      currentActivity: null,
+      runtime: "1 /ship build + 4 /ship fix + 1 /code-review xhigh; 27 Branch-Commits; 2026-09-16 bis 2026-09-28 (mit 12 Tagen Pause)",
       log: [
         { at: "2026-07-14", note: "Milestone angelegt (Nutzer-Feedback: In-App-Quickstart-Guide gewünscht; Per-Setting-Hints bereits in 0.5.1 erledigt, diese Seite ist die zusammenhängende Kurzanleitung)" },
         { at: "2026-09-16", note: "Gestartet als erster echter Lauf mit skill-agentic-loop-framework-V2 auf dem v2-Bootstrap-Branch (v1-Framework entfernt, CLAUDE.md 35 Zeilen). Brainstorming/Spec/Plan bewusst durch einen vollständigen Task-Vertrag im /ship-Aufruf ersetzt (SDK-Vertrag vorab per context7 verifiziert) — Steps als erledigt markiert, weil das, was sie gaten, geliefert ist. /ship build: Implementer Opus test-first, 2 Adversaries, 1 confirmed (Dosierung hat kein 'Immer anzeigen'), 1 refuted (globales Homey existiert im echten Webview — Disprover holte /homey.js vom Homey Pro). Zwei Plugin-Defekte umgangen (agentType unqualifiziert, verifyCommit-JSON verschachtelt) — nur in der run-lokalen Skriptkopie, Plugin unverändert." },
-        { at: "2026-09-28", note: "Vier /ship-fix-Runden + /code-review xhigh: 22 bestätigte Funde, alle Klasse Eingabe/testblind (Prosa widersprach dem Schema: Dosierung-Optionen, erfundener Konto-Rat, Passwort-Ort Reparieren statt Geräteeinstellungen, 0 = dauerhaft, Kachel-OFF revertiert auch). Fakten-Sweep als Testmuster eingeführt (test/helpers/prose.js: jede Aussage über ein Setting aus dem Compose-Schema abgeleitet, über alle Prosa-Quellen inkl. Changelog/Manifest/Pair-Views geprüft). PR #22 gemergt als 782eac1 (Squash, inkl. v2-Bootstrap). Ablation-Log: 7 Zeilen (docs/superpowers/notes/2026-09-16-v2-ablation-log.md). Offen: Geräte-Test, Test-Release 0.9.2, Forenbeitrag, D3 (breitere Verbotsmuster), Pairing-Intro-View (Empfehlung: weglassen)." }
+        { at: "2026-09-28", note: "Vier /ship-fix-Runden + /code-review xhigh: 22 bestätigte Funde, alle Klasse Eingabe/testblind (Prosa widersprach dem Schema: Dosierung-Optionen, erfundener Konto-Rat, Passwort-Ort Reparieren statt Geräteeinstellungen, 0 = dauerhaft, Kachel-OFF revertiert auch). Fakten-Sweep als Testmuster eingeführt (test/helpers/prose.js: jede Aussage über ein Setting aus dem Compose-Schema abgeleitet, über alle Prosa-Quellen inkl. Changelog/Manifest/Pair-Views geprüft). PR #22 gemergt als 782eac1 (Squash, inkl. v2-Bootstrap). Ablation-Log: 7 Zeilen (docs/superpowers/notes/2026-09-16-v2-ablation-log.md). Offen: Geräte-Test, Test-Release 0.9.2, Forenbeitrag, D3 (breitere Verbotsmuster), Pairing-Intro-View (Empfehlung: weglassen)." },
+        { at: "2026-09-28", note: "Abgeschlossen: 0.9.2 als Test-Release installiert (zweiter homey-app-install-Versuch, erster wieder 'Missing File' — dritter Datenpunkt), Geräte-Test vom Nutzer bestanden (Seite erscheint auf Deutsch). Quickstart-Guides um den Verweis auf die In-App-Kurzanleitung ergänzt; Forenbeitrag 157109 wird vom Nutzer von Hand nachgezogen. Ablation-Entscheidung im Log: Fakten-Sweep als Test + Adversary-Satz zurückgeholt, Plugin 0.1.1. Pairing-Intro-View entfällt. Offen als Follow-up: D3 (breitere Verbotsmuster im Sweep)." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten; alle Pfade unten sind repo-relativ.
-
-Startmodus (CLAUDE.md §10): autonomer Lauf per claude --permission-mode auto; Alltags-Session im Default-Modus (Allowlist greift). Lies zuerst docs/dashboard/triage-inbox.md (§7) — offene Findings vor neuer Arbeit sichten.
-
-Violet Homey Pro App — Milestone M9.2 (In-App Quick-Start-Guide über eine App-Settings-Seite).
-
-Aktualisiere beim Start den M9.2-Eintrag in docs/dashboard/dashboard.html: status "active", startedAt = heute, log "gestartet". Steps abhaken; am Ende status "done" + commit. Vor jedem Homey-Install/Store-Upload Version bumpen (HOMEY.md) + versions.md pflegen. (Protokoll: CLAUDE.md §7-8 + HOMEY.md, automatisch geladen.)
-
-Kontext: Nutzer-Feedback vom 2026-07-14 — die App hat viele Konfigurationen, deren Sinn sich nicht auf Anhieb erschließt. Per-Setting-Hints wurden in 0.5.1 bereits nachgerüstet (drivers/pool/driver.settings.compose.json). Dieser Milestone ergänzt eine ZUSAMMENHÄNGENDE Kurzanleitung als App-Settings-HTML-Seite.
-
-Aufgabe: Eine App-Settings-Seite (settings/index.html — Homey Apps SDK v3, self-contained HTML/CSS/JS, kein Server, kein externer Fetch; über Homey.get/set nur falls nötig) bauen, erreichbar über das ⚙ am App-Kachel in Homey. Inhalt zweisprachig (en+de, Sprachumschaltung oder beide untereinander): Kurz-Onboarding (Pairing/Host, Credentials sind optional — Lesen braucht keine, nur Schreibsteuerung + Config-Fallback), Wassertemperatur-Auswahl (Smart-Auto + manuelle Wahl, benannte Sub-Kacheln als Zuordnungshilfe), Feature-Gruppen (Auto/Immer/Ausblenden), LSI-Wasserchemie (welche Werte, woher), Steuerung/Schreibzugriff (Default aus, Klartext-HTTP-Hinweis), erweiterte Diagnose. Verweis (Link/Text) auf den Community-Post als ausführliche Referenz (homeyCommunityTopicId 157109). Homey-SDK-Spezifika der App-Settings-Seite über die Skill homey-app bzw. context7 verifizieren, NICHT raten.
-
-Optional (im Brainstorming entscheiden): zusätzlich eine Pairing-Intro-View ("Bevor du startest …") am Anfang des Hinzufügen-Assistenten.
-
-Store-Changelog-Freigabe: bei Publish Version-Notes (en+de) vom Nutzer freigeben lassen. Dev-Gate: npx homey app validate --level=debug muss PASSEN. Live-Sicht der Seite über homey app run/install gegen "Torstens Homey Pro".
-
-UI-Abnahme (Lehre aus /insights 2026-08-31, buggy_code-Klasse — UI-Fehler tauchten regelmäßig erst beim manuellen Klicken des Nutzers auf): vor jeder "done"-Meldung zur Settings-Seite ein nummeriertes manuelles Testskript schreiben — exakte Klickpfade, erwartetes Ergebnis je Pfad, Fehlerbild falls kaputt — und den eigenen Diff dagegen lesen, erst dann abnehmen.
-
-DONE-BEDINGUNGEN (transcript-verifizierbar; Klartext-Fallback solange Claude Code < 2.1.139, danach als /goal-Zeile fuehrbar):
-1. npm test zeigt fail 0 — Output im Chat gezeigt.
-2. npx homey app validate --level publish zeigt PASS — Output im Chat gezeigt.
-3. Die App-Settings-Seite ist im Manifest registriert und wird in Homey angezeigt — Beleg (Screenshot/read_page oder App-Settings-Route) im Chat gezeigt.
-
-/remote-control M9.2 — In-App Quick-Start-Guide`
+      prompt: null
     },
     {
       id: "M9.3",
@@ -1059,22 +1036,25 @@ NO-ACTION: Laesst sich ein Plugin-Hook nicht pro Projekt scopen (feuert also in 
       currentActivity: null,
       runtime: null,
       log: [
-        { at: "2026-09-16", note: "Milestone angelegt (Nutzer): die kuenftigen Housekeeping-Milestones an das neue Framework anpassen. Voraussetzung: mindestens ein echter Milestone-Lauf mit /ship (M9.2) ist durch, damit das Ablation-Log als Entscheidungsgrundlage gefuellt ist." }
+        { at: "2026-09-16", note: "Milestone angelegt (Nutzer): die kuenftigen Housekeeping-Milestones an das neue Framework anpassen. Voraussetzung: mindestens ein echter Milestone-Lauf mit /ship (M9.2) ist durch, damit das Ablation-Log als Entscheidungsgrundlage gefuellt ist." },
+        { at: "2026-09-28", note: "Voraussetzung erfuellt: M9.2 Teil 1 ist durch (PR #22, 0.9.2 live, Geraete-Test bestanden). Prompt nach dem ersten Lauf ueberarbeitet: Ablation-Log hat 8 Zeilen + Entscheidungsabschnitt, die Retro-Quellen existieren jetzt real (Freigabedatei mit Klassifikationswoertern, Ablation-Log, versions.md), und die Housekeeping-Arbeit, die der Lauf von Hand brauchte, ist benannt (Worktree-Cleanup, Memory-Dateien noch v1-foermig, Handover fehlte am Session-Ende, Plugin-Quelle gelesen). Kein /ship noetig — Dashboard-Datenblock + Notiz + Memory sind kein Code; stattdessen /code-review medium auf den Diff." }
       ],
-      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten, eigener Worktree; alle Pfade unten sind repo-relativ.
+      prompt: `UMGEBUNG: Repo liegt lokal unter C:/Users/TorstenSturm/source/repos/VioletApp. Claude Code in diesem Ordner starten, eigener Worktree; alle Pfade unten sind repo-relativ. Plugin skill-agentic-loop-framework-V2 0.1.1 ist installiert (Quelle: C:/Users/TorstenSturm/source/repos/skill-agentic-loop-framework-V2).
 
-Lies zuerst docs/dashboard/triage-inbox.md, dann docs/superpowers/notes/2026-09-16-v2-handover.md und docs/superpowers/notes/2026-09-16-v2-ablation-log.md.
+Lies zuerst docs/dashboard/triage-inbox.md, dann in dieser Reihenfolge: docs/superpowers/notes/2026-09-16-v2-handover.md, docs/superpowers/notes/2026-09-16-v2-ablation-log.md (8 Zeilen + Abschnitt "Entscheidung 2026-09-28"), docs/superpowers/reviews/2026-09-16-approved.md (Triage aller fuenf Runden, je Fund ein Klassifikationswort), den M9.2-Eintrag in docs/dashboard/dashboard.html (log[]) und MEMORY.md unter C:/Users/TorstenSturm/.claude/projects/C--Users-TorstenSturm-source-repos-VioletApp/memory/.
 
 Violet Homey Pro App — Milestone M9.9 (Housekeeping-Milestones an Framework v2 anpassen).
 
-Kontext: Seit 2026-09-16 laeuft das Repo auf skill-agentic-loop-framework-V2 (ein /ship-Workflow, zwei Adversaries + Disprover, drei Must-never-Hooks im Plugin, CLAUDE.md mit ~38 Zeilen). Der milestone-checkpoint-Skill, das Dashboard-Protokoll (dashboard-sync), die Hook-Telemetrie und das FRICTION-Log sind entfernt. Die offenen Housekeeping-Eintraege im Dashboard (M10.0 und alle spaeteren Mx.0) beschreiben aber noch den v1-Ablauf mit neun Schritten und verweisen auf Quellen, die es nicht mehr gibt.
+Kontext: Seit 2026-09-16 laeuft das Repo auf skill-agentic-loop-framework-V2 (ein /ship-Workflow, zwei Adversaries + Disprover, drei Must-never-Hooks im Plugin, CLAUDE.md mit 35 Zeilen). Der milestone-checkpoint-Skill, das Dashboard-Protokoll (dashboard-sync), die Hook-Telemetrie und das FRICTION-Log sind entfernt. Der erste echte Lauf (M9.2 Teil 1: 1 /ship build + 4 /ship fix + /code-review xhigh, 22 bestaetigte Funde, alle Klasse Eingabe/testblind) ist abgeschlossen und hat die Ablation-Entscheidung schon getroffen (Fakten-Sweep als Test, ein Satz im Adversary-Suchraum, Plugin 0.1.1). Die offenen Housekeeping-Eintraege im Dashboard (M10.0 und alle spaeteren Mx.0) beschreiben aber noch den v1-Ablauf mit neun Schritten und verweisen auf Quellen, die es nicht mehr gibt.
 
-Aufgabe: Den Housekeeping-Milestone fuer v2 neu definieren und die offenen Mx.0-Eintraege in docs/dashboard/dashboard.html (nur Datenblock window.DASHBOARD_STATUS) darauf umschreiben. Grundlage ist der erste echte /ship-Lauf (M9.2) und sein Ablation-Log: Was dort als vermisst geloggt wurde, entscheidet, welche Checkpoint-Schritte zurueckkommen — als Test, als Satz im Adversary-Suchraum oder als Zeile im CLAUDE.md, in dieser Reihenfolge, nie als Hook ausser fuer ein Must-never. Ergebnis als kurze Notiz docs/superpowers/notes/<datum>-housekeeping-v2.md (Schritte, Quellen der Retro, was bewusst entfaellt und warum).
+Was der erste Lauf an Housekeeping tatsaechlich von Hand brauchte — das ist die Ausgangsliste, nicht die neun v1-Schritte: (1) Worktree-/Branch-Cleanup nach dem Squash-Merge (Ordner war nach Session-Ende weg, Branch blieb; Remote-Branch loeschte GitHub selbst); (2) Memory-Konsolidierung — MEMORY.md und mehrere Memory-Dateien beschreiben noch v1 (dashboard-sync, Hook-Namen, commit-msg-guard, M9.4-Hooks-Plugin-Stand); (3) Handover — am Session-Ende gab es keinen; die Wiederaufnahme nach 12 Tagen lief nur ueber den Chat-Verlauf; (4) Skill-/Plugin-Quellen-Review — das V2-Plugin ist selbst geschrieben, aber jede Version wird vor dem Update gelesen (CLAUDE.md Must-never); (5) Retro — Quellen sind jetzt real: Klassifikationswoerter in der Freigabedatei (eine Klasse mit drei Treffern im Monat wird zu einem Satz im Adversary-Suchraum oder einem Testmuster), das Ablation-Log, die versions.md-Zeile (z. B. das dreimal beobachtete "Missing File" beim ersten homey app install); (6) Ablation-Entscheidung am Milestone-Ende (Test → Adversary-Satz → CLAUDE.md-Zeile, nie ein Hook ausser fuer ein Must-never). Entfallen sind /doctor, /claude-automation-recommender, /fewer-permission-prompts und der Framework-Drift-Abgleich 7a (das Plugin liefert die Hooks, Drift ist per Definition null) — pruefe, ob das stimmt, statt es zu uebernehmen.
 
-/goal Jeder offene Mx.0-Eintrag im Dashboard beschreibt den v2-Housekeeping-Ablauf (keine Referenz mehr auf milestone-checkpoint, dashboard-sync-Checkpoint-Steps, Framework-Drift 7a oder FRICTION-Log), die Notiz existiert, der Datenblock parst (node -e mit vm wie im alten dashboard-guard, Output im Transcript), und der M9.9-Eintrag steht auf done.
+Aufgabe: Den Housekeeping-Milestone fuer v2 aus dieser Liste definieren und die offenen Mx.0-Eintraege in docs/dashboard/dashboard.html (nur Datenblock window.DASHBOARD_STATUS: steps[], summary, prompt) darauf umschreiben; M10.0 ist der erste, sein Prompt muss allein lauffaehig sein. Die Memory-Konsolidierung aus (2) in diesem Milestone gleich durchfuehren (v1-Verweise streichen oder als historisch markieren, MEMORY.md-Index nachziehen). Ergebnis als kurze Notiz docs/superpowers/notes/<datum>-housekeeping-v2.md (Schritte, Quellen der Retro, was bewusst entfaellt und warum). Kein /ship — Dashboard-Datenblock, Notiz und Memory sind kein Code; vor dem Push /code-review medium auf den Diff, danach Push-/PR-Frage.
 
-SCOPE-NEGATIV: Renderer in dashboard.html unberuehrt; abgeschlossene Milestones (status done) nicht umschreiben; kein Eingriff in das Plugin-Repo skill-agentic-loop-framework-V2 ausser einer dort geloggten Beobachtung; kein Version-Bump; CLAUDE.md nur, wenn das Ablation-Log eine konkrete Zeile verlangt.
-NO-ACTION: Ist das Ablation-Log aus M9.2 leer oder M9.2 noch nicht abgeschlossen, Milestone NICHT starten — Notiz mit dem Stand anlegen und den Eintrag auf todo lassen; ohne echten Lauf gibt es keine Entscheidungsgrundlage, und ein aus dem Kopf entworfener Checkpoint ist genau die Spirale, die M10.6 abgebrochen hat.
+/goal Jeder offene Mx.0-Eintrag im Dashboard beschreibt den v2-Housekeeping-Ablauf (keine Referenz mehr auf milestone-checkpoint, dashboard-sync-Checkpoint-Steps, Framework-Drift 7a, /doctor oder FRICTION-Log — grep-Nachweis ueber den Datenblock im Transcript), die Notiz existiert, MEMORY.md nennt keine v1-Artefakte mehr als aktuell, der Datenblock parst (node -e mit vm, Output im Transcript), und der M9.9-Eintrag steht auf done.
+
+SCOPE-NEGATIV: Renderer in dashboard.html unberuehrt; abgeschlossene Milestones (status done) nicht umschreiben; kein Eingriff in das Plugin-Repo skill-agentic-loop-framework-V2 ausser einer dort geloggten Beobachtung; kein Version-Bump; CLAUDE.md nur, wenn das Ablation-Log eine konkrete Zeile verlangt; das Ablation-Log selbst nur ergaenzen, nie umschreiben.
+NO-ACTION: Ist eine Retro-Quelle fuer einen Schritt leer (z. B. keine Klasse mit drei Treffern), wird der Schritt als "nichts zu tun" protokolliert, nicht mit erfundenem Inhalt gefuellt; ein Housekeeping-Schritt, fuer den der erste Lauf keinen Bedarf gezeigt hat, kommt nicht zurueck, nur weil v1 ihn hatte — genau das war die Spirale, die M10.6 abgebrochen hat.
 
 /remote-control M9.9 — Housekeeping-Milestones an Framework v2 anpassen`
     },

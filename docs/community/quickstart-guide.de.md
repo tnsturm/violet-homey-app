@@ -28,6 +28,10 @@ PoolDigital-Hardware.
    tatsächlich meldet — keine leeren Kacheln für nicht vorhandene Ausstattung.
 4. Werte auslesen (Temperatur, pH, Pumpenstatus usw.) funktioniert sofort, ganz
    ohne Passwort.
+5. Unsicher, was eine Einstellung bewirkt? Die App hat eine eingebaute
+   Kurzanleitung: öffne die App-Einstellungen (Zahnrad an der App-Kachel in
+   Homey) für einen kurzen Überblick über jede Einstellungsgruppe — mit einem
+   Button zurück zu dieser Anleitung.
 
 Für die reine Überwachung ist das schon alles. Zwei optionale Funktionen gehen
 weiter — beide sind bis zur Aktivierung ausgeschaltet:

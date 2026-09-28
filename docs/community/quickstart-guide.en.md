@@ -28,6 +28,9 @@ PoolDigital hardware.
    reports — no empty tiles for gear you don't have.
 4. Reading values (temperature, pH, pump state, etc.) works immediately, without
    any password.
+5. Unsure what a setting does? The app carries a built-in Quick Start: open the
+   app's settings (the gear on the app tile in Homey) for a short overview of
+   every setting group, with a button back to this guide.
 
 That's it for monitoring. Two optional features go further — both are off until
 you switch them on:
