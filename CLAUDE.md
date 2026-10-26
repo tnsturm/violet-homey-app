@@ -14,6 +14,7 @@ Layout: pure logic in lib/ (unit-tested, total functions: bad input ⇒ null, ne
 ## Workflow
 - One worktree per session; never a checkout another session may be using.
 - Substantive change → `/ship <task>`. The human triages confirmed findings and decides push and merge.
+- After brainstorming, the approved design goes into `/ship <task>`; superpowers' plan executors (subagent-driven-development, executing-plans) are not used.
 - New attack surface (write path, network listener, credentials) → a short threat note in docs/superpowers/security/ before implementing.
 - The nightly cloud routine writes docs/dashboard/triage-inbox.md on main; a new milestone session reads it first.
 - Fix the process, not the instance: a repeated mistake becomes a test, a line in the adversary's search space, or one line here — in that order. A new hook only for a must-never.
